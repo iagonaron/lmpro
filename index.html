@@ -10,7 +10,7 @@
     --ink:#fbf7ec; --muted:#d8caa6; --muted2:#a8966a; --paper:#ffffff;
     --accent:#d4af37;
     --gold1:#d4af37; --gold2:#b8860b; --gold-soft:#e9c96a;
-    --area-entonacion:#5b9dff; --area-ritmo:#22c98a; --area-audicion:#e08537; --area-teoria:#e84393;
+    --area-entonacion:var(--gold1); --area-ritmo:var(--gold1); --area-audicion:var(--gold1); --area-teoria:var(--gold1);
   }
   html,body{margin:0;padding:0}
   body{
@@ -19,27 +19,103 @@
     font-family:"Helvetica Neue",Arial,system-ui,sans-serif;
     -webkit-font-smoothing:antialiased; line-height:1.5; min-height:100vh;
   }
+  /* capa negra que baja revelando el degradado dorado de ARRIBA hacia ABAJO, como niebla.
+     Frame 1: cubre TODO en negro. Luego desciende y su borde superior difuso destapa el fondo. */
+  .veil{position:fixed;left:0;right:0;bottom:0;height:130vh;z-index:70;pointer-events:none;
+    background:linear-gradient(180deg, transparent 0%, #000 12%, #000 100%);}
+  body.intro .veil{animation:veilFog 1.6s cubic-bezier(.45,.05,.25,1) .6s forwards}
+  body:not(.intro) .veil{display:none}
+  /* arranca subido (su parte negra tapa todo el viewport) y baja hasta salir */
+  @keyframes veilFog{from{transform:translateY(-30vh)}to{transform:translateY(118vh)}}
+
   .wrap{max-width:1040px;margin:0 auto;padding:22px 26px 80px}
 
   /* "at home" manuscrito */
-  .home2,.ath{font-style:italic;font-family:Georgia,'Times New Roman',serif;font-weight:500;color:#aeb6d6;transform:rotate(-3deg);display:inline-block}
+  .home2,.ath{font-style:italic;font-family:Georgia,'Times New Roman',serif;font-weight:500;color:var(--gold-soft);transform:rotate(-3deg);display:inline-block}
 
   /* barra superior */
   .topbar{position:relative;display:flex;justify-content:flex-end;align-items:center;min-height:20px}
   .topbar-right{display:flex;align-items:center;gap:14px}
-  .portal-gp{border:1px solid rgba(212,175,55,.55);color:#d4af37;font-size:12px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;padding:7px 18px;border-radius:9px;cursor:pointer;background:linear-gradient(135deg,rgba(212,175,55,.16),rgba(184,134,11,.08));transition:background .15s,border-color .15s,color .15s,box-shadow .15s}
-  .portal-gp:hover{color:#f0d57a;background:linear-gradient(135deg,rgba(212,175,55,.30),rgba(184,134,11,.18));border-color:rgba(212,175,55,.85);box-shadow:0 4px 16px rgba(212,175,55,.30)}
+  .portal-gp{border:1px solid rgba(212,175,55,.55);font-size:15px;padding:7px 18px;border-radius:9px;cursor:pointer;background:linear-gradient(135deg,rgba(212,175,55,.16),rgba(184,134,11,.08));transition:background .15s,border-color .15s,box-shadow .15s;line-height:1;text-decoration:none}
+  .portal-gp:hover{background:linear-gradient(135deg,rgba(212,175,55,.30),rgba(184,134,11,.18));border-color:rgba(212,175,55,.85);box-shadow:0 4px 16px rgba(212,175,55,.30)}
+  .back-lmeav{color:#d4af37;font-weight:800;letter-spacing:.06em}
+  /* botón "LMEAV" — mismo formato recuadro que el botón LMPRO, pero en azul (elemental) */
+  .visit-elem{border:1px solid rgba(91,157,255,.55);font-size:15px;padding:7px 18px;border-radius:9px;cursor:pointer;text-decoration:none;background:linear-gradient(135deg,rgba(91,157,255,.16),rgba(58,79,134,.08));transition:background .15s,border-color .15s,box-shadow .15s;line-height:1}
+  .visit-elem .ve-lm{color:#fff;font-weight:900;letter-spacing:.01em}
+  .visit-elem .ve-eav{color:#5b9dff;font-weight:300;letter-spacing:.04em}
+  .visit-elem:hover{background:linear-gradient(135deg,rgba(91,157,255,.30),rgba(58,79,134,.16));border-color:rgba(91,157,255,.85);box-shadow:0 4px 16px rgba(91,157,255,.25)}
   .opt-mini{position:absolute;left:50%;transform:translateX(-50%);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted2)}
   .by{font-size:11.5px;letter-spacing:.03em;color:var(--muted2);font-weight:500}
 
-  /* hero: LMEAV at home una sola vez, grande */
-  .hero{text-align:center;margin:46px 0 48px}
-  .hero h1{font-size:68px;font-weight:900;letter-spacing:-.01em;margin:0;line-height:1}
-  .hero .lm{color:var(--ink);font-weight:900}
-  .hero .eav{color:var(--gold1);font-weight:300}
-  .back-lmeav{text-decoration:none;display:inline-flex;align-items:center}
-  .hero .home2{font-size:.42em}
-  .hero .tag{font-size:16px;color:var(--muted);margin:16px 0 0}
+  /* ===== HERO con animación ===== */
+  .hero{text-align:center;margin:46px 0 48px;position:relative;z-index:75}
+  .hero-title{font-size:68px;font-weight:900;letter-spacing:-.01em;margin:0;line-height:1;display:inline-flex;align-items:baseline;justify-content:center}
+  .hero-title .t-lm{color:var(--ink);font-weight:900}
+  .hero-title .t-pro{color:var(--gold1);font-weight:300;white-space:pre;transition:letter-spacing .35s ease, padding .35s ease, background .35s ease}
+  .hero-title .t-home{font-size:.42em;font-style:italic;font-family:Georgia,serif;font-weight:500;color:#d8caa6;transform:rotate(-3deg);margin-left:.28em;display:inline-block}
+  .hero .tag{font-size:16px;color:var(--muted);margin:16px 0 0;position:relative;z-index:75;line-height:1.5}
+  .hero .tag b{color:var(--ink);font-weight:800}
+  .hero .tag .tag-grade{display:inline-block;margin-top:6px;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold1);font-weight:700}
+
+  /* --- estado durante la intro --- */
+  body.intro .t-pro{
+    /* el sello PRO: recuadro dorado (como un tampón) y termina fino y estilizado */
+    font-weight:900;letter-spacing:.04em;color:#1a1407;
+    background:linear-gradient(135deg,#e9c96a,#b8860b);
+    border:1px solid #8a6410;
+    padding:.10em .26em;border-radius:.16em;
+    box-shadow:0 2px 10px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,240,190,.5);
+    animation:proStamp 2.4s cubic-bezier(.34,1.2,.4,1) forwards;
+  }
+  body.intro .t-lm{animation:lmDodge 2.4s cubic-bezier(.34,1.1,.4,1) forwards}
+  body.intro .t-home{opacity:0;animation:homeWrite .7s ease forwards 1.5s}
+  body.intro .tag{opacity:0;animation:fadeUp .6s ease forwards 2s}
+
+  /* LM aparece centrado y luego se aparta a su sitio (esquiva el sello) */
+  @keyframes lmDodge{
+    0%{opacity:0;transform:translateX(60px) scale(1.05)}
+    18%{opacity:1;transform:translateX(28px) scale(1.05)}   /* LM solo, centrado */
+    42%{transform:translateX(-6px)}                           /* se aparta a la izquierda esquivando */
+    100%{transform:translateX(0)}
+  }
+  /* el sello PRO irrumpe desde la derecha, "estampa" en el centro y luego se reduce a etiqueta fina */
+  @keyframes proStamp{
+    0%{opacity:0;transform:translateX(140px) scale(1.7) rotate(10deg)}
+    24%{opacity:0;transform:translateX(140px) scale(1.7) rotate(10deg)}
+    38%{opacity:1;transform:translateX(10px) scale(1.6) rotate(-2deg)}   /* impacto: sello grande */
+    46%{transform:translateX(8px) scale(1.45) rotate(0deg)}              /* rebote del estampado */
+    62%{transform:translateX(2px) scale(1.5)}                            /* se mantiene como sello un instante */
+    100%{
+      transform:translateX(0) scale(1);
+      /* termina EXACTAMENTE en el estado base (sin salto al quitar .intro) */
+      background:linear-gradient(135deg,rgba(212,175,55,0),rgba(184,134,11,0));
+      border-color:rgba(138,100,16,0);
+      box-shadow:0 0 0 rgba(0,0,0,0), inset 0 0 0 rgba(0,0,0,0);
+      color:var(--gold1);font-weight:300;letter-spacing:-.01em;padding:0;border-radius:0;
+    }
+  }
+  @keyframes homeWrite{
+    from{opacity:0;clip-path:inset(0 100% 0 0);transform:rotate(-3deg) translateX(-6px)}
+    to{opacity:1;clip-path:inset(0 0 0 0);transform:rotate(-3deg) translateX(0)}
+  }
+  @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+  /* tarjetas: ocultas durante la intro, aparecen al final */
+  body.intro .apps .app-card{opacity:0;transform:translateY(16px)}
+  body.intro.cards-in .apps .app-card{animation:cardIn .5s ease forwards}
+  body.intro.cards-in .apps .app-card:nth-child(1){animation-delay:0s}
+  body.intro.cards-in .apps .app-card:nth-child(2){animation-delay:.07s}
+  body.intro.cards-in .apps .app-card:nth-child(3){animation-delay:.14s}
+  body.intro.cards-in .apps .app-card:nth-child(4){animation-delay:.21s}
+  body.intro.cards-in .apps .app-card:nth-child(5){animation-delay:.28s}
+  @keyframes cardIn{to{opacity:1;transform:translateY(0)}}
+  @media (prefers-reduced-motion: reduce){
+    .veil{display:none!important}
+    body.intro .t-pro,body.intro .t-lm,body.intro .t-home,body.intro .tag{animation:none!important}
+    body.intro .t-pro{background:none;color:var(--gold1);font-weight:300;padding:0}
+    body.intro .t-home,body.intro .tag{opacity:1}
+    body.intro .apps .app-card{opacity:1!important;transform:none!important}
+  }
 
   /* tarjetas apaisadas de apps — SIN color */
   .apps{display:flex;flex-direction:column;gap:16px}
@@ -49,10 +125,10 @@
     transition:transform .12s,border-color .15s,box-shadow .15s,background .25s}
   .app-card:hover{transform:translateY(-3px);border-color:var(--muted2);box-shadow:0 20px 50px rgba(20,40,120,.4)}
   /* tinte sutil del color de apartado al pasar el ratón */
-  .app-card:has(.area.entonacion):hover{background:linear-gradient(180deg,rgba(91,157,255,.10),rgba(91,157,255,.04));border-color:var(--area-entonacion)}
-  .app-card:has(.area.ritmo):hover{background:linear-gradient(180deg,rgba(34,201,138,.10),rgba(34,201,138,.04));border-color:var(--area-ritmo)}
-  .app-card:has(.area.audicion):hover{background:linear-gradient(180deg,rgba(224,133,55,.10),rgba(224,133,55,.04));border-color:var(--area-audicion)}
-  .app-card:has(.area.teoria):hover{background:linear-gradient(180deg,rgba(232,67,147,.10),rgba(232,67,147,.04));border-color:var(--area-teoria)}
+  .app-card:has(.area.entonacion):hover{background:linear-gradient(180deg,rgba(212,175,55,.10),rgba(212,175,55,.04));border-color:var(--area-entonacion)}
+  .app-card:has(.area.ritmo):hover{background:linear-gradient(180deg,rgba(212,175,55,.10),rgba(212,175,55,.04));border-color:var(--area-ritmo)}
+  .app-card:has(.area.audicion):hover{background:linear-gradient(180deg,rgba(212,175,55,.10),rgba(212,175,55,.04));border-color:var(--area-audicion)}
+  .app-card:has(.area.teoria):hover{background:linear-gradient(180deg,rgba(212,175,55,.10),rgba(212,175,55,.04));border-color:var(--area-teoria)}
   .app-card:has(.area.entonacion):hover .edge{background:var(--area-entonacion)}
   .app-card:has(.area.ritmo):hover .edge{background:var(--area-ritmo)}
   .app-card:has(.area.audicion):hover .edge{background:var(--area-audicion)}
@@ -81,6 +157,10 @@
   }
   .app-card.pro-card:has(.area):hover .edge{opacity:1;background:var(--gold-soft)}
   .app-card.pro-card:has(.area):hover .kick.area{color:var(--gold-soft)}
+  /* cartel "Próximamente" sutil dorado, a la derecha de la tarjeta */
+  .soon-card{justify-content:flex-start}
+  .soon-tag{position:absolute;right:24px;top:50%;transform:translateY(-50%);font-size:11px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--gold1);opacity:.55;white-space:nowrap;transition:opacity .2s}
+  .soon-card:hover .soon-tag{opacity:.9}
   .app-card .info{flex:1;min-width:0}
   .app-card .kick{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted2)}
   .app-card h2{font-size:32px;margin:6px 0 8px;font-weight:900;letter-spacing:-.3px;line-height:1.05}
@@ -127,35 +207,80 @@
   .portal-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 </style>
 </head>
-<body>
+<body class="intro">
+<div class="veil"></div>
 <div class="wrap">
 
   <div class="topbar">
     <div class="opt-mini">Optimizado para ordenador y tablet</div>
     <div class="topbar-right">
-      <a class="portal-gp back-lmeav" href="https://iagonaron.github.io/LMEAVathome/">← LMEAV</a>
+      <a class="visit-elem" href="https://iagonaron.github.io/LMEAVathome/"><span class="ve-lm">LM</span><span class="ve-eav">EAV</span></a>
       <div class="by">by Iago González Alonso</div>
     </div>
   </div>
 
   <div class="hero">
-    <h1><span class="lm">LM</span><span class="eav">PRO</span> <span class="home2">at home</span></h1>
-    <p class="tag">Nivel Pro · entrenamiento avanzado de Lenguaje Musical para Grado Profesional</p>
+    <h1 class="hero-title" id="heroTitle" aria-label="LMPRO at home">
+      <span class="t-lm">LM</span><span class="t-pro" id="tPro">PRO</span><span class="t-home" id="tHome">at home</span>
+    </h1>
+    <p class="tag">Entrenamiento avanzado de Lenguaje Musical… <b>¡desde casa!</b><br><span class="tag-grade">Grado Profesional</span></p>
   </div>
 
   <div class="apps">
 
-    <!-- Intervalia Pro — ejemplo, ya existe la versión Pro -->
-    <a class="app-card pro-card" href="https://iagonaron.github.io/intervalia/">
+    <!-- PreDict Pro — pide contraseña 010513 -->
+    <div class="app-card pro-card" onclick="tryPredictPro()" style="cursor:pointer">
       <div class="edge"></div>
+      <div class="info">
+        <div class="kick area audicion">Audición</div>
+        <h2 class="nm"><span class="hl">PRE</span><span class="dim">DICT</span> <span class="home2">at home</span> <span class="pro-tag">PRO</span></h2>
+        <p>Ejercicios de ritmo, melodía y tonalidad para Grado Profesional.</p>
+      </div>
+    </div>
+
+    <!-- Dictado Pro — próximamente -->
+    <div class="app-card pro-card soon-card" onclick="proSoon()" style="cursor:pointer">
+      <div class="edge"></div>
+      <div class="soon-tag">Próximamente</div>
+      <div class="info">
+        <div class="kick area audicion">Audición</div>
+        <h2 class="nm"><span class="hl">DICT</span><span class="dim">ADO</span> <span class="home2">at home</span> <span class="pro-tag">PRO</span></h2>
+        <p>El dictado completo de Grado Profesional, como en clase.</p>
+      </div>
+    </div>
+
+    <!-- Intervalia Pro — próximamente -->
+    <div class="app-card pro-card soon-card" onclick="proSoon()" style="cursor:pointer">
+      <div class="edge"></div>
+      <div class="soon-tag">Próximamente</div>
       <div class="info">
         <div class="kick area entonacion">Entonación</div>
         <h2 class="nm"><span class="hl">INTER</span><span class="dim">VALIA</span> <span class="home2">at home</span> <span class="pro-tag">PRO</span></h2>
-        <p>Entrenamiento interválico puro, sin contexto tonal. Para Grado Profesional.</p>
+        <p>Entrenamiento interválico puro, sin contexto tonal.</p>
       </div>
-    </a>
+    </div>
 
-    <div class="apps-soon">Más recursos Pro en camino…</div>
+    <!-- Teoría Pro — próximamente -->
+    <div class="app-card pro-card soon-card" onclick="proSoon()" style="cursor:pointer">
+      <div class="edge"></div>
+      <div class="soon-tag">Próximamente</div>
+      <div class="info">
+        <div class="kick area teoria">Teoría</div>
+        <h2 class="nm"><span class="hl">TEO</span><span class="dim">RÍA</span> <span class="home2">at home</span> <span class="pro-tag">PRO</span></h2>
+        <p>Los conceptos del lenguaje musical de Grado Profesional.</p>
+      </div>
+    </div>
+
+    <!-- Ritmo Pro — próximamente -->
+    <div class="app-card pro-card soon-card" onclick="proSoon()" style="cursor:pointer">
+      <div class="edge"></div>
+      <div class="soon-tag">Próximamente</div>
+      <div class="info">
+        <div class="kick area ritmo">Ritmo</div>
+        <h2 class="nm"><span class="hl">RIT</span><span class="dim">MO</span> <span class="home2">at home</span> <span class="pro-tag">PRO</span></h2>
+        <p>Lectura y dictado rítmico avanzado de Grado Profesional.</p>
+      </div>
+    </div>
 
   </div>
 
@@ -171,6 +296,24 @@
   </div>
 </div>
 <script>
+// Orquestación de la intro: las tarjetas aparecen al desplegarse el degradado (~2.1s).
+// No quitamos la clase 'intro': los estados finales se mantienen con animation-fill:forwards,
+// evitando cualquier reajuste al final. Las tarjetas quedan visibles vía 'cards-in'.
+(function(){
+  const reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(reduce){ document.body.classList.remove('intro'); return; }
+  window.addEventListener('load',()=>{
+    setTimeout(()=>document.body.classList.add('cards-in'), 2050);
+  });
+})();
+function tryPredictPro(){
+  const pin=prompt('PreDict PRO — introduce la contraseña:');
+  if(pin==null) return;
+  if(pin.trim()==='010513'){ window.location.href='https://iagonaron.github.io/predictpro/'; }
+  else { toast('Contraseña incorrecta'); }
+}
+function proSoon(){ toast('Próximamente'); }
+
 const ENIG={
   entonacion:{glyph:'♪', color:'var(--area-entonacion)', title:'Muy pronto…',
     text:'Algo se está afinando en silencio.<br>Vuelve cuando suene la primera nota.'},
@@ -193,7 +336,7 @@ function tryPortalGP(){
   const pin=prompt('LMPRO — introduce la contraseña:');
   if(pin==null) return;
   if(pin.trim().toLowerCase()==='hamilton'){
-    window.location.href='https://iagonaron.github.io/LMPROathome/';
+    window.location.href='https://iagonaron.github.io/lmpro/';
   } else {
     toast('Contraseña incorrecta');
   }
