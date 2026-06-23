@@ -229,7 +229,7 @@
   <div class="apps">
 
     <!-- PreDict Pro — pide contraseña 010513 -->
-    <div class="app-card pro-card" onclick="tryPredictPro()" style="cursor:pointer">
+    <div class="app-card pro-card" onclick="goPredictPro()" style="cursor:pointer">
       <div class="edge"></div>
       <div class="info">
         <div class="kick area audicion">Audición</div>
@@ -238,10 +238,9 @@
       </div>
     </div>
 
-    <!-- Dictado Pro — próximamente -->
-    <div class="app-card pro-card soon-card" onclick="proSoon()" style="cursor:pointer">
+    <!-- Dictado Pro -->
+    <div class="app-card pro-card" onclick="goDictadoPro()" style="cursor:pointer">
       <div class="edge"></div>
-      <div class="soon-tag">Próximamente</div>
       <div class="info">
         <div class="kick area audicion">Audición</div>
         <h2 class="nm"><span class="hl">DICT</span><span class="dim">ADO</span> <span class="home2">at home</span> <span class="pro-tag">PRO</span></h2>
@@ -249,10 +248,9 @@
       </div>
     </div>
 
-    <!-- Intervalia Pro — próximamente -->
-    <div class="app-card pro-card soon-card" onclick="proSoon()" style="cursor:pointer">
+    <!-- Intervalia Pro -->
+    <div class="app-card pro-card" onclick="goIntervaliaPro()" style="cursor:pointer">
       <div class="edge"></div>
-      <div class="soon-tag">Próximamente</div>
       <div class="info">
         <div class="kick area entonacion">Entonación</div>
         <h2 class="nm"><span class="hl">INTER</span><span class="dim">VALIA</span> <span class="home2">at home</span> <span class="pro-tag">PRO</span></h2>
@@ -260,10 +258,9 @@
       </div>
     </div>
 
-    <!-- Teoría Pro — próximamente -->
-    <div class="app-card pro-card soon-card" onclick="proSoon()" style="cursor:pointer">
+    <!-- Teoría Pro -->
+    <div class="app-card pro-card" onclick="goTeoriaPro()" style="cursor:pointer">
       <div class="edge"></div>
-      <div class="soon-tag">Próximamente</div>
       <div class="info">
         <div class="kick area teoria">Teoría</div>
         <h2 class="nm"><span class="hl">TEO</span><span class="dim">RÍA</span> <span class="home2">at home</span> <span class="pro-tag">PRO</span></h2>
@@ -306,12 +303,10 @@
     setTimeout(()=>document.body.classList.add('cards-in'), 2050);
   });
 })();
-function tryPredictPro(){
-  const pin=prompt('PreDict PRO — introduce la contraseña:');
-  if(pin==null) return;
-  if(pin.trim()==='010513'){ window.location.href='https://iagonaron.github.io/predictpro/'; }
-  else { toast('Contraseña incorrecta'); }
-}
+function goPredictPro(){ window.location.href='https://iagonaron.github.io/predictpro/'; }
+function goDictadoPro(){ window.location.href='https://iagonaron.github.io/dictadospro/'; }
+function goIntervaliaPro(){ window.location.href='https://iagonaron.github.io/intervaliapro/'; }
+function goTeoriaPro(){ window.location.href='https://iagonaron.github.io/teoriapro/'; }
 function proSoon(){ toast('Próximamente'); }
 
 const ENIG={
