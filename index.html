@@ -354,10 +354,9 @@
 <script>
 // ===== Gate de acceso (contraseña) =====
 const GATE_PASS='aula30año26';
-const GATE_KEY='lmpro_gate_ok';
-function gateAlreadyOk(){
-  try{ return localStorage.getItem(GATE_KEY)==='1' || sessionStorage.getItem(GATE_KEY)==='1'; }
-  catch(e){ return false; }
+const GATE_KEY='lmpro_gate_fill';
+function gateRemembered(){
+  try{ return localStorage.getItem(GATE_KEY)==='1'; }catch(e){ return false; }
 }
 function unlockGate(){
   const g=document.getElementById('gate');
@@ -378,7 +377,7 @@ function submitGate(){
     const remember=document.getElementById('gateRemember').checked;
     try{
       if(remember){ localStorage.setItem(GATE_KEY,'1'); }
-      else{ sessionStorage.setItem(GATE_KEY,'1'); }
+      else{ localStorage.removeItem(GATE_KEY); }
     }catch(e){}
     unlockGate();
   } else {
@@ -389,18 +388,26 @@ function submitGate(){
   }
 }
 (function(){
-  if(gateAlreadyOk()){
-    document.body.classList.remove('locked');
-    const g=document.getElementById('gate');
-    g.style.display='none';
-    return;
+  // El gate se muestra SIEMPRE (con su animación). Si se ha pedido recordar,
+  // solo se pre-rellena el campo y se marca la casilla: hay que pulsar Entrar igualmente.
+  const remembered=gateRemembered();
+  if(remembered){
+    document.getElementById('gateInput').value=GATE_PASS;
+    document.getElementById('gateRemember').checked=true;
   }
   const reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const delay=reduce?0:2900, fdelay=reduce?100:3500;
   window.addEventListener('load',()=>{
     const g=document.getElementById('gate');
     setTimeout(()=>{ document.body.classList.add('gating'); g.classList.add('show'); }, delay);
-    setTimeout(()=>{ try{document.getElementById('gateInput').focus();}catch(e){} }, fdelay);
+    setTimeout(()=>{
+      try{
+        const inp=document.getElementById('gateInput');
+        inp.focus();
+        // si está pre-relleno, dejamos el cursor al final (no seleccionado) para que solo pulse Entrar
+        if(remembered){ inp.setSelectionRange(inp.value.length, inp.value.length); }
+      }catch(e){}
+    }, fdelay);
   });
   document.addEventListener('keydown',e=>{
     if(e.key==='Enter' && document.body.classList.contains('locked')){ submitGate(); }
