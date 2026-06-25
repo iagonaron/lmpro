@@ -205,9 +205,69 @@
   .enig-close:hover{border-color:var(--muted2);color:var(--ink)}
   .portal-toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--panel2);border:1px solid var(--line);color:var(--ink);padding:12px 22px;border-radius:11px;font-size:13.5px;font-weight:600;z-index:90;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;box-shadow:0 14px 40px rgba(0,0,0,.4)}
   .portal-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+  /* ===== Gate de acceso (contraseña, tras la intro) — estética PRO dorada ===== */
+  .gate{position:fixed;inset:0;z-index:95;display:flex;align-items:center;justify-content:center;padding:24px;
+    background:linear-gradient(180deg,#1a1206 0%,#120c03 40%,#0a0702 78%,#040302 100%);
+    opacity:0;transition:opacity .9s cubic-bezier(.4,0,.2,1)}
+  .gate.show{opacity:1}
+  .gate.hide{opacity:0;pointer-events:none;transition:opacity 1.05s cubic-bezier(.45,0,.15,1)}
+  body.locked{overflow:hidden}
+  /* portal de fondo: nítido durante la intro; se oscurece/difumina al activarse el gate */
+  .wrap{transition:filter .85s cubic-bezier(.32,.08,.24,1), transform .85s cubic-bezier(.32,.08,.24,1)}
+  body.gating .wrap{filter:blur(9px) brightness(.42) saturate(.85);transform:scale(1.015);pointer-events:none;user-select:none}
+  body.revealing .wrap{filter:blur(0) brightness(1) saturate(1);transform:scale(1)}
+
+  .gate-card{width:100%;max-width:400px;text-align:center;
+    background:linear-gradient(180deg,#221908,#160f04);border:1px solid var(--gold1);
+    border-radius:20px;padding:36px 36px;
+    box-shadow:0 26px 80px rgba(0,0,0,.6),0 0 0 1px rgba(212,175,55,.15),inset 0 1px 0 rgba(255,220,130,.12);
+    opacity:0;transform:translateY(22px) scale(.97);filter:blur(6px);
+    transition:opacity .8s cubic-bezier(.2,.7,.2,1), transform .9s cubic-bezier(.2,.7,.2,1), filter .8s ease}
+  .gate.show .gate-card{opacity:1;transform:translateY(0) scale(1);filter:blur(0)}
+  .gate.hide .gate-card{opacity:0;transform:translateY(-34px) scale(1.04);filter:blur(10px);
+    transition:opacity .65s cubic-bezier(.5,0,.2,1), transform .8s cubic-bezier(.5,0,.15,1), filter .7s ease}
+
+  .gate-logo{font-size:34px;margin:0 0 14px;line-height:1;justify-content:center}
+  .gate-logo .t-home{font-size:.42em}
+  /* logo PRO estático dentro del gate (sin la animación de estampado) */
+  body.intro .gate-logo .t-lm{animation:none!important;opacity:1!important;transform:none!important}
+  body.intro .gate-logo .t-pro{animation:none!important;opacity:1!important;transform:none!important;
+    background:none!important;border:none!important;box-shadow:none!important;padding:0!important;border-radius:0!important;
+    color:var(--gold1)!important;font-weight:300!important;letter-spacing:-.01em!important}
+  body.intro .gate-logo .t-home{animation:none!important;opacity:1!important;transform:rotate(-3deg)!important;clip-path:none!important}
+  .gate-card h3{margin:0 0 8px;font-size:22px;color:#f5edd8;font-weight:800;letter-spacing:.02em}
+  .gate-card p{margin:0 0 22px;font-size:14px;color:#c4b288;line-height:1.6}
+  .gate-input{width:100%;box-sizing:border-box;background:#0e0a02;border:1px solid #3a2c10;border-radius:11px;
+    padding:13px 16px;font-size:15px;color:#f5edd8;text-align:center;letter-spacing:.06em;outline:none;transition:border-color .15s,box-shadow .15s}
+  .gate-input:focus{border-color:var(--gold1);box-shadow:0 0 0 3px rgba(212,175,55,.14)}
+  .gate-remember{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:14px;font-size:13px;color:#98875e;cursor:pointer;user-select:none}
+  .gate-remember input{width:15px;height:15px;accent-color:var(--gold1);cursor:pointer}
+  .gate-go{width:100%;margin-top:16px;background:linear-gradient(135deg,#d4af37,#b8860b);border:none;color:#1a1407;
+    border-radius:11px;padding:13px;font-size:14.5px;font-weight:900;letter-spacing:.04em;cursor:pointer;transition:filter .15s,box-shadow .15s}
+  .gate-go:hover{filter:brightness(1.08);box-shadow:0 6px 20px rgba(212,175,55,.4)}
+  .gate-err{margin-top:14px;min-height:1.1em;font-size:13px;color:#ff8585;font-weight:600}
+  .gate-card.shake{animation:gateShake .4s cubic-bezier(.36,.07,.19,.97)}
+  @keyframes gateShake{10%,90%{transform:translateX(-2px)}20%,80%{transform:translateX(4px)}30%,50%,70%{transform:translateX(-7px)}40%,60%{transform:translateX(7px)}}
+  @media (prefers-reduced-motion: reduce){
+    .gate,.gate-card,.wrap{transition:opacity .25s ease!important}
+    .gate-card{filter:none!important;transform:none!important}
+    body.gating .wrap{filter:brightness(.5)!important;transform:none!important}
+  }
 </style>
 </head>
-<body class="intro">
+<body class="intro locked">
+<div class="gate" id="gate" aria-modal="true" role="dialog">
+  <div class="gate-card">
+    <h1 class="hero-title gate-logo" aria-label="LMPRO at home"><span class="t-lm">LM</span><span class="t-pro">PRO</span><span class="t-home">at home</span></h1>
+    <h3>Acceso a la suite</h3>
+    <p>Recursos de uso interno.</p>
+    <input class="gate-input" id="gateInput" type="password" placeholder="Contraseña" autocomplete="off" autocapitalize="off" spellcheck="false">
+    <label class="gate-remember"><input type="checkbox" id="gateRemember"> Recordar en este dispositivo</label>
+    <button class="gate-go" onclick="submitGate()">Entrar</button>
+    <div class="gate-err" id="gateErr"></div>
+  </div>
+</div>
 <div class="veil"></div>
 <div class="wrap">
 
@@ -292,6 +352,61 @@
   </div>
 </div>
 <script>
+// ===== Gate de acceso (contraseña) =====
+const GATE_PASS='aula30año26';
+const GATE_KEY='lmpro_gate_ok';
+function gateAlreadyOk(){
+  try{ return localStorage.getItem(GATE_KEY)==='1' || sessionStorage.getItem(GATE_KEY)==='1'; }
+  catch(e){ return false; }
+}
+function unlockGate(){
+  const g=document.getElementById('gate');
+  document.body.classList.remove('gating');
+  document.body.classList.add('revealing');
+  g.classList.add('hide');
+  setTimeout(()=>{
+    document.body.classList.remove('locked');
+    g.style.display='none';
+  }, 1100);
+}
+function submitGate(){
+  const val=document.getElementById('gateInput').value;
+  const err=document.getElementById('gateErr');
+  const card=document.querySelector('.gate-card');
+  if(val.trim().normalize('NFC')===GATE_PASS){
+    err.textContent='';
+    const remember=document.getElementById('gateRemember').checked;
+    try{
+      if(remember){ localStorage.setItem(GATE_KEY,'1'); }
+      else{ sessionStorage.setItem(GATE_KEY,'1'); }
+    }catch(e){}
+    unlockGate();
+  } else {
+    err.textContent='Contraseña incorrecta';
+    document.getElementById('gateInput').value='';
+    document.getElementById('gateInput').focus();
+    card.classList.remove('shake'); void card.offsetWidth; card.classList.add('shake');
+  }
+}
+(function(){
+  if(gateAlreadyOk()){
+    document.body.classList.remove('locked');
+    const g=document.getElementById('gate');
+    g.style.display='none';
+    return;
+  }
+  const reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const delay=reduce?0:2900, fdelay=reduce?100:3500;
+  window.addEventListener('load',()=>{
+    const g=document.getElementById('gate');
+    setTimeout(()=>{ document.body.classList.add('gating'); g.classList.add('show'); }, delay);
+    setTimeout(()=>{ try{document.getElementById('gateInput').focus();}catch(e){} }, fdelay);
+  });
+  document.addEventListener('keydown',e=>{
+    if(e.key==='Enter' && document.body.classList.contains('locked')){ submitGate(); }
+  });
+})();
+
 // Orquestación de la intro: las tarjetas aparecen al desplegarse el degradado (~2.1s).
 // No quitamos la clase 'intro': los estados finales se mantienen con animation-fill:forwards,
 // evitando cualquier reajuste al final. Las tarjetas quedan visibles vía 'cards-in'.
