@@ -218,7 +218,7 @@
   body.gating .wrap{filter:blur(9px) brightness(.42) saturate(.85);transform:scale(1.015);pointer-events:none;user-select:none}
   body.revealing .wrap{filter:blur(0) brightness(1) saturate(1);transform:scale(1)}
 
-  .gate-card{width:100%;max-width:400px;text-align:center;
+  .gate-card{width:100%;max-width:400px;text-align:center;position:relative;
     background:linear-gradient(180deg,#221908,#160f04);border:1px solid var(--gold1);
     border-radius:20px;padding:36px 36px;
     box-shadow:0 26px 80px rgba(0,0,0,.6),0 0 0 1px rgba(212,175,55,.15),inset 0 1px 0 rgba(255,220,130,.12);
@@ -228,6 +228,10 @@
   .gate.hide .gate-card{opacity:0;transform:translateY(-34px) scale(1.04);filter:blur(10px);
     transition:opacity .65s cubic-bezier(.5,0,.2,1), transform .8s cubic-bezier(.5,0,.15,1), filter .7s ease}
 
+  .gate-devices{position:absolute;top:14px;right:14px;display:flex;gap:7px;align-items:center;opacity:.5}
+  .gate-devices svg{width:17px;height:17px;fill:none;stroke:#98875e;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+  .gate-devices .gd-no{stroke:#cf7a5a;opacity:.9}
+  .gate-devices .gd-slash{stroke:#cf7a5a;stroke-width:1.9}
   .gate-logo{font-size:34px;margin:0 0 14px;line-height:1;justify-content:center}
   .gate-logo .t-home{font-size:.42em}
   /* logo PRO estático dentro del gate (sin la animación de estampado) */
@@ -247,6 +251,12 @@
     border-radius:11px;padding:13px;font-size:14.5px;font-weight:900;letter-spacing:.04em;cursor:pointer;transition:filter .15s,box-shadow .15s}
   .gate-go:hover{filter:brightness(1.08);box-shadow:0 6px 20px rgba(212,175,55,.4)}
   .gate-err{margin-top:14px;min-height:1.1em;font-size:13px;color:#ff8585;font-weight:600}
+  .gm-icon{display:flex;justify-content:center;margin:4px 0 16px}
+  .gm-icon svg{width:46px;height:46px;fill:none;stroke:#98875e;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+  .gm-icon .gd-slash{stroke:#cf7a5a;stroke-width:1.9}
+  .gate-secondary{width:100%;margin-top:10px;background:transparent;border:1px solid #3a2c10;color:#98875e;
+    border-radius:11px;padding:11px;font-size:13.5px;font-weight:700;letter-spacing:.03em;cursor:pointer;transition:border-color .15s,color .15s}
+  .gate-secondary:hover{border-color:var(--gold1);color:#f5edd8}
   .gate-card.shake{animation:gateShake .4s cubic-bezier(.36,.07,.19,.97)}
   @keyframes gateShake{10%,90%{transform:translateX(-2px)}20%,80%{transform:translateX(4px)}30%,50%,70%{transform:translateX(-7px)}40%,60%{transform:translateX(7px)}}
   @media (prefers-reduced-motion: reduce){
@@ -259,13 +269,30 @@
 <body class="intro locked">
 <div class="gate" id="gate" aria-modal="true" role="dialog">
   <div class="gate-card">
+    <div class="gate-devices" aria-label="Recomendado en ordenador o tablet, no en móvil">
+      <svg viewBox="0 0 24 24" class="gd-ok"><rect x="3" y="5" width="18" height="11" rx="1.4"/><path d="M9 20h6M12 16v4"/></svg>
+      <svg viewBox="0 0 24 24" class="gd-ok"><rect x="3" y="6" width="18" height="12" rx="1.8"/><line x1="18" y1="11" x2="18" y2="13"/></svg>
+      <svg viewBox="0 0 24 24" class="gd-no"><rect x="8" y="3" width="8" height="18" rx="1.8"/><line x1="11" y1="18" x2="13" y2="18"/><line x1="4" y1="3.5" x2="20" y2="20.5" class="gd-slash"/></svg>
+    </div>
     <h1 class="hero-title gate-logo" aria-label="LMPRO at home"><span class="t-lm">LM</span><span class="t-pro">PRO</span><span class="t-home">at home</span></h1>
-    <h3>Acceso a la suite</h3>
-    <p>Recursos de uso interno.</p>
-    <input class="gate-input" id="gateInput" type="password" placeholder="Contraseña" autocomplete="off" autocapitalize="off" spellcheck="false">
-    <label class="gate-remember"><input type="checkbox" id="gateRemember"> Recordar en este dispositivo</label>
-    <button class="gate-go" onclick="submitGate()">Entrar</button>
-    <div class="gate-err" id="gateErr"></div>
+    <div id="gatePass">
+      <h3>Acceso a la suite</h3>
+      <p>Recursos de uso interno.</p>
+      <input class="gate-input" id="gateInput" type="password" placeholder="Contraseña" autocomplete="off" autocapitalize="off" spellcheck="false">
+      <label class="gate-remember"><input type="checkbox" id="gateRemember"> Recordar en este dispositivo</label>
+      <button class="gate-go" onclick="submitGate()">Entrar</button>
+      <div class="gate-err" id="gateErr"></div>
+      <div style="margin-top:14px;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#98875e;opacity:.6">gate v2 · siempre solicita</div>
+    </div>
+    <div id="gateMobile" style="display:none">
+      <div class="gm-icon">
+        <svg viewBox="0 0 24 24"><rect x="8" y="3" width="8" height="18" rx="1.8"/><line x1="11" y1="18" x2="13" y2="18"/><line x1="4" y1="3.5" x2="20" y2="20.5" class="gd-slash"/></svg>
+      </div>
+      <h3>Mejor en ordenador o tablet</h3>
+      <p>Estos recursos están pensados para pantallas grandes. En el móvil algunas actividades no se ven ni funcionan bien.</p>
+      <button class="gate-go" onclick="continueAnyway()">Continuar de todas formas</button>
+      <button class="gate-secondary" onclick="backToPass()">Volver</button>
+    </div>
   </div>
 </div>
 <div class="veil"></div>
@@ -355,9 +382,30 @@
 // ===== Gate de acceso (contraseña) =====
 const GATE_PASS='aula30año26';
 const GATE_KEY='lmpro_gate_fill';
+// limpieza de marcas antiguas que saltaban el gate (versiones previas)
+try{ localStorage.removeItem('lmpro_gate_ok'); sessionStorage.removeItem('lmpro_gate_ok'); }catch(e){}
 function gateRemembered(){
   try{ return localStorage.getItem(GATE_KEY)==='1'; }catch(e){ return false; }
 }
+// Detección de móvil: combina user-agent de teléfono con ancho de pantalla.
+// El iPad moderno se identifica como escritorio, así que NO se considera móvil (correcto).
+function isMobileDevice(){
+  const ua=navigator.userAgent||'';
+  const uaPhone=/iPhone|iPod|Android.*Mobile|Windows Phone|BlackBerry|Opera Mini|IEMobile/i.test(ua);
+  const minSide=Math.min(window.screen.width||9999, window.screen.height||9999);
+  const narrow=minSide>0 && minSide<=480;
+  return uaPhone || narrow;
+}
+function showMobileNotice(){
+  document.getElementById('gatePass').style.display='none';
+  document.getElementById('gateMobile').style.display='';
+}
+function backToPass(){
+  document.getElementById('gateMobile').style.display='none';
+  document.getElementById('gatePass').style.display='';
+  try{ document.getElementById('gateInput').focus(); }catch(e){}
+}
+function continueAnyway(){ unlockGate(); }
 function unlockGate(){
   const g=document.getElementById('gate');
   document.body.classList.remove('gating');
@@ -379,7 +427,9 @@ function submitGate(){
       if(remember){ localStorage.setItem(GATE_KEY,'1'); }
       else{ localStorage.removeItem(GATE_KEY); }
     }catch(e){}
-    unlockGate();
+    // contraseña correcta: si es móvil, mostramos el aviso antes de revelar
+    if(isMobileDevice()){ showMobileNotice(); }
+    else{ unlockGate(); }
   } else {
     err.textContent='Contraseña incorrecta';
     document.getElementById('gateInput').value='';
