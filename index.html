@@ -398,7 +398,7 @@
       <p>Solo para alumnos de Iago. El <b>nº de expediente</b> se pide una única vez: Iago lo contrasta con tu expediente real para validar que eres tú. Después entrarás siempre con tu nombre y tu contraseña.</p>
       <input class="gate-input txt" id="regNombre" type="text" placeholder="Nombre y apellidos" autocomplete="off" autocapitalize="words" spellcheck="false">
       <input class="gate-input txt" id="regExp" type="text" placeholder="Nº de expediente del alumno" autocomplete="off" autocapitalize="off" spellcheck="false">
-      <div class="gate-note" id="ayudaExpediente"><b>¿Dónde está el nº de expediente?</b> Se consulta en Centros Net o en la matrícula. [[AYUDA_EXPEDIENTE — Iago: sustituye esta frase por las indicaciones exactas para las familias]]</div>
+      <div class="gate-note" id="ayudaExpediente"><b>Nº de expediente:</b> disponible para consulta en CentrosNet o en la matrícula.</div>
       <input class="gate-input" id="regPass" type="password" placeholder="Elige una contraseña" autocomplete="off" autocapitalize="off" spellcheck="false">
       <label class="gate-remember"><input type="checkbox" id="regRecordar" checked> Recordar en este dispositivo</label>
       <div class="gate-note"><b>Pensada para ordenador</b> y adaptada para tablet. <b>No es una app para móvil.</b></div>
@@ -584,6 +584,73 @@ function abrirRegistro(){
 }
 function continuarComoInvitadoPend(){ unlockGate(); }
 
+/* ===== Bienvenida "Cuenta validada" (tutorial · tarjeta 1) =====
+   Se muestra UNA vez: cuando el alumno entra por primera vez ya validado
+   en el dispositivo donde su cuenta estaba pendiente. */
+function bienvenidaCSS(){
+  if(document.getElementById('bv-css')) return;
+  const st=document.createElement('style'); st.id='bv-css';
+  st.textContent=
+    '.bv-overlay{position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;'+
+      'background:rgba(8,10,20,.82);backdrop-filter:blur(8px);opacity:0;transition:opacity .45s}'+
+    '.bv-overlay.on{opacity:1}'+
+    '.bv-card{position:relative;max-width:420px;width:calc(100% - 48px);text-align:center;'+
+      'background:linear-gradient(165deg,rgba(255,255,255,.10),rgba(255,255,255,.035));'+
+      'border:1px solid rgba(212,175,55,.4);border-radius:22px;padding:38px 30px 30px;color:#eef2fb;'+
+      'box-shadow:0 24px 70px rgba(0,0,0,.5);transform:translateY(14px) scale(.96);transition:transform .5s cubic-bezier(.2,.9,.3,1.2)}'+
+    '.bv-overlay.on .bv-card{transform:translateY(0) scale(1)}'+
+    '.bv-kicker{font-size:10.5px;font-weight:900;letter-spacing:.16em;text-transform:uppercase;color:#d4af37;margin-bottom:16px}'+
+    '.bv-check{width:104px;height:104px;margin:0 auto 18px;display:block}'+
+    '.bv-check .c{fill:none;stroke:#d4af37;stroke-width:2.6;stroke-linecap:round;'+
+      'stroke-dasharray:302;stroke-dashoffset:302;animation:bvCirc 1s .25s ease forwards}'+
+    '.bv-check .t{fill:none;stroke:#d4af37;stroke-width:3.4;stroke-linecap:round;stroke-linejoin:round;'+
+      'stroke-dasharray:60;stroke-dashoffset:60;animation:bvTick .55s 1.05s ease forwards}'+
+    '@keyframes bvCirc{to{stroke-dashoffset:0}}'+
+    '@keyframes bvTick{to{stroke-dashoffset:0}}'+
+    '.bv-chispas i{position:absolute;left:50%;top:96px;width:7px;height:7px;border-radius:50%;background:#d4af37;'+
+      'opacity:0;animation:bvChispa 1s 1.25s ease-out forwards}'+
+    '@keyframes bvChispa{0%{transform:translate(0,0) scale(.4);opacity:.95}'+
+      '100%{transform:translate(var(--dx),var(--dy)) scale(1);opacity:0}}'+
+    '.bv-titulo{font-size:24px;font-weight:900;margin:2px 0 10px;color:#fff}'+
+    '.bv-texto{font-size:14.5px;line-height:1.65;color:#c9d2e6;margin:0 0 24px}'+
+    '.bv-texto b{color:#d4af37}'+
+    '.bv-go{border:0;border-radius:12px;padding:13px 30px;font-weight:900;font-size:15px;cursor:pointer;'+
+      'color:#101322;background:linear-gradient(120deg,#d4af37,#e9c96a);box-shadow:0 10px 26px rgba(212,175,55,.4);'+
+      'transition:transform .12s}'+
+    '.bv-go:hover{transform:translateY(-1px)}'+
+    '@media (prefers-reduced-motion: reduce){.bv-check .c,.bv-check .t{animation-duration:.01s;animation-delay:0s}'+
+      '.bv-chispas i{display:none}}';
+  document.head.appendChild(st);
+}
+function mostrarBienvenidaValidada(nombre){
+  bienvenidaCSS();
+  const primer=(String(nombre||'').trim().split(/\s+/)[0])||'';
+  const ov=document.createElement('div');
+  ov.className='bv-overlay';
+  // chispas alrededor del check
+  let chispas='';
+  for(let i=0;i<10;i++){
+    const ang=(Math.PI*2*i)/10, d=58+Math.random()*26;
+    chispas+='<i style="left:50%;top:96px;--dx:'+Math.round(Math.cos(ang)*d)+'px;--dy:'+Math.round(Math.sin(ang)*d)+'px"></i>';
+  }
+  ov.innerHTML=
+    '<div class="bv-card"><div class="bv-chispas">'+chispas+'</div>'+
+      '<div class="bv-kicker">Tutorial · 1 de 1 · Cuenta validada</div>'+
+      '<svg class="bv-check" viewBox="0 0 104 104"><circle class="c" cx="52" cy="52" r="48"/>'+
+      '<path class="t" d="M33 54 L47 68 L73 40"/></svg>'+
+      '<div class="bv-titulo">¡Cuenta validada' + (primer ? ', '+primer : '') + '!</div>'+
+      '<div class="bv-texto">Iago ya ha comprobado tu <b>nº de expediente</b>: esta cuenta es oficialmente tuya. '+
+      'A partir de ahora entras siempre con tu nombre y tu contraseña. Bienvenido/a al portal LMPRO at home (GP).</div>'+
+      '<button type="button" class="bv-go">¡Empezar!</button>'+
+    '</div>';
+  document.body.appendChild(ov);
+  requestAnimationFrame(()=>ov.classList.add('on'));
+  ov.querySelector('.bv-go').addEventListener('click',()=>{
+    ov.classList.remove('on');
+    setTimeout(()=>{ try{ ov.remove(); }catch(e){} },450);
+  });
+}
+
 function abrirReset(){
   const s=getSession();
   const n=document.getElementById('resNombre');
@@ -657,8 +724,11 @@ async function alumnoEntrar(){
     return;
   }
   const recordar=document.getElementById('logRecordar').checked;
+  // ¿Es la PRIMERA entrada ya validado en este dispositivo? (aquí estaba pendiente)
+  const prev=getSession();
+  const reciénValidado = !!(prev && prev.estado && prev.estado!=='validado' && r.estado==='validado');
   setSession({ id:r.id, nombre:r.nombre, estado:r.estado, alumno_canon_id:r.alumno_canon_id, grupo_id:r.grupo_id, recordar, pass: recordar?pass:undefined });
-  if(r.estado==='validado'){ unlockGate(); }
+  if(r.estado==='validado'){ unlockGate(); if(reciénValidado){ setTimeout(()=>mostrarBienvenidaValidada(r.nombre), 500); } }
   else if(r.estado==='rechazado'){ err.textContent='Tu solicitud no fue aceptada. Habla con Iago en clase.'; }
   else { mostrarPanel('alumnoPendiente'); }   // pendiente
 }
