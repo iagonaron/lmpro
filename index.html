@@ -264,7 +264,73 @@
     .gate-card{filter:none!important;transform:none!important}
     body.gating .wrap{filter:brightness(.5)!important;transform:none!important}
   }
+
+  /* ===== SUITE AT HOME · GP-A · trasplante del sistema de cuentas (r1) ===== */
+  /* ===== Acceso de alumno (Suite at home) ===== */
+  .gate-help{margin-top:12px;font-size:11.5px;color:var(--muted2);line-height:1.5}
+  .gate-alt{margin-top:16px;padding-top:15px;border-top:1px solid var(--line)}
+  .gate-linkbtn{background:none;border:none;color:var(--area-entonacion);font-size:13.5px;font-weight:800;letter-spacing:.02em;cursor:pointer;padding:7px 6px}
+  .gate-linkbtn:hover{text-decoration:underline}
+  #alumnoLogin .gate-input,#alumnoRegistro .gate-input{margin-top:10px}
+  #alumnoLogin .gate-input:first-of-type,#alumnoRegistro .gate-input:first-of-type{margin-top:0}
+  .gate-input.txt{letter-spacing:normal;text-align:left}
+  .gate-note{margin:14px 0 4px;padding:11px 13px;border:1px solid var(--line);border-radius:10px;
+    background:rgba(224,133,55,.09);font-size:12px;color:var(--muted);line-height:1.55;text-align:left}
+  .gate-note b{color:var(--ink);font-weight:800}
+  .gate-q{font-size:13px;font-weight:800;color:var(--ink);margin-bottom:3px;text-align:left}
+  .gate-mini{font-size:11.5px;line-height:1.5;color:var(--muted2);margin:0 0 8px;text-align:left}
+  .gate-linkbtn2{color:var(--muted2)}
+  .gate-back{margin-top:8px}
+  /* ===== Campana de notificaciones del alumno validado ===== */
+  .portal-bell{position:relative;border:1px solid rgba(212,175,55,.55);background:linear-gradient(135deg,rgba(212,175,55,.14),rgba(184,134,11,.06));border-radius:11px;padding:8px 10px;cursor:pointer;line-height:0;transition:background .15s,border-color .15s,box-shadow .15s}
+  .portal-bell:hover{background:linear-gradient(135deg,rgba(212,175,55,.28),rgba(184,134,11,.16));border-color:rgba(212,175,55,.85);box-shadow:0 4px 16px rgba(212,175,55,.30)}
+  .portal-bell .pb-bell{width:22px;height:22px;fill:none;stroke:#d4af37;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;transform-origin:50% 4px}
+  .portal-bell-badge{position:absolute;top:-6px;right:-6px;min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:#e5484d;color:#fff;font-size:11px;font-weight:800;line-height:18px;text-align:center;box-shadow:0 0 0 2px var(--bg)}
+  .portal-bell-badge.hidden{display:none}
+  .portal-welcome{position:absolute;left:0;top:50%;transform:translateY(-50%);display:inline-flex;flex-direction:column;align-items:flex-start;gap:6px;font-size:13px;color:var(--muted);white-space:nowrap}
+  .portal-welcome .pw-linea{display:inline-flex;align-items:center;gap:6px}
+  .portal-welcome .pw-nombre{color:var(--ink);font-weight:800}
+  .portal-welcome .pw-check{width:18px;height:18px;flex:0 0 auto}
+  .portal-welcome .pw-check circle{fill:#22c98a}
+  /* FASE 6.8 · botón "Mis resultados": misma estética que las tarjetas de
+     apps (app-card) en formato pequeño — rectangular, borde --line, fondo
+     panel2→panel y hover que se eleva. Ancho = línea del nombre del alumno
+     (align-self:stretch dentro de la columna del welcome). */
+  .pw-resultados{display:flex;align-items:center;justify-content:center;gap:8px;align-self:stretch;box-sizing:border-box;cursor:pointer;font:inherit;font-size:12.5px;font-weight:800;letter-spacing:.01em;color:var(--ink);padding:7px 12px;background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:10px;transition:transform .12s,border-color .15s,box-shadow .15s}
+  .pw-resultados:hover{transform:translateY(-2px);border-color:var(--muted2);box-shadow:0 10px 26px rgba(140,100,20,.45)}
+  .pw-resultados:active{transform:translateY(0)}
+  .pw-resultados .pwr-chev{font-size:10px;opacity:.7;color:var(--muted)}
+  @media (max-width:560px){.portal-welcome .pw-hi{display:none}}
+  .portal-bell.hay-avisos::before,.portal-bell.hay-avisos::after{content:"";position:absolute;inset:0;border-radius:11px;border:2px solid rgba(212,175,55,.6);animation:alucamp-onda 2.4s ease-out infinite;pointer-events:none}
+  .portal-bell.hay-avisos::after{animation-delay:1.2s}
+  .portal-bell.hay-avisos .pb-bell{animation:alucamp-tintineo 2.4s ease-in-out infinite}
+  .portal-bell.nuevo{animation:alucamp-burst .6s ease-out}
+  @keyframes alucamp-onda{0%{transform:scale(1);opacity:.7}100%{transform:scale(3.2);opacity:0}}
+  @keyframes alucamp-tintineo{0%,60%,100%{transform:rotate(0)}66%{transform:rotate(12deg)}72%{transform:rotate(-10deg)}78%{transform:rotate(7deg)}84%{transform:rotate(-4deg)}90%{transform:rotate(0)}}
+  @keyframes alucamp-burst{0%{box-shadow:0 0 0 0 rgba(212,175,55,.55)}100%{box-shadow:0 0 0 18px rgba(212,175,55,0)}}
+  @media (prefers-reduced-motion: reduce){.portal-bell.hay-avisos::before,.portal-bell.hay-avisos::after,.portal-bell.hay-avisos .pb-bell,.portal-bell.nuevo{animation:none}}
+  .alu-modal{position:fixed;inset:0;z-index:90;display:none;align-items:flex-start;justify-content:center;padding:36px 16px 16px;background:rgba(5,8,20,.6);backdrop-filter:blur(3px)}
+  .alu-modal.open{display:flex}
+  .alu-card{width:100%;max-width:880px;background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:16px;box-shadow:0 24px 80px rgba(0,0,0,.5);overflow:hidden}
+  .alu-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:16px 18px;border-bottom:1px solid var(--line)}
+  .alu-head h3{margin:0;font-size:16px;color:var(--ink);font-weight:800}
+  .alu-head .alu-todo{background:none;border:none;color:var(--area-entonacion);font-size:12.5px;font-weight:700;cursor:pointer;padding:4px 6px}
+  .alu-close{background:none;border:none;color:var(--muted);font-size:22px;cursor:pointer;line-height:1;padding:0 4px}
+  .alu-body{max-height:82vh;overflow:auto;padding:8px 14px 16px}
+  .alu-item{display:flex;gap:10px;padding:9px 4px;border-bottom:1px solid var(--line);cursor:default}
+  .alu-item:last-child{border-bottom:none}
+  .alu-item.no-leido{cursor:pointer}
+  .alu-dot{flex:0 0 auto;width:8px;height:8px;border-radius:50%;background:var(--area-entonacion);margin-top:6px;visibility:hidden}
+  .alu-item.no-leido .alu-dot{visibility:visible}
+  .alu-item-main{flex:1 1 auto;min-width:0}
+  .alu-item-tit{font-size:13.5px;font-weight:700;color:var(--ink)}
+  .alu-item-cuerpo{font-size:12.5px;color:var(--muted);line-height:1.45;margin-top:2px}
+  .alu-item-fecha{font-size:11px;color:var(--muted2);margin-top:3px}
+  .alu-vacio{color:var(--muted2);font-size:13px;text-align:center;padding:24px 8px}
+
+
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body class="intro locked">
 <div class="gate" id="gate" aria-modal="true" role="dialog">
@@ -280,9 +346,15 @@
       <p>Recursos de uso interno.</p>
       <input class="gate-input" id="gateInput" type="password" placeholder="Contraseña" autocomplete="off" autocapitalize="off" spellcheck="false">
       <label class="gate-remember"><input type="checkbox" id="gateRemember"> Recordar en este dispositivo</label>
-      <button class="gate-go" onclick="submitGate()">Entrar</button>
+      <button class="gate-go" onclick="submitGate()">Entrar como invitado</button>
       <div class="gate-err" id="gateErr"></div>
-      <div style="margin-top:14px;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#98875e;opacity:.6">gate v2 · siempre solicita</div>
+            <div class="gate-alt">
+        <div class="gate-q">¿Eres alumno/a de Iago?</div>
+        <p class="gate-mini">Como invitado ya tienes el 99% de las funciones. Registrarte solo añade la vinculación con las tablas de evaluación de tu profe y el seguimiento de las actividades que hagas.</p>
+        <button class="gate-linkbtn" onclick="abrirRegistro()">Registrarme</button>
+        <button class="gate-linkbtn gate-linkbtn2" onclick="abrirLogin()">Ya tengo cuenta</button>
+      </div>
+      <div style="margin-top:14px;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#98875e;opacity:.6">suite GP-A · r1</div>
     </div>
     <div id="gateMobile" style="display:none">
       <div class="gm-icon">
@@ -293,6 +365,38 @@
       <button class="gate-go" onclick="continueAnyway()">Continuar de todas formas</button>
       <button class="gate-secondary" onclick="backToPass()">Volver</button>
     </div>
+    <div id="alumnoLogin" style="display:none">
+      <h3>Soy alumno de Iago</h3>
+      <p>Entra con tu nombre y tu contraseña.</p>
+      <input class="gate-input txt" id="logNombre" type="text" placeholder="Nombre y apellidos" autocomplete="off" autocapitalize="words" spellcheck="false">
+      <input class="gate-input" id="logPass" type="password" placeholder="Contraseña" autocomplete="off" autocapitalize="off" spellcheck="false">
+      <label class="gate-remember"><input type="checkbox" id="logRecordar"> Recordar en este dispositivo</label>
+      <button class="gate-go" id="logBtn" onclick="alumnoEntrar()">Entrar</button>
+      <div class="gate-err" id="alumnoLoginErr"></div>
+      <button class="gate-linkbtn" onclick="abrirRegistro()">¿Primera vez? Crea tu cuenta</button>
+      <button class="gate-secondary gate-back" onclick="mostrarPanel('gatePass')">Volver</button>
+    </div>
+    <div id="alumnoRegistro" style="display:none">
+      <h3>Crear cuenta de alumno</h3>
+      <p>Solo para alumnos de Iago. Tu profesor validará tu cuenta.</p>
+      <input class="gate-input txt" id="regNombre" type="text" placeholder="Nombre y apellidos" autocomplete="off" autocapitalize="words" spellcheck="false">
+      <input class="gate-input" id="regPass" type="password" placeholder="Elige una contraseña" autocomplete="off" autocapitalize="off" spellcheck="false">
+      <label class="gate-remember"><input type="checkbox" id="regRecordar" checked> Recordar en este dispositivo</label>
+      <div class="gate-note"><b>Pensada para ordenador</b> y adaptada para tablet. <b>No es una app para móvil.</b></div>
+      <button class="gate-go" id="regBtn" onclick="alumnoRegistrar()">Crear mi cuenta</button>
+      <div class="gate-err" id="alumnoRegistroErr"></div>
+      <button class="gate-linkbtn" onclick="abrirLogin()">Ya tengo cuenta</button>
+      <button class="gate-secondary gate-back" onclick="mostrarPanel('gatePass')">Volver</button>
+    </div>
+    <div id="alumnoPendiente" style="display:none">
+      <div class="gm-icon">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5l3 2"/></svg>
+      </div>
+      <h3>Cuenta creada</h3>
+      <p>Tu profesor <b>Iago</b> recibirá tu solicitud. En cuanto te valide, tendrás acceso a todas las funciones de LMPRO at home.<br>Mientras tanto, puedes usar las apps como invitado.</p>
+      <button class="gate-go" onclick="continuarComoInvitadoPend()">Continuar</button>
+      <button class="gate-secondary gate-back" onclick="abrirLogin()">Ya me validaron: entrar</button>
+    </div>
   </div>
 </div>
 <div class="veil"></div>
@@ -300,7 +404,23 @@
 
   <div class="topbar">
     <div class="opt-mini">Optimizado para ordenador y tablet</div>
+    <span class="portal-welcome" id="portal-welcome" style="display:none">
+      <span class="pw-linea">
+        <span class="pw-hi">Bienvenido/a,</span>
+        <span class="pw-nombre" id="portal-welcome-nombre"></span>
+        <svg class="pw-check" viewBox="0 0 24 24" role="img" aria-label="Cuenta verificada"><circle cx="12" cy="12" r="10"/><path d="M8 12.4l2.6 2.6L16 9" fill="none" stroke="#160f04" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </span>
+      <button type="button" class="pw-resultados" id="btn-mis-resultados" onclick="MisResultados&&MisResultados.abrir()">📊 Mis resultados <span class="pwr-chev">▾</span></button>
+    </span>
     <div class="topbar-right">
+      <button class="portal-bell" id="alu-msj-btn" aria-label="Mensajes con el profe" title="Mensajes con el profe" style="display:none" onclick="AluMensajes&&AluMensajes.abrir()">
+        <svg viewBox="0 0 24 24" class="pb-bell" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m4 7 8 6 8-6"/></svg>
+        <span class="portal-bell-badge hidden" id="alu-msj-badge">0</span>
+      </button>
+      <button class="portal-bell" id="alu-campana-btn" aria-label="Notificaciones" title="Notificaciones" style="display:none" onclick="AluCampana&&AluCampana.abrir()">
+        <svg viewBox="0 0 24 24" class="pb-bell" aria-hidden="true"><path d="M12 3a5 5 0 0 0-5 5c0 4-1.5 5.5-2.5 6.5-.4.4-.1 1 .5 1h14c.6 0 .9-.6.5-1C19 13.5 17 12 17 8a5 5 0 0 0-5-5Z"/><path d="M10 20a2 2 0 0 0 4 0"/></svg>
+        <span class="portal-bell-badge hidden" id="alu-campana-badge">0</span>
+      </button>
       <a class="visit-elem" href="https://iagonaron.github.io/LMEAVathome/"><span class="ve-lm">LM</span><span class="ve-eav">EAV</span></a>
       <div class="by">by Iago González Alonso</div>
     </div>
@@ -384,6 +504,95 @@ const GATE_PASS='aula30año26';
 const GATE_KEY='lmpro_gate_fill';
 // limpieza de marcas antiguas que saltaban el gate (versiones previas)
 try{ localStorage.removeItem('lmpro_gate_ok'); sessionStorage.removeItem('lmpro_gate_ok'); }catch(e){}
+
+// ===== Suite at home · sesión de alumno (Supabase) =====================
+// El portal es el rol INVITADO (gate de arriba). Sobre él se monta el
+// acceso de ALUMNO: registro -> pendiente de validación; login -> si está
+// validado, entra directo (y en visitas siguientes auto-salta el gate).
+// La sesión vive en localStorage['lmpro_session']; las subapps (Teoría...)
+// la leerán en la Fase 5 (misma-origen => localStorage compartido).
+const SESSION_KEY='lmpro_session';
+const SB_URL='https://woiptkyrxkbpnvioypit.supabase.co';
+const SB_ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndvaXB0a3lyeGticG52aW95cGl0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0NzI2ODYsImV4cCI6MjA5MjA0ODY4Nn0.B2nKgj5rD0rkdLeMIrd9KgD8lUPWsBT4Y7aCtmnvbjA';
+let _sbClient=null;
+function sbClient(){
+  if(!_sbClient && window.supabase){ _sbClient=window.supabase.createClient(SB_URL, SB_ANON); }
+  return _sbClient;
+}
+function getSession(){ try{ return JSON.parse(localStorage.getItem(SESSION_KEY)||'null'); }catch(e){ return null; } }
+function setSession(s){ try{ localStorage.setItem(SESSION_KEY, JSON.stringify(s)); }catch(e){} }
+function clearSession(){ try{ localStorage.removeItem(SESSION_KEY); }catch(e){} }
+async function callRPC(fn, args){
+  try{
+    const c=sbClient();
+    if(!c) return { ok:false, error:'sin_conexion' };
+    const { data, error } = await c.rpc(fn, args);
+    if(error){ console.warn('[rpc]', fn, error.message); return { ok:false, error:'red' }; }
+    return data || { ok:false, error:'vacio' };
+  }catch(e){ console.warn('[rpc]', fn, e); return { ok:false, error:'excepcion' }; }
+}
+
+// ---- Cambio de panel dentro de la tarjeta del gate ----
+function mostrarPanel(id){
+  ['gatePass','gateMobile','alumnoLogin','alumnoRegistro','alumnoPendiente'].forEach(p=>{
+    const el=document.getElementById(p); if(el) el.style.display=(p===id)?'':'none';
+  });
+}
+function abrirLogin(){
+  const s=getSession();
+  const n=document.getElementById('logNombre'), p=document.getElementById('logPass'), r=document.getElementById('logRecordar');
+  if(s && s.recordar){ if(s.nombre) n.value=s.nombre; if(s.pass) p.value=s.pass; if(r) r.checked=true; }
+  mostrarPanel('alumnoLogin');
+  setTimeout(()=>{ try{ (n.value? p:n).focus(); }catch(e){} }, 60);
+}
+function abrirRegistro(){
+  const s=getSession();
+  const n=document.getElementById('regNombre');
+  if(s && s.recordar && s.nombre && n && !n.value){ n.value=s.nombre; }
+  mostrarPanel('alumnoRegistro');
+  setTimeout(()=>{ try{ document.getElementById('regNombre').focus(); }catch(e){} }, 60);
+}
+function continuarComoInvitadoPend(){ unlockGate(); }
+
+async function alumnoRegistrar(){
+  const nombre=(document.getElementById('regNombre').value||'').trim();
+  const pass=document.getElementById('regPass').value||'';
+  const err=document.getElementById('alumnoRegistroErr'); err.textContent='';
+  if(nombre.length<3){ err.textContent='Escribe tu nombre y apellidos.'; return; }
+  if(pass.length<4){ err.textContent='La contraseña debe tener al menos 4 caracteres.'; return; }
+  const btn=document.getElementById('regBtn'); btn.disabled=true; btn.textContent='Creando…';
+  const r=await callRPC('suite_registrar_alumno', { p_nombre:nombre, p_pass:pass });
+  btn.disabled=false; btn.textContent='Crear mi cuenta';
+  if(!r.ok){
+    err.textContent = r.error==='nombre_corto' ? 'Escribe tu nombre y apellidos.'
+                    : r.error==='pass_corta'   ? 'La contraseña debe tener al menos 4 caracteres.'
+                    : 'No se pudo crear la cuenta. Revisa tu conexión e inténtalo de nuevo.';
+    return;
+  }
+  const recordar=document.getElementById('regRecordar').checked;
+  setSession({ id:r.id, nombre, estado:'pendiente', recordar, pass: recordar?pass:undefined });
+  mostrarPanel('alumnoPendiente');
+}
+
+async function alumnoEntrar(){
+  const nombre=(document.getElementById('logNombre').value||'').trim();
+  const pass=document.getElementById('logPass').value||'';
+  const err=document.getElementById('alumnoLoginErr'); err.textContent='';
+  if(!nombre || !pass){ err.textContent='Escribe tu nombre y tu contraseña.'; return; }
+  const btn=document.getElementById('logBtn'); btn.disabled=true; btn.textContent='Entrando…';
+  const r=await callRPC('suite_login_alumno', { p_nombre:nombre, p_pass:pass });
+  btn.disabled=false; btn.textContent='Entrar';
+  if(!r.ok){
+    err.textContent = r.error==='credenciales' ? 'Nombre o contraseña incorrectos.'
+                    : 'No se pudo entrar. Revisa tu conexión e inténtalo de nuevo.';
+    return;
+  }
+  const recordar=document.getElementById('logRecordar').checked;
+  setSession({ id:r.id, nombre:r.nombre, estado:r.estado, alumno_canon_id:r.alumno_canon_id, grupo_id:r.grupo_id, recordar, pass: recordar?pass:undefined });
+  if(r.estado==='validado'){ unlockGate(); }
+  else if(r.estado==='rechazado'){ err.textContent='Tu solicitud no fue aceptada. Habla con Iago en clase.'; }
+  else { mostrarPanel('alumnoPendiente'); }   // pendiente
+}
 function gateRemembered(){
   try{ return localStorage.getItem(GATE_KEY)==='1'; }catch(e){ return false; }
 }
@@ -408,12 +617,16 @@ function backToPass(){
 function continueAnyway(){ unlockGate(); }
 function unlockGate(){
   const g=document.getElementById('gate');
+  // 1) el portal empieza a emerger (nítido) bajo el gate
   document.body.classList.remove('gating');
   document.body.classList.add('revealing');
+  // 2) la tarjeta asciende y se difumina; el fondo del gate se disuelve
   g.classList.add('hide');
+  // 3) al terminar, retiramos el bloqueo y el gate del DOM visual
   setTimeout(()=>{
     document.body.classList.remove('locked');
     g.style.display='none';
+    if(window.AluCampana) window.AluCampana.refrescar();
   }, 1100);
 }
 function submitGate(){
@@ -438,31 +651,73 @@ function submitGate(){
   }
 }
 (function(){
-  // El gate se muestra SIEMPRE (con su animación). Si se ha pedido recordar,
-  // solo se pre-rellena el campo y se marca la casilla: hay que pulsar Entrar igualmente.
+  // El gate se muestra SIEMPRE (con su animación) para invitados. Si se ha
+  // pedido recordar, solo se pre-rellena el campo. EXCEPCIÓN: un alumno ya
+  // validado (sesión recordada) salta el gate directamente.
   const remembered=gateRemembered();
   if(remembered){
     document.getElementById('gateInput').value=GATE_PASS;
     document.getElementById('gateRemember').checked=true;
   }
+  // el gate emerge justo cuando la intro termina de asentarse (hero quieto)
   const reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const delay=reduce?0:2900, fdelay=reduce?100:3500;
-  window.addEventListener('load',()=>{
+
+  function mostrarGate(){
     const g=document.getElementById('gate');
     setTimeout(()=>{ document.body.classList.add('gating'); g.classList.add('show'); }, delay);
     setTimeout(()=>{
       try{
         const inp=document.getElementById('gateInput');
-        inp.focus();
-        // si está pre-relleno, dejamos el cursor al final (no seleccionado) para que solo pulse Entrar
-        if(remembered){ inp.setSelectionRange(inp.value.length, inp.value.length); }
+        if(document.getElementById('gatePass').style.display!=='none'){
+          inp.focus();
+          if(remembered){ inp.setSelectionRange(inp.value.length, inp.value.length); }
+        }
       }catch(e){}
     }, fdelay);
+  }
+  function saltarGate(){
+    const g=document.getElementById('gate');
+    document.body.classList.remove('gating','locked');
+    document.body.classList.add('revealing');
+    if(g){ g.classList.remove('show'); g.style.display='none'; }
+    if(window.AluCampana) window.AluCampana.refrescar();
+  }
+
+  window.addEventListener('load',()=>{
+    (async()=>{
+      // Auto-salto del gate para un alumno YA validado (sesión recordada).
+      // Refresca el estado por si Iago lo validó/rechazó desde la última vez.
+      const s=getSession();
+      if(s && s.id && s.estado==='validado'){
+        const r=await callRPC('suite_estado_cuenta', { p_id:s.id });
+        if(r && r.ok && r.estado==='validado'){
+          setSession(Object.assign({}, s, { estado:'validado', alumno_canon_id:r.alumno_canon_id, grupo_id:r.grupo_id }));
+          saltarGate();
+          return;
+        }
+        if(r && r.ok && r.estado){
+          setSession(Object.assign({}, s, { estado:r.estado, alumno_canon_id:r.alumno_canon_id, grupo_id:r.grupo_id }));
+        }
+      }
+      // Si en este dispositivo ya hay una cuenta de alumno registrada (aunque
+      // esté pendiente), no mostramos el cartel de invitado: vamos directos al
+      // login con el nombre y la contraseña ya puestos (si pidió recordar).
+      const s2=getSession();
+      if(s2 && s2.id){ abrirLogin(); }
+      mostrarGate();
+    })();
   });
+
   document.addEventListener('keydown',e=>{
-    if(e.key==='Enter' && document.body.classList.contains('locked')){ submitGate(); }
+    if(e.key!=='Enter' || !document.body.classList.contains('locked')) return;
+    const vis=id=>{ const el=document.getElementById(id); return el && el.style.display!=='none'; };
+    if(vis('alumnoLogin')) alumnoEntrar();
+    else if(vis('alumnoRegistro')) alumnoRegistrar();
+    else if(vis('gatePass')) submitGate();
   });
 })();
+
 
 // Orquestación de la intro: las tarjetas aparecen al desplegarse el degradado (~2.1s).
 // No quitamos la clase 'intro': los estados finales se mantienen con animation-fill:forwards,
@@ -523,6 +778,1261 @@ function showEnig(kind){
   document.getElementById('enigModal').style.borderColor=c.color;
   document.getElementById('enigBackdrop').classList.add('open');
 }
+</script>
+<script>
+(function(){
+  'use strict';
+  var SB_URL='https://woiptkyrxkbpnvioypit.supabase.co';
+  var SB_ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndvaXB0a3lyeGticG52aW95cGl0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0NzI2ODYsImV4cCI6MjA5MjA0ODY4Nn0.B2nKgj5rD0rkdLeMIrd9KgD8lUPWsBT4Y7aCtmnvbjA';
+  var LS_ULT='alu_campana_ultimo_pro';
+  var POLL=30000;
+  var _cli=null,_timer=null,_nuevoT=null,_cdTimer=null;
+  function cli(){ if(!_cli && window.supabase){ _cli=window.supabase.createClient(SB_URL,SB_ANON); } return _cli; }
+  function ses(){ try{ return JSON.parse(localStorage.getItem('lmpro_session')||'null'); }catch(e){ return null; } }
+  function cuentaId(){ var s=ses(); return (s && s.id && s.estado==='validado') ? s.id : null; }
+  function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+  function fecha(iso){ if(!iso) return ''; var d=new Date(iso); if(isNaN(d)) return String(iso).slice(0,10); return ('0'+d.getDate()).slice(-2)+'/'+('0'+(d.getMonth()+1)).slice(-2); }
+  // Cuenta atrás (días, horas, minutos, segundos) hasta el fin de plazo.
+  function fmtCuenta(ms){
+    if(ms<=0) return '0s';
+    var s=Math.floor(ms/1000);
+    var d=Math.floor(s/86400); s-=d*86400;
+    var h=Math.floor(s/3600);  s-=h*3600;
+    var m=Math.floor(s/60);    s-=m*60;
+    var out=[];
+    if(d) out.push(d+'d');
+    if(d||h) out.push(h+'h');
+    out.push(m+'m'); out.push(s+'s');
+    return out.join(' ');
+  }
+  function estadoPlazo(fnIso,fgIso){
+    if(!fnIso) return null;
+    var ahora=Date.now(), fn=new Date(fnIso).getTime(), fg=fgIso?new Date(fgIso).getTime():null;
+    if(!isFinite(fn)) return null;
+    if(ahora<=fn) return {fase:'normal', restante:fn-ahora};
+    if(fg && isFinite(fg) && ahora<=fg) return {fase:'gracia', restante:fg-ahora};
+    return {fase:'fin', restante:0};
+  }
+  function pintarCuenta(el){
+    var st=estadoPlazo(el.getAttribute('data-fin'), el.getAttribute('data-gracia'));
+    if(!st){ el.textContent=''; return; }
+    if(st.fase==='normal'){ el.style.color='#2dd4bf'; el.textContent='Te quedan '+fmtCuenta(st.restante); }
+    else if(st.fase==='gracia'){ el.style.color='#ff5c80'; el.textContent='⏰ Semana de recuperación · te quedan '+fmtCuenta(st.restante); }
+    else { el.style.color='#ef4444'; el.textContent='Plazo terminado'; }
+  }
+  function tickCuentas(){
+    Array.prototype.forEach.call(document.querySelectorAll('.alu-item-plazo[data-fin]'), pintarCuenta);
+  }
+  async function rpc(fn,args){ var c=cli(); if(!c) return {ok:false,error:'sin_cliente'}; try{ var r=await c.rpc(fn,args||{}); if(r.error){ console.warn('[alu-campana]',fn,r.error.message); return {ok:false,error:r.error.message}; } return r.data; }catch(e){ console.warn('[alu-campana]',fn,e); return {ok:false,error:String(e)}; } }
+  // ============================================================
+  // FASE 6.7 · FICHAS A MEDIAS (guardado + reanudar)
+  // El player (teoriaathome) guarda puntos de control al pasar de
+  // ejercicio: en Supabase (suite_ficha_progreso) y en localStorage
+  // (mismo origen). Aquí se leen AMBOS y gana el más reciente, para
+  // animar la campana ("ficha pendiente de terminar · 3/8") y cambiar
+  // el botón de la notificación a "Continuar la ficha →".
+  // ============================================================
+  var _progresos={};   // ficha_id -> {hechos,total,t}
+  // FASE 6.9 · fichas ya ENTREGADAS: se pintan en gris con ✓ verde y sin
+  // botón/cuenta atrás, para que el alumno no crea que tiene algo pendiente.
+  // Fuentes: marcador localStorage que deja el player al entregar (instantáneo,
+  // mismo origen) + RPC suite_fichas_entregadas (autoritativa, multi-dispositivo).
+  var _entregadas={};  // ficha_id -> true
+  // FASE 7 · quizzes de ritmo ya HECHOS: marcador localStorage que deja
+  // RITMO at home al completar (mismo origen) + RPC suite_quiz_hechos_de
+  // (autoritativa, multi-dispositivo). envio_id -> true
+  var _quizHechos={};
+  // FASE 8 · partes de "Tareas de la semana" marcadas: 'envio|parte' -> true
+  var _semanaHechos={};
+  function semanaHechosLocal(id){
+    var out={};
+    try{
+      var pref='suite_semana_hecho_'+id+'_';
+      for(var k=0;k<localStorage.length;k++){
+        var key=localStorage.key(k);
+        if(key && key.indexOf(pref)===0) out[key.slice(pref.length)]=true;   // '<envio>_<parte>'
+      }
+    }catch(e){}
+    return out;
+  }
+  async function cargarSemanaHechos(id){
+    var out=semanaHechosLocal(id);
+    try{
+      var r=await rpc('suite_semana_hechos_de',{p_cuenta_id:id});
+      if(r && r.ok && Array.isArray(r.hechos)){
+        r.hechos.forEach(function(h){ if(h && h.envio_id) out[h.envio_id+'_'+h.parte]=true; });
+      }
+    }catch(e){}
+    _semanaHechos=out;
+    return out;
+  }
+  function parteHecha(envio,parte){ return !!_semanaHechos[envio+'_'+parte]; }
+  /* FASE 8 · visor de lecciones (capturas del libro): pantalla completa,
+     desplazable, y al FINAL el botón «✓ Ya la estudié» que marca la parte. */
+  function abrirVisorLecciones(envio, imgs, parte, titulo){
+    parte=parte||'lecciones'; titulo=titulo||'Lecciones de la semana';
+    var old=document.getElementById('ts-visor'); if(old) old.remove();
+    var ov=document.createElement('div'); ov.id='ts-visor';
+    ov.style.cssText='position:fixed;inset:0;z-index:100002;background:rgba(8,5,22,.96);overflow:auto;-webkit-overflow-scrolling:touch;padding:18px 14px 30px';
+    var inner='<div style="max-width:760px;margin:0 auto">'
+      +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">'
+      +'<div style="font:700 14px/1.2 \'Helvetica Neue\',Arial,sans-serif;color:#c8cfdd;letter-spacing:.06em;text-transform:uppercase">'+esc(titulo)+'</div>'
+      +'<div style="display:flex;align-items:center;gap:12px">'
+      +(parteHecha(envio,parte)?'<span style="font:700 12px \'Helvetica Neue\',Arial;color:#9ad9bd">✓ Ya estudiada</span>':'')
+      +'<button id="tsVisorCerrar" style="border:1px solid rgba(255,255,255,.22);border-radius:10px;padding:8px 13px;font-weight:700;cursor:pointer;background:transparent;color:#c8cfdd">✕ Cerrar</button></div></div>';
+    imgs.forEach(function(u,i){
+      inner+=(imgs.length>1?'<div style="font:700 11px/1 \'Helvetica Neue\',Arial,sans-serif;color:#8a93a8;letter-spacing:.12em;text-transform:uppercase;margin:14px 0 6px 2px">Página '+(i+1)+'</div>':'')
+        +'<img src="'+esc(u)+'" alt="Lección '+(i+1)+'" loading="lazy" style="display:block;width:100%;height:auto;border-radius:12px;background:#fff;box-shadow:0 12px 34px rgba(0,0,0,.45)">';
+    });
+    var ya=parteHecha(envio,parte);
+    // Iago 3-jul: pantalla de ESTUDIO — sobria, sin estímulos. Botón discreto.
+    inner+='<div style="text-align:center;margin-top:22px">'
+      +(ya
+        ? '<button id="tsVisorCerrar2" style="border:1px solid rgba(255,255,255,.25);border-radius:12px;padding:12px 26px;font:700 14px \'Helvetica Neue\',Arial;cursor:pointer;color:#c8cfdd;background:rgba(255,255,255,.05)">Salir</button>'
+        : '<button id="tsVisorHecho" style="border:1px solid rgba(154,217,189,.45);border-radius:12px;padding:12px 24px;font:700 14px \'Helvetica Neue\',Arial;cursor:pointer;color:#c9ead9;background:rgba(62,150,110,.14)">✓ Salir y marcar como estudiado</button>')
+      +'</div></div>';
+    ov.innerHTML=inner;
+    document.body.appendChild(ov);
+    document.getElementById('tsVisorCerrar').onclick=function(){ ov.remove(); };
+    var c2=document.getElementById('tsVisorCerrar2');
+    if(c2) c2.onclick=function(){ ov.remove(); };
+    var bh=document.getElementById('tsVisorHecho');
+    if(bh) bh.onclick=async function(){
+      bh.disabled=true; bh.textContent='Guardando…';
+      await marcarParte(envio,parte);
+      ov.remove();
+      try{ render(); }catch(e){}
+    };
+  }
+  async function marcarParte(envio,parte){
+    var id=cuentaId(); if(!id) return false;
+    _semanaHechos[envio+'_'+parte]=true;
+    try{ localStorage.setItem('suite_semana_hecho_'+id+'_'+envio+'_'+parte,String(Date.now())); }catch(e){}
+    try{
+      var r=await rpc('suite_semana_marcar',{p_cuenta_id:id,p_envio_id:envio,p_parte:parte});
+      if(!(r && r.ok)) console.warn('[semana] marcar',r);
+    }catch(e){ console.warn('[semana] marcar',e); }
+    return true;
+  }
+  function quizHechosLocal(id){
+    var out={};
+    try{
+      var pref='suite_quiz_hecho_'+id+'_';
+      for(var k=0;k<localStorage.length;k++){
+        var key=localStorage.key(k);
+        if(key && key.indexOf(pref)===0) out[key.slice(pref.length)]=true;
+      }
+    }catch(e){}
+    return out;
+  }
+  async function cargarQuizHechos(id){
+    var out=quizHechosLocal(id);
+    var r=await rpc('suite_quiz_hechos_de',{p_cuenta_id:id});
+    if(r && r.ok && Array.isArray(r.hechos)){
+      r.hechos.forEach(function(eid){ if(eid) out[eid]=true; });
+    }
+    _quizHechos=out;
+    return out;
+  }
+  function entregadasLocal(id){
+    var out={};
+    try{
+      var pref='suite_ficha_hecha_'+id+'_';
+      for(var k=0;k<localStorage.length;k++){
+        var key=localStorage.key(k);
+        if(key && key.indexOf(pref)===0) out[key.slice(pref.length)]=true;
+      }
+    }catch(e){}
+    return out;
+  }
+  async function cargarEntregadas(id){
+    var out=entregadasLocal(id);
+    var r=await rpc('suite_fichas_entregadas',{p_cuenta_id:id});
+    if(r && r.ok && Array.isArray(r.entregadas)){
+      r.entregadas.forEach(function(fid){ if(fid) out[fid]=true; });
+    }
+    _entregadas=out;
+    return out;
+  }
+  function progLocalTodos(id){
+    var out={};
+    try{
+      var pref='suite_ficha_prog_'+id+'_';
+      for(var k=0;k<localStorage.length;k++){
+        var key=localStorage.key(k);
+        if(key && key.indexOf(pref)===0){
+          try{
+            var v=JSON.parse(localStorage.getItem(key)||'null');
+            if(v && (v.hechos|0)>0 && (v.total|0)>0){
+              out[key.slice(pref.length)]={hechos:v.hechos|0,total:v.total|0,t:v.t||0};
+            }
+          }catch(e){}
+        }
+      }
+    }catch(e){}
+    return out;
+  }
+  async function cargarProgresos(id){
+    var out=progLocalTodos(id);
+    var r=await rpc('suite_ficha_progreso_pendientes',{p_cuenta_id:id});
+    if(r && r.ok && Array.isArray(r.pendientes)){
+      r.pendientes.forEach(function(p){
+        if(!p || !p.ficha_id || !(p.hechos|0)) return;
+        var t=Date.parse(p.actualizado_en)||0;
+        var loc=out[p.ficha_id];
+        if(!loc || t>=(loc.t||0)) out[p.ficha_id]={hechos:p.hechos|0,total:p.total|0,t:t};
+      });
+    }
+    _progresos=out;
+    // FASE 6.9 · una ficha ENTREGADA nunca cuenta como "a medias" (restos de
+    // progreso que no llegaron a borrarse, p. ej. entrega desde otro equipo).
+    Object.keys(_progresos).forEach(function(fid){ if(_entregadas[fid]) delete _progresos[fid]; });
+    return _progresos;
+  }
+  function pintarCampanaProgreso(){
+    var b=btn(); if(!b) return;
+    var keys=Object.keys(_progresos||{});
+    var pend=keys.length>0;
+    b.classList.toggle('ficha-pendiente',pend);
+    var pill=document.getElementById('alu-campana-prog');
+    if(pend){
+      var p=_progresos[keys[0]];
+      if(!pill){
+        pill=document.createElement('span');
+        pill.id='alu-campana-prog';
+        pill.className='portal-bell-prog';
+        b.appendChild(pill);
+      }
+      pill.textContent=(keys.length>1)?(keys.length+' a medias'):(p.hechos+'/'+p.total);
+      b.title='Tienes una ficha pendiente de terminar ('+p.hechos+' de '+p.total+' ejercicios hechos)';
+    } else if(pill){
+      pill.remove();
+      b.title='Notificaciones';
+    }
+  }
+  function ultimo(){ try{ var v=parseInt(localStorage.getItem(LS_ULT),10); return isNaN(v)?null:v; }catch(e){ return null; } }
+  function guardar(n){ try{ localStorage.setItem(LS_ULT,String(n)); }catch(e){} }
+  function btn(){ return document.getElementById('alu-campana-btn'); }
+  function badge(){ return document.getElementById('alu-campana-badge'); }
+  function pintarBienvenida(){
+    var s=ses(), w=document.getElementById('portal-welcome');
+    if(!w) return;
+    if(s && s.id && s.estado==='validado'){
+      var nom=document.getElementById('portal-welcome-nombre');
+      if(nom) nom.textContent=s.nombre||'';
+      w.style.display='';
+    } else { w.style.display='none'; }
+  }
+  function onda(){ var b=btn(); if(!b) return; b.classList.add('nuevo'); if(_nuevoT) clearTimeout(_nuevoT); _nuevoT=setTimeout(function(){ b.classList.remove('nuevo'); },700); }
+  async function refrescar(){
+    pintarBienvenida();
+    var id=cuentaId(),b=btn(),bd=badge();
+    if(!id){ if(b) b.style.display='none'; return; }
+    if(b) b.style.display='';
+    // FASE 7.3 · barrido perezoso: materializa las notificaciones de quizzes
+    // PROGRAMADOS cuya hora ya se cumplió (idempotente, sin datos sensibles).
+    try{ await rpc('suite_quiz_barrer',{}); }catch(e){}
+    var r=await rpc('suite_alumno_notif_contador',{p_cuenta_id:id});
+    var n=(r && r.ok)?(r.no_leidos||0):0;
+    // FASE 8 · las fichas todavía NO activadas (llegan el viernes 19:00) no
+    // deben encender el globo: se descuentan del contador.
+    if(n>0){
+      try{
+        var rl=await rpc('suite_alumno_notif_listar',{p_cuenta_id:id});
+        if(rl && rl.ok && Array.isArray(rl.notificaciones)){
+          var ocultas=rl.notificaciones.filter(function(o){
+            var pj=o.payload_json||{};
+            if(o.leido || !pj.ficha_id || !pj.fin_normal) return false;
+            return ((Date.parse(pj.fin_normal)||0) - 7*864e5) > Date.now();
+          }).length;
+          n=Math.max(0,n-ocultas);
+        }
+      }catch(e){}
+    }
+    if(bd){ bd.textContent=n>99?'99+':String(n); bd.classList.toggle('hidden',n===0); }
+    if(b) b.classList.toggle('hay-avisos',n>0);
+    var prev=ultimo(); if(prev!=null && n>prev) onda(); guardar(n);
+    // FASE 6.7/6.9 · entregadas + fichas a medias → estado de la campana
+    try{ await cargarEntregadas(id); }catch(e){}
+    try{ await cargarProgresos(id); }catch(e){}
+    pintarCampanaProgreso();
+  }
+  function modalEl(){
+    var m=document.getElementById('alu-modal'); if(m) return m;
+    m=document.createElement('div'); m.className='alu-modal'; m.id='alu-modal';
+    m.innerHTML='<div class="alu-card"><div class="alu-head"><h3>Tus notificaciones</h3><div><button class="alu-todo" id="alu-todo">Marcar todo leído</button><button class="alu-close" id="alu-close" aria-label="Cerrar">&times;</button></div></div><div class="alu-body" id="alu-body"></div></div>';
+    document.body.appendChild(m);
+    m.addEventListener('click',function(e){ if(e.target===m) cerrar(); });
+    m.querySelector('#alu-close').addEventListener('click',cerrar);
+    m.querySelector('#alu-todo').addEventListener('click',marcarTodo);
+    return m;
+  }
+  async function render(){
+    var body=document.getElementById('alu-body'); if(!body) return;
+    body.innerHTML='<div class="alu-vacio">Cargando…</div>';
+    var id=cuentaId(); if(!id){ body.innerHTML='<div class="alu-vacio">Inicia sesión para ver tus notificaciones.</div>'; return; }
+    var r=await rpc('suite_alumno_notif_listar',{p_cuenta_id:id});
+    var list=(r && r.ok && Array.isArray(r.notificaciones))?r.notificaciones:[];
+    if(!list.length){ body.innerHTML='<div class="alu-vacio">Todavía no tienes notificaciones.</div>'; return; }
+    // FASE 6.7/6.9 · refresca entregadas y progresos antes de pintar (para
+    // decidir Hacer/Continuar/✓ Entregada y la fracción X/Y).
+    try{ await cargarEntregadas(id); }catch(e){}
+    try{ await cargarProgresos(id); }catch(e){}
+    try{ await cargarQuizHechos(id); }catch(e){}
+    try{ await cargarSemanaHechos(id); }catch(e){}
+    pintarCampanaProgreso();
+    // FASE 6.9 · las fichas ENTREGADAS se hunden al final de la lista y se
+    // pintan "hechas"; las pendientes/a medias quedan arriba.
+    // FASE 7 · los quizzes ya HECHOS también se hunden.
+    // FASE 8 · tarjeta agrupada "Tareas de la semana"; la FICHA no se ve
+    // hasta su activación (viernes 19:00); en TIEMPO EXTRA se ancla arriba.
+    var esQuiz=function(o){ return !!(o.payload_json && o.payload_json.quiz && o.payload_json.envio_id && !o.payload_json.tareas_semana); };
+    var esQuizHecho=function(o){ return esQuiz(o) && !!_quizHechos[o.payload_json.envio_id]; };
+    var esTareas=function(o){ return !!(o.payload_json && o.payload_json.tareas_semana && o.payload_json.semana_envio_id); };
+    var tareasHecha=function(o){
+      if(!esTareas(o)) return false;
+      var pj=o.payload_json, se=pj.semana_envio_id;
+      if(pj.quiz && pj.quiz.envio_id && !_quizHechos[pj.quiz.envio_id]) return false;
+      var lecs=(pj.lecciones||[]).filter(function(l){ return l && l.n!=null; });
+      if(lecs.length){
+        if(!lecs.every(function(l){ return parteHecha(se,'leccion_'+l.n); })) return false;
+      } else if((pj.lecciones_imgs&&pj.lecciones_imgs.length) && !parteHecha(se,'lecciones')) return false;
+      if(pj.otras && !parteHecha(se,'otras')) return false;
+      if(pj.ficha && pj.ficha.numero!=null){
+        var fN=_fichaPorNumero[String(pj.ficha.numero)];
+        if(!fN || !(fN.payload_json&&fN.payload_json.ficha_id&&_entregadas[fN.payload_json.ficha_id])) return false;
+      }
+      return true;
+    };
+    // FASE 8.3 · mapa de notificaciones de FICHA por número, y qué números
+    // están absorbidos por un marco semanal (para no pintarlas sueltas).
+    var _fichaPorNumero={}, _fichasEnMarco={};
+    list.forEach(function(o){
+      var pj=o.payload_json||{};
+      if(pj.ficha_id && pj.numero!=null) _fichaPorNumero[String(pj.numero)]=o;
+    });
+    list.forEach(function(o){
+      var pj=o.payload_json||{};
+      if(pj.tareas_semana && pj.ficha && pj.ficha.numero!=null) _fichasEnMarco[String(pj.ficha.numero)]=true;
+    });
+    var fichaAbsorbida=function(o){
+      var pj=o.payload_json||{};
+      if(!pj.ficha_id || pj.numero==null) return false;
+      if(!_fichasEnMarco[String(pj.numero)]) return false;
+      // en TIEMPO EXTRA vuelve a salir suelta y anclada (urgencia manda)
+      var fin=Date.parse(pj.fin_normal||'')||0;
+      if(fin && Date.now()>fin && !(pj.ficha_id && _entregadas[pj.ficha_id])) return false;
+      return true;
+    };
+    var fichaOculta=function(o){
+      var pj=o.payload_json||{}, f=pj.ficha_id||'';
+      if(!f || _entregadas[f] || !pj.fin_normal) return false;
+      var act=(Date.parse(pj.fin_normal)||0) - 7*864e5;   // activa = entrega − 7 días
+      return act > Date.now();
+    };
+    var enTiempoExtra=function(o){
+      var pj=o.payload_json||{}, f=pj.ficha_id||'';
+      if(!f || _entregadas[f] || !pj.fin_normal) return false;
+      var fin=Date.parse(pj.fin_normal)||0, fg=Date.parse(pj.fin_gracia||'')||0;
+      var t=Date.now();
+      return t>fin && (!fg || t<=fg);
+    };
+    var esHecha=function(o){ var f=(o.payload_json&&o.payload_json.ficha_id)||''; return !!(f && _entregadas[f]) || esQuizHecho(o) || tareasHecha(o); };
+    list=list.filter(function(o){ return !fichaOculta(o) && !fichaAbsorbida(o); });
+    list.sort(function(a,b){
+      var pa=(enTiempoExtra(a)?-1:0)+(esHecha(a)?1:0);
+      var pb=(enTiempoExtra(b)?-1:0)+(esHecha(b)?1:0);
+      return pa-pb;
+    });
+    body.innerHTML=list.map(function(o){
+      // FASE 8 · TARJETA AGRUPADA "Tareas de la semana": quiz → lecciones → otras.
+      if(esTareas(o)){
+        var tj=o.payload_json, se=tj.semana_envio_id;
+        var hechaT=tareasHecha(o);
+        var partes='';
+        // 1º · QUIZ
+        if(tj.quiz && tj.quiz.envio_id){
+          var qh=!!_quizHechos[tj.quiz.envio_id];
+          partes+='<div class="ts-parte ts-quiz'+(qh?' ts-hecha':'')+'">'
+            +'<div class="ts-parte-tit">🥁 Quiz de ritmo · Carta '+esc(tj.quiz.carta||'')+(tj.quiz.nombre?' · '+esc(tj.quiz.nombre):'')+(qh?' <b class="ts-check">✓</b>':'')+'</div>'
+            +(qh?'<div class="ts-parte-sub">Ya lo completaste. ¡Buen trabajo!</div>'
+                :'<button class="alu-quiz-go" data-envio="'+esc(tj.quiz.envio_id)+'" data-carta="'+esc(tj.quiz.carta||'')+'">▶ Empezar el quiz</button>')
+            +'</div>';
+        }
+        // 2º · LECCIONES DE RITMO — FASE 8.3: cada lección es un CHIP con su
+        // propio estado. Con capturas: el chip abre el visor de ESA lección
+        // (imagen limpia, sin distracciones) con «✓ Ya la estudié» al final.
+        // Sin capturas: el chip se marca directamente.
+        var lecList=(tj.lecciones||[]).filter(function(l){ return l && l.n!=null; });
+        if(!lecList.length && (tj.lecciones_imgs||[]).length){
+          lecList=[{n:null, imgs:tj.lecciones_imgs}];   // compat con envíos viejos
+        }
+        if(lecList.length){
+          var todasLec=lecList.every(function(l){ return parteHecha(se,l.n!=null?('leccion_'+l.n):'lecciones'); });
+          var chips=lecList.map(function(l){
+            var parte=(l.n!=null)?('leccion_'+l.n):'lecciones';
+            var hechaL=parteHecha(se,parte);
+            var lbl=(l.n!=null)?('Lección '+esc(l.n)):'Lecciones';
+            if(hechaL && l.imgs && l.imgs.length)
+              return '<button class="ts-lec-chip abre hecha" title="Reabrir para repasar" data-envio="'+esc(se)+'" data-parte="'+esc(parte)+'" data-lbl="'+esc(lbl)+'" data-imgs="'+esc(JSON.stringify(l.imgs))+'">✓ '+lbl+'</button>';
+            if(hechaL) return '<span class="ts-lec-chip hecha">✓ '+lbl+'</span>';
+            if(l.imgs && l.imgs.length)
+              return '<button class="ts-lec-chip abre" data-envio="'+esc(se)+'" data-parte="'+esc(parte)+'" data-lbl="'+esc(lbl)+'" data-imgs="'+esc(JSON.stringify(l.imgs))+'">📖 '+lbl+'</button>';
+            return '<button class="ts-lec-chip marca" data-envio="'+esc(se)+'" data-parte="'+esc(parte)+'">☐ '+lbl+'</button>';
+          }).join('');
+          partes+='<div class="ts-parte ts-lecciones'+(todasLec?' ts-hecha':'')+'">'
+            +'<div class="ts-parte-tit">📚 Lecciones de ritmo'+(todasLec?' <b class="ts-check">✓</b>':'')+'</div>'
+            +'<div class="ts-lec-chips">'+chips+'</div>'
+            +(todasLec?'<div class="ts-parte-sub">Estudiadas. El viernes se tocan en clase. (Puedes reabrirlas para repasar.)</div>'
+                      :'<div class="ts-parte-sub">Toca cada lección para estudiarla.</div>')
+            +'</div>';
+        }
+        // 3º-bis se pinta después; primero preparar OTRAS
+        if(tj.otras){
+          var oh=parteHecha(se,'otras');
+          partes+='<div class="ts-parte ts-otras'+(oh?' ts-hecha':'')+'">'
+            +'<div class="ts-parte-tit">📝 Otras tareas'+(oh?' <b class="ts-check">✓</b>':'')+'</div>'
+            +'<div class="ts-parte-sub ts-otras-txt">'+esc(tj.otras)+'</div>'
+            +(oh?'':'<button class="ts-marcar" data-envio="'+esc(se)+'" data-parte="otras">☐ Hecho</button>')
+            +'</div>';
+        }
+        // 4º · LA FICHA DE LA SEMANA, dentro del marco (por número)
+        if(tj.ficha && tj.ficha.numero!=null){
+          var fN=_fichaPorNumero[String(tj.ficha.numero)];
+          if(fN){
+            var fpj=fN.payload_json||{}, fHecha=!!(fpj.ficha_id && _entregadas[fpj.ficha_id]);
+            partes+='<div class="ts-parte ts-ficha'+(fHecha?' ts-hecha':'')+'">'
+              +'<div class="ts-parte-tit">🖊 Ficha '+esc(tj.ficha.numero)+' de teoría'+(fHecha?' <b class="ts-check">✓</b>':'')+'</div>'
+              +(fHecha
+                ? '<div class="ts-parte-sub">Entregada. ¡Buen trabajo!</div>'
+                : ((fpj.fin_normal)?'<div class="alu-item-plazo" data-fin="'+esc(fpj.fin_normal)+'" data-gracia="'+esc(fpj.fin_gracia||'')+'" style="font-size:11.5px;font-weight:700;font-variant-numeric:tabular-nums"></div>':'')
+                  +'<button class="alu-hacer ts-ficha-go" data-ficha="'+esc(fpj.ficha_id||'')+'" data-n="'+esc(fpj.numero||'')+'" data-nid="'+esc(fN.id)+'">Hacer la ficha →</button>')
+              +'</div>';
+          } else {
+            partes+='<div class="ts-parte ts-ficha"><div class="ts-parte-tit">🖊 Ficha '+esc(tj.ficha.numero)+' de teoría</div>'
+              +'<div class="ts-parte-sub">🕐 Se activa el viernes a las 19:00.</div></div>';
+          }
+        }
+        return '<div class="alu-item alu-item-tareas'+((o.leido||hechaT)?'':' no-leido')+(hechaT?' hecha':'')+'" data-id="'+esc(o.id)+'">'
+          +'<span class="alu-dot"></span>'
+          +'<div class="alu-item-main">'
+          +'<div class="alu-item-tit">📦 Tareas de la semana'+(hechaT?' <span class="alu-hecha-check" aria-label="Hechas">✓</span>':'')+'</div>'
+          +'<div class="alu-item-fecha">'+fecha(o.creado_en)+'</div>'
+          +'<div class="ts-partes">'+partes+'</div>'
+          +'</div></div>';
+      }
+      // FASE 7 · notificación de QUIZ DE RITMO: tarjeta propia con la
+      // estética psicodélica de RITMO at home (blobs amarillo/rosa/verde/azul).
+      if(esQuiz(o)){
+        var qj=o.payload_json, qHecho=esQuizHecho(o);
+        var qAccion=qHecho
+          ? '<span class="alu-hecha-badge">✓ Hecho</span>'
+          : '<button class="alu-quiz-go" data-envio="'+esc(qj.envio_id)+'" data-carta="'+esc(qj.carta||'')+'">▶ Empezar el quiz</button>';
+        return '<div class="alu-item alu-item-quiz'+((o.leido||qHecho)?'':' no-leido')+(qHecho?' hecha':'')+'" data-id="'+esc(o.id)+'">'
+          +'<div class="quiz-blobs" aria-hidden="true"><i class="q1"></i><i class="q2"></i><i class="q3"></i><i class="q4"></i></div>'
+          +'<span class="alu-dot"></span>'
+          +'<div class="alu-item-main"><div class="alu-item-tit">'+esc(o.titulo||'Quiz de ritmo')+(qHecho?' <span class="alu-hecha-check" aria-label="Hecho">✓</span>':'')+'</div>'
+          +'<div class="alu-item-cuerpo">'+esc(qHecho?'Ya lo completaste. ¡Buen trabajo!':(o.cuerpo||''))+'</div>'
+          +'<div class="alu-item-fecha">'+fecha(o.creado_en)+'</div>'
+          +qAccion
+          +'</div></div>';
+      }
+      var fid=(o.payload_json && o.payload_json.ficha_id) ? o.payload_json.ficha_id : '';
+      var pj=o.payload_json||{};
+      var hecha=esHecha(o);
+      var prog=(!hecha && fid && _progresos[fid]) ? _progresos[fid] : null;
+      var progHTML='';
+      if(prog){
+        var pct=Math.max(0,Math.min(100,Math.round(prog.hechos*100/Math.max(1,prog.total))));
+        progHTML='<div class="alu-item-prog"><span class="aip-txt">⏸ Ficha a medias · '+prog.hechos+' de '+prog.total+' ejercicios hechos</span>'
+          +'<span class="aip-bar"><i style="width:'+pct+'%"></i></span></div>';
+      }
+      var cuerpoTxt=hecha ? 'Ya la entregaste. ¡Buen trabajo!' : (o.cuerpo||'');
+      // FASE 8 · TIEMPO EXTRA (para el alumno, sin jerga): mensaje claro + pin rojo
+      var extra=enTiempoExtra(o);
+      if(extra){
+        cuerpoTxt='Te quedaste sin tiempo y has sacado un 0, crack. Para recuperar la puntuación de esta ficha te doy UNA SEMANA MÁS. Si te pasas, ya sí que la liaste.';
+      }
+      var accionHTML='';
+      if(fid){
+        accionHTML=hecha
+          ? '<span class="alu-hecha-badge">✓ Entregada</span>'
+          : '<button class="alu-hacer'+(prog?' alu-continuar':'')+'" data-ficha="'+esc(fid)+'" data-n="'+esc(pj.numero!=null?pj.numero:'')+'" style="margin-top:8px;background:#2dd4bf;color:#062b26;border:0;border-radius:8px;padding:8px 12px;font-weight:700;font-size:13px;cursor:pointer">'+(prog?'Continuar la ficha ('+prog.hechos+'/'+prog.total+') →':'Hacer la ficha →')+'</button>';
+      }
+      return '<div class="alu-item'+((o.leido||hecha)?'':' no-leido')+(fid?' ficha':'')+(hecha?' hecha':'')+(extra?' alu-extra-pin':'')+'" data-id="'+esc(o.id)+'"'+(fid?(' data-ficha="'+esc(fid)+'"'):'')+'>'
+        
+        +(fid?'<div class="neb-mini" aria-hidden="true"><i class="n1"></i><i class="n2"></i><i class="n3"></i></div>':'')
+        +'<span class="alu-dot"></span>'
+        +'<div class="alu-item-main"><div class="alu-item-tit">'+(extra?'<span class="alu-extra-chip">⏰ TIEMPO EXTRA</span> ':'')+esc(o.titulo||'Aviso')+(hecha?' <span class="alu-hecha-check" aria-label="Entregada">✓</span>':'')+'</div>'
+        +(cuerpoTxt?'<div class="alu-item-cuerpo">'+esc(cuerpoTxt)+'</div>':'')
+        +((fid&&pj.fin_normal&&!hecha)?'<div class="alu-item-plazo" data-fin="'+esc(pj.fin_normal)+'" data-gracia="'+esc(pj.fin_gracia||'')+'" style="font-size:12px;font-weight:700;margin-top:4px;font-variant-numeric:tabular-nums"></div>':'')
+        +progHTML
+        +'<div class="alu-item-fecha">'+fecha(o.creado_en)+'</div>'
+        +accionHTML
+        +'</div></div>';
+    }).join('');
+    // FASE 6.9 · las entregadas no leídas se marcan LEÍDAS solas (el alumno
+    // ya cumplió: que el globito rojo no le persiga). Un solo refresco al final.
+    var autoLeer=list.filter(function(o){ return esHecha(o) && !o.leido; });
+    if(autoLeer.length){
+      Promise.all(autoLeer.map(function(o){ return rpc('suite_alumno_marcar_leido',{p_cuenta_id:id,p_notif_id:o.id}); }))
+        .then(function(){ refrescar(); }).catch(function(){});
+    }
+    // FASE 8 · marcar una parte de las tareas ("Ya las estudié" / "Hecho")
+    Array.prototype.forEach.call(body.querySelectorAll('.ts-marcar'),function(b){
+      b.addEventListener('click',async function(ev){
+        ev.stopPropagation();
+        b.disabled=true; b.textContent='Guardando…';
+        await marcarParte(b.getAttribute('data-envio'), b.getAttribute('data-parte'));
+        render();                                   // repinta con la parte en gris
+      });
+    });
+    // FASE 8.3 · chips de lección: con capturas abre el visor de ESA lección;
+    // sin capturas, marca directamente.
+    Array.prototype.forEach.call(body.querySelectorAll('.ts-lec-chip.abre'),function(b){
+      b.addEventListener('click',function(ev){
+        ev.stopPropagation();
+        var imgs=[]; try{ imgs=JSON.parse(b.getAttribute('data-imgs')||'[]'); }catch(e){}
+        abrirVisorLecciones(b.getAttribute('data-envio'), imgs, b.getAttribute('data-parte'), b.getAttribute('data-lbl'));
+      });
+    });
+    Array.prototype.forEach.call(body.querySelectorAll('.ts-lec-chip.marca'),function(b){
+      b.addEventListener('click',async function(ev){
+        ev.stopPropagation();
+        b.disabled=true; b.textContent='Guardando…';
+        await marcarParte(b.getAttribute('data-envio'), b.getAttribute('data-parte'));
+        render();
+      });
+    });
+    // FASE 8.3 · ficha DENTRO del marco: mismo destino que "Hacer la ficha"
+    Array.prototype.forEach.call(body.querySelectorAll('.ts-ficha-go'),function(b){
+      b.addEventListener('click',function(ev){
+        ev.stopPropagation();
+        var fid=b.getAttribute('data-ficha')||'', nnum=b.getAttribute('data-n')||'';
+        var nid=b.getAttribute('data-nid'); var item=b.closest('.alu-item');
+        if(nid) marcar(nid,item);
+        window.location.href='https://iagonaron.github.io/teoriapro/?fichaId='+encodeURIComponent(fid)+'&cuenta='+encodeURIComponent(cuentaId()||'')+(nnum?('&n='+encodeURIComponent(nnum)):'');
+      });
+    });
+    // FASE 7 · "Empezar el quiz": marca leído y abre RITMO at home con la
+    // carta y el envío (mismo origen -> localStorage compartido para el ✓).
+    Array.prototype.forEach.call(body.querySelectorAll('.alu-quiz-go'),function(b){
+      b.addEventListener('click',function(ev){
+        ev.stopPropagation();
+        var envio=b.getAttribute('data-envio')||'';
+        var carta=b.getAttribute('data-carta')||'';
+        var item=b.closest('.alu-item'), nid=item&&item.getAttribute('data-id');
+        if(nid) marcar(nid,item);
+        window.location.href='https://iagonaron.github.io/ritmoathome/?quizCarta='+encodeURIComponent(carta)
+          +'&envio='+encodeURIComponent(envio)+'&cuenta='+encodeURIComponent(cuentaId()||'');
+      });
+    });
+    // "Hacer la ficha": marca leído y abre el player con esa ficha (mismo origen -> el player lee la sesión).
+    Array.prototype.forEach.call(body.querySelectorAll('.alu-hacer'),function(b){
+      b.addEventListener('click',function(ev){
+        ev.stopPropagation();
+        var fid=b.getAttribute('data-ficha');
+        var nnum=b.getAttribute('data-n')||'';
+        var item=b.closest('.alu-item'), nid=item&&item.getAttribute('data-id');
+        if(nid) marcar(nid,item);
+        window.location.href='https://iagonaron.github.io/teoriapro/?fichaId='+encodeURIComponent(fid)+'&cuenta='+encodeURIComponent(cuentaId()||'')+(nnum?('&n='+encodeURIComponent(nnum)):'');
+      });
+    });
+    // Clic en una notificación sin acción: solo marcar leído.
+    Array.prototype.forEach.call(body.querySelectorAll('.alu-item.no-leido'),function(el){
+      el.addEventListener('click',function(){ marcar(el.getAttribute('data-id'),el); });
+    });
+    tickCuentas();
+  }
+  async function marcar(nid,el){
+    var id=cuentaId(); if(!id||!nid) return;
+    var r=await rpc('suite_alumno_marcar_leido',{p_cuenta_id:id,p_notif_id:nid});
+    if(r && r.ok){ if(el) el.classList.remove('no-leido'); refrescar(); }
+  }
+  async function marcarTodo(){
+    var id=cuentaId(); if(!id) return;
+    var r=await rpc('suite_alumno_marcar_todo',{p_cuenta_id:id});
+    if(r && r.ok){ render(); refrescar(); }
+  }
+  function abrir(){ var b=btn(); if(b) b.classList.remove('nuevo'); modalEl().classList.add('open'); render(); if(_cdTimer) clearInterval(_cdTimer); _cdTimer=setInterval(tickCuentas,1000); }
+  function cerrar(){ var m=document.getElementById('alu-modal'); if(m) m.classList.remove('open'); if(_cdTimer){ clearInterval(_cdTimer); _cdTimer=null; } }
+  function injectNebCSS(){
+    if(document.getElementById('neb-portal-css')) return;
+    var s=document.createElement('style'); s.id='neb-portal-css';
+    s.textContent=
+      '.alu-item.ficha{position:relative;overflow:hidden;border:1px solid rgba(169,116,255,.4);background:linear-gradient(160deg,#241a52 0%,#180f3c 45%,#0e0a2c 100%)}'+
+      '.alu-item.ficha .neb-mini{position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none;filter:blur(26px);opacity:.5}'+
+      '.alu-item.ficha .neb-mini i{position:absolute;border-radius:50%;display:block}'+
+      '.alu-item.ficha .neb-mini .n1{width:120px;height:120px;left:-24px;top:-34px;background:#5bd0ff;animation:pnDrift1 21s ease-in-out infinite}'+
+      '.alu-item.ficha .neb-mini .n2{width:110px;height:110px;right:-28px;top:-18px;background:#a974ff;animation:pnDrift2 25s ease-in-out infinite}'+
+      '.alu-item.ficha .neb-mini .n3{width:130px;height:120px;right:12%;bottom:-44px;background:#ff5ccd;animation:pnDrift3 23s ease-in-out infinite}'+
+      '.alu-item.ficha .alu-dot,.alu-item.ficha .alu-item-main{position:relative;z-index:1}'+
+      '.alu-item.ficha .alu-item-tit{color:#f6f3ff}'+
+      '.alu-item.ficha .alu-item-cuerpo{color:#cfc7f5}'+
+      '.alu-item.ficha .alu-item-fecha{color:#9a90c8}'+
+      '.alu-item.ficha .alu-hacer{background:linear-gradient(90deg,#a974ff,#5bd0ff 45%,#ff5ccd)!important;background-size:200% 100%!important;animation:pnSlide 3s linear infinite;color:#12082e!important;box-shadow:0 8px 24px rgba(255,92,205,.38)}'+
+      '@keyframes pnDrift1{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(14px,10px) scale(1.12)}}'+
+      '@keyframes pnDrift2{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-12px,12px) scale(1.1)}}'+
+      '@keyframes pnDrift3{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-10px,-12px) scale(1.14)}}'+
+      '@keyframes pnSlide{to{background-position:200% 0}}'+
+      '.portal-bell.ficha-pendiente{border-color:rgba(169,116,255,.85);background:linear-gradient(135deg,rgba(169,116,255,.16),rgba(91,208,255,.07))}'+
+      '.portal-bell.ficha-pendiente::before,.portal-bell.ficha-pendiente::after{content:"";position:absolute;inset:0;border-radius:11px;border:2px solid rgba(169,116,255,.65);animation:alucamp-onda 2.4s ease-out infinite;pointer-events:none}'+
+      '.portal-bell.ficha-pendiente::after{animation-delay:1.2s}'+
+      '.portal-bell.ficha-pendiente .pb-bell{animation:alucamp-tintineo 2.4s ease-in-out infinite;stroke:#a974ff}'+
+      '.portal-bell-prog{position:absolute;bottom:-10px;left:50%;transform:translateX(-50%);background:linear-gradient(90deg,#a974ff,#5bd0ff 55%,#ff5ccd);background-size:200% 100%;animation:pnSlide 3s linear infinite;color:#12082e;font-size:9.5px;font-weight:800;padding:1px 7px;border-radius:99px;white-space:nowrap;box-shadow:0 2px 10px rgba(169,116,255,.5);line-height:14px;pointer-events:none}'+
+      '.alu-item-prog{margin-top:7px;display:flex;flex-direction:column;gap:5px}'+
+      '.alu-item-prog .aip-txt{font-size:12px;font-weight:800;color:#5bd0ff}'+
+      '.alu-item-prog .aip-bar{display:block;height:7px;border-radius:99px;background:rgba(255,255,255,.12);overflow:hidden}'+
+      '.alu-item-prog .aip-bar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#a974ff,#5bd0ff 55%,#ff5ccd);background-size:200% 100%;animation:pnSlide 3s linear infinite}'+
+      // FASE 6.9 · ficha ENTREGADA: tarjeta gris desaturada + ✓ verde
+      '.alu-item.ficha.hecha{border-color:rgba(148,163,184,.30);background:linear-gradient(160deg,#1b2036 0%,#151a2b 55%,#101423 100%);opacity:.82}'+
+      '.alu-item.ficha.hecha .neb-mini{opacity:.10;filter:blur(26px) grayscale(1)}'+
+      '.alu-item.ficha.hecha .neb-mini i{animation:none!important}'+
+      '.alu-item.ficha.hecha .alu-item-tit{color:#aab2cc}'+
+      '.alu-item.ficha.hecha .alu-item-cuerpo{color:#7d86a6}'+
+      '.alu-item.ficha.hecha .alu-item-fecha{color:#5e6a98}'+
+      '.alu-item.ficha.hecha .alu-dot{visibility:hidden}'+
+      '.alu-hecha-check{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;margin-left:6px;border-radius:50%;background:#22c98a;color:#062b26;font-size:12px;font-weight:900;vertical-align:middle}'+
+      '.alu-hecha-badge{display:inline-flex;align-items:center;gap:7px;margin-top:8px;font-size:13px;font-weight:800;color:#22c98a;background:rgba(34,201,138,.10);border:1px solid rgba(34,201,138,.45);border-radius:8px;padding:7px 12px}'+
+      // FASE 8 · tarjeta "Tareas de la semana" + pin de TIEMPO EXTRA
+      '.alu-item.alu-item-tareas{border:2px solid rgba(255,214,120,.65);border-radius:16px;margin:10px 0;padding:12px 14px;background:linear-gradient(165deg,rgba(255,214,120,.12),rgba(24,15,60,.7) 45%,rgba(8,5,24,.85));box-shadow:0 10px 34px rgba(0,0,0,.35),inset 0 0 0 1px rgba(255,214,120,.12)}'+'.alu-item.alu-item-tareas .alu-item-tit{font-size:15px;letter-spacing:.02em}'+'.ts-lec-chips{display:flex;gap:6px;flex-wrap:wrap}'+'.ts-lec-chip{font:800 12px \'Helvetica Neue\',Arial,sans-serif;border-radius:999px;padding:6px 12px;cursor:pointer;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#e8e4ff}'+'.ts-lec-chip.abre{border-color:rgba(52,211,153,.6);background:linear-gradient(90deg,rgba(255,214,120,.16),rgba(52,211,153,.16));color:#d9ffef}'+'.ts-lec-chip.hecha{cursor:default;border-color:rgba(62,233,166,.5);background:rgba(62,233,166,.1);color:#7ef0c0;filter:none}'+'.ts-lec-chip.abre.hecha{cursor:pointer}'+'.ts-lec-chip.abre.hecha:hover{background:rgba(62,233,166,.18)}'+'.ts-parte.ts-hecha .ts-lec-chip.abre.hecha{pointer-events:auto}'+
+      '.alu-item-tareas .alu-item-tit{color:#ffe4a8}'+
+      '.ts-partes{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:8px;margin-top:8px}'+'.ts-parte{padding:9px 11px;border-radius:11px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.045);display:flex;flex-direction:column;gap:5px}'+'.ts-parte .ts-marcar,.ts-parte .alu-quiz-go,.ts-parte .ts-ver-lecciones{margin-top:auto;align-self:flex-start}'+
+      '.ts-parte-tit{font-size:12.5px;font-weight:800;color:#f1ecff}'+
+      '.ts-parte-tit b{color:#ffd678}'+
+      '.ts-parte-sub{font-size:11.5px;color:#b9b0dd;white-space:pre-wrap;max-height:64px;overflow:auto}'+
+      '.ts-check{color:#7ef0c0}'+
+      '.ts-parte.ts-hecha{filter:grayscale(1);opacity:.55}'+
+      '.ts-marcar,.ts-ver-lecciones{margin-top:8px;border:0;border-radius:8px;padding:8px 13px;font-weight:800;font-size:12.5px;cursor:pointer}'+
+      '.ts-ver-lecciones{color:#08301f;background:linear-gradient(90deg,#ffd678,#34d399 55%,#5bd0ff);box-shadow:0 6px 20px rgba(52,211,153,.3)}'+
+      '.ts-marcar{color:#e8e4ff;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.25)}'+
+      '.ts-marcar:hover{background:rgba(255,255,255,.16)}'+
+      '.alu-item-tareas.hecha{opacity:.72;border-color:rgba(148,163,184,.3)}'+
+      '.alu-item.alu-extra-pin{border:1px solid #ff2d6a;border-radius:12px;margin:8px 0;padding:10px 12px;box-shadow:0 0 0 1px rgba(255,45,106,.45),0 8px 26px rgba(255,45,106,.25);animation:pinLatido 1.5s ease-in-out infinite;background:linear-gradient(100deg,#4a0d24 0%,#2e0817 55%,#1a0510 100%)!important;align-items:center}'+'.alu-item.alu-extra-pin .alu-item-main{display:flex;flex-wrap:wrap;align-items:center;gap:4px 14px}'+'.alu-item.alu-extra-pin .alu-item-tit{flex:0 0 auto}'+'.alu-item.alu-extra-pin .alu-item-cuerpo{flex:1 1 260px;font-size:12px;line-height:1.4;margin:0}'+'.alu-item.alu-extra-pin .alu-item-plazo{flex:0 0 auto;margin:0!important}'+'.alu-item.alu-extra-pin .alu-item-fecha{display:none}'+'.alu-item.alu-extra-pin .alu-hacer{flex:0 0 auto;margin:0}'+'.alu-item.alu-extra-pin .neb-mini{display:none}'+'.alu-item.alu-extra-pin .alu-item-cuerpo{color:#ffd6e2;font-weight:700}'+
+      '.alu-extra-chip{font-size:10.5px;font-weight:900;letter-spacing:.1em;color:#fff;background:linear-gradient(90deg,#ff2d6a,#ff6a3c);border-radius:7px;padding:3px 8px;vertical-align:1px;animation:pinLatido 1.5s ease-in-out infinite;display:inline-block}'+
+      '@keyframes pinLatido{0%,100%{opacity:1}50%{opacity:.55}}'+
+      '@media (prefers-reduced-motion:reduce){.alu-item.alu-extra-pin,.alu-extra-chip{animation:none!important}}'+
+      // FASE 7 · notificación de QUIZ DE RITMO: piel psicodélica de RITMO at
+      // home (fondo azul noche + blobs amarillo/rosa/verde/azul en deriva).
+      '.alu-item.alu-item-quiz{position:relative;overflow:hidden;border:1px solid rgba(52,211,153,.45);background:linear-gradient(160deg,#241a52 0%,#180f3c 38%,#0e0a2c 72%,#080518 100%)}'+
+      '.alu-item-quiz .quiz-blobs{position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none;filter:blur(24px);opacity:.55}'+
+      '.alu-item-quiz .quiz-blobs i{position:absolute;border-radius:50%;display:block}'+
+      '.alu-item-quiz .quiz-blobs .q1{width:120px;height:110px;left:-26px;top:-36px;background:#34d399;animation:pnDrift1 19s ease-in-out infinite}'+
+      '.alu-item-quiz .quiz-blobs .q2{width:110px;height:100px;right:-24px;top:-20px;background:#5bd0ff;animation:pnDrift2 23s ease-in-out infinite}'+
+      '.alu-item-quiz .quiz-blobs .q3{width:130px;height:120px;right:18%;bottom:-46px;background:#ff5ccd;animation:pnDrift3 21s ease-in-out infinite}'+
+      '.alu-item-quiz .quiz-blobs .q4{width:100px;height:96px;left:22%;bottom:-40px;background:#ff9a3c;animation:pnDrift1 25s ease-in-out infinite}'+
+      '.alu-item-quiz .alu-dot,.alu-item-quiz .alu-item-main{position:relative;z-index:1}'+
+      '.alu-item-quiz .alu-item-tit{color:#f6f3ff}'+
+      '.alu-item-quiz .alu-item-cuerpo{color:#cfc7f5}'+
+      '.alu-item-quiz .alu-item-fecha{color:#9a90c8}'+
+      '.alu-quiz-go{margin-top:8px;border:0;border-radius:8px;padding:8px 14px;font-weight:800;font-size:13px;cursor:pointer;color:#08301f;background:linear-gradient(90deg,#ffd678,#34d399 40%,#5bd0ff 75%,#ff5ccd);background-size:200% 100%;animation:pnSlide 3s linear infinite;box-shadow:0 8px 24px rgba(52,211,153,.35)}'+
+      '.alu-item-quiz.hecha{border-color:rgba(148,163,184,.30);background:linear-gradient(160deg,#1b2036 0%,#151a2b 55%,#101423 100%);opacity:.82}'+
+      '.alu-item-quiz.hecha .quiz-blobs{opacity:.10;filter:blur(24px) grayscale(1)}'+
+      '.alu-item-quiz.hecha .quiz-blobs i{animation:none!important}'+
+      '.alu-item-quiz.hecha .alu-item-tit{color:#aab2cc}'+
+      '.alu-item-quiz.hecha .alu-item-cuerpo{color:#7d86a6}'+
+      '.alu-item-quiz.hecha .alu-dot{visibility:hidden}'+
+      '@media (prefers-reduced-motion:reduce){.alu-item.ficha .neb-mini i,.alu-item.ficha .alu-hacer,.alu-item-quiz .quiz-blobs i,.alu-quiz-go{animation:none!important}.portal-bell.ficha-pendiente::before,.portal-bell.ficha-pendiente::after,.portal-bell.ficha-pendiente .pb-bell,.portal-bell-prog,.alu-item-prog .aip-bar i{animation:none!important}}';
+    document.head.appendChild(s);
+  }
+  function start(){
+    injectNebCSS();
+    refrescar();
+    if(_timer) clearInterval(_timer);
+    _timer=setInterval(refrescar,POLL);
+    document.addEventListener('visibilitychange',function(){ if(!document.hidden) refrescar(); });
+    window.addEventListener('focus',refrescar);
+    document.addEventListener('keydown',function(e){ if(e.key==='Escape') cerrar(); });
+  }
+  window.AluCampana={ abrir:abrir, cerrar:cerrar, refrescar:refrescar };
+  if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded',start); } else { start(); }
+})();
+
+</script>
+<script>
+/* ============================================================================
+   FASE 6.8 · "MIS RESULTADOS" — réplica de la ficha del alumno del Diario,
+   con estética Suite (nebulosa azul/morada) y colores canon por apartado:
+   Ritmo #22c55e · Entonación #4a9eff · Audición #f97316 · Teoría #ec4899.
+
+   Datos: RPC suite_mis_resultados(p_cuenta_id) — SECURITY DEFINER, resuelve
+   cuenta→alumno_canon y devuelve SUS evaluaciones (SQL: suite_mis_resultados.sql).
+   La "nota de clase actual" usa la MISMA fórmula fuente-única que el Diario
+   PC/iPhone: media simple de sesiones (eval_tipo='sesion', nota!=null,
+   !sin_evaluar). Las medias por apartado/trimestre son orientativas.
+   Gráficas en SVG vanilla (sin librerías): evolución por apartado + radar.
+   ============================================================================ */
+(function(){
+  'use strict';
+  var SB_URL='https://woiptkyrxkbpnvioypit.supabase.co';
+  var SB_ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndvaXB0a3lyeGticG52aW95cGl0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0NzI2ODYsImV4cCI6MjA5MjA0ODY4Nn0.B2nKgj5rD0rkdLeMIrd9KgD8lUPWsBT4Y7aCtmnvbjA';
+  var _cli=null;
+  function cli(){ if(!_cli && window.supabase){ _cli=window.supabase.createClient(SB_URL,SB_ANON); } return _cli; }
+  function ses(){ try{ return JSON.parse(localStorage.getItem('lmpro_session')||'null'); }catch(e){ return null; } }
+  function cuentaId(){ var s=ses(); return (s && s.id && s.estado==='validado') ? s.id : null; }
+  function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+
+  /* ---- colores CANON de los apartados (idénticos al Diario) ---- */
+  var APARTADOS={
+    ritmo:      { label:'Ritmo',      color:'#22c55e' },
+    entonacion: { label:'Entonación', color:'#4a9eff' },
+    audicion:   { label:'Audición',   color:'#f97316' },
+    teoria:     { label:'Teoría',     color:'#ec4899' }
+  };
+  var ORDEN_AP=['ritmo','entonacion','audicion','teoria'];
+  /* app_origen → apartado (mismo mapeo que evaluaciones-reader del Diario) */
+  var MAP_APP={
+    dictados_elemental:'audicion', dictados_profesional:'audicion',
+    entonacion:'entonacion', fichas:'teoria', ritmo_elemental:'ritmo'
+  };
+
+  var _st={ rows:null, alumno:null, trim:null, cargado:false };
+
+  /* ================= derivaciones de datos ================= */
+  function apartadoDe(e){
+    var ap=(e && e.apartado_override) || MAP_APP[e && e.app_origen] || null;
+    return APARTADOS[ap] ? ap : null;
+  }
+  // Sesiones normalizadas {ap, fecha, trim, leccion, nota}, orden cronológico.
+  // Incluye nota_secundaria si su etiqueta mapea a un apartado GE.
+  function sesiones(){
+    var out=[];
+    (_st.rows||[]).forEach(function(e){
+      if(((e.eval_tipo)||'sesion')!=='sesion') return;
+      if(e.sin_evaluar) return;
+      var ap=apartadoDe(e);
+      if(ap && e.nota_final!=null && isFinite(Number(e.nota_final))){
+        out.push({ ap:ap, fecha:e.fecha||null, trim:e.trimestre||null, leccion:e.leccion, nota:Number(e.nota_final) });
+      }
+      if(e.nota_secundaria!=null && e.etiqueta_nota_secundaria && APARTADOS[e.etiqueta_nota_secundaria]
+         && isFinite(Number(e.nota_secundaria))){
+        out.push({ ap:e.etiqueta_nota_secundaria, fecha:e.fecha||null, trim:e.trimestre||null, leccion:e.leccion, nota:Number(e.nota_secundaria) });
+      }
+    });
+    out.sort(function(a,b){ return String(a.fecha||'').localeCompare(String(b.fecha||'')); });
+    return out;
+  }
+  function examenes(){
+    var out={ '1T':{}, '2T':{}, '3T':{}, extraordinaria:{} };
+    (_st.rows||[]).forEach(function(e){
+      var t=null;
+      if(e.eval_tipo==='examen_1T') t='1T';
+      else if(e.eval_tipo==='examen_2T') t='2T';
+      else if(e.eval_tipo==='examen_3T') t='3T';
+      else if(e.eval_tipo==='extraordinaria') t='extraordinaria';
+      if(!t) return;
+      var ap=apartadoDe(e);
+      if(ap && e.nota_final!=null && isFinite(Number(e.nota_final))) out[t][ap]=Number(e.nota_final);
+      if(e.nota_secundaria!=null && e.etiqueta_nota_secundaria && APARTADOS[e.etiqueta_nota_secundaria]
+         && isFinite(Number(e.nota_secundaria))) out[t][e.etiqueta_nota_secundaria]=Number(e.nota_secundaria);
+    });
+    return out;
+  }
+  function media(list){ if(!list||!list.length) return null; var s=0; for(var i=0;i<list.length;i++) s+=list[i].nota; return s/list.length; }
+  function mediasPorAp(ss, trim){
+    var out={};
+    ORDEN_AP.forEach(function(ap){
+      var l=ss.filter(function(x){ return x.ap===ap && (!trim || x.trim===trim); });
+      out[ap]={ media:media(l), n:l.length };
+    });
+    return out;
+  }
+  function trimsConDatos(ss){
+    var t=[]; ['1T','2T','3T'].forEach(function(x){ if(ss.some(function(s){ return s.trim===x; })) t.push(x); });
+    return t;
+  }
+  function colorNota(n){ return n==null?'#8f87b8':(n<5?'#ff8fa8':(n<7?'#ffd166':'#7ef0c0')); }
+  function fmt(n){ return n==null?'—':n.toFixed(2); }
+  function fFecha(iso){ if(!iso) return ''; var d=new Date(iso+(String(iso).length===10?'T00:00:00':'')); if(isNaN(d)) return String(iso).slice(0,10); return ('0'+d.getDate()).slice(-2)+'/'+('0'+(d.getMonth()+1)).slice(-2); }
+  function iniciales(nom,ape){ var a=(nom||' ')[0]||'', b=(ape||' ')[0]||''; return (a+b).toUpperCase()||'??'; }
+
+  /* ================= SVG · evolución por apartado ================= */
+  function svgEvolucion(ss){
+    var pts=ss.filter(function(x){ return x.fecha && isFinite(Date.parse(x.fecha)); });
+    if(pts.length<2) return '<div class="mr-vacio">Aún no hay sesiones suficientes para dibujar tu evolución.</div>';
+    var W=760,H=280,L=36,R=14,T=16,B=30;
+    var ts=pts.map(function(x){ return Date.parse(x.fecha); });
+    var mn=Math.min.apply(null,ts), mx=Math.max.apply(null,ts);
+    if(mn===mx){ mn-=86400000; mx+=86400000; }
+    function X(t){ return L+((t-mn)/(mx-mn))*(W-L-R); }
+    function Y(n){ return T+(1-Math.max(0,Math.min(10,n))/10)*(H-T-B); }
+    var s='<svg class="mr-svg" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Evolución de tus notas de clase">';
+    [0,2.5,5,7.5,10].forEach(function(v){
+      var y=Y(v);
+      s+='<line x1="'+L+'" y1="'+y+'" x2="'+(W-R)+'" y2="'+y+'" stroke="#ffffff17" stroke-width="1"'+(v===5?' stroke-dasharray="4 4" stroke="#ffffff33"':'')+'/>';
+      s+='<text x="'+(L-7)+'" y="'+(y+4)+'" text-anchor="end" font-size="10.5" fill="#8f87b8">'+v+'</text>';
+    });
+    // marcas de meses en el eje X
+    var d0=new Date(mn); d0.setDate(1); d0.setHours(0,0,0,0);
+    var MESES=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+    for(var d=new Date(d0); d.getTime()<=mx; d.setMonth(d.getMonth()+1)){
+      var t=d.getTime(); if(t<mn) continue;
+      s+='<text x="'+X(t)+'" y="'+(H-9)+'" text-anchor="middle" font-size="10" fill="#8f87b8">'+MESES[d.getMonth()]+'</text>';
+    }
+    ORDEN_AP.forEach(function(ap){
+      var l=pts.filter(function(x){ return x.ap===ap; });
+      if(!l.length) return;
+      var col=APARTADOS[ap].color;
+      var path=l.map(function(x,i){ return (i?'L':'M')+X(Date.parse(x.fecha)).toFixed(1)+' '+Y(x.nota).toFixed(1); }).join(' ');
+      if(l.length>1) s+='<path d="'+path+'" fill="none" stroke="'+col+'" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round" opacity=".92"/>';
+      l.forEach(function(x){
+        s+='<circle cx="'+X(Date.parse(x.fecha)).toFixed(1)+'" cy="'+Y(x.nota).toFixed(1)+'" r="4" fill="'+col+'" stroke="#0e0a2c" stroke-width="1.6">'
+          +'<title>'+esc(APARTADOS[ap].label)+' · '+esc(x.leccion!=null?String(x.leccion):'')+' · '+fFecha(x.fecha)+' · '+fmt(x.nota)+'</title></circle>';
+      });
+    });
+    s+='</svg>';
+    return s;
+  }
+
+  /* ================= SVG · radar (4 ejes canon) ================= */
+  function svgRadar(mediasCurso){
+    var S=300, c=S/2, Rr=104;
+    var ejes=[ {ap:'ritmo',dx:0,dy:-1,anch:'middle',ax:0,ay:-14},
+               {ap:'entonacion',dx:1,dy:0,anch:'start',ax:12,ay:4},
+               {ap:'audicion',dx:0,dy:1,anch:'middle',ax:0,ay:20},
+               {ap:'teoria',dx:-1,dy:0,anch:'end',ax:-12,ay:4} ];
+    function P(dx,dy,val){ var r=Rr*Math.max(0,Math.min(10,val))/10; return (c+dx*r).toFixed(1)+','+(c+dy*r).toFixed(1); }
+    var s='<svg class="mr-svg mr-radar" viewBox="0 0 '+S+' '+S+'" role="img" aria-label="Radar de medias por apartado">';
+    [2.5,5,7.5,10].forEach(function(v){
+      s+='<polygon points="'+ejes.map(function(e){ return P(e.dx,e.dy,v); }).join(' ')+'" fill="none" stroke="#ffffff1d" stroke-width="1"'+(v===5?' stroke-dasharray="4 4"':'')+'/>';
+    });
+    ejes.forEach(function(e){ s+='<line x1="'+c+'" y1="'+c+'" x2="'+P(e.dx,e.dy,10).split(',')[0]+'" y2="'+P(e.dx,e.dy,10).split(',')[1]+'" stroke="#ffffff14"/>'; });
+    var tiene=ejes.some(function(e){ return mediasCurso[e.ap] && mediasCurso[e.ap].media!=null; });
+    if(tiene){
+      var poly=ejes.map(function(e){ var m=mediasCurso[e.ap]; return P(e.dx,e.dy,(m&&m.media!=null)?m.media:0); }).join(' ');
+      s+='<polygon points="'+poly+'" fill="rgba(169,116,255,.26)" stroke="#a974ff" stroke-width="2"/>';
+      ejes.forEach(function(e){
+        var m=mediasCurso[e.ap]; if(!m||m.media==null) return;
+        var p=P(e.dx,e.dy,m.media).split(',');
+        s+='<circle cx="'+p[0]+'" cy="'+p[1]+'" r="4.5" fill="'+APARTADOS[e.ap].color+'" stroke="#0e0a2c" stroke-width="1.6"><title>'+esc(APARTADOS[e.ap].label)+' · '+fmt(m.media)+'</title></circle>';
+      });
+    }
+    ejes.forEach(function(e){
+      var end=P(e.dx,e.dy,10).split(',');
+      var m=mediasCurso[e.ap];
+      s+='<text x="'+(parseFloat(end[0])+e.ax)+'" y="'+(parseFloat(end[1])+e.ay)+'" text-anchor="'+e.anch+'" font-size="11.5" font-weight="800" fill="'+APARTADOS[e.ap].color+'">'+esc(APARTADOS[e.ap].label)+(m&&m.media!=null?' · '+fmt(m.media):'')+'</text>';
+    });
+    s+='</svg>';
+    return s;
+  }
+
+  /* ================= render ================= */
+  function overlayEl(){
+    var ov=document.getElementById('mr-overlay'); if(ov) return ov;
+    ov=document.createElement('div'); ov.id='mr-overlay'; ov.className='mr-overlay';
+    ov.innerHTML='<div class="neb-bg" aria-hidden="true"><span class="mrneb b1"></span><span class="mrneb b2"></span><span class="mrneb b3"></span></div>'
+      +'<div class="mr-top"><button type="button" class="mr-volver" id="mr-volver">← Volver al portal</button>'
+      +'<div class="mr-titulo">📊 Mis resultados</div><div class="mr-top-hueco"></div></div>'
+      +'<div class="mr-scroll" id="mr-body"></div>';
+    document.body.appendChild(ov);
+    ov.querySelector('#mr-volver').addEventListener('click',cerrar);
+    document.addEventListener('keydown',function(e){ if(e.key==='Escape' && ov.classList.contains('open')) cerrar(); });
+    return ov;
+  }
+  function cerrar(){ var ov=document.getElementById('mr-overlay'); if(ov) ov.classList.remove('open'); document.documentElement.classList.remove('mr-bloqueo'); }
+
+  function tarjetasApartados(ss){
+    var m=mediasPorAp(ss,_st.trim);
+    return '<div class="mr-aps">'+ORDEN_AP.map(function(ap){
+      var d=m[ap], col=APARTADOS[ap].color;
+      return '<div class="mr-ap" style="--apc:'+col+'">'
+        +'<div class="mr-ap-nombre">'+esc(APARTADOS[ap].label)+'</div>'
+        +'<div class="mr-ap-nota" style="color:'+colorNota(d.media)+'">'+fmt(d.media)+'</div>'
+        +'<div class="mr-ap-n">'+(d.n?(d.n+' sesión'+(d.n===1?'':'es')):'sin sesiones')+'</div>'
+      +'</div>';
+    }).join('')+'</div>';
+  }
+  function bloqueTendencia(ss){
+    function mTrim(t){ var l=ss.filter(function(x){ return x.trim===t; }); return media(l); }
+    var n1=mTrim('1T'),n2=mTrim('2T'),n3=mTrim('3T');
+    var N=function(v){ return (v!=null&&isFinite(v))?+v.toFixed(2):null; };
+    n1=N(n1); n2=N(n2); n3=N(n3);
+    var dif=null, ref=null;
+    if(n3!=null&&n2!=null){ dif=+(n3-n2).toFixed(2); ref='2T'; }
+    else if(n2!=null&&n1!=null){ dif=+(n2-n1).toFixed(2); ref='1T'; }
+    if(dif==null) return '';
+    var txt,cls;
+    if(dif>=0.7){ txt='⬆ Mejora notable'; cls='ok'; }
+    else if(dif>=0.2){ txt='↗ Vas mejorando'; cls='ok'; }
+    else if(dif<=-0.7){ txt='⬇ Bajada'; cls='mal'; }
+    else if(dif<=-0.2){ txt='↘ Vas bajando'; cls='mal'; }
+    else { txt='→ Estable'; cls='flat'; }
+    return '<div class="mr-card mr-tend"><div class="mr-card-tit">Tendencia de tu trabajo de clase</div>'
+      +'<div class="mr-tend-txt '+cls+'">'+txt+' <span class="mr-dim">vs '+ref+' · '+(dif>0?'+':'')+dif.toFixed(2)+' puntos</span></div></div>';
+  }
+  function bloqueExamenes(){
+    var ex=examenes();
+    var trims=['1T','2T','3T'].filter(function(t){ return Object.keys(ex[t]).length; });
+    var hayExtra=Object.keys(ex.extraordinaria).length>0;
+    if(!trims.length && !hayExtra) return '';
+    var filas=trims.concat(hayExtra?['extraordinaria']:[]);
+    var h='<div class="mr-card"><div class="mr-card-tit">Exámenes</div><div class="mr-ex-tabla"><table><thead><tr><th></th>'
+      +ORDEN_AP.map(function(ap){ return '<th style="color:'+APARTADOS[ap].color+'">'+esc(APARTADOS[ap].label)+'</th>'; }).join('')
+      +'</tr></thead><tbody>';
+    filas.forEach(function(t){
+      h+='<tr><td class="mr-ex-trim">'+(t==='extraordinaria'?'Extraord.':t)+'</td>'
+        +ORDEN_AP.map(function(ap){ var n=ex[t][ap]; return '<td style="color:'+colorNota(n!=null?n:null)+'">'+(n!=null?fmt(n):'—')+'</td>'; }).join('')
+        +'</tr>';
+    });
+    h+='</tbody></table></div></div>';
+    return h;
+  }
+  function bloqueUltimas(ss){
+    if(!ss.length) return '';
+    var ult=ss.slice(-10).reverse();
+    return '<div class="mr-card"><div class="mr-card-tit">Tus últimas notas de clase</div><div class="mr-ult">'
+      +ult.map(function(x){
+        return '<div class="mr-ult-fila"><span class="mr-chip" style="--apc:'+APARTADOS[x.ap].color+'">'+esc(APARTADOS[x.ap].label)+'</span>'
+          +'<span class="mr-ult-lec">'+esc(x.leccion!=null&&String(x.leccion).trim()?String(x.leccion):'Sesión')+'</span>'
+          +'<span class="mr-ult-fecha">'+fFecha(x.fecha)+'</span>'
+          +'<span class="mr-ult-nota" style="color:'+colorNota(x.nota)+'">'+fmt(x.nota)+'</span></div>';
+      }).join('')+'</div></div>';
+  }
+
+  function render(){
+    var body=document.getElementById('mr-body'); if(!body) return;
+    var ss=sesiones();
+    var al=_st.alumno||{};
+    var nombre=((al.nombre||'')+' '+(al.apellidos||'')).trim()||'Alumno/a';
+    var trims=trimsConDatos(ss);
+    if(!_st.trim || trims.indexOf(_st.trim)===-1) _st.trim=trims.length?trims[trims.length-1]:'1T';
+    var notaClase=media(ss);   // fuente única: media simple de TODAS las sesiones
+    var fechaTxt=new Date().toLocaleDateString('es-ES',{day:'numeric',month:'long',year:'numeric'});
+    var chips=(trims.length?trims:['1T']).map(function(t){
+      return '<button type="button" class="mr-chip-trim'+(t===_st.trim?' on':'')+'" data-trim="'+t+'">'+t+'</button>';
+    }).join('');
+
+    body.innerHTML=
+      '<div class="mr-hero mr-card">'
+        +'<div class="mr-avatar">'+esc(iniciales(al.nombre,al.apellidos))+'</div>'
+        +'<div class="mr-hero-info"><div class="mr-hero-nombre">'+esc(nombre)+'</div>'
+        +'<div class="mr-hero-sub">'+esc(al.grupo||'')+(al.grupo?' · ':'')+'Lenguaje Musical · curso 2025/26</div></div>'
+        +'<div class="mr-notaclase"><div class="mr-nc-lbl">Tu nota de clase actual</div>'
+        +'<div class="mr-nc-num" style="color:'+colorNota(notaClase)+'">'+fmt(notaClase)+'</div>'
+        +'<div class="mr-nc-fecha">a día '+esc(fechaTxt)+'</div></div>'
+      +'</div>'
+      +(ss.length
+        ? '<div class="mr-card"><div class="mr-card-tit-row"><div class="mr-card-tit">Tus medias de clase</div><div class="mr-trims">'+chips+'</div></div>'
+          +tarjetasApartados(ss)+'</div>'
+          +bloqueTendencia(ss)
+          +bloqueExamenes()
+          +'<div class="mr-dos">'
+            +'<div class="mr-card"><div class="mr-card-tit">Tu evolución durante el curso</div>'+svgEvolucion(ss)
+            +'<div class="mr-leyenda">'+ORDEN_AP.map(function(ap){ return '<span class="mr-chip" style="--apc:'+APARTADOS[ap].color+'">'+esc(APARTADOS[ap].label)+'</span>'; }).join('')+'</div></div>'
+            +'<div class="mr-card mr-card-radar"><div class="mr-card-tit">Tu radar del curso</div>'+svgRadar(mediasPorAp(ss,null))+'</div>'
+          +'</div>'
+          +bloqueUltimas(ss)
+        : '<div class="mr-card"><div class="mr-vacio">Todavía no hay notas registradas en tu cuenta. En cuanto entregues fichas y hagas ejercicios de la Suite, tus resultados aparecerán aquí. ✨</div></div>')
+      +'<div class="mr-nota-pie">Las medias de esta pantalla son orientativas (media simple de tus sesiones). La calificación oficial de cada evaluación es la del boletín.</div>';
+
+    Array.prototype.forEach.call(body.querySelectorAll('.mr-chip-trim'),function(b){
+      b.addEventListener('click',function(){ _st.trim=b.getAttribute('data-trim'); render(); });
+    });
+    body.scrollTop=0;
+  }
+
+  async function abrir(){
+    var id=cuentaId();
+    var ov=overlayEl();
+    ov.classList.add('open');
+    document.documentElement.classList.add('mr-bloqueo');
+    var body=document.getElementById('mr-body');
+    if(!id){ body.innerHTML='<div class="mr-card"><div class="mr-vacio">Inicia sesión con tu cuenta validada para ver tus resultados.</div></div>'; return; }
+    // Con caché: pinta al instante y refresca en silencio. Sin caché: spinner.
+    var teniaCache=(_st.cargado && _st.rows);
+    if(teniaCache){ render(); }
+    else { body.innerHTML='<div class="mr-cargando"><div class="mr-spin"></div>Cargando tus resultados…</div>'; }
+    var c=cli();
+    if(!c){ if(!teniaCache) body.innerHTML='<div class="mr-card"><div class="mr-vacio">No pude conectar. Revisa tu conexión e inténtalo de nuevo.</div></div>'; return; }
+    try{
+      var r=await c.rpc('suite_mis_resultados',{ p_cuenta_id:id });
+      if(r.error) throw new Error(r.error.message);
+      var d=r.data;
+      if(!d || d.ok!==true){
+        var cod=(d&&d.error)||'error';
+        var mapa={ no_validado:'Tu cuenta aún no está validada por Iago; en cuanto lo esté, verás aquí tus resultados.',
+                   cuenta_no_encontrada:'No encuentro tu cuenta. Cierra sesión y vuelve a entrar.' };
+        if(!teniaCache) body.innerHTML='<div class="mr-card"><div class="mr-vacio">'+esc(mapa[cod]||('No se pudieron cargar los resultados ('+cod+').'))+'</div></div>';
+        return;
+      }
+      _st.rows=Array.isArray(d.evaluaciones)?d.evaluaciones:[];
+      _st.alumno=d.alumno||{};
+      _st.cargado=true;
+      render();
+    }catch(e){
+      console.warn('[mis-resultados]',e);
+      if(!teniaCache) body.innerHTML='<div class="mr-card"><div class="mr-vacio">No se pudieron cargar los resultados ('+esc((e&&e.message)||e)+'). Si acaba de crearse, puede que falte ejecutar el SQL suite_mis_resultados.</div></div>';
+    }
+  }
+
+  /* ---- CSS del overlay (inyectado, estética Suite) ---- */
+  function css(){
+    if(document.getElementById('mr-css')) return;
+    var s=document.createElement('style'); s.id='mr-css';
+    s.textContent=
+      'html.mr-bloqueo,html.mr-bloqueo body{overflow:hidden}'
+      +'.mr-overlay{position:fixed;inset:0;z-index:99998;display:none;flex-direction:column;background:linear-gradient(160deg,#241a52 0%,#180f3c 38%,#0e0a2c 72%,#080518 100%);color:#f6f3ff;font-family:inherit}'
+      +'.mr-overlay.open{display:flex}'
+      +'.mr-overlay .neb-bg{position:absolute;inset:0;overflow:hidden;pointer-events:none;filter:blur(60px);opacity:.5}'
+      +'.mrneb{position:absolute;border-radius:50%;display:block}'
+      +'.mrneb.b1{width:44vw;height:44vw;left:-10vw;top:-12vw;background:#5bd0ff;opacity:.35;animation:mrDrift1 24s ease-in-out infinite}'
+      +'.mrneb.b2{width:40vw;height:40vw;right:-12vw;top:8vh;background:#a974ff;opacity:.4;animation:mrDrift2 28s ease-in-out infinite}'
+      +'.mrneb.b3{width:46vw;height:42vw;left:22vw;bottom:-18vw;background:#ff5ccd;opacity:.3;animation:mrDrift3 26s ease-in-out infinite}'
+      +'@keyframes mrDrift1{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(4vw,3vh) scale(1.1)}}'
+      +'@keyframes mrDrift2{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-3vw,4vh) scale(1.08)}}'
+      +'@keyframes mrDrift3{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-3vw,-3vh) scale(1.12)}}'
+      +'.mr-top{position:relative;z-index:2;display:flex;align-items:center;gap:14px;padding:14px 22px}'
+      +'.mr-volver{background:rgba(255,255,255,.06);border:1px solid #ffffff33;color:#fff;border-radius:10px;padding:8px 14px;cursor:pointer;font-weight:700;font-size:13.5px;backdrop-filter:blur(4px);font-family:inherit}'
+      +'.mr-volver:hover{background:rgba(255,255,255,.12)}'
+      +'.mr-titulo{flex:1;text-align:center;font-size:16px;font-weight:900;letter-spacing:.02em}'
+      +'.mr-top-hueco{width:132px}'
+      +'.mr-scroll{position:relative;z-index:2;flex:1;overflow:auto;padding:8px 20px 34px;display:flex;flex-direction:column;gap:14px;max-width:860px;width:100%;margin:0 auto;box-sizing:border-box}'
+      +'.mr-card{background:rgba(255,255,255,.055);border:1px solid #ffffff22;border-radius:18px;padding:18px 20px;backdrop-filter:blur(6px)}'
+      +'.mr-card-tit{font-size:13px;font-weight:900;text-transform:uppercase;letter-spacing:.06em;color:#c7bff0;margin-bottom:12px}'
+      +'.mr-card-tit-row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}'
+      +'.mr-hero{display:flex;align-items:center;gap:16px;flex-wrap:wrap}'
+      +'.mr-avatar{width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:900;color:#12082e;background:linear-gradient(135deg,#a974ff,#5bd0ff 55%,#ff5ccd);box-shadow:0 10px 26px rgba(169,116,255,.4);flex:0 0 auto}'
+      +'.mr-hero-info{flex:1 1 auto;min-width:180px}'
+      +'.mr-hero-nombre{font-size:20px;font-weight:900}'
+      +'.mr-hero-sub{font-size:12.5px;color:#c7bff0;margin-top:3px}'
+      +'.mr-notaclase{text-align:center;padding:6px 18px;border-left:1px dashed #ffffff2b}'
+      +'.mr-nc-lbl{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:#c7bff0}'
+      +'.mr-nc-num{font-size:38px;font-weight:900;line-height:1.15;font-variant-numeric:tabular-nums}'
+      +'.mr-nc-fecha{font-size:11px;color:#9a90c8}'
+      +'.mr-trims{display:flex;gap:6px}'
+      +'.mr-chip-trim{font:inherit;font-size:12px;font-weight:800;color:#c7bff0;background:rgba(255,255,255,.06);border:1px solid #ffffff2b;border-radius:99px;padding:5px 13px;cursor:pointer}'
+      +'.mr-chip-trim.on{color:#12082e;background:linear-gradient(90deg,#a974ff,#5bd0ff);border-color:transparent}'
+      +'.mr-aps{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:12px}'
+      +'.mr-ap{position:relative;background:rgba(255,255,255,.04);border:1px solid #ffffff1c;border-left:4px solid var(--apc);border-radius:14px;padding:12px 14px}'
+      +'.mr-ap-nombre{font-size:12px;font-weight:900;color:var(--apc);text-transform:uppercase;letter-spacing:.04em}'
+      +'.mr-ap-nota{font-size:27px;font-weight:900;margin-top:4px;font-variant-numeric:tabular-nums}'
+      +'.mr-ap-n{font-size:11px;color:#9a90c8;margin-top:2px}'
+      +'.mr-tend-txt{font-size:16px;font-weight:900}'
+      +'.mr-tend-txt.ok{color:#7ef0c0}.mr-tend-txt.mal{color:#ff8fa8}.mr-tend-txt.flat{color:#c7bff0}'
+      +'.mr-dim{font-size:12px;font-weight:700;color:#9a90c8}'
+      +'.mr-ex-tabla{overflow-x:auto}'
+      +'.mr-ex-tabla table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}'
+      +'.mr-ex-tabla th{font-size:11.5px;text-transform:uppercase;letter-spacing:.04em;padding:6px 10px;text-align:center}'
+      +'.mr-ex-tabla td{padding:8px 10px;text-align:center;font-weight:800;border-top:1px solid #ffffff14;font-size:15px}'
+      +'.mr-ex-trim{color:#c7bff0!important;font-size:12.5px!important;text-align:left!important;text-transform:uppercase;letter-spacing:.04em}'
+      +'.mr-dos{display:grid;grid-template-columns:1fr;gap:14px}'
+      +'@media(min-width:760px){.mr-dos{grid-template-columns:1.5fr 1fr}}'
+      +'.mr-svg{width:100%;height:auto;display:block}'
+      +'.mr-card-radar{display:flex;flex-direction:column}'
+      +'.mr-card-radar .mr-radar{max-width:320px;margin:auto}'
+      +'.mr-leyenda{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;justify-content:center}'
+      +'.mr-chip{display:inline-flex;align-items:center;font-size:11px;font-weight:900;color:var(--apc);background:color-mix(in srgb,var(--apc) 16%,transparent);border:1px solid color-mix(in srgb,var(--apc) 45%,transparent);border-radius:99px;padding:3px 10px;text-transform:uppercase;letter-spacing:.03em}'
+      +'.mr-ult{display:flex;flex-direction:column;gap:7px}'
+      +'.mr-ult-fila{display:grid;grid-template-columns:auto 1fr auto auto;align-items:center;gap:12px;background:rgba(255,255,255,.035);border:1px solid #ffffff14;border-radius:12px;padding:8px 13px}'
+      +'.mr-ult-lec{font-size:13px;font-weight:700;color:#e9e4ff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}'
+      +'.mr-ult-fecha{font-size:12px;color:#9a90c8;font-variant-numeric:tabular-nums}'
+      +'.mr-ult-nota{font-size:15.5px;font-weight:900;font-variant-numeric:tabular-nums}'
+      +'.mr-vacio{color:#c7bff0;font-size:14px;line-height:1.6;padding:6px 2px}'
+      +'.mr-nota-pie{font-size:11.5px;color:#9a90c8;text-align:center;padding:0 12px}'
+      +'.mr-cargando{display:flex;flex-direction:column;align-items:center;gap:14px;padding:60px 0;color:#c7bff0;font-weight:700}'
+      +'.mr-spin{width:44px;height:44px;border-radius:50%;border:4px solid #ffffff26;border-top-color:#a974ff;animation:mrSpin .9s linear infinite}'
+      +'@keyframes mrSpin{to{transform:rotate(360deg)}}'
+      +'@media(prefers-reduced-motion:reduce){.mrneb,.mr-spin{animation:none!important}}'
+      +'@media(max-width:600px){.mr-notaclase{border-left:none;border-top:1px dashed #ffffff2b;padding-top:10px;width:100%}.mr-top-hueco{display:none}}';
+    document.head.appendChild(s);
+  }
+  if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded',css); } else { css(); }
+
+  window.MisResultados={ abrir:abrir, cerrar:cerrar };
+})();
+
+</script>
+<script>
+/* FASE 9 · Mensajes del alumno con el profesor (sobre junto a la campana) */
+(function(){
+  'use strict';
+  function esc(x){return String(x==null?'':x).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+  function cuentaId(){ try{ var s=JSON.parse(localStorage.getItem('lmpro_session')||'null'); return (s&&s.id&&s.estado==='validado')?s.id:null; }catch(e){ return null; } }
+  var _cliMsj=null;
+  function cli(){
+    if(_cliMsj || !window.supabase) return _cliMsj;
+    var u=(typeof SB_URL!=='undefined')?SB_URL:'https://woiptkyrxkbpnvioypit.supabase.co';
+    var k=(typeof SB_ANON!=='undefined')?SB_ANON:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndvaXB0a3lyeGticG52aW95cGl0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0NzI2ODYsImV4cCI6MjA5MjA0ODY4Nn0.B2nKgj5rD0rkdLeMIrd9KgD8lUPWsBT4Y7aCtmnvbjA';
+    _cliMsj=window.supabase.createClient(u,k); return _cliMsj;
+  }
+  async function rpc(fn,args){ try{ var c=cli(); if(!c) throw new Error('sin cliente'); var r=await c.rpc(fn,args); if(r.error) throw r.error; return r.data; }catch(e){ console.warn('[msj]',fn,e); return {ok:false}; } }
+  function fmt(iso){ var d=new Date(iso); if(isNaN(d)) return '';
+    var hoy=new Date(); var hm=d.getHours()+':'+String(d.getMinutes()).padStart(2,'0');
+    return (d.toDateString()===hoy.toDateString())?hm:(String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0')+' '+hm); }
+  function css(){
+    if(document.getElementById('alu-msj-css')) return;
+    var st=document.createElement('style'); st.id='alu-msj-css';
+    st.textContent=
+      '.amj-modal{position:fixed;inset:0;z-index:92;display:none;align-items:flex-start;justify-content:center;padding:40px 16px 16px;background:rgba(5,8,20,.6);backdrop-filter:blur(3px)}'+
+      '.amj-modal.open{display:flex}'+
+      '.amj-card{width:100%;max-width:560px;background:#141a2e;border:1px solid rgba(255,255,255,.14);border-radius:16px;box-shadow:0 24px 80px rgba(0,0,0,.5);display:flex;flex-direction:column;max-height:82vh;overflow:hidden}'+
+      '.amj-head{display:flex;align-items:center;justify-content:space-between;padding:13px 16px;border-bottom:1px solid rgba(255,255,255,.12)}'+
+      '.amj-head h3{margin:0;font-size:15px;font-weight:800;color:#f1f5f9}'+
+      '.amj-x{background:none;border:none;color:#94a3b8;font-size:21px;cursor:pointer;line-height:1}'+
+      '.amj-body{overflow:auto;padding:10px 14px;flex:1 1 auto}'+
+      '.amj-b{max-width:80%;margin:6px 0;padding:8px 12px;border-radius:13px;font-size:13.5px;line-height:1.45;white-space:pre-wrap;word-wrap:break-word}'+
+      '.amj-b .h{display:block;font-size:10px;opacity:.6;margin-top:3px;text-align:right}'+
+      '.amj-prof{margin-right:auto;background:linear-gradient(120deg,#8a6d1f,#a8862a);color:#fff8e6;border-bottom-left-radius:4px}'+
+      '.amj-yo{margin-left:auto;background:rgba(52,211,153,.16);border:1px solid rgba(52,211,153,.3);color:#d9ffef;border-bottom-right-radius:4px}'+
+      '.amj-caja{display:flex;gap:8px;padding:10px 14px;border-top:1px solid rgba(255,255,255,.12)}'+
+      '.amj-caja textarea{flex:1 1 auto;resize:none;font:inherit;font-size:13.5px;color:#f1f5f9;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.18);border-radius:10px;padding:9px 11px;min-height:42px;max-height:110px}'+
+      '.amj-caja button{border:0;border-radius:10px;padding:0 18px;font-weight:800;cursor:pointer;color:#062b26;background:linear-gradient(90deg,#ffd678,#34d399)}'+
+      '.amj-caja button:disabled{opacity:.5;cursor:default}'+
+      '.amj-vacio{font-size:13px;color:#94a3b8;padding:14px 4px;font-style:italic}';
+    document.head.appendChild(st);
+  }
+  function montarModal(){
+    if(document.getElementById('amj-modal')) return;
+    var m=document.createElement('div'); m.id='amj-modal'; m.className='amj-modal';
+    m.innerHTML='<div class="amj-card"><div class="amj-head"><h3>💬 Mensajes con el profe</h3>'+
+      '<button class="amj-x" id="amj-x" aria-label="Cerrar">&times;</button></div>'+
+      '<div class="amj-body" id="amj-body"></div>'+
+      '<div class="amj-caja"><textarea id="amj-txt" rows="2" placeholder="Escríbele al profe…"></textarea>'+
+      '<button id="amj-env">Enviar</button></div></div>';
+    document.body.appendChild(m);
+    m.addEventListener('click',function(e){ if(e.target===m) cerrar(); });
+    document.getElementById('amj-x').addEventListener('click',cerrar);
+    document.getElementById('amj-env').addEventListener('click',enviar);
+  }
+  async function pintar(){
+    var body=document.getElementById('amj-body'); if(!body) return;
+    body.innerHTML='<div class="amj-vacio">Cargando…</div>';
+    var d=await rpc('suite_msj_conversacion_alumno',{p_cuenta_id:cuentaId()});
+    if(!(d&&d.ok)){ body.innerHTML='<div class="amj-vacio">No pude cargar los mensajes.</div>'; return; }
+    body.innerHTML=(d.mensajes||[]).map(function(mm){
+      var cls=mm.de==='profesor'?'amj-prof':'amj-yo';
+      return '<div class="amj-b '+cls+'">'+esc(mm.cuerpo)+'<span class="h">'+fmt(mm.creado_en)+'</span></div>';
+    }).join('')||'<div class="amj-vacio">Sin mensajes todavía. Escríbele el primero al profe.</div>';
+    body.scrollTop=body.scrollHeight;
+    refrescar();
+  }
+  async function enviar(){
+    var ta=document.getElementById('amj-txt'), b=document.getElementById('amj-env');
+    var txt=(ta.value||'').trim(); if(!txt) return;
+    b.disabled=true;
+    var r=await rpc('suite_msj_enviar_alumno',{p_cuenta_id:cuentaId(),p_cuerpo:txt});
+    b.disabled=false;
+    if(r&&r.ok){ ta.value=''; pintar(); }
+  }
+  function abrir(){ css(); montarModal(); var m=document.getElementById('amj-modal'); m.classList.add('open'); pintar(); }
+  function cerrar(){ var m=document.getElementById('amj-modal'); if(m) m.classList.remove('open'); }
+  async function refrescar(){
+    var id=cuentaId(), b=document.getElementById('alu-msj-btn'), bd=document.getElementById('alu-msj-badge');
+    if(!b) return;
+    if(!id){ b.style.display='none'; return; }
+    b.style.display='';
+    var d=await rpc('suite_msj_contador_alumno',{p_cuenta_id:id});
+    var n=(d&&d.ok)?(d.sin_leer||0):0;
+    if(bd){ bd.textContent=n>99?'99+':String(n); bd.classList.toggle('hidden',n===0); }
+  }
+  window.AluMensajes={abrir:abrir,refrescar:refrescar};
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',function(){ setTimeout(refrescar,900); });
+  else setTimeout(refrescar,900);
+  setInterval(refrescar,90000);
+})();
+
+</script>
+<script>
+/* ============================================================
+   FASE 9.4 · MINI-TOUR del portal (foco + oscurecido, 4 pasos)
+   Se lanza SOLO la primera vez que entra un alumno validado
+   (marca en localStorage). Se puede relanzar: AluTour.abrir().
+   ============================================================ */
+(function(){
+  'use strict';
+  var K='alu_tour_visto_pro';
+  function cuentaValidada(){
+    try{ var s=JSON.parse(localStorage.getItem('lmpro_session')||'null'); return !!(s&&s.id&&s.estado==='validado'); }catch(e){ return false; }
+  }
+  var PASOS=[
+    { sel:'#alu-campana-btn', tit:'🔔 Tus tareas', txt:'Cada viernes a las 19:00 te llegan aquí las Tareas de la semana: la ficha de teoría (¡con sus 7 días de plazo!) y las lecciones de ritmo para estudiar.' },
+    { sel:'#alu-msj-btn', tit:'✉️ Habla con tu profe', txt:'Por aquí recibirás mensajes y consejos del profe. Y tú puedes escribirle cuando quieras: dudas, problemas con una tarea… lo que sea.' },
+    { sel:'#btn-mis-resultados', tit:'📊 Mis resultados', txt:'Aquí puedes consultar tus resultados, progreso y estadísticas. Sin sorpresas: siempre sabrás cómo vas.' },
+    { sel:'.apps', tit:'🎵 Las apps', txt:'Y aquí abajo, las aplicaciones para practicar por libre todo lo que quieras: Ritmo, Teoría, Intervalia, Entonación, Dictado… Cuanto más las uses, más fácil será todo.' }
+  ];
+  var _paso=0, _ov=null, _foco=null, _card=null;
+  function css(){
+    if(document.getElementById('alu-tour-css')) return;
+    var st=document.createElement('style'); st.id='alu-tour-css';
+    st.textContent=
+      '.atour-foco{position:fixed;z-index:100010;border-radius:14px;pointer-events:none;'+
+        'box-shadow:0 0 0 9999px rgba(4,7,18,.82),0 0 0 3px #ffd678,0 0 30px rgba(255,214,120,.55);'+
+        'transition:all .35s cubic-bezier(.4,0,.2,1)}'+
+      '.atour-card{position:fixed;z-index:100011;max-width:330px;background:#141a2e;'+
+        'border:1px solid rgba(255,214,120,.5);border-radius:14px;padding:16px 18px;'+
+        'box-shadow:0 18px 60px rgba(0,0,0,.6);transition:all .35s cubic-bezier(.4,0,.2,1)}'+
+      '.atour-card h4{margin:0 0 6px;font:800 15.5px \'Helvetica Neue\',Arial,sans-serif;color:#ffd678}'+
+      '.atour-card p{margin:0 0 12px;font:400 13.5px/1.5 \'Helvetica Neue\',Arial,sans-serif;color:#dbe2f1}'+
+      '.atour-pie{display:flex;align-items:center;justify-content:space-between;gap:10px}'+
+      '.atour-dots{display:flex;gap:5px}'+
+      '.atour-dots i{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.25)}'+
+      '.atour-dots i.on{background:#ffd678}'+
+      '.atour-sig{border:0;border-radius:9px;padding:9px 16px;font:800 13px \'Helvetica Neue\',Arial;'+
+        'cursor:pointer;color:#062b26;background:linear-gradient(90deg,#ffd678,#34d399)}'+
+      '.atour-salta{background:none;border:none;color:#8a93a8;font:700 12px \'Helvetica Neue\',Arial;cursor:pointer;padding:4px}';
+    document.head.appendChild(st);
+  }
+  function colocar(){
+    var paso=PASOS[_paso];
+    var el=document.querySelector(paso.sel);
+    if(!el){ siguiente(); return; }
+    try{ el.scrollIntoView({block:'center',behavior:'smooth'}); }catch(e){}
+    setTimeout(function(){
+      var r=el.getBoundingClientRect();
+      var pad=8;
+      _foco.style.left=(r.left-pad)+'px'; _foco.style.top=(r.top-pad)+'px';
+      _foco.style.width=(r.width+pad*2)+'px'; _foco.style.height=(r.height+pad*2)+'px';
+      _card.querySelector('h4').textContent=paso.tit;
+      _card.querySelector('p').textContent=paso.txt;
+      _card.querySelector('.atour-sig').textContent=(_paso===PASOS.length-1)?'¡Entendido!':'Siguiente →';
+      var dots=_card.querySelector('.atour-dots');
+      dots.innerHTML=PASOS.map(function(_,i){ return '<i'+(i===_paso?' class="on"':'')+'></i>'; }).join('');
+      // tarjeta: debajo del foco si cabe; si no, encima; siempre dentro de pantalla
+      var ch=_card.offsetHeight||170, cw=Math.min(330, window.innerWidth-24);
+      var top=r.bottom+pad+12;
+      if(top+ch>window.innerHeight-12) top=Math.max(12, r.top-pad-12-ch);
+      var left=Math.min(Math.max(12, r.left), window.innerWidth-cw-12);
+      _card.style.top=top+'px'; _card.style.left=left+'px'; _card.style.maxWidth=cw+'px';
+    }, 320);
+  }
+  function siguiente(){
+    _paso++;
+    if(_paso>=PASOS.length){ cerrar(); return; }
+    colocar();
+  }
+  function cerrar(){
+    try{ localStorage.setItem(K, String(Date.now())); }catch(e){}
+    if(_foco) _foco.remove(); if(_card) _card.remove();
+    _foco=_card=null; _paso=0;
+    window.removeEventListener('resize', colocar);
+  }
+  function abrir(){
+    css();
+    if(_card) cerrar();
+    _paso=0;
+    _foco=document.createElement('div'); _foco.className='atour-foco';
+    _card=document.createElement('div'); _card.className='atour-card';
+    _card.innerHTML='<h4></h4><p></p><div class="atour-pie">'+
+      '<div style="display:flex;align-items:center;gap:10px"><div class="atour-dots"></div>'+
+      '<button class="atour-salta">Saltar</button></div>'+
+      '<button class="atour-sig">Siguiente →</button></div>';
+    document.body.appendChild(_foco); document.body.appendChild(_card);
+    _card.querySelector('.atour-sig').addEventListener('click', siguiente);
+    _card.querySelector('.atour-salta').addEventListener('click', cerrar);
+    window.addEventListener('resize', colocar);
+    colocar();
+  }
+  window.AluTour={ abrir:abrir };
+  // lanzamiento automático: primera visita de una cuenta con sesión
+  function auto(){
+    if(!cuentaValidada()) return;
+    try{ if(localStorage.getItem(K)) return; }catch(e){}
+    setTimeout(abrir, 1600);   // deja respirar al portal (campana/sobre ya pintados)
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', auto);
+  else auto();
+})();
+
 </script>
 </body>
 </html>
