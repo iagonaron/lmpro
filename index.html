@@ -624,31 +624,93 @@ function bienvenidaCSS(){
 }
 function mostrarBienvenidaValidada(nombre){
   bienvenidaCSS();
+  // CSS extra del tutorial (tarjetas 2..N)
+  if(!document.getElementById('bv-css2')){
+    const st2=document.createElement('style'); st2.id='bv-css2';
+    st2.textContent=
+      '.bv-icono{font-size:64px;line-height:1;margin:6px auto 20px;display:block;'+
+        'filter:drop-shadow(0 6px 18px rgba(0,0,0,.35));animation:bvIcono .6s cubic-bezier(.2,.9,.3,1.3)}'+
+      '@keyframes bvIcono{0%{transform:scale(.4);opacity:0}100%{transform:scale(1);opacity:1}}'+
+      '.bv-cuerpo{transition:opacity .22s, transform .22s}'+
+      '.bv-cuerpo.fuera{opacity:0;transform:translateX(-14px)}'+
+      '.bv-dots{display:flex;gap:7px;justify-content:center;margin:0 0 18px}'+
+      '.bv-dots i{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.22);transition:background .2s, transform .2s}'+
+      '.bv-dots i.on{background:currentColor;transform:scale(1.25)}'+
+      '.bv-saltar{display:block;margin:12px auto 0;border:none;background:transparent;color:#8a93a8;'+
+        'font-size:12px;cursor:pointer;text-decoration:underline}'+
+      '@media (prefers-reduced-motion: reduce){.bv-icono{animation:none}}';
+    document.head.appendChild(st2);
+  }
   const primer=(String(nombre||'').trim().split(/\s+/)[0])||'';
+  const CARDS=[
+    { tipo:'check', kicker:'Cuenta validada',
+      titulo:'¡Cuenta validada__NOM__!',
+      texto:'Iago ya ha comprobado tu <b>nº de expediente</b>: esta cuenta es oficialmente tuya. A partir de ahora entras siempre con tu nombre y tu contraseña. Bienvenido/a al portal LMPRO at home (GP).' },
+    { icono:'📦', kicker:'Las tareas del viernes',
+      titulo:'Cada viernes, tus tareas',
+      texto:'Los viernes a las 19:00 te llega el paquete de tareas de la semana: las <b>lecciones</b> (si llevan captura, ábrela para marcarla como vista), la <b>ficha de teoría</b> y otras tareas. Ve marcándolas según las hagas.' },
+    { icono:'🔔', kicker:'Tu campana',
+      titulo:'Los avisos, en la campana',
+      texto:'Arriba tienes tu <b>campana de avisos</b>: ahí llegan las tareas, las fichas y los mensajes de Iago. Cuando tenga algo sin leer, te lo dirá con su numerito.' },
+    { icono:'🖊', kicker:'Las fichas de teoría',
+      titulo:'Fichas que se corrigen solas',
+      texto:'Cuando Iago te envíe una <b>ficha de teoría</b>, hazla desde su aviso. Al terminar, pulsa «enviar al profesor y ver puntuación»: tu nota le llega a Iago automáticamente. No la dejes pasar de semana.' },
+    { icono:'🎼', kicker:'Las apps PRO',
+      titulo:'Practica cuando quieras',
+      texto:'En el portal tienes las apps de <b>LMPRO at home</b>: dictados a dos voces, Intervalia PRO, Teoría PRO, ritmo… Entra siempre con tu cuenta para que tus resultados queden guardados.' }
+  ];
+  const N=CARDS.length;
+  let idx=0;
+
   const ov=document.createElement('div');
   ov.className='bv-overlay';
-  // chispas alrededor del check
-  let chispas='';
-  for(let i=0;i<10;i++){
-    const ang=(Math.PI*2*i)/10, d=58+Math.random()*26;
-    chispas+='<i style="left:50%;top:96px;--dx:'+Math.round(Math.cos(ang)*d)+'px;--dy:'+Math.round(Math.sin(ang)*d)+'px"></i>';
-  }
-  ov.innerHTML=
-    '<div class="bv-card"><div class="bv-chispas">'+chispas+'</div>'+
-      '<div class="bv-kicker">Tutorial · 1 de 1 · Cuenta validada</div>'+
-      '<svg class="bv-check" viewBox="0 0 104 104"><circle class="c" cx="52" cy="52" r="48"/>'+
-      '<path class="t" d="M33 54 L47 68 L73 40"/></svg>'+
-      '<div class="bv-titulo">¡Cuenta validada' + (primer ? ', '+primer : '') + '!</div>'+
-      '<div class="bv-texto">Iago ya ha comprobado tu <b>nº de expediente</b>: esta cuenta es oficialmente tuya. '+
-      'A partir de ahora entras siempre con tu nombre y tu contraseña. Bienvenido/a al portal LMPRO at home (GP).</div>'+
-      '<button type="button" class="bv-go">¡Empezar!</button>'+
-    '</div>';
+  ov.innerHTML='<div class="bv-card"><div class="bv-cuerpo" id="bv-cuerpo"></div></div>';
   document.body.appendChild(ov);
-  requestAnimationFrame(()=>ov.classList.add('on'));
-  ov.querySelector('.bv-go').addEventListener('click',()=>{
+  const cuerpo=ov.querySelector('#bv-cuerpo');
+
+  function chispasHTML(){
+    let h='';
+    for(let i=0;i<10;i++){
+      const ang=(Math.PI*2*i)/10, d=58+Math.random()*26;
+      h+='<i style="left:50%;top:96px;--dx:'+Math.round(Math.cos(ang)*d)+'px;--dy:'+Math.round(Math.sin(ang)*d)+'px"></i>';
+    }
+    return h;
+  }
+  function dotsHTML(){
+    let h='<div class="bv-dots">';
+    for(let i=0;i<N;i++) h+='<i class="'+(i===idx?'on':'')+'"></i>';
+    return h+'</div>';
+  }
+  function pintar(){
+    const c=CARDS[idx];
+    const esUltima=(idx===N-1);
+    const visual = c.tipo==='check'
+      ? '<div class="bv-chispas">'+chispasHTML()+'</div>'+
+        '<svg class="bv-check" viewBox="0 0 104 104"><circle class="c" cx="52" cy="52" r="48"/>'+
+        '<path class="t" d="M33 54 L47 68 L73 40"/></svg>'
+      : '<span class="bv-icono">'+c.icono+'</span>';
+    cuerpo.innerHTML=
+      '<div class="bv-kicker">Tutorial · '+(idx+1)+' de '+N+' · '+c.kicker+'</div>'+
+      visual+
+      '<div class="bv-titulo">'+c.titulo.replace('__NOM__', primer?(', '+primer):'')+'</div>'+
+      '<div class="bv-texto">'+c.texto+'</div>'+
+      dotsHTML()+
+      '<button type="button" class="bv-go">'+(esUltima?'¡A por ello!':(idx===0?'¡Empezar!':'Siguiente →'))+'</button>'+
+      (esUltima?'':'<button type="button" class="bv-saltar">Saltar el tutorial</button>');
+    cuerpo.querySelector('.bv-go').addEventListener('click',()=>{ esUltima?cerrar():siguiente(); });
+    const sk=cuerpo.querySelector('.bv-saltar');
+    if(sk) sk.addEventListener('click',cerrar);
+  }
+  function siguiente(){
+    cuerpo.classList.add('fuera');
+    setTimeout(()=>{ idx++; pintar(); cuerpo.classList.remove('fuera'); },220);
+  }
+  function cerrar(){
     ov.classList.remove('on');
     setTimeout(()=>{ try{ ov.remove(); }catch(e){} },450);
-  });
+  }
+  pintar();
+  requestAnimationFrame(()=>ov.classList.add('on'));
 }
 
 function abrirReset(){
