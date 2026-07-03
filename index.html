@@ -1232,6 +1232,15 @@ function showEnig(kind){
     var id=cuentaId(); if(!id){ body.innerHTML='<div class="alu-vacio">Inicia sesión para ver tus notificaciones.</div>'; return; }
     var r=await rpc('suite_alumno_notif_listar',{p_cuenta_id:id});
     var list=(r && r.ok && Array.isArray(r.notificaciones))?r.notificaciones:[];
+    // 3-jul (Iago): la notificación de 'cuenta validada' del servidor es
+    // redundante — la bienvenida animada + el mini-tour ya cubren ese
+    // momento. La ocultamos y la auto-marcamos leída (más abajo).
+    function esNotifValidacion(o){
+      if(!o || (o.payload_json && (o.payload_json.ficha_id || o.payload_json.envio_id))) return false;
+      return /valida|verificad/i.test(String(o.titulo||'')+' '+String(o.cuerpo||''));
+    }
+    var listTodas=list;
+    list=list.filter(function(o){ return !esNotifValidacion(o); });
     if(!list.length){ body.innerHTML='<div class="alu-vacio">Todavía no tienes notificaciones.</div>'; return; }
     // FASE 6.7/6.9 · refresca entregadas y progresos antes de pintar (para
     // decidir Hacer/Continuar/✓ Entregada y la fracción X/Y).
@@ -1432,7 +1441,7 @@ function showEnig(kind){
     }).join('');
     // FASE 6.9 · las entregadas no leídas se marcan LEÍDAS solas (el alumno
     // ya cumplió: que el globito rojo no le persiga). Un solo refresco al final.
-    var autoLeer=list.filter(function(o){ return esHecha(o) && !o.leido; });
+    var autoLeer=listTodas.filter(function(o){ return (esHecha(o)||esNotifValidacion(o)) && !o.leido; });
     if(autoLeer.length){
       Promise.all(autoLeer.map(function(o){ return rpc('suite_alumno_marcar_leido',{p_cuenta_id:id,p_notif_id:o.id}); }))
         .then(function(){ refrescar(); }).catch(function(){});
