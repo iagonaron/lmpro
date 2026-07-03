@@ -329,6 +329,19 @@
   .alu-vacio{color:var(--muted2);font-size:13px;text-align:center;padding:24px 8px}
 
 
+
+  /* ===== GP-A.3 · Mis resultados en clave PRO (nebulosa dorada) ===== */
+  #mr-overlay.mr-overlay{background:linear-gradient(160deg,#2b2008 0%,#1d1506 38%,#140e05 72%,#0b0703 100%);color:#f7f1e2}
+  #mr-overlay .mr-avatar{color:#1a1204;background:linear-gradient(135deg,#f0d47a,#d4af37 55%,#b8860b);box-shadow:0 10px 26px rgba(212,175,55,.4)}
+  #mr-overlay .mr-hero-sub{color:#b3a273}
+  #mr-overlay .mr-hero-nombre{color:#fdf6e3}
+  #mr-overlay .mr-chip-trim{color:#cdbb8a;border-color:rgba(212,175,55,.35)}
+  #mr-overlay .mr-chip-trim.on{color:#1a1204;background:linear-gradient(90deg,#f0d47a,#d4af37);border-color:transparent}
+  #mr-overlay .mr-card{background:rgba(255,232,170,.05);border-color:rgba(212,175,55,.22)}
+  #mr-overlay .mr-card-tit{color:#e8c15a}
+  #mr-overlay .mr-ap-nombre,#mr-overlay .mr-nc-lbl{color:#d9c99a}
+  #mr-overlay .mr-ap-n,#mr-overlay .mr-dim,#mr-overlay .mr-nc-fecha,#mr-overlay .mr-leyenda{color:#a8996b}
+  #mr-overlay .mr-cargando{color:#cdbb8a}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -355,7 +368,7 @@
         <button class="gate-linkbtn" onclick="abrirRegistro()">Registrarme</button>
         <button class="gate-linkbtn gate-linkbtn2" onclick="abrirLogin()">Ya tengo cuenta</button>
       </div>
-      <div style="margin-top:14px;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#98875e;opacity:.6">suite GP-A · r3</div>
+      <div style="margin-top:14px;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#98875e;opacity:.6">suite GP-A · r4</div>
     </div>
     <div id="gateMobile" style="display:none">
       <div class="gm-icon">
@@ -682,6 +695,7 @@ function submitGate(){
     document.body.classList.add('revealing');
     if(g){ g.classList.remove('show'); g.style.display='none'; }
     if(window.AluCampana) window.AluCampana.refrescar();
+    if(window.AluTour && window.AluTour.autoSiProcede) window.AluTour.autoSiProcede();
   }
 
   window.addEventListener('load',()=>{
@@ -689,7 +703,10 @@ function submitGate(){
       // Auto-salto del gate para un alumno YA validado (sesión recordada).
       // Refresca el estado por si Iago lo validó/rechazó desde la última vez.
       const s=getSession();
-      if(s && s.id && s.estado==='validado'){
+      if(s && s.id){
+        // r3: se re-comprueba SIEMPRE que haya cuenta en el dispositivo, aunque
+        // la sesión guardada dijera 'pendiente' — si Iago validó desde entonces,
+        // el alumno entra directo sin volver a teclear nada.
         const r=await callRPC('suite_estado_cuenta', { p_id:s.id });
         if(r && r.ok && r.estado==='validado'){
           setSession(Object.assign({}, s, { estado:'validado', alumno_canon_id:r.alumno_canon_id, grupo_id:r.grupo_id }));
@@ -2022,13 +2039,15 @@ function showEnig(kind){
     window.addEventListener('resize', colocar);
     colocar();
   }
-  window.AluTour={ abrir:abrir };
-  // lanzamiento automático: primera visita de una cuenta con sesión
+  // lanzamiento automático: primera visita de una cuenta validada. Expuesto
+  // como autoSiProcede para dispararlo también justo tras el login/desbloqueo
+  // (r2: antes solo corría al cargar la página y se perdía el primer login).
   function auto(){
     if(!cuentaValidada()) return;
     try{ if(localStorage.getItem(K)) return; }catch(e){}
     setTimeout(abrir, 1600);   // deja respirar al portal (campana/sobre ya pintados)
   }
+  window.AluTour={ abrir:abrir, autoSiProcede:auto };
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', auto);
   else auto();
 })();
