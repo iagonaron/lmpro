@@ -390,18 +390,32 @@
       <button class="gate-go" id="logBtn" onclick="alumnoEntrar()">Entrar</button>
       <div class="gate-err" id="alumnoLoginErr"></div>
       <button class="gate-linkbtn" onclick="abrirRegistro()">¿Primera vez? Crea tu cuenta</button>
+      <button class="gate-linkbtn" onclick="abrirReset()">¿Olvidaste tu contraseña?</button>
       <button class="gate-secondary gate-back" onclick="mostrarPanel('gatePass')">Volver</button>
     </div>
     <div id="alumnoRegistro" style="display:none">
       <h3>Crear cuenta de alumno</h3>
-      <p>Solo para alumnos de Iago. Tu profesor validará tu cuenta.</p>
+      <p>Solo para alumnos de Iago. El <b>nº de expediente</b> se pide una única vez: Iago lo contrasta con tu expediente real para validar que eres tú. Después entrarás siempre con tu nombre y tu contraseña.</p>
       <input class="gate-input txt" id="regNombre" type="text" placeholder="Nombre y apellidos" autocomplete="off" autocapitalize="words" spellcheck="false">
+      <input class="gate-input txt" id="regExp" type="text" placeholder="Nº de expediente del alumno" autocomplete="off" autocapitalize="off" spellcheck="false">
+      <div class="gate-note" id="ayudaExpediente"><b>¿Dónde está el nº de expediente?</b> Se consulta en Centros Net o en la matrícula. [[AYUDA_EXPEDIENTE — Iago: sustituye esta frase por las indicaciones exactas para las familias]]</div>
       <input class="gate-input" id="regPass" type="password" placeholder="Elige una contraseña" autocomplete="off" autocapitalize="off" spellcheck="false">
       <label class="gate-remember"><input type="checkbox" id="regRecordar" checked> Recordar en este dispositivo</label>
       <div class="gate-note"><b>Pensada para ordenador</b> y adaptada para tablet. <b>No es una app para móvil.</b></div>
       <button class="gate-go" id="regBtn" onclick="alumnoRegistrar()">Crear mi cuenta</button>
       <div class="gate-err" id="alumnoRegistroErr"></div>
       <button class="gate-linkbtn" onclick="abrirLogin()">Ya tengo cuenta</button>
+      <button class="gate-secondary gate-back" onclick="mostrarPanel('gatePass')">Volver</button>
+    </div>
+    <div id="alumnoReset" style="display:none">
+      <h3>Recuperar contraseña</h3>
+      <p>Demuestra que eres tú con tu <b>nº de expediente</b> (Centros Net o la matrícula) y elige una contraseña nueva.</p>
+      <input class="gate-input txt" id="resNombre" type="text" placeholder="Nombre y apellidos" autocomplete="off" autocapitalize="words" spellcheck="false">
+      <input class="gate-input txt" id="resExp" type="text" placeholder="Nº de expediente" autocomplete="off" autocapitalize="off" spellcheck="false">
+      <input class="gate-input" id="resPass" type="password" placeholder="Contraseña nueva" autocomplete="off" autocapitalize="off" spellcheck="false">
+      <button class="gate-go" id="resBtn" onclick="alumnoResetear()">Cambiar mi contraseña</button>
+      <div class="gate-err" id="alumnoResetErr"></div>
+      <button class="gate-linkbtn" onclick="abrirLogin()">Volver a entrar</button>
       <button class="gate-secondary gate-back" onclick="mostrarPanel('gatePass')">Volver</button>
     </div>
     <div id="alumnoPendiente" style="display:none">
@@ -550,7 +564,7 @@ async function callRPC(fn, args){
 
 // ---- Cambio de panel dentro de la tarjeta del gate ----
 function mostrarPanel(id){
-  ['gatePass','gateMobile','alumnoLogin','alumnoRegistro','alumnoPendiente'].forEach(p=>{
+  ['gatePass','gateMobile','alumnoLogin','alumnoRegistro','alumnoPendiente','alumnoReset'].forEach(p=>{
     const el=document.getElementById(p); if(el) el.style.display=(p===id)?'':'none';
   });
 }
@@ -570,14 +584,53 @@ function abrirRegistro(){
 }
 function continuarComoInvitadoPend(){ unlockGate(); }
 
+function abrirReset(){
+  const s=getSession();
+  const n=document.getElementById('resNombre');
+  if(s && s.nombre && n && !n.value) n.value=s.nombre;
+  mostrarPanel('alumnoReset');
+  setTimeout(()=>{ try{ document.getElementById('resNombre').focus(); }catch(e){} }, 60);
+}
+
+async function alumnoResetear(){
+  const nombre=(document.getElementById('resNombre').value||'').trim();
+  const exp=(document.getElementById('resExp').value||'').trim();
+  const pass=document.getElementById('resPass').value||'';
+  const err=document.getElementById('alumnoResetErr'); err.textContent='';
+  if(nombre.length<3){ err.textContent='Escribe tu nombre y apellidos.'; return; }
+  if(exp.length<3){ err.textContent='Escribe tu nº de expediente.'; return; }
+  if(pass.length<4){ err.textContent='La contraseña nueva debe tener al menos 4 caracteres.'; return; }
+  const btn=document.getElementById('resBtn'); btn.disabled=true; btn.textContent='Cambiando…';
+  const r=await callRPC('suite_pass_reset', { p_nombre:nombre, p_expediente:exp, p_pass:pass });
+  btn.disabled=false; btn.textContent='Cambiar mi contraseña';
+  if(!r.ok){
+    err.textContent = r.error==='no_coincide' ? 'El nombre o el nº de expediente no coinciden con ninguna cuenta.'
+                    : r.error==='sin_expediente' ? 'Tu cuenta es anterior a este sistema y no tiene expediente guardado. Habla con Iago en clase.'
+                    : r.error==='pass_corta' ? 'La contraseña nueva debe tener al menos 4 caracteres.'
+                    : 'La recuperación aún no está disponible. Habla con Iago en clase.';
+    return;
+  }
+  err.textContent='';
+  const ln=document.getElementById('logNombre'); if(ln) ln.value=nombre;
+  const lp=document.getElementById('logPass'); if(lp) lp.value='';
+  mostrarPanel('alumnoLogin');
+  const lerr=document.getElementById('alumnoLoginErr');
+  if(lerr) lerr.textContent='✓ Contraseña cambiada. Entra con la nueva.';
+}
+
 async function alumnoRegistrar(){
   const nombre=(document.getElementById('regNombre').value||'').trim();
+  const exp=(document.getElementById('regExp').value||'').trim();
   const pass=document.getElementById('regPass').value||'';
   const err=document.getElementById('alumnoRegistroErr'); err.textContent='';
   if(nombre.length<3){ err.textContent='Escribe tu nombre y apellidos.'; return; }
+  if(exp.length<3){ err.textContent='Escribe el nº de expediente completo (Centros Net o la matrícula).'; return; }
   if(pass.length<4){ err.textContent='La contraseña debe tener al menos 4 caracteres.'; return; }
   const btn=document.getElementById('regBtn'); btn.disabled=true; btn.textContent='Creando…';
-  const r=await callRPC('suite_registrar_alumno', { p_nombre:nombre, p_pass:pass });
+  // Alta v3: nombre + contraseña propia + nº de expediente (solo para que el
+  // profesor valide la identidad). Si el SQL no está desplegado, alta clásica.
+  let r=await callRPC('suite_registrar_alumno_v3', { p_nombre:nombre, p_pass:pass, p_expediente:exp });
+  if(!r.ok && (r.error==='red' || r.error==='excepcion')) r=await callRPC('suite_registrar_alumno', { p_nombre:nombre, p_pass:pass });
   btn.disabled=false; btn.textContent='Crear mi cuenta';
   if(!r.ok){
     err.textContent = r.error==='nombre_corto' ? 'Escribe tu nombre y apellidos.'
@@ -599,7 +652,7 @@ async function alumnoEntrar(){
   const r=await callRPC('suite_login_alumno', { p_nombre:nombre, p_pass:pass });
   btn.disabled=false; btn.textContent='Entrar';
   if(!r.ok){
-    err.textContent = r.error==='credenciales' ? 'Nombre o contraseña incorrectos.'
+    err.textContent = r.error==='credenciales' ? 'Nombre o contraseña incorrectos. Si no la recuerdas, usa «¿Olvidaste tu contraseña?».'
                     : 'No se pudo entrar. Revisa tu conexión e inténtalo de nuevo.';
     return;
   }
