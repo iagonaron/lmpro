@@ -370,7 +370,7 @@
         <button class="gate-linkbtn" onclick="abrirRegistro()">Registrarme</button>
         <button class="gate-linkbtn gate-linkbtn2" onclick="abrirLogin()">Ya tengo cuenta</button>
       </div>
-      <div style="margin-top:14px;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#98875e;opacity:.6">suite GP-A · r7</div>
+      <div style="margin-top:14px;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#98875e;opacity:.6">suite GP-A · r8</div>
     </div>
     <div id="gateMobile" style="display:none">
       <div class="gm-icon">
@@ -898,8 +898,10 @@ function showEnig(kind){
     parte=parte||'lecciones'; titulo=titulo||'Lecciones de la semana';
     var old=document.getElementById('ts-visor'); if(old) old.remove();
     var ov=document.createElement('div'); ov.id='ts-visor';
-    ov.style.cssText='position:fixed;inset:0;z-index:100002;background:rgba(8,5,22,.96);overflow:auto;-webkit-overflow-scrolling:touch;padding:18px 14px 30px';
-    var inner='<div style="max-width:760px;margin:0 auto">'
+    ov.style.cssText='position:fixed;inset:0;z-index:100002;background:rgba(8,5,22,.96);overflow:auto;-webkit-overflow-scrolling:touch;padding:16px 10px 30px';
+    // Iago 3-jul: visor a lo ANCHO - 760px se quedaba pequeno para leer la
+    // partitura en iPad/ordenador. Ahora ocupa casi todo el viewport (tope 1240px).
+    var inner='<div style="max-width:1240px;margin:0 auto">'
       +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">'
       +'<div style="font:700 14px/1.2 \'Helvetica Neue\',Arial,sans-serif;color:#c8cfdd;letter-spacing:.06em;text-transform:uppercase">'+esc(titulo)+'</div>'
       +'<div style="display:flex;align-items:center;gap:12px">'
