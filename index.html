@@ -398,7 +398,7 @@
       <p>Solo para alumnos de Iago. El <b>nº de expediente</b> se pide una única vez: Iago lo contrasta con tu expediente real para validar que eres tú. Después entrarás siempre con tu nombre y tu contraseña.</p>
       <input class="gate-input txt" id="regNombre" type="text" placeholder="Nombre y apellidos" autocomplete="off" autocapitalize="words" spellcheck="false">
       <input class="gate-input txt" id="regExp" type="text" placeholder="Nº de expediente del alumno" autocomplete="off" autocapitalize="off" spellcheck="false">
-      <div class="gate-note" id="ayudaExpediente"><b>Nº de expediente:</b> disponible para consulta en CentrosNet o en la matrícula.</div>
+      <div class="gate-note" id="ayudaExpediente"><b>Nº de expediente:</b> disponible para consulta en CentrosNet o en el carnet de alumno.</div>
       <input class="gate-input" id="regPass" type="password" placeholder="Elige una contraseña" autocomplete="off" autocapitalize="off" spellcheck="false">
       <label class="gate-remember"><input type="checkbox" id="regRecordar" checked> Recordar en este dispositivo</label>
       <div class="gate-note"><b>Pensada para ordenador</b> y adaptada para tablet. <b>No es una app para móvil.</b></div>
@@ -409,7 +409,7 @@
     </div>
     <div id="alumnoReset" style="display:none">
       <h3>Recuperar contraseña</h3>
-      <p>Demuestra que eres tú con tu <b>nº de expediente</b> (Centros Net o la matrícula) y elige una contraseña nueva.</p>
+      <p>Demuestra que eres tú con tu <b>nº de expediente</b> (Centros Net o el carnet de alumno) y elige una contraseña nueva.</p>
       <input class="gate-input txt" id="resNombre" type="text" placeholder="Nombre y apellidos" autocomplete="off" autocapitalize="words" spellcheck="false">
       <input class="gate-input txt" id="resExp" type="text" placeholder="Nº de expediente" autocomplete="off" autocapitalize="off" spellcheck="false">
       <input class="gate-input" id="resPass" type="password" placeholder="Contraseña nueva" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -697,7 +697,7 @@ async function alumnoRegistrar(){
   const pass=document.getElementById('regPass').value||'';
   const err=document.getElementById('alumnoRegistroErr'); err.textContent='';
   if(nombre.length<3){ err.textContent='Escribe tu nombre y apellidos.'; return; }
-  if(exp.length<3){ err.textContent='Escribe el nº de expediente completo (Centros Net o la matrícula).'; return; }
+  if(exp.length<3){ err.textContent='Escribe el nº de expediente completo (Centros Net o el carnet de alumno).'; return; }
   if(pass.length<4){ err.textContent='La contraseña debe tener al menos 4 caracteres.'; return; }
   const btn=document.getElementById('regBtn'); btn.disabled=true; btn.textContent='Creando…';
   // Alta v3: nombre + contraseña propia + nº de expediente (solo para que el
