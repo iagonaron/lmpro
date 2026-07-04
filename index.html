@@ -2130,7 +2130,7 @@ function showEnig(kind){
     try{ var s=JSON.parse(localStorage.getItem('lmpro_session')||'null'); return !!(s&&s.id&&s.estado==='validado'); }catch(e){ return false; }
   }
   var PASOS=[
-    { sel:'#alu-campana-btn', tit:'🔔 Tus tareas', txt:'Cada viernes a las 19:00 te llegan aquí las Tareas de la semana: la ficha de teoría (¡con sus 7 días de plazo!) y las lecciones de ritmo para estudiar.' },
+    { sel:'#alu-campana-btn', tit:'🔔 Tus tareas', txt:'Cada viernes a las 19:00 te llegan aquí las Tareas de la semana: las lecciones de ritmo (abre cada captura para marcarla como estudiada) y la ficha de teoría — hazla desde su aviso y pulsa «enviar al profesor»: ¡tienes una semana de plazo y otra de gracia!' },
     { sel:'#alu-msj-btn', tit:'✉️ Habla con tu profe', txt:'Por aquí recibirás mensajes y consejos del profe. Y tú puedes escribirle cuando quieras: dudas, problemas con una tarea… lo que sea.' },
     { sel:'#btn-mis-resultados', tit:'📊 Mis resultados', txt:'Aquí puedes consultar tus resultados, progreso y estadísticas. Sin sorpresas: siempre sabrás cómo vas.' },
     { sel:'.apps', tit:'🎵 Las apps', txt:'Y aquí abajo, las aplicaciones para practicar por libre todo lo que quieras: Ritmo, Teoría, Intervalia, Entonación, Dictado… Cuanto más las uses, más fácil será todo.' }
