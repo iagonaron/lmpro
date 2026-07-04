@@ -1031,9 +1031,9 @@ function showEnig(kind){
     var old=document.getElementById('ts-visor'); if(old) old.remove();
     var ov=document.createElement('div'); ov.id='ts-visor';
     ov.style.cssText='position:fixed;inset:0;z-index:100002;background:rgba(8,5,22,.96);overflow:auto;-webkit-overflow-scrolling:touch;padding:16px 10px 30px';
-    // Iago 3-jul: visor a lo ANCHO - 760px se quedaba pequeno para leer la
-    // partitura en iPad/ordenador. Ahora ocupa casi todo el viewport (tope 1240px).
-    var inner='<div style="max-width:1240px;margin:0 auto">'
+    // Iago 3-jul (noche): vuelta al aspecto de antes pero un poco mas amplio.
+    // 760px se quedaba corto; 1240px resultaba excesivo. Tope: 880px.
+    var inner='<div style="max-width:880px;margin:0 auto">'
       +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">'
       +'<div style="font:700 14px/1.2 \'Helvetica Neue\',Arial,sans-serif;color:#c8cfdd;letter-spacing:.06em;text-transform:uppercase">'+esc(titulo)+'</div>'
       +'<div style="display:flex;align-items:center;gap:12px">'
@@ -1052,6 +1052,23 @@ function showEnig(kind){
       +'</div></div>';
     ov.innerHTML=inner;
     document.body.appendChild(ov);
+    // Iago 3-jul: si la captura ya no existe (barrido de 14 dias, o se quito
+    // del Diario despues de enviarla), el <img> roto pintaba un recuadro
+    // blanco enorme con una "?". Lo sustituimos por un aviso claro.
+    Array.prototype.forEach.call(ov.querySelectorAll('img'), function(im){
+      function caida(){
+        var av=document.createElement('div');
+        av.style.cssText='border:1px dashed rgba(255,255,255,.28);border-radius:12px;'+
+          'padding:30px 18px;text-align:center;color:#c8cfdd;'+
+          "font:600 13.5px/1.6 'Helvetica Neue',Arial,sans-serif;background:rgba(255,255,255,.04)";
+        av.innerHTML='🕳 Esta captura ya no está disponible.<br>'+
+          '<span style="font-weight:400;color:#8a93a8">Las imágenes de las lecciones caducan a los 14 días. '+
+          'Díselo a Iago en clase para que la vuelva a subir.</span>';
+        im.replaceWith(av);
+      }
+      im.onerror=caida;
+      if(im.complete && im.naturalWidth===0) caida();
+    });
     document.getElementById('tsVisorCerrar').onclick=function(){ ov.remove(); };
     var c2=document.getElementById('tsVisorCerrar2');
     if(c2) c2.onclick=function(){ ov.remove(); };
