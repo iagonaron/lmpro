@@ -973,7 +973,7 @@ function showEnig(kind){
   function pintarCuenta(el){
     var st=estadoPlazo(el.getAttribute('data-fin'), el.getAttribute('data-gracia'));
     if(!st){ el.textContent=''; return; }
-    if(st.fase==='normal'){ el.style.color='#2dd4bf'; el.textContent='Te quedan '+fmtCuenta(st.restante); }
+    if(st.fase==='normal'){ el.style.color='#e9c96a'; el.textContent='Te quedan '+fmtCuenta(st.restante); }
     else if(st.fase==='gracia'){ el.style.color='#ff5c80'; el.textContent='⏰ Semana de recuperación · te quedan '+fmtCuenta(st.restante); }
     else { el.style.color='#ef4444'; el.textContent='Plazo terminado'; }
   }
@@ -1442,7 +1442,7 @@ function showEnig(kind){
       if(fid){
         accionHTML=hecha
           ? '<span class="alu-hecha-badge">✓ Entregada</span>'
-          : '<button class="alu-hacer'+(prog?' alu-continuar':'')+'" data-ficha="'+esc(fid)+'" data-n="'+esc(pj.numero!=null?pj.numero:'')+'" style="margin-top:8px;background:#2dd4bf;color:#062b26;border:0;border-radius:8px;padding:8px 12px;font-weight:700;font-size:13px;cursor:pointer">'+(prog?'Continuar la ficha ('+prog.hechos+'/'+prog.total+') →':'Hacer la ficha →')+'</button>';
+          : '<button class="alu-hacer'+(prog?' alu-continuar':'')+'" data-ficha="'+esc(fid)+'" data-n="'+esc(pj.numero!=null?pj.numero:'')+'" style="margin-top:8px;background:linear-gradient(90deg,#e9c96a,#c8862b);color:#1a1305;border:0;border-radius:8px;padding:8px 12px;font-weight:700;font-size:13px;cursor:pointer">'+(prog?'Continuar la ficha ('+prog.hechos+'/'+prog.total+') →':'Hacer la ficha →')+'</button>';
       }
       return '<div class="alu-item'+((o.leido||hecha)?'':' no-leido')+(fid?' ficha':'')+(hecha?' hecha':'')+(extra?' alu-extra-pin':'')+'" data-id="'+esc(o.id)+'"'+(fid?(' data-ficha="'+esc(fid)+'"'):'')+'>'
         
@@ -1545,30 +1545,30 @@ function showEnig(kind){
     if(document.getElementById('neb-portal-css')) return;
     var s=document.createElement('style'); s.id='neb-portal-css';
     s.textContent=
-      '.alu-item.ficha{position:relative;overflow:hidden;border:1px solid rgba(169,116,255,.4);background:linear-gradient(160deg,#241a52 0%,#180f3c 45%,#0e0a2c 100%)}'+
-      '.alu-item.ficha .neb-mini{position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none;filter:blur(26px);opacity:.5}'+
+      '.alu-item.ficha{position:relative;overflow:hidden;border:1px solid rgba(212,175,55,.45);background:linear-gradient(160deg,#2a2008 0%,#1c1405 45%,#120c03 100%)}'+
+      '.alu-item.ficha .neb-mini{position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none;filter:blur(26px);opacity:.55}'+
       '.alu-item.ficha .neb-mini i{position:absolute;border-radius:50%;display:block}'+
-      '.alu-item.ficha .neb-mini .n1{width:120px;height:120px;left:-24px;top:-34px;background:#5bd0ff;animation:pnDrift1 21s ease-in-out infinite}'+
-      '.alu-item.ficha .neb-mini .n2{width:110px;height:110px;right:-28px;top:-18px;background:#a974ff;animation:pnDrift2 25s ease-in-out infinite}'+
-      '.alu-item.ficha .neb-mini .n3{width:130px;height:120px;right:12%;bottom:-44px;background:#ff5ccd;animation:pnDrift3 23s ease-in-out infinite}'+
+      '.alu-item.ficha .neb-mini .n1{width:120px;height:120px;left:-24px;top:-34px;background:#e9c96a;animation:pnDrift1 21s ease-in-out infinite}'+
+      '.alu-item.ficha .neb-mini .n2{width:110px;height:110px;right:-28px;top:-18px;background:#d4af37;animation:pnDrift2 25s ease-in-out infinite}'+
+      '.alu-item.ficha .neb-mini .n3{width:130px;height:120px;right:12%;bottom:-44px;background:#c8862b;animation:pnDrift3 23s ease-in-out infinite}'+
       '.alu-item.ficha .alu-dot,.alu-item.ficha .alu-item-main{position:relative;z-index:1}'+
-      '.alu-item.ficha .alu-item-tit{color:#f6f3ff}'+
-      '.alu-item.ficha .alu-item-cuerpo{color:#cfc7f5}'+
-      '.alu-item.ficha .alu-item-fecha{color:#9a90c8}'+
-      '.alu-item.ficha .alu-hacer{background:linear-gradient(90deg,#a974ff,#5bd0ff 45%,#ff5ccd)!important;background-size:200% 100%!important;animation:pnSlide 3s linear infinite;color:#12082e!important;box-shadow:0 8px 24px rgba(255,92,205,.38)}'+
+      '.alu-item.ficha .alu-item-tit{color:#fbf3df}'+
+      '.alu-item.ficha .alu-item-cuerpo{color:#e6d6a8}'+
+      '.alu-item.ficha .alu-item-fecha{color:#b39a5f}'+
+      '.alu-item.ficha .alu-hacer{background:linear-gradient(90deg,#e9c96a,#d4af37 45%,#c8862b)!important;background-size:200% 100%!important;animation:pnSlide 3s linear infinite;color:#1a1305!important;box-shadow:0 8px 24px rgba(212,175,55,.4)}'+
       '@keyframes pnDrift1{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(14px,10px) scale(1.12)}}'+
       '@keyframes pnDrift2{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-12px,12px) scale(1.1)}}'+
       '@keyframes pnDrift3{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-10px,-12px) scale(1.14)}}'+
       '@keyframes pnSlide{to{background-position:200% 0}}'+
-      '.portal-bell.ficha-pendiente{border-color:rgba(169,116,255,.85);background:linear-gradient(135deg,rgba(169,116,255,.16),rgba(91,208,255,.07))}'+
-      '.portal-bell.ficha-pendiente::before,.portal-bell.ficha-pendiente::after{content:"";position:absolute;inset:0;border-radius:11px;border:2px solid rgba(169,116,255,.65);animation:alucamp-onda 2.4s ease-out infinite;pointer-events:none}'+
+      '.portal-bell.ficha-pendiente{border-color:rgba(212,175,55,.85);background:linear-gradient(135deg,rgba(212,175,55,.16),rgba(200,134,43,.07))}'+
+      '.portal-bell.ficha-pendiente::before,.portal-bell.ficha-pendiente::after{content:"";position:absolute;inset:0;border-radius:11px;border:2px solid rgba(212,175,55,.65);animation:alucamp-onda 2.4s ease-out infinite;pointer-events:none}'+
       '.portal-bell.ficha-pendiente::after{animation-delay:1.2s}'+
-      '.portal-bell.ficha-pendiente .pb-bell{animation:alucamp-tintineo 2.4s ease-in-out infinite;stroke:#a974ff}'+
-      '.portal-bell-prog{position:absolute;bottom:-10px;left:50%;transform:translateX(-50%);background:linear-gradient(90deg,#a974ff,#5bd0ff 55%,#ff5ccd);background-size:200% 100%;animation:pnSlide 3s linear infinite;color:#12082e;font-size:9.5px;font-weight:800;padding:1px 7px;border-radius:99px;white-space:nowrap;box-shadow:0 2px 10px rgba(169,116,255,.5);line-height:14px;pointer-events:none}'+
+      '.portal-bell.ficha-pendiente .pb-bell{animation:alucamp-tintineo 2.4s ease-in-out infinite;stroke:#d4af37}'+
+      '.portal-bell-prog{position:absolute;bottom:-10px;left:50%;transform:translateX(-50%);background:linear-gradient(90deg,#e9c96a,#d4af37 55%,#c8862b);background-size:200% 100%;animation:pnSlide 3s linear infinite;color:#1a1305;font-size:9.5px;font-weight:800;padding:1px 7px;border-radius:99px;white-space:nowrap;box-shadow:0 2px 10px rgba(212,175,55,.5);line-height:14px;pointer-events:none}'+
       '.alu-item-prog{margin-top:7px;display:flex;flex-direction:column;gap:5px}'+
-      '.alu-item-prog .aip-txt{font-size:12px;font-weight:800;color:#5bd0ff}'+
+      '.alu-item-prog .aip-txt{font-size:12px;font-weight:800;color:#e9c96a}'+
       '.alu-item-prog .aip-bar{display:block;height:7px;border-radius:99px;background:rgba(255,255,255,.12);overflow:hidden}'+
-      '.alu-item-prog .aip-bar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#a974ff,#5bd0ff 55%,#ff5ccd);background-size:200% 100%;animation:pnSlide 3s linear infinite}'+
+      '.alu-item-prog .aip-bar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#e9c96a,#d4af37 55%,#c8862b);background-size:200% 100%;animation:pnSlide 3s linear infinite}'+
       // FASE 6.9 · ficha ENTREGADA: tarjeta gris desaturada + ✓ verde
       '.alu-item.ficha.hecha{border-color:rgba(148,163,184,.30);background:linear-gradient(160deg,#1b2036 0%,#151a2b 55%,#101423 100%);opacity:.82}'+
       '.alu-item.ficha.hecha .neb-mini{opacity:.10;filter:blur(26px) grayscale(1)}'+
