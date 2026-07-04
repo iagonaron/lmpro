@@ -1031,9 +1031,8 @@ function showEnig(kind){
     var old=document.getElementById('ts-visor'); if(old) old.remove();
     var ov=document.createElement('div'); ov.id='ts-visor';
     ov.style.cssText='position:fixed;inset:0;z-index:100002;background:rgba(8,5,22,.96);overflow:auto;-webkit-overflow-scrolling:touch;padding:16px 10px 30px';
-    // Iago 3-jul (noche): vuelta al aspecto de antes pero un poco mas amplio.
-    // 760px se quedaba corto; 1240px resultaba excesivo. Tope: 880px.
-    var inner='<div style="max-width:880px;margin:0 auto">'
+    // Iago 4-jul: con imagen REAL, 880px desaprovechaba pantalla. Tope: 1200px.
+    var inner='<div style="max-width:1200px;margin:0 auto">'
       +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">'
       +'<div style="font:700 14px/1.2 \'Helvetica Neue\',Arial,sans-serif;color:#c8cfdd;letter-spacing:.06em;text-transform:uppercase">'+esc(titulo)+'</div>'
       +'<div style="display:flex;align-items:center;gap:12px">'
@@ -1041,7 +1040,7 @@ function showEnig(kind){
       +'<button id="tsVisorCerrar" style="border:1px solid rgba(255,255,255,.22);border-radius:10px;padding:8px 13px;font-weight:700;cursor:pointer;background:transparent;color:#c8cfdd">✕ Cerrar</button></div></div>';
     imgs.forEach(function(u,i){
       inner+=(imgs.length>1?'<div style="font:700 11px/1 \'Helvetica Neue\',Arial,sans-serif;color:#8a93a8;letter-spacing:.12em;text-transform:uppercase;margin:14px 0 6px 2px">Página '+(i+1)+'</div>':'')
-        +'<img src="'+esc(u)+'" alt="Lección '+(i+1)+'" loading="lazy" style="display:block;width:100%;height:auto;border-radius:12px;background:#fff;box-shadow:0 12px 34px rgba(0,0,0,.45)">';
+        +'<img src="'+esc(u)+'" alt="Lección '+(i+1)+'" loading="lazy" style="display:block;width:100%;height:auto;border-radius:12px;background:#fff;box-shadow:0 12px 34px rgba(0,0,0,.45);image-rendering:-webkit-optimize-contrast">';
     });
     var ya=parteHecha(envio,parte);
     // Iago 3-jul: pantalla de ESTUDIO — sobria, sin estímulos. Botón discreto.
