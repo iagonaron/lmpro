@@ -1031,8 +1031,9 @@ function showEnig(kind){
     var old=document.getElementById('ts-visor'); if(old) old.remove();
     var ov=document.createElement('div'); ov.id='ts-visor';
     ov.style.cssText='position:fixed;inset:0;z-index:100002;background:rgba(8,5,22,.96);overflow:auto;-webkit-overflow-scrolling:touch;padding:16px 10px 30px';
-    // Iago 4-jul: con imagen REAL, 880px desaprovechaba pantalla. Tope: 1200px.
-    var inner='<div style="max-width:1200px;margin:0 auto">'
+    // Iago 4-jul (2): un punto mas de tamano sin comprometer nitidez. Tope 1280px
+    // y fluido (en pantallas menores ocupa el 96% del ancho).
+    var inner='<div style="max-width:1280px;width:96%;margin:0 auto">'
       +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">'
       +'<div style="font:700 14px/1.2 \'Helvetica Neue\',Arial,sans-serif;color:#c8cfdd;letter-spacing:.06em;text-transform:uppercase">'+esc(titulo)+'</div>'
       +'<div style="display:flex;align-items:center;gap:12px">'
