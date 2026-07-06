@@ -70,6 +70,14 @@
   body.intro .t-lm{animation:lmDodge 2.4s cubic-bezier(.34,1.1,.4,1) forwards}
   body.intro .t-home{opacity:0;animation:homeWrite .7s ease forwards 1.5s}
   body.intro .tag{opacity:0;animation:fadeUp .6s ease forwards 2s}
+  /* Congela el intro en el fotograma 0 hasta el primer pintado real (rAF).
+     Evita que la animación aparezca "a medias" cuando la página tarda en
+     cargar (dominio propio, http, caché fría). Se quita por JS al arrancar. */
+  body.hold-intro .veil,
+  body.hold-intro .t-lm,
+  body.hold-intro .t-pro,
+  body.hold-intro .t-home,
+  body.hold-intro .tag{animation-play-state:paused!important}
 
   /* LM aparece centrado y luego se aparta a su sitio (esquiva el sello) */
   @keyframes lmDodge{
@@ -347,7 +355,7 @@
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
-<body class="intro locked">
+<body class="intro locked hold-intro">
 <div class="gate" id="gate" aria-modal="true" role="dialog">
   <div class="gate-card">
     <div class="gate-devices" aria-label="Recomendado en ordenador o tablet, no en móvil">
@@ -880,11 +888,19 @@ function submitGate(){
 // No quitamos la clase 'intro': los estados finales se mantienen con animation-fill:forwards,
 // evitando cualquier reajuste al final. Las tarjetas quedan visibles vía 'cards-in'.
 (function(){
-  const reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if(reduce){ document.body.classList.remove('intro'); return; }
-  window.addEventListener('load',()=>{
-    setTimeout(()=>document.body.classList.add('cards-in'), 2050);
-  });
+  var b=document.body;
+  var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(reduce){ b.classList.remove('intro','hold-intro'); return; }
+  var started=false;
+  function start(){
+    if(started) return; started=true;
+    b.classList.remove('hold-intro');                    // arranca hero + velo desde el fotograma 0
+    setTimeout(()=>b.classList.add('cards-in'), 2050);   // tarjetas, ancladas al MISMO origen
+  }
+  // Anclar el arranque al PRIMER pintado real (no a 'load'): así la animación
+  // siempre empieza desde el principio, aunque el dominio tarde en responder.
+  requestAnimationFrame(()=>requestAnimationFrame(start));
+  setTimeout(start, 600);                                 // red de seguridad si rAF no dispara
 })();
 function goPredictPro(){ window.location.href='https://iagonaron.github.io/predictpro/'; }
 function goDictadoPro(){ window.location.href='https://iagonaron.github.io/dictadospro/'; }
@@ -1637,8 +1653,9 @@ function showEnig(kind){
 <script>
 /* ============================================================================
    FASE 6.8 · "MIS RESULTADOS" — réplica de la ficha del alumno del Diario,
-   con estética Suite (nebulosa azul/morada) y colores canon por apartado:
-   Ritmo #f0d47a · Entonación #e0b34a · Audición #b87526 · Teoría #b8860b.
+   con estética Suite (nebulosa dorada) y colores canon por apartado
+   (idénticos al portal elemental):
+   Ritmo #22c55e · Entonación #4a9eff · Audición #f97316 · Teoría #ec4899.
 
    Datos: RPC suite_mis_resultados(p_cuenta_id) — SECURITY DEFINER, resuelve
    cuenta→alumno_canon y devuelve SUS evaluaciones (SQL: suite_mis_resultados.sql).
@@ -1657,12 +1674,14 @@ function showEnig(kind){
   function cuentaId(){ var s=ses(); return (s && s.id && s.estado==='validado') ? s.id : null; }
   function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
 
-  /* ---- colores CANON de los apartados (idénticos al Diario) ---- */
+  /* ---- colores CANON de los apartados (idénticos al portal ELEMENTAL) ----
+     Ritmo verde · Entonación azul claro · Audición naranja · Teoría rosa.
+     Solo afecta al panel "Mis resultados"; el resto del PRO sigue dorado. */
   var APARTADOS={
-    ritmo:      { label:'Ritmo',      color:'#f0d47a' },
-    entonacion: { label:'Entonación', color:'#e0b34a' },
-    audicion:   { label:'Audición',   color:'#b87526' },
-    teoria:     { label:'Teoría',     color:'#b8860b' }
+    ritmo:      { label:'Ritmo',      color:'#22c55e' },
+    entonacion: { label:'Entonación', color:'#4a9eff' },
+    audicion:   { label:'Audición',   color:'#f97316' },
+    teoria:     { label:'Teoría',     color:'#ec4899' }
   };
   var ORDEN_AP=['ritmo','entonacion','audicion','teoria'];
   /* app_origen → apartado (mismo mapeo que evaluaciones-reader del Diario) */
@@ -1727,6 +1746,11 @@ function showEnig(kind){
     return t;
   }
   function colorNota(n){ return n==null?'#98895e':(n<5?'#caa14a':(n<7?'#ffd166':'#e8d9a8')); }
+  /* --- Nota del boletín (idéntica al Diario): entero redondeado + color por banda ---
+     redondea PRIMERO a 2 decimales y LUEGO al entero (misma regla que el Diario). */
+  function redondearEnteroBoletin(n){ if(n==null||isNaN(n)) return null; return Math.round(+(Number(n).toFixed(2))); }
+  function colorBoletin(real){ if(real==null||isNaN(real)) return '#98895e'; var ent=redondearEnteroBoletin(real); if(ent<5) return '#f87171'; return real>=7?'#5eead4':'#fbbf24'; }
+  function notasFin(){ return Array.isArray(_st.notasFinales)?_st.notasFinales:[]; }
   function fmt(n){ return n==null?'—':n.toFixed(2); }
   function fFecha(iso){ if(!iso) return ''; var d=new Date(iso+(String(iso).length===10?'T00:00:00':'')); if(isNaN(d)) return String(iso).slice(0,10); return ('0'+d.getDate()).slice(-2)+'/'+('0'+(d.getMonth()+1)).slice(-2); }
   function iniciales(nom,ape){ var a=(nom||' ')[0]||'', b=(ape||' ')[0]||''; return (a+b).toUpperCase()||'??'; }
@@ -1734,12 +1758,15 @@ function showEnig(kind){
   /* ================= SVG · evolución por apartado ================= */
   function svgEvolucion(ss){
     var pts=ss.filter(function(x){ return x.fecha && isFinite(Date.parse(x.fecha)); });
-    if(pts.length<2) return '<div class="mr-vacio">Aún no hay sesiones suficientes para dibujar tu evolución.</div>';
+    if(!pts.length) return '<div class="mr-vacio">Aún no hay sesiones para dibujar tu evolución.</div>';
     var W=760,H=280,L=36,R=14,T=16,B=30;
     var ts=pts.map(function(x){ return Date.parse(x.fecha); });
-    var mn=Math.min.apply(null,ts), mx=Math.max.apply(null,ts);
-    if(mn===mx){ mn-=86400000; mx+=86400000; }
-    function X(t){ return L+((t-mn)/(mx-mn))*(W-L-R); }
+    // Eje X FIJO: curso académico sep→jun (a partir de la primera sesión).
+    // Al arrancar el curso solo se cubre el principio; según avanza, se rellena.
+    var first=new Date(Math.min.apply(null,ts));
+    var sy=first.getMonth()>=8?first.getFullYear():first.getFullYear()-1;
+    var mn=new Date(sy,8,1).getTime(), mx=new Date(sy+1,5,30).getTime();
+    function X(t){ return L+Math.max(0,Math.min(1,(t-mn)/(mx-mn)))*(W-L-R); }
     function Y(n){ return T+(1-Math.max(0,Math.min(10,n))/10)*(H-T-B); }
     var s='<svg class="mr-svg" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Evolución de tus notas de clase">';
     [0,2.5,5,7.5,10].forEach(function(v){
@@ -1747,12 +1774,10 @@ function showEnig(kind){
       s+='<line x1="'+L+'" y1="'+y+'" x2="'+(W-R)+'" y2="'+y+'" stroke="#ffffff17" stroke-width="1"'+(v===5?' stroke-dasharray="4 4" stroke="#ffffff33"':'')+'/>';
       s+='<text x="'+(L-7)+'" y="'+(y+4)+'" text-anchor="end" font-size="10.5" fill="#98895e">'+v+'</text>';
     });
-    // marcas de meses en el eje X
-    var d0=new Date(mn); d0.setDate(1); d0.setHours(0,0,0,0);
+    // marcas de meses FIJAS: sep → jun
     var MESES=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
-    for(var d=new Date(d0); d.getTime()<=mx; d.setMonth(d.getMonth()+1)){
-      var t=d.getTime(); if(t<mn) continue;
-      s+='<text x="'+X(t)+'" y="'+(H-9)+'" text-anchor="middle" font-size="10" fill="#98895e">'+MESES[d.getMonth()]+'</text>';
+    for(var d=new Date(sy,8,1); d.getTime()<=mx; d.setMonth(d.getMonth()+1)){
+      s+='<text x="'+X(d.getTime()).toFixed(1)+'" y="'+(H-9)+'" text-anchor="middle" font-size="10" fill="#98895e">'+MESES[d.getMonth()]+'</text>';
     }
     ORDEN_AP.forEach(function(ap){
       var l=pts.filter(function(x){ return x.ap===ap; });
@@ -1777,15 +1802,39 @@ function showEnig(kind){
                {ap:'audicion',dx:0,dy:1,anch:'middle',ax:0,ay:20},
                {ap:'teoria',dx:-1,dy:0,anch:'end',ax:-12,ay:4} ];
     function P(dx,dy,val){ var r=Rr*Math.max(0,Math.min(10,val))/10; return (c+dx*r).toFixed(1)+','+(c+dy*r).toFixed(1); }
-    var s='<svg class="mr-svg mr-radar" viewBox="0 0 '+S+' '+S+'" role="img" aria-label="Radar de medias por apartado">';
+    var PADX=48;   // aire lateral para que "Entonación"/"Teoría" no se corten
+    var s='<svg class="mr-svg mr-radar" viewBox="'+(-PADX)+' 0 '+(S+2*PADX)+' '+S+'" role="img" aria-label="Radar de medias por apartado">';
+    // defs: un degradado radial por apartado, centrado hacia SU región (se apaga hacia el centro)
+    var defs='<defs>';
+    ejes.forEach(function(e){
+      var col=APARTADOS[e.ap].color, o=P(e.dx,e.dy,10).split(',');
+      defs+='<radialGradient id="mrG_'+e.ap+'" gradientUnits="userSpaceOnUse" cx="'+o[0]+'" cy="'+o[1]+'" r="'+(Rr*1.45).toFixed(1)+'">'
+          +'<stop offset="0%" stop-color="'+col+'" stop-opacity=".85"/>'
+          +'<stop offset="50%" stop-color="'+col+'" stop-opacity=".32"/>'
+          +'<stop offset="100%" stop-color="'+col+'" stop-opacity="0"/></radialGradient>';
+    });
+    defs+='</defs>'; s+=defs;
     [2.5,5,7.5,10].forEach(function(v){
       s+='<polygon points="'+ejes.map(function(e){ return P(e.dx,e.dy,v); }).join(' ')+'" fill="none" stroke="#ffffff1d" stroke-width="1"'+(v===5?' stroke-dasharray="4 4"':'')+'/>';
     });
     ejes.forEach(function(e){ s+='<line x1="'+c+'" y1="'+c+'" x2="'+P(e.dx,e.dy,10).split(',')[0]+'" y2="'+P(e.dx,e.dy,10).split(',')[1]+'" stroke="#ffffff14"/>'; });
     var tiene=ejes.some(function(e){ return mediasCurso[e.ap] && mediasCurso[e.ap].media!=null; });
     if(tiene){
-      var poly=ejes.map(function(e){ var m=mediasCurso[e.ap]; return P(e.dx,e.dy,(m&&m.media!=null)?m.media:0); }).join(' ');
-      s+='<polygon points="'+poly+'" fill="rgba(212,175,55,.26)" stroke="#e8c15a" stroke-width="2"/>';
+      var pts=ejes.map(function(e){ var m=mediasCurso[e.ap]; return P(e.dx,e.dy,(m&&m.media!=null)?m.media:0); });
+      // relleno multicolor recortado al polígono de datos
+      s+='<clipPath id="mrRadarClip"><polygon points="'+pts.join(' ')+'"/></clipPath>';
+      s+='<g clip-path="url(#mrRadarClip)">';
+      ejes.forEach(function(e){ var m=mediasCurso[e.ap]; if(!m||m.media==null) return;
+        s+='<rect x="'+(-PADX)+'" y="0" width="'+(S+2*PADX)+'" height="'+S+'" fill="url(#mrG_'+e.ap+')"/>'; });
+      s+='</g>';
+      // contorno: cada arista degrada entre los colores de sus dos apartados
+      var xy=pts.map(function(p){ return p.split(','); });
+      for(var i=0;i<ejes.length;i++){
+        var j=(i+1)%ejes.length, pa=xy[i], pb=xy[j];
+        s+='<linearGradient id="mrE_'+i+'" gradientUnits="userSpaceOnUse" x1="'+pa[0]+'" y1="'+pa[1]+'" x2="'+pb[0]+'" y2="'+pb[1]+'">'
+          +'<stop offset="0%" stop-color="'+APARTADOS[ejes[i].ap].color+'"/><stop offset="100%" stop-color="'+APARTADOS[ejes[j].ap].color+'"/></linearGradient>';
+        s+='<line x1="'+pa[0]+'" y1="'+pa[1]+'" x2="'+pb[0]+'" y2="'+pb[1]+'" stroke="url(#mrE_'+i+')" stroke-width="2.2" stroke-linecap="round"/>';
+      }
       ejes.forEach(function(e){
         var m=mediasCurso[e.ap]; if(!m||m.media==null) return;
         var p=P(e.dx,e.dy,m.media).split(',');
@@ -1794,8 +1843,7 @@ function showEnig(kind){
     }
     ejes.forEach(function(e){
       var end=P(e.dx,e.dy,10).split(',');
-      var m=mediasCurso[e.ap];
-      s+='<text x="'+(parseFloat(end[0])+e.ax)+'" y="'+(parseFloat(end[1])+e.ay)+'" text-anchor="'+e.anch+'" font-size="11.5" font-weight="800" fill="'+APARTADOS[e.ap].color+'">'+esc(APARTADOS[e.ap].label)+(m&&m.media!=null?' · '+fmt(m.media):'')+'</text>';
+      s+='<text x="'+(parseFloat(end[0])+e.ax)+'" y="'+(parseFloat(end[1])+e.ay)+'" text-anchor="'+e.anch+'" font-size="12" font-weight="800" fill="'+APARTADOS[e.ap].color+'">'+esc(APARTADOS[e.ap].label)+'</text>';
     });
     s+='</svg>';
     return s;
@@ -1874,6 +1922,40 @@ function showEnig(kind){
       }).join('')+'</div></div>';
   }
 
+  /* ===== Notas del trimestre (leídas del Diario, NO calculadas) — GP: NOTA TOTAL ===== */
+  function bloqueNotasTrimestre(){
+    var nf=notasFin(); if(!nf.length) return '';
+    var byT={}; nf.forEach(function(r){ if(r&&r.trimestre) byT[r.trimestre]=r; });
+    var hay=['1T','2T','3T'].some(function(t){ return byT[t] && byT[t].m_total!=null; });
+    if(!hay) return '';
+    var cards=['1T','2T','3T'].map(function(t){
+      var v=byT[t]?byT[t].m_total:null;
+      var real=(v==null||isNaN(v))?null:Number(v);
+      var ent=redondearEnteroBoletin(real), col=colorBoletin(real);
+      return '<div class="mr-bol"><div class="mr-bol-top"><span class="mr-bol-lbl">NOTA TOTAL</span>'
+        +(real!=null?'<span class="mr-bol-real"'+(real<5?' style="color:#f87171"':'')+'>'+real.toFixed(2)+'</span>':'')+'</div>'
+        +'<div class="mr-bol-trim">'+t+'</div>'
+        +'<div class="mr-bol-num" style="color:'+col+'">'+(ent!=null?ent:'—')+'</div></div>';
+    }).join('');
+    return '<div class="mr-card mr-bol-card"><div class="mr-card-tit">🎓 Notas del trimestre</div>'
+      +'<div class="mr-bol-sub">Combinación media de clase × examen ponderada por los pesos del curso · del Diario del profesor</div>'
+      +'<div class="mr-bol-grid">'+cards+'</div></div>';
+  }
+  /* ===== Radar en ventana emergente ===== */
+  function abrirRadar(){
+    var ss=sesiones();
+    var m=document.getElementById('mr-radar-modal');
+    if(!m){ m=document.createElement('div'); m.id='mr-radar-modal'; m.className='mr-radar-modal';
+      m.addEventListener('click',function(e){ if(e.target===m) cerrarRadar(); });
+      document.addEventListener('keydown',function(e){ if(e.key==='Escape' && m.classList.contains('open')){ e.stopImmediatePropagation(); cerrarRadar(); } }, true);
+      document.body.appendChild(m); }
+    m.innerHTML='<div class="mr-radar-box"><button type="button" class="mr-radar-x" aria-label="Cerrar">✕</button>'
+      +'<div class="mr-card-tit" style="text-align:center">Tu radar del curso</div>'+svgRadar(mediasPorAp(ss,null))+'</div>';
+    m.querySelector('.mr-radar-x').addEventListener('click',cerrarRadar);
+    m.classList.add('open');
+  }
+  function cerrarRadar(){ var m=document.getElementById('mr-radar-modal'); if(m) m.classList.remove('open'); }
+
   function render(){
     var body=document.getElementById('mr-body'); if(!body) return;
     var ss=sesiones();
@@ -1896,23 +1978,22 @@ function showEnig(kind){
         +'<div class="mr-nc-num" style="color:'+colorNota(notaClase)+'">'+fmt(notaClase)+'</div>'
         +'<div class="mr-nc-fecha">a día '+esc(fechaTxt)+'</div></div>'
       +'</div>'
+      +bloqueNotasTrimestre()
       +(ss.length
-        ? '<div class="mr-card"><div class="mr-card-tit-row"><div class="mr-card-tit">Tus medias de clase</div><div class="mr-trims">'+chips+'</div></div>'
+        ? '<div class="mr-card"><div class="mr-card-tit-row"><div class="mr-card-tit">Tus medias de clase</div><div class="mr-medias-acc"><button type="button" class="mr-ver-radar">🎯 Ver radar</button><div class="mr-trims">'+chips+'</div></div></div>'
           +tarjetasApartados(ss)+'</div>'
           +bloqueTendencia(ss)
           +bloqueExamenes()
-          +'<div class="mr-dos">'
-            +'<div class="mr-card"><div class="mr-card-tit">Tu evolución durante el curso</div>'+svgEvolucion(ss)
+          +'<div class="mr-card"><div class="mr-card-tit">Tu evolución durante el curso</div>'+svgEvolucion(ss)
             +'<div class="mr-leyenda">'+ORDEN_AP.map(function(ap){ return '<span class="mr-chip" style="--apc:'+APARTADOS[ap].color+'">'+esc(APARTADOS[ap].label)+'</span>'; }).join('')+'</div></div>'
-            +'<div class="mr-card mr-card-radar"><div class="mr-card-tit">Tu radar del curso</div>'+svgRadar(mediasPorAp(ss,null))+'</div>'
-          +'</div>'
           +bloqueUltimas(ss)
         : '<div class="mr-card"><div class="mr-vacio">Todavía no hay notas registradas en tu cuenta. En cuanto entregues fichas y hagas ejercicios de la Suite, tus resultados aparecerán aquí. ✨</div></div>')
-      +'<div class="mr-nota-pie">Las medias de esta pantalla son orientativas (media simple de tus sesiones). La calificación oficial de cada evaluación es la del boletín.</div>';
+      +'<div class="mr-nota-pie">Las Notas del trimestre provienen del Diario del profesor (nota del boletín). Las medias y gráficas de clase son orientativas, a partir de tus sesiones.</div>';
 
     Array.prototype.forEach.call(body.querySelectorAll('.mr-chip-trim'),function(b){
       b.addEventListener('click',function(){ _st.trim=b.getAttribute('data-trim'); render(); });
     });
+    var vr=body.querySelector('.mr-ver-radar'); if(vr) vr.addEventListener('click',abrirRadar);
     body.scrollTop=0;
   }
 
@@ -1944,6 +2025,12 @@ function showEnig(kind){
       _st.alumno=d.alumno||{};
       _st.cargado=true;
       render();
+      // Notas del boletín leídas del Diario (aditivo, tolerante a fallo):
+      // si aún no está el SQL suite_mis_notas_finales, el bloque no aparece.
+      try{
+        var rf=await c.rpc('suite_mis_notas_finales',{ p_cuenta_id:id });
+        if(rf && !rf.error && Array.isArray(rf.data) && rf.data.length){ _st.notasFinales=rf.data; render(); }
+      }catch(_e){ /* silencioso: el bloque simplemente no se muestra */ }
     }catch(e){
       console.warn('[mis-resultados]',e);
       if(!teniaCache) body.innerHTML='<div class="mr-card"><div class="mr-vacio">No se pudieron cargar los resultados ('+esc((e&&e.message)||e)+'). Si acaba de crearse, puede que falte ejecutar el SQL suite_mis_resultados.</div></div>';
@@ -2018,7 +2105,24 @@ function showEnig(kind){
       +'.mr-spin{width:44px;height:44px;border-radius:50%;border:4px solid #ffffff26;border-top-color:#e8c15a;animation:mrSpin .9s linear infinite}'
       +'@keyframes mrSpin{to{transform:rotate(360deg)}}'
       +'@media(prefers-reduced-motion:reduce){.mrneb,.mr-spin{animation:none!important}}'
-      +'@media(max-width:600px){.mr-notaclase{border-left:none;border-top:1px dashed #ffffff2b;padding-top:10px;width:100%}.mr-top-hueco{display:none}}';
+      +'@media(max-width:600px){.mr-notaclase{border-left:none;border-top:1px dashed #ffffff2b;padding-top:10px;width:100%}.mr-top-hueco{display:none}}'
+      +'.mr-medias-acc{display:flex;align-items:center;gap:10px;flex-wrap:wrap}'
+      +'.mr-ver-radar{font:inherit;font-size:12px;font-weight:800;color:#1a1204;background:linear-gradient(90deg,#e8c15a,#d4af37);border:none;border-radius:99px;padding:6px 14px;cursor:pointer}'
+      +'.mr-ver-radar:hover{filter:brightness(1.07)}'
+      +'.mr-bol-card .mr-bol-sub{font-size:12px;color:#a8996b;margin:2px 0 12px;line-height:1.4}'
+      +'.mr-bol-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}'
+      +'@media(max-width:520px){.mr-bol-grid{grid-template-columns:1fr}}'
+      +'.mr-bol{position:relative;background:rgba(255,255,255,.04);border:1px solid #ffffff1c;border-radius:16px;padding:13px 16px 16px;display:flex;flex-direction:column;min-height:132px}'
+      +'.mr-bol-top{display:flex;justify-content:space-between;align-items:center;gap:8px}'
+      +'.mr-bol-lbl{font-size:11px;font-weight:900;color:#a8996b;letter-spacing:.05em;text-transform:uppercase}'
+      +'.mr-bol-real{font-size:12.5px;font-weight:800;color:#e8c15a;background:rgba(0,0,0,.35);border-radius:8px;padding:3px 8px;font-variant-numeric:tabular-nums}'
+      +'.mr-bol-trim{font-size:15px;font-weight:900;color:#e8c15a;margin-top:2px}'
+      +'.mr-bol-num{font-size:52px;font-weight:900;line-height:1.02;margin-top:auto;font-variant-numeric:tabular-nums;text-align:center}'
+      +'.mr-radar-modal{position:fixed;inset:0;z-index:99999;display:none;align-items:center;justify-content:center;background:rgba(6,4,1,.72);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);padding:20px}'
+      +'.mr-radar-modal.open{display:flex}'
+      +'.mr-radar-box{position:relative;background:linear-gradient(160deg,#241b08,#140e05);border:1px solid #ffffff22;border-radius:20px;padding:20px 22px 16px;max-width:430px;width:100%;box-shadow:0 30px 80px rgba(0,0,0,.6)}'
+      +'.mr-radar-box .mr-radar{max-width:360px;margin:6px auto 0;display:block}'
+      +'.mr-radar-x{position:absolute;top:10px;right:12px;background:none;border:none;color:#d9c99a;font-size:18px;cursor:pointer;line-height:1}';
     document.head.appendChild(s);
   }
   if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded',css); } else { css(); }
