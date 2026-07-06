@@ -1751,6 +1751,12 @@ function showEnig(kind){
   function redondearEnteroBoletin(n){ if(n==null||isNaN(n)) return null; return Math.round(+(Number(n).toFixed(2))); }
   function colorBoletin(real){ if(real==null||isNaN(real)) return '#98895e'; var ent=redondearEnteroBoletin(real); if(ent<5) return '#f87171'; return real>=7?'#5eead4':'#fbbf24'; }
   function notasFin(){ return Array.isArray(_st.notasFinales)?_st.notasFinales:[]; }
+  /* curso académico automático: rueda solo cada curso. Salta en AGOSTO (mes>=7),
+     así si creas el curso nuevo el 15-ago ya aparece el curso siguiente. */
+  function cursoAcad(){ var d=new Date(), y=d.getFullYear(), s=(d.getMonth()>=7)?y:y-1; return s+'/'+String(s+1).slice(-2); }
+  /* media de clase del Diario (c_media) para un trimestre; null si no hay dato */
+  function cMediaTrim(t){ var nf=notasFin(); for(var i=0;i<nf.length;i++){ if(nf[i]&&nf[i].trimestre===t&&nf[i].c_media!=null) return Number(nf[i].c_media); } return null; }
+  function mediaClaseChip(){ var c=cMediaTrim(_st.trim); if(c==null) return ''; return '<span class="mr-media-clase">Media de clase <b style="color:'+colorNota(c)+'">'+fmt(c)+'</b></span>'; }
   function fmt(n){ return n==null?'—':n.toFixed(2); }
   function fFecha(iso){ if(!iso) return ''; var d=new Date(iso+(String(iso).length===10?'T00:00:00':'')); if(isNaN(d)) return String(iso).slice(0,10); return ('0'+d.getDate()).slice(-2)+'/'+('0'+(d.getMonth()+1)).slice(-2); }
   function iniciales(nom,ape){ var a=(nom||' ')[0]||'', b=(ape||' ')[0]||''; return (a+b).toUpperCase()||'??'; }
@@ -1973,14 +1979,11 @@ function showEnig(kind){
       '<div class="mr-hero mr-card">'
         +'<div class="mr-avatar">'+esc(iniciales(al.nombre,al.apellidos))+'</div>'
         +'<div class="mr-hero-info"><div class="mr-hero-nombre">'+esc(nombre)+'</div>'
-        +'<div class="mr-hero-sub">'+esc(al.grupo||'')+(al.grupo?' · ':'')+'Lenguaje Musical · curso 2025/26</div></div>'
-        +'<div class="mr-notaclase"><div class="mr-nc-lbl">Tu nota de clase actual</div>'
-        +'<div class="mr-nc-num" style="color:'+colorNota(notaClase)+'">'+fmt(notaClase)+'</div>'
-        +'<div class="mr-nc-fecha">a día '+esc(fechaTxt)+'</div></div>'
+        +'<div class="mr-hero-sub">'+esc(al.grupo||'')+(al.grupo?' · ':'')+'Lenguaje Musical · curso '+cursoAcad()+'</div></div>'
       +'</div>'
       +bloqueNotasTrimestre()
       +(ss.length
-        ? '<div class="mr-card"><div class="mr-card-tit-row"><div class="mr-card-tit">Tus medias de clase</div><div class="mr-medias-acc"><button type="button" class="mr-ver-radar">🎯 Ver radar</button><div class="mr-trims">'+chips+'</div></div></div>'
+        ? '<div class="mr-card"><div class="mr-card-tit-row"><div class="mr-card-tit">Tus medias de clase</div><div class="mr-medias-acc">'+mediaClaseChip()+'<button type="button" class="mr-ver-radar">🎯 Ver radar</button><div class="mr-trims">'+chips+'</div></div></div>'
           +tarjetasApartados(ss)+'</div>'
           +bloqueTendencia(ss)
           +bloqueExamenes()
@@ -2107,6 +2110,8 @@ function showEnig(kind){
       +'@media(prefers-reduced-motion:reduce){.mrneb,.mr-spin{animation:none!important}}'
       +'@media(max-width:600px){.mr-notaclase{border-left:none;border-top:1px dashed #ffffff2b;padding-top:10px;width:100%}.mr-top-hueco{display:none}}'
       +'.mr-medias-acc{display:flex;align-items:center;gap:10px;flex-wrap:wrap}'
+      +'.mr-media-clase{font-size:12px;font-weight:700;color:#a8996b;white-space:nowrap}'
+      +'.mr-media-clase b{font-size:14px;font-weight:900;margin-left:4px;font-variant-numeric:tabular-nums}'
       +'.mr-ver-radar{font:inherit;font-size:12px;font-weight:800;color:#1a1204;background:linear-gradient(90deg,#e8c15a,#d4af37);border:none;border-radius:99px;padding:6px 14px;cursor:pointer}'
       +'.mr-ver-radar:hover{filter:brightness(1.07)}'
       +'.mr-bol-card .mr-bol-sub{font-size:12px;color:#a8996b;margin:2px 0 12px;line-height:1.4}'
