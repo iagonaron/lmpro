@@ -357,6 +357,55 @@
 </head>
 <body class="intro locked hold-intro">
 <script>
+/* ===== MODO VISOR (llave maestra del profesor) =====================
+   Abrir el portal con  #visor=<cuenta_id>  entra como ese alumno en
+   SOLO LECTURA y SIN RASTRO: no persiste sesión y bloquea toda RPC de
+   escritura (marcar leído, marcar todo, enviar mensaje, barrer quiz,
+   marcar semana, login, registro, reset). Se activa SOLO con ese hash;
+   los alumnos que entran normal no se ven afectados en absoluto. */
+(function(){
+  try{
+    var m=(location.hash||'').match(/visor=([0-9a-fA-F-]{36})/);
+    if(!m) return;
+    var VID=m[1];
+    window.__VISOR={ id:VID, session:{ id:VID, estado:'validado', recordar:true, nombre:'' } };
+    var SES={ lmeav_session:1, lmpro_session:1 };
+    var BLOCK={ suite_alumno_marcar_leido:1, suite_alumno_marcar_todo:1, suite_msj_enviar_alumno:1,
+                suite_quiz_barrer:1, suite_semana_marcar:1, suite_login_alumno:1, suite_pass_reset:1,
+                suite_registrar_alumno:1, suite_registrar_alumno_v3:1 };
+    var WRE=/(_marcar|marcar_|_enviar|registrar|_reset|barrer|_guardar|_crear|_borrar|_upsert|_insert|_update|_delete)/;
+    function esEscritura(fn){ return !!BLOCK[fn] || WRE.test(String(fn||'')); }
+    /* 1) Sesión del alumno EN MEMORIA (nunca se persiste) */
+    var _g=localStorage.getItem.bind(localStorage), _s=localStorage.setItem.bind(localStorage), _r=localStorage.removeItem.bind(localStorage);
+    localStorage.getItem=function(k){ if(SES[k]) return JSON.stringify(window.__VISOR.session); return _g(k); };
+    localStorage.setItem=function(k,v){ if(SES[k]){ try{ window.__VISOR.session=JSON.parse(v); }catch(e){} return; } if(/^(suite_|lmeav_|lmpro_)/.test(k)) return; return _s(k,v); };
+    localStorage.removeItem=function(k){ if(SES[k]) return; return _r(k); };
+    /* 2) Cliente Supabase de SOLO LECTURA: las escrituras -> no-op */
+    function wrap(c){
+      if(!c||c.__visor) return c;
+      var rpc=c.rpc.bind(c);
+      c.rpc=function(fn,args){ if(esEscritura(fn)){ if(window.console&&console.log) console.log('[visor] escritura bloqueada:',fn); return Promise.resolve({ data:{ ok:true, __visor:true }, error:null }); } return rpc(fn,args); };
+      var from=c.from.bind(c);
+      c.from=function(t){ var q=from(t); ['insert','update','upsert','delete'].forEach(function(mm){ if(q&&typeof q[mm]==='function') q[mm]=function(){ return Promise.resolve({ data:null, error:null }); }; }); return q; };
+      c.__visor=1; return c;
+    }
+    function patch(){ if(window.supabase&&window.supabase.createClient&&!window.supabase.__visor){ var cc=window.supabase.createClient; window.supabase.createClient=function(){ return wrap(cc.apply(this,arguments)); }; window.supabase.__visor=1; } }
+    patch();
+    var n=0, iv=setInterval(function(){ patch(); if((window.supabase&&window.supabase.__visor)||++n>80) clearInterval(iv); },30);
+    /* 3) Banner "modo profesor" */
+    function banner(){
+      if(document.getElementById('visor-banner')) return;
+      var b=document.createElement('div'); b.id='visor-banner';
+      b.textContent='\u{1F441} Modo profesor · viendo como el alumno · solo lectura';
+      b.style.cssText='position:fixed;left:0;right:0;top:0;z-index:2147483647;background:linear-gradient(90deg,#7c3aed,#5b21b6);color:#fff;font:700 12.5px/1.4 system-ui,-apple-system,Arial;padding:7px 14px;text-align:center;box-shadow:0 2px 12px rgba(0,0,0,.45);letter-spacing:.02em';
+      (document.body||document.documentElement).appendChild(b);
+    }
+    if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',banner); else banner();
+  }catch(e){ if(window.console) console.warn('[visor] init',e); }
+})();
+</script>
+
+<script>
 /* Radar del Diario (radar-medias.js) reutilizado en la suite para que el radar sea IDÉNTICO al del Diario. Módulo puro: solo genera SVG. */
 (function () {
   'use strict';
