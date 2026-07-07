@@ -2429,16 +2429,34 @@ function showEnig(kind){
       +'<div class="mr-bol-sub">Combinación media de clase × examen ponderada por los pesos del curso · del Diario del profesor</div>'
       +'<div class="mr-bol-grid">'+cards+'</div></div>';
   }
-  /* Medias por apartado IGUAL que el Diario: media simple de clase + examen. */
+  /* Medias por apartado IGUAL que el Diario. GP = 5 vértices: separa
+     entonación TONAL (apartado_override 'entonacion' / 'entonacion_lec') de
+     entonación ATONAL ('entonacion_int', exclusiva de examen en GP).
+     Lee clase + examen sobre las filas crudas para no perder lec/int. */
   function mediasRadar(){
-    var ss=sesiones(), ex=examenes(), out={};
-    ORDEN_AP.forEach(function(ap){
-      var vals=[];
-      ss.forEach(function(s){ if(s.ap===ap && s.nota!=null && isFinite(s.nota)) vals.push(Number(s.nota)); });
-      ['1T','2T','3T','extraordinaria'].forEach(function(t){ var v=ex[t]&&ex[t][ap]; if(v!=null && isFinite(v)) vals.push(Number(v)); });
-      out[ap]= vals.length ? vals.reduce(function(a,b){return a+b;},0)/vals.length : null;
+    var acc={ ritmo:[], entonacion:[], entonacion_atonal:[], audicion:[], teoria:[] };
+    function ovDe(e){ return e.apartado_override || (e.payload_json && e.payload_json.apartado_override) || null; }
+    function apDe(ov, appOrigen){
+      if(ov==='entonacion_int') return 'entonacion_atonal';
+      if(ov==='entonacion_lec') return 'entonacion';
+      var ap = ov || MAP_APP[appOrigen];
+      return (acc[ap]!==undefined) ? ap : null;
+    }
+    (_st.rows||[]).forEach(function(e){
+      var t=(e.eval_tipo)||'sesion';
+      if(t!=='sesion' && t.indexOf('examen')!==0 && t!=='extraordinaria') return;
+      if(e.sin_evaluar) return;
+      var ap=apDe(ovDe(e), e.app_origen);
+      if(ap && e.nota_final!=null && isFinite(e.nota_final)) acc[ap].push(Number(e.nota_final));
+      var et=e.etiqueta_nota_secundaria;
+      var ap2=(et==='entonacion_int')?'entonacion_atonal':((et==='entonacion_lec')?'entonacion':((acc[et]!==undefined)?et:null));
+      if(ap2 && e.nota_secundaria!=null && isFinite(e.nota_secundaria)) acc[ap2].push(Number(e.nota_secundaria));
     });
-    return out;
+    var out={};
+    ['ritmo','entonacion','entonacion_atonal','audicion','teoria'].forEach(function(ap){
+      var l=acc[ap]; out[ap]= l.length ? l.reduce(function(a,b){return a+b;},0)/l.length : null;
+    });
+    return out;   // incluye la clave entonacion_atonal -> RadarMedias dibuja 5 vértices
   }
   /* Radar renderizado con el MISMO módulo del Diario (RadarMedias). */
   function radarSVG(){
