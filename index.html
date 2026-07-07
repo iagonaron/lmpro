@@ -2198,6 +2198,11 @@ function showEnig(kind){
 
   /* ================= derivaciones de datos ================= */
   function apartadoDe(e){
+    // La ACTITUD del examen se guarda con el mismo app_origen que ritmo
+    // (payload_json.tipo='actitud_examen'); NO es un apartado de examen y no
+    // debe contarse como ritmo. La excluimos aquí, que es el filtro común de
+    // sesiones/exámenes/radar.
+    if(e && e.payload_json && e.payload_json.tipo==='actitud_examen') return null;
     var ap=(e && e.apartado_override) || MAP_APP[e && e.app_origen] || null;
     return APARTADOS[ap] ? ap : null;
   }
@@ -2495,6 +2500,7 @@ function showEnig(kind){
       var isEx=(t.indexOf('examen')===0 || t==='extraordinaria');
       if(t!=='sesion' && !isEx) return;
       if(e.sin_evaluar) return;
+      if(e.payload_json && e.payload_json.tipo==='actitud_examen') return; // actitud ≠ ritmo
       var ap=apDe(ovDe(e), e.app_origen);
       var et=e.etiqueta_nota_secundaria;
       var ap2=(et==='entonacion_int')?'entonacion_atonal':((et==='entonacion_lec')?'entonacion':((acc[et]!==undefined)?et:null));
