@@ -2110,7 +2110,8 @@ function showEnig(kind){
   /* app_origen → apartado (mismo mapeo que evaluaciones-reader del Diario) */
   var MAP_APP={
     dictados_elemental:'audicion', dictados_profesional:'audicion',
-    entonacion:'entonacion', fichas:'teoria', ritmo_elemental:'ritmo'
+    entonacion:'entonacion', fichas:'teoria', ritmo_elemental:'ritmo',
+    ritmo_entonado_gp:'ritmo'   // GP — MISMO mapeo que el Diario (evaluaciones-reader)
   };
 
   var _st={ rows:null, alumno:null, trim:null, cargado:false };
@@ -2180,10 +2181,12 @@ function showEnig(kind){
   /* media de clase del Diario (c_media) para un trimestre; null si no hay dato */
   function cMediaTrim(t){ var nf=notasFin(); for(var i=0;i<nf.length;i++){ if(nf[i]&&nf[i].trimestre===t&&nf[i].c_media!=null) return Number(nf[i].c_media); } return null; }
   function mediaClaseChip(){ var c=cMediaTrim(_st.trim); if(c==null) return ''; return '<span class="mr-media-clase">Media de clase <b style="color:'+colorNota(c)+'">'+fmt(c)+'</b></span>'; }
-  /* Cuerpo de la tarjeta "Media de clase": el c_media del Diario del trimestre elegido. */
+  /* Media de clase: CALCO del Diario. Copiamos el c_media que el Diario tiene
+     guardado. Si el Diario no lo tiene (por lo que sea), NO se pone: la suite
+     no calcula ni inventa nada — solo refleja lo que hay en el Diario. */
   function mediaClaseBody(){
     var c=cMediaTrim(_st.trim);
-    if(c==null) return '<span class="mr-cmedia-none">Sin media de clase del Diario para este trimestre todavía.</span>';
+    if(c==null) return '<span class="mr-cmedia-none">Sin media de clase en el Diario para este trimestre.</span>';
     return '<span class="mr-cmedia-num" style="color:'+colorNota(c)+'">'+fmt(c)+'</span>'
       +'<span class="mr-cmedia-lbl">media de clase · '+esc(_st.trim)+' · del Diario</span>';
   }
