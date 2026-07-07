@@ -2466,6 +2466,55 @@ function showEnig(kind){
     return svgRadar(mediasPorAp(sesiones(),null)); // fallback
   }
 
+  /* ===== Pesos de evaluación por curso (copiados del Diario) ===== */
+  var PESOS_EVAL_DEFAULT={ '1Ge':{examen:.30,clase:.70}, '2Ge':{examen:.40,clase:.60}, '3Ge':{examen:.50,clase:.50}, '4Ge':{examen:.60,clase:.40}, '1Gp':{examen:.60,clase:.40}, '2Gp':{examen:.60,clase:.40} };
+  var PESOS_EXAMEN_GE={ ritmo:.25, entonacion:.25, audicion:.25, teoria:.20, actitud:.05 };
+  var PESOS_EXAMEN_GP={ ritmo:.25, entonacion:.10, entonacion_atonal:.10, audicion:.25, teoria:.25, actitud:.05 };
+  var CURSO_NOMBRE={'1Ge':'1º Grado Elemental','2Ge':'2º Grado Elemental','3Ge':'3º Grado Elemental','4Ge':'4º Grado Elemental','1Gp':'1º Grado Profesional','2Gp':'2º Grado Profesional'};
+  function cursoCodDe(grupo){
+    var g=String(grupo||'').trim();
+    var mGp=g.match(/^(\d)\s*Gp/i); if(mGp) return mGp[1]+'Gp';
+    var mGe=g.match(/^(\d)\s*[A-Za-z]/); if(mGe) return mGe[1]+'Ge';
+    return null;
+  }
+  /* modal genérico (reutiliza el estilo del radar) */
+  function abrirModalMR(inner, wide){
+    var m=document.getElementById('mr-modal-gen');
+    if(!m){ m=document.createElement('div'); m.id='mr-modal-gen'; m.className='mr-radar-modal';
+      m.addEventListener('click',function(e){ if(e.target===m) m.classList.remove('open'); });
+      document.addEventListener('keydown',function(e){ if(e.key==='Escape' && m.classList.contains('open')){ e.stopImmediatePropagation(); m.classList.remove('open'); } }, true);
+      document.body.appendChild(m); }
+    m.innerHTML='<div class="mr-radar-box'+(wide?' mr-box-wide':'')+'"><button type="button" class="mr-radar-x" aria-label="Cerrar">✕</button>'+inner+'</div>';
+    m.querySelector('.mr-radar-x').addEventListener('click',function(){ m.classList.remove('open'); });
+    m.classList.add('open');
+  }
+  /* Nota de clase actual: media de TODAS tus notas de clase hasta hoy (como el Diario). */
+  function abrirNotaClase(){
+    var n=media(sesiones());
+    var f=new Date().toLocaleDateString('es-ES',{day:'numeric',month:'long',year:'numeric'});
+    abrirModalMR('<div class="mr-nc-lbl2">Nota de clase actual</div>'
+      +'<div class="mr-nc-big" style="color:'+colorNota(n)+'">'+fmt(n)+'</div>'
+      +'<div class="mr-nc-fecha2">'+(n==null?'Aún no tienes notas de clase.':('a día '+esc(f)))+'</div>');
+  }
+  /* Porcentajes de evaluación del curso del alumno (copiados del Diario). */
+  function abrirPesos(){
+    var curso=cursoCodDe((_st.alumno&&_st.alumno.grupo)||'');
+    var pesos=PESOS_EVAL_DEFAULT[curso]||{examen:.5,clase:.5};
+    var esGP=/Gp$/.test(curso||'');
+    var pEx=esGP?PESOS_EXAMEN_GP:PESOS_EXAMEN_GE;
+    function fila(l,v){ return '<div class="mr-pw-row"><span>'+l+'</span><b>'+Math.round(v*100)+'%</b></div>'; }
+    var nom=CURSO_NOMBRE[curso]||(curso||'tu curso');
+    var h='<div class="mr-pw-tit">⚙️ Porcentajes de evaluación</div>'
+      +'<div class="mr-pw-sub">'+esc(nom)+' · así se calcula la nota final del trimestre: por un lado el examen (ponderado por apartados), por otro la media de tus notas de clase.</div>'
+      +'<div class="mr-pw-card mr-pw-full"><h5>Nota final</h5>'+fila('Peso del examen',pesos.examen)+fila('Peso notas de clase',pesos.clase)+'</div>'
+      +'<div class="mr-pw-cards">'
+        +'<div class="mr-pw-card"><h5>LM</h5><div class="mr-pw-note">Ponderación de los apartados del examen</div>'+fila('Ritmo',pEx.ritmo)+fila('Entonación',pEx.entonacion)+(esGP?fila('Entonación atonal',pEx.entonacion_atonal):'')+fila('Audición',pEx.audicion)+fila('Teoría',pEx.teoria)+fila('Actitud',pEx.actitud)+'</div>'
+        +(!esGP?'<div class="mr-pw-card"><h5>EAV</h5><div class="mr-pw-note">Ponderación de los apartados del examen</div>'+fila('Entonación',.45)+fila('Audición',.50)+fila('Actitud',.05)+'</div>':'')
+      +'</div>'
+      +'<div class="mr-pw-foot">La actitud se aplica solo en la parte de examen. '+(!esGP?'EAV usa pesos propios (45/50/5).':'En GP la entonación se reparte 10% tonal + 10% atonal.')+'</div>';
+    abrirModalMR(h, true);
+  }
+
   /* ===== Radar en ventana emergente ===== */
   function abrirRadar(){
     var m=document.getElementById('mr-radar-modal');
@@ -2501,8 +2550,7 @@ function showEnig(kind){
       +'</div>'
       +bloqueNotasTrimestre()
       +(ss.length
-        ? '<div class="mr-card"><div class="mr-card-tit-row"><div class="mr-card-tit">Media de clase</div><div class="mr-medias-acc"><button type="button" class="mr-ver-radar">🎯 Ver radar</button><div class="mr-trims">'+chips+'</div></div></div>'
-          +'<div class="mr-cmedia">'+mediaClaseBody()+'</div></div>'
+        ? '<div class="mr-card mr-acciones"><button type="button" class="mr-btn-nota">📊 Consultar nota de clase actual</button><button type="button" class="mr-ver-radar">🎯 Ver radar</button><button type="button" class="mr-btn-pesos">⚙️ Porcentajes de evaluación</button></div>'
           +bloqueExamenes()
           +'<div class="mr-card"><div class="mr-card-tit">Tu evolución durante el curso</div>'+svgEvolucion(ss)
             +'<div class="mr-leyenda">'+ORDEN_AP.map(function(ap){ return '<span class="mr-chip" style="--apc:'+APARTADOS[ap].color+'">'+esc(APARTADOS[ap].label)+'</span>'; }).join('')+'</div></div>'
@@ -2514,6 +2562,8 @@ function showEnig(kind){
       b.addEventListener('click',function(){ _st.trim=b.getAttribute('data-trim'); render(); });
     });
     var vr=body.querySelector('.mr-ver-radar'); if(vr) vr.addEventListener('click',abrirRadar);
+    var bn=body.querySelector('.mr-btn-nota'); if(bn) bn.addEventListener('click',abrirNotaClase);
+    var bp=body.querySelector('.mr-btn-pesos'); if(bp) bp.addEventListener('click',abrirPesos);
     body.scrollTop=0;
   }
 
@@ -2648,7 +2698,25 @@ function showEnig(kind){
       +'.mr-radar-modal.open{display:flex}'
       +'.mr-radar-box{position:relative;background:linear-gradient(160deg,#241b08,#140e05);border:1px solid #ffffff22;border-radius:20px;padding:20px 22px 16px;max-width:430px;width:100%;box-shadow:0 30px 80px rgba(0,0,0,.6)}'
       +'.mr-radar-box .mr-radar{max-width:360px;margin:6px auto 0;display:block}'
-      +'.mr-radar-x{position:absolute;top:10px;right:12px;background:none;border:none;color:#d9c99a;font-size:18px;cursor:pointer;line-height:1}';
+      +'.mr-radar-x{position:absolute;top:10px;right:12px;background:none;border:none;color:#d9c99a;font-size:18px;cursor:pointer;line-height:1}'
+      +'.mr-box-wide{max-width:540px}'
+      +'.mr-acciones{display:flex;gap:10px;flex-wrap:wrap;align-items:center}'
+      +'.mr-btn-nota{font:inherit;font-size:13px;font-weight:800;color:#12210a;background:linear-gradient(90deg,#5eead4,#22c55e);border:none;border-radius:99px;padding:9px 18px;cursor:pointer}'
+      +'.mr-btn-nota:hover,.mr-btn-pesos:hover{filter:brightness(1.07)}'
+      +'.mr-btn-pesos{font:inherit;font-size:12px;font-weight:800;color:#e8d9a8;background:rgba(255,255,255,.06);border:1px solid #ffffff2b;border-radius:99px;padding:8px 14px;cursor:pointer}'
+      +'.mr-nc-lbl2{font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#a8996b;text-align:center}'
+      +'.mr-nc-big{font-size:64px;font-weight:900;text-align:center;line-height:1.05;margin:6px 0;font-variant-numeric:tabular-nums}'
+      +'.mr-nc-fecha2{font-size:12.5px;color:#a8996b;text-align:center}'
+      +'.mr-pw-tit{font-weight:800;font-size:15px;color:#f0e6c8;margin-bottom:6px}'
+      +'.mr-pw-sub{font-size:12px;color:#a8996b;line-height:1.4;margin-bottom:12px}'
+      +'.mr-pw-card{background:rgba(255,255,255,.04);border:1px solid #ffffff1c;border-radius:12px;padding:12px 14px;margin-bottom:10px}'
+      +'.mr-pw-card h5{margin:0 0 8px;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:#a8996b}'
+      +'.mr-pw-cards{display:grid;grid-template-columns:1fr 1fr;gap:10px}'
+      +'@media(max-width:520px){.mr-pw-cards{grid-template-columns:1fr}}'
+      +'.mr-pw-row{display:flex;justify-content:space-between;padding:4px 0;font-size:13.5px}'
+      +'.mr-pw-row b{color:#e8c15a;font-variant-numeric:tabular-nums}'
+      +'.mr-pw-note{font-size:11px;color:#a8996b;margin:-2px 0 8px;line-height:1.3}'
+      +'.mr-pw-foot{font-size:12px;color:#a8996b;margin-top:10px;line-height:1.4}';
     document.head.appendChild(s);
   }
   if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded',css); } else { css(); }
