@@ -1,0 +1,12 @@
+{
+  "name": "LMPRO at home",
+  "short_name": "LMPRO",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#160f04",
+  "theme_color": "#160f04",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
