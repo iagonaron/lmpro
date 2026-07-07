@@ -882,19 +882,13 @@
       <input class="gate-input" id="regPass" type="password" placeholder="Elige una contraseña" autocomplete="off" autocapitalize="off" spellcheck="false">
       <label class="gate-remember"><input type="checkbox" id="regRecordar" checked> Recordar en este dispositivo</label>
       <div class="gate-note"><b>Pensada para ordenador</b> y adaptada para tablet. <b>No es una app para móvil.</b></div>
-      <div class="gate-note" id="regConsentAviso" style="text-align:left;line-height:1.45">
-        <b>Antes de crear la cuenta</b>, lee esta información.<br>
-        <b>Centro educativo:</b> CMUS Profesional A Coruña · <b>Profesor encargado:</b> Iago González Alonso · <b>Contacto:</b> iagogonzalezalonso@edu.xunta.gal.<br>
-        Se tratan el nombre, el curso, el nº de expediente (solo para validarte en el alta) y los resultados de las actividades, con el fin de ofrecer actividades complementarias de Lenguaje Musical y su seguimiento. <b>Base legal:</b> consentimiento del padre/madre o tutor. <b>Conservación:</b> mientras dure la matrícula; al cambiar de curso se borran o anonimizan. <b>Derechos:</b> escribiendo a ese correo. No se tratan datos sensibles y se alojan en la UE.
-        <a href="politica-privacidad.html" target="_blank" rel="noopener" style="color:var(--area-entonacion,#5b9dff)">Ver política de privacidad completa</a>.
-      </div>
-      <label class="gate-remember" style="align-items:flex-start;text-align:left;gap:8px;line-height:1.35;margin-top:8px">
+      <label class="gate-remember" style="align-items:flex-start;text-align:left;gap:8px;line-height:1.35;margin-top:12px">
         <input type="checkbox" id="regConsentTutor" onchange="actualizarBtnRegistro()" style="margin-top:2px;flex:0 0 auto">
         <span>Soy el <b>padre/madre o tutor legal</b> de este alumno/a y <b>autorizo</b> su registro y el tratamiento de sus datos.</span>
       </label>
       <label class="gate-remember" style="align-items:flex-start;text-align:left;gap:8px;line-height:1.35;margin-top:6px">
         <input type="checkbox" id="regConsentPolitica" onchange="actualizarBtnRegistro()" style="margin-top:2px;flex:0 0 auto">
-        <span>He leído la <b>política de privacidad</b>.</span>
+        <span>He leído y acepto la <a href="politica-privacidad.html" target="_blank" rel="noopener" style="color:var(--area-entonacion,#5b9dff);font-weight:700;text-decoration:underline">política de privacidad</a>.</span>
       </label>
       <button class="gate-go" id="regBtn" onclick="alumnoRegistrar()" disabled>Crear mi cuenta</button>
       <div class="gate-err" id="alumnoRegistroErr"></div>
