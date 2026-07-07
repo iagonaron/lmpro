@@ -2190,19 +2190,28 @@ function showEnig(kind){
     return out;
   }
   function examenes(){
-    var out={ '1T':{}, '2T':{}, '3T':{}, extraordinaria:{} };
+    // Como el Diario: por trimestre+apartado nos quedamos con la nota de examen
+    // de fecha MÁS ANTIGUA (los re-guardados posteriores son duplicados y no
+    // deben pisar la nota real). Se descartan los exámenes 'sin_evaluar'.
+    var best={ '1T':{}, '2T':{}, '3T':{}, extraordinaria:{} };
+    function poner(t, ap, nota, fecha){
+      if(!ap || nota==null || !isFinite(Number(nota))) return;
+      var cur=best[t][ap], f=String(fecha||'');
+      if(!cur || f <= String(cur.f)) best[t][ap]={ n:Number(nota), f:fecha };
+    }
     (_st.rows||[]).forEach(function(e){
       var t=null;
       if(e.eval_tipo==='examen_1T') t='1T';
       else if(e.eval_tipo==='examen_2T') t='2T';
       else if(e.eval_tipo==='examen_3T') t='3T';
       else if(e.eval_tipo==='extraordinaria') t='extraordinaria';
-      if(!t) return;
-      var ap=apartadoDe(e);
-      if(ap && e.nota_final!=null && isFinite(Number(e.nota_final))) out[t][ap]=Number(e.nota_final);
-      if(e.nota_secundaria!=null && e.etiqueta_nota_secundaria && APARTADOS[e.etiqueta_nota_secundaria]
-         && isFinite(Number(e.nota_secundaria))) out[t][e.etiqueta_nota_secundaria]=Number(e.nota_secundaria);
+      if(!t || e.sin_evaluar) return;
+      poner(t, apartadoDe(e), e.nota_final, e.fecha);
+      if(e.nota_secundaria!=null && e.etiqueta_nota_secundaria && APARTADOS[e.etiqueta_nota_secundaria])
+        poner(t, e.etiqueta_nota_secundaria, e.nota_secundaria, e.fecha);
     });
+    var out={ '1T':{}, '2T':{}, '3T':{}, extraordinaria:{} };
+    ['1T','2T','3T','extraordinaria'].forEach(function(t){ for(var ap in best[t]) out[t][ap]=best[t][ap].n; });
     return out;
   }
   function media(list){ if(!list||!list.length) return null; var s=0; for(var i=0;i<list.length;i++) s+=list[i].nota; return s/list.length; }
@@ -2442,16 +2451,32 @@ function showEnig(kind){
       var ap = ov || MAP_APP[appOrigen];
       return (acc[ap]!==undefined) ? ap : null;
     }
+    // Exámenes deduplicados (más antiguo por trimestre+apartado, como el Diario),
+    // para no promediar filas re-guardadas por duplicado.
+    var exBest={};
+    function exPoner(trim, ap, nota, fecha){
+      if(!ap || nota==null || !isFinite(Number(nota))) return;
+      var k=trim+'|'+ap, cur=exBest[k], f=String(fecha||'');
+      if(!cur || f <= String(cur.f)) exBest[k]={ n:Number(nota), f:fecha };
+    }
     (_st.rows||[]).forEach(function(e){
       var t=(e.eval_tipo)||'sesion';
-      if(t!=='sesion' && t.indexOf('examen')!==0 && t!=='extraordinaria') return;
+      var isEx=(t.indexOf('examen')===0 || t==='extraordinaria');
+      if(t!=='sesion' && !isEx) return;
       if(e.sin_evaluar) return;
       var ap=apDe(ovDe(e), e.app_origen);
-      if(ap && e.nota_final!=null && isFinite(e.nota_final)) acc[ap].push(Number(e.nota_final));
       var et=e.etiqueta_nota_secundaria;
       var ap2=(et==='entonacion_int')?'entonacion_atonal':((et==='entonacion_lec')?'entonacion':((acc[et]!==undefined)?et:null));
-      if(ap2 && e.nota_secundaria!=null && isFinite(e.nota_secundaria)) acc[ap2].push(Number(e.nota_secundaria));
+      if(isEx){
+        var tk=(t==='extraordinaria')?'3T':t.replace('examen_','');
+        exPoner(tk, ap, e.nota_final, e.fecha);
+        if(e.nota_secundaria!=null) exPoner(tk, ap2, e.nota_secundaria, e.fecha);
+      } else {
+        if(ap && e.nota_final!=null && isFinite(e.nota_final)) acc[ap].push(Number(e.nota_final));
+        if(ap2 && e.nota_secundaria!=null && isFinite(e.nota_secundaria)) acc[ap2].push(Number(e.nota_secundaria));
+      }
     });
+    for(var k in exBest){ var apx=k.split('|')[1]; if(acc[apx]!==undefined) acc[apx].push(exBest[k].n); }
     var out={};
     ['ritmo','entonacion','entonacion_atonal','audicion','teoria'].forEach(function(ap){
       var l=acc[ap]; out[ap]= l.length ? l.reduce(function(a,b){return a+b;},0)/l.length : null;
