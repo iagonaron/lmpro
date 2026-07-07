@@ -882,7 +882,21 @@
       <input class="gate-input" id="regPass" type="password" placeholder="Elige una contraseña" autocomplete="off" autocapitalize="off" spellcheck="false">
       <label class="gate-remember"><input type="checkbox" id="regRecordar" checked> Recordar en este dispositivo</label>
       <div class="gate-note"><b>Pensada para ordenador</b> y adaptada para tablet. <b>No es una app para móvil.</b></div>
-      <button class="gate-go" id="regBtn" onclick="alumnoRegistrar()">Crear mi cuenta</button>
+      <div class="gate-note" id="regConsentAviso" style="text-align:left;line-height:1.45">
+        <b>Antes de crear la cuenta</b>, lee esta información.<br>
+        <b>Centro educativo:</b> CMUS Profesional A Coruña · <b>Profesor encargado:</b> Iago González Alonso · <b>Contacto:</b> iagogonzalezalonso@edu.xunta.gal.<br>
+        Se tratan el nombre, el curso, el nº de expediente (solo para validarte en el alta) y los resultados de las actividades, con el fin de ofrecer actividades complementarias de Lenguaje Musical y su seguimiento. <b>Base legal:</b> consentimiento del padre/madre o tutor. <b>Conservación:</b> mientras dure la matrícula; al cambiar de curso se borran o anonimizan. <b>Derechos:</b> escribiendo a ese correo. No se tratan datos sensibles y se alojan en la UE.
+        <a href="politica-privacidad.html" target="_blank" rel="noopener" style="color:var(--area-entonacion,#5b9dff)">Ver política de privacidad completa</a>.
+      </div>
+      <label class="gate-remember" style="align-items:flex-start;text-align:left;gap:8px;line-height:1.35;margin-top:8px">
+        <input type="checkbox" id="regConsentTutor" onchange="actualizarBtnRegistro()" style="margin-top:2px;flex:0 0 auto">
+        <span>Soy el <b>padre/madre o tutor legal</b> de este alumno/a y <b>autorizo</b> su registro y el tratamiento de sus datos.</span>
+      </label>
+      <label class="gate-remember" style="align-items:flex-start;text-align:left;gap:8px;line-height:1.35;margin-top:6px">
+        <input type="checkbox" id="regConsentPolitica" onchange="actualizarBtnRegistro()" style="margin-top:2px;flex:0 0 auto">
+        <span>He leído la <b>política de privacidad</b>.</span>
+      </label>
+      <button class="gate-go" id="regBtn" onclick="alumnoRegistrar()" disabled>Crear mi cuenta</button>
       <div class="gate-err" id="alumnoRegistroErr"></div>
       <button class="gate-linkbtn" onclick="abrirLogin()">Ya tengo cuenta</button>
       <button class="gate-secondary gate-back" onclick="mostrarPanel('gatePass')">Volver</button>
@@ -1171,23 +1185,40 @@ async function alumnoResetear(){
   if(lerr) lerr.textContent='✓ Contraseña cambiada. Entra con la nueva.';
 }
 
+// Versión del texto de consentimiento mostrado en el alta (para el resguardo).
+const CONSENT_VERSION='v1-2026-09';
+
+// Habilita "Crear mi cuenta" solo cuando están marcadas las dos casillas.
+function actualizarBtnRegistro(){
+  var t=document.getElementById('regConsentTutor');
+  var p=document.getElementById('regConsentPolitica');
+  var b=document.getElementById('regBtn');
+  if(b) b.disabled=!(t&&t.checked&&p&&p.checked);
+}
+
 async function alumnoRegistrar(){
   const nombre=(document.getElementById('regNombre').value||'').trim();
   const exp=(document.getElementById('regExp').value||'').trim();
   const pass=document.getElementById('regPass').value||'';
   const err=document.getElementById('alumnoRegistroErr'); err.textContent='';
+  var elT=document.getElementById('regConsentTutor'); var consTutor=!!(elT&&elT.checked);
+  var elP=document.getElementById('regConsentPolitica'); var consPol=!!(elP&&elP.checked);
   if(nombre.length<3){ err.textContent='Escribe tu nombre y apellidos.'; return; }
   if(exp.length<3){ err.textContent='Escribe el nº de expediente completo (Centros Net o el carnet de alumno).'; return; }
   if(pass.length<4){ err.textContent='La contraseña debe tener al menos 4 caracteres.'; return; }
+  if(!consTutor || !consPol){ err.textContent='Para crear la cuenta, marca las dos casillas de consentimiento.'; return; }
   const btn=document.getElementById('regBtn'); btn.disabled=true; btn.textContent='Creando…';
-  // Alta v3: nombre + contraseña propia + nº de expediente (solo para que el
-  // profesor valide la identidad). Si el SQL no está desplegado, alta clásica.
-  let r=await callRPC('suite_registrar_alumno_v3', { p_nombre:nombre, p_pass:pass, p_expediente:exp });
+  const ua=(navigator.userAgent||'').slice(0,300);
+  // Alta v4 = v3 (nombre + contraseña + expediente) + resguardo del consentimiento.
+  // Si el SQL v4 aún no está desplegado o hay red, cae a v3 y luego a la clásica.
+  let r=await callRPC('suite_registrar_alumno_v4', { p_nombre:nombre, p_pass:pass, p_expediente:exp, p_consent_version:CONSENT_VERSION, p_consent_tutor:true, p_consent_ua:ua });
+  if(!r.ok && (r.error==='red' || r.error==='excepcion')) r=await callRPC('suite_registrar_alumno_v3', { p_nombre:nombre, p_pass:pass, p_expediente:exp });
   if(!r.ok && (r.error==='red' || r.error==='excepcion')) r=await callRPC('suite_registrar_alumno', { p_nombre:nombre, p_pass:pass });
   btn.disabled=false; btn.textContent='Crear mi cuenta';
   if(!r.ok){
     err.textContent = r.error==='nombre_corto' ? 'Escribe tu nombre y apellidos.'
                     : r.error==='pass_corta'   ? 'La contraseña debe tener al menos 4 caracteres.'
+                    : (r.error==='falta_consentimiento'||r.error==='falta_version') ? 'Falta el consentimiento. Marca las dos casillas.'
                     : 'No se pudo crear la cuenta. Revisa tu conexión e inténtalo de nuevo.';
     return;
   }
