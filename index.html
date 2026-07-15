@@ -3245,14 +3245,20 @@ window.DictadoClase = (function(){
   function segNotas(m0, m1, voz){
     if(esGP()) return segNotasGP(m0, m1, voz);
     // eventos {tipo:'nota'|'silencio', dur, midi?, acc?} de los compases [m0,m1)
-    var out=[];
+    var out=[], lastNota=null;
     for(var mi=m0; mi<m1; mi++){
       var beat=0, notas=_aplicaTuplets(D.measures[mi]);
       out.push({tipo:'compas', dur:0, m:mi});
       for(var i=0;i<notas.length;i++){
         var n=notas[i], dB=durBeats(n);
-        if(n.rest || n.midi==null) out.push({tipo:'silencio', dur:dB});
-        else out.push({tipo:'nota', dur:dB, midi:n.midi, acc:(beat===0)});
+        if(n.rest || n.midi==null){ out.push({tipo:'silencio', dur:dB}); lastNota=null; }
+        else if(n.lig && lastNota && lastNota.midi===n.midi){
+          // LIGADURA (15-jul): la continuación no se re-ataca — prolonga el
+          // sonido de la cabeza (sost) y su hueco de tiempo pasa como silencio.
+          lastNota.sost=(lastNota.sost||0)+dB;
+          out.push({tipo:'silencio', dur:dB});
+        }
+        else { var evN={tipo:'nota', dur:dB, midi:n.midi, acc:(beat===0)}; out.push(evN); lastNota=evN; }
         beat+=dB;
       }
     }
@@ -3268,6 +3274,7 @@ window.DictadoClase = (function(){
       if(v===voz) return acc?1.0:0.75;                                  // protagonista
       return acc?0.30:0.22;                                             // atenuada
     }
+    var lastAbs={sol:null, fa:null};   // LIGADURAS: cabeza viva de cada voz
     for(var mi=m0; mi<m1; mi++){
       out.push({tipo:'compas', dur:0, m:mi});
       var durCompas=0;   // duración REAL del compás (aguanta cambios de compás)
@@ -3280,8 +3287,14 @@ window.DictadoClase = (function(){
             // esqueletos del editor (cabezas sin asignar): altura neutra por
             // voz, para que el dictado suene ENTERO tal y como está.
             var midi=(n.midi!=null)?n.midi:(v==='sol'?71:50);
-            out.push({tipo:'notaAbs', dur:dB, at:beat, midi:midi, gain:gDe(v, beat===0)});
-          }
+            if(n.lig && lastAbs[v] && lastAbs[v].midi===midi){
+              // LIGADURA (15-jul): prolongar la cabeza, sin nuevo ataque
+              lastAbs[v].dur+=dB;
+            } else {
+              var evA={tipo:'notaAbs', dur:dB, at:beat, midi:midi, gain:gDe(v, beat===0)};
+              out.push(evA); lastAbs[v]=evA;
+            }
+          } else lastAbs[v]=null;
           beat+=dB;
         }
         if(beat>durCompas) durCompas=beat;
@@ -3407,7 +3420,7 @@ window.DictadoClase = (function(){
   }
   function programa(ev, t){
     switch(ev.tipo){
-      case 'nota':   nota(t, ev.midi, ev.acc?1.0:0.72, Math.max(ev.dur*spb(), 0.18)); break;
+      case 'nota':   nota(t, ev.midi, ev.acc?1.0:0.72, Math.max((ev.dur+(ev.sost||0))*spb(), 0.18)); break;
       case 'notaAbs': nota(t+ev.at*spb(), ev.midi, ev.gain, Math.max(ev.dur*spb(), 0.18)); break;
       case 'regalo':
         // campanita: arpegio corto y suave sobre la tónica (registro agudo)
@@ -3732,6 +3745,7 @@ window.DictadoClase = (function(){
   function dibujaDictadoGP(host, ancho){
     var VF=Vex.Flow;
     host.innerHTML='';
+    var tiePrevGP={treble:null, bass:null}, tiesGP=[], _LActualGP=0;   // LIGADURAS (15-jul)
     var W=ancho||host.clientWidth||1100;
     // MISMAS proporciones que dibujaVacioGP (se ve mejor de lejos, da continuidad)
     var porLinea=Math.ceil(nMeasures/2), sistemas=Math.ceil(nMeasures/porLinea);
@@ -3765,10 +3779,16 @@ window.DictadoClase = (function(){
           }
         }
         if(conP){ try{ VF.Dot.buildAndAttach([sn],{all:true}); }catch(e){} }
+        if(n.rest || !n.k){ tiePrevGP[clef]=null; }
+        else {
+          if(n.lig && tiePrevGP[clef] && tiePrevGP[clef].L===_LActualGP) tiesGP.push({a:tiePrevGP[clef].sn, b:sn});
+          tiePrevGP[clef]={sn:sn, L:_LActualGP};
+        }
         return { sn:sn, d:(n.d||'q'), rest:(n.rest||!n.k) };
       });
     }
     for(var L=0;L<sistemas;L++){
+      _LActualGP=L;
       var ySol=18+L*(sysH+sepSys), yFa=ySol+gapSF;
       var libre=W-2*margen-extraW, anchoM=libre/porLinea, x=margen;
       var firstSol=null, firstFa=null, lastSol=null, lastFa=null;
@@ -3837,6 +3857,8 @@ window.DictadoClase = (function(){
         try{ new VF.StaveConnector(lastSol, lastFa).setType(VF.StaveConnector.type.BOLD_DOUBLE_RIGHT).setContext(vctx).draw(); }catch(e){}
       }
     }
+    // LIGADURAS (15-jul): arcos del revelado GP (misma línea)
+    tiesGP.forEach(function(p){ try{ new VF.StaveTie({first_note:p.a, last_note:p.b}).setContext(vctx).draw(); }catch(e){} });
   }
 
   /* ---- render COMPLETO del dictado (respaldo del revelado si el JPG
@@ -3845,6 +3867,7 @@ window.DictadoClase = (function(){
   function dibujaDictado(host, ancho){
     if(esGP()){ dibujaDictadoGP(host, ancho); return; }
     var VF=Vex.Flow;
+    var tiePrevGE=null, tiesGE=[];   // LIGADURAS (15-jul): arcos del revelado
     host.innerHTML='';
     var W=ancho||host.clientWidth||1100;
     // MISMAS proporciones que dibujaVacio (compás vacío de la animación): se ve
@@ -3890,6 +3913,11 @@ window.DictadoClase = (function(){
           if(conPunt){ try{ VF.Dot.buildAndAttach([sn], {all:true}); }catch(e){} }
           vNotes.push(sn);
           paresGE.push({ sn:sn, d:(n.d||'q') });
+          if(esRest){ tiePrevGE=null; }
+          else {
+            if(n.lig && tiePrevGE && tiePrevGE.L===L) tiesGE.push({a:tiePrevGE.sn, b:sn});
+            tiePrevGE={sn:sn, L:L};
+          }
         }
         if(vNotes.length){
           var voice=new VF.Voice({num_beats:num, beat_value:den});
@@ -3905,6 +3933,8 @@ window.DictadoClase = (function(){
         x+=w;
       }
     }
+    // LIGADURAS (15-jul): arco entre cada pareja marcada (misma línea)
+    tiesGE.forEach(function(p){ try{ new VF.StaveTie({first_note:p.a, last_note:p.b}).setContext(vctx).draw(); }catch(e){} });
   }
   /* precarga del JPG de la solución; resuelve la URL solo si carga de verdad */
   function precargaSolucion(){
@@ -4082,17 +4112,20 @@ window.DictadoClase = (function(){
   }
   // toca una voz (lista de compases) desde el tiempo t0
   function _verTocaVoz(measures, spb, t0){
-    var t=t0;
-    (measures||[]).forEach(function(m){
-      var notas=_aplicaTuplets(m);
-      notas.forEach(function(n){
-        var db=_verDurBeats(n);
-        if(!n.rest && n.midi){
-          try{ var nodo=_verPiano.play(n.midi, t, { gain:1.0, duration:spb*db*0.95 }); if(nodo) _verNodos.push(nodo); }catch(e){}
+    var t=t0, plana=[];
+    (measures||[]).forEach(function(m){ _aplicaTuplets(m).forEach(function(n){ plana.push(n); }); });
+    for(var i=0;i<plana.length;i++){
+      var n=plana[i], db=_verDurBeats(n);
+      if(!n.rest && n.midi){
+        // LIGADURAS (15-jul): las continuaciones (n.lig) alargan la cabeza sin re-ataque
+        var dTot=db;
+        while(i+1<plana.length && plana[i+1].lig && !plana[i+1].rest && plana[i+1].midi===n.midi){
+          i++; dTot+=_verDurBeats(plana[i]);
         }
-        t+=spb*db;
-      });
-    });
+        try{ var nodo=_verPiano.play(n.midi, t, { gain:1.0, duration:spb*dTot*0.95 }); if(nodo) _verNodos.push(nodo); }catch(e){}
+        t+=spb*dTot;
+      } else t+=spb*db;
+    }
   }
   // tiempo en el que acaba una voz
   function _verFinDeVoz(measures, spb, t0){
