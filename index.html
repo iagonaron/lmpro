@@ -1597,7 +1597,7 @@ function showEnig(kind){
       +(ya
         ? '<button id="tsVisorCerrar2" style="border:1px solid rgba(255,255,255,.25);border-radius:12px;padding:12px 26px;font:700 14px \'Helvetica Neue\',Arial;cursor:pointer;color:#c8cfdd;background:rgba(255,255,255,.05)">Salir</button>'
         : '<button id="tsVisorHecho" style="border:1px solid rgba(154,217,189,.45);border-radius:12px;padding:12px 24px;font:700 14px \'Helvetica Neue\',Arial;cursor:pointer;color:#c9ead9;background:rgba(62,150,110,.14)">✓ Salir y marcar como estudiado</button>')
-      +'</div></div>';
+      +(ya?'':'<div style="margin-top:10px;font:600 12px \'Helvetica Neue\',Arial,sans-serif;color:#8a93a8">Si sales sin marcarla, esta lección seguirá apareciendo como pendiente en tus notificaciones.</div>')+'</div></div>';
     ov.innerHTML=inner;
     document.body.appendChild(ov);
     // Iago 3-jul: si la captura ya no existe (barrido de 14 dias, o se quito
@@ -1915,10 +1915,10 @@ function showEnig(kind){
           }).join('');
           partes+='<div class="ts-parte ts-lecciones'+(todasLec?' ts-hecha':'')+'">'
             +'<div class="ts-parte-tit">📚 Lecciones de ritmo'+(todasLec?' <b class="ts-check">✓</b>':'')+'</div>'
-            +((tj.carta_ritmo&&tj.carta_ritmo.id)?('<div class="ts-carta-row">Lecciones de la carta <b>'+esc(tj.carta_ritmo.id)+'</b>'+(tj.carta_ritmo.nombre?(' · '+esc(tj.carta_ritmo.nombre)):'')+' <a class="ts-ver-intro" target="_blank" rel="noopener" href="https://iagonaron.github.io/ritmopro/?introCarta='+encodeURIComponent(tj.carta_ritmo.id)+'">▸ Ver explicación</a></div>'):'')
+            +((tj.carta_ritmo&&tj.carta_ritmo.id)?('<div class="ts-carta-row">Lecciones de la carta <b>'+esc(tj.carta_ritmo.id)+'</b>'+(tj.carta_ritmo.nombre?(' · '+esc(tj.carta_ritmo.nombre)):'')+' <a class="ts-ver-intro" target="_blank" rel="noopener" href="https://iagonaron.github.io/ritmopro/?introCarta='+encodeURIComponent(tj.carta_ritmo.id)+'">▸ Ver explicación interactiva</a></div>'):'')
             +'<div class="ts-lec-chips">'+chips+'</div>'
             +(todasLec?'<div class="ts-parte-sub">Estudiadas. El viernes se tocan en clase. (Puedes reabrirlas para repasar.)</div>'
-                      :'<div class="ts-parte-sub">Toca cada lección para estudiarla.</div>')
+                      :'<div class="ts-parte-sub">Toca cada lección para estudiarla. Mientras no las marques como estudiadas, esta tarea seguirá pendiente.</div>')
             +'</div>';
         }
         // 3º-bis se pinta después; primero preparar OTRAS
