@@ -1781,6 +1781,40 @@ function showEnig(kind){
     try{ await cargarProgresos(id); }catch(e){}
     pintarCampanaProgreso();
   }
+  // DICTADO REVISADO (Iago jul-2026) · visor a pantalla completa con la foto
+  // que sacó el alumno de su dictado y la(s) foto(s) de la solución.
+  function abrirVisorDictado(dj){
+    var old=document.getElementById('dictado-visor'); if(old) old.remove();
+    var v=document.createElement('div'); v.className='dictado-visor'; v.id='dictado-visor';
+    var figs='';
+    if(dj.foto_alumno){
+      figs+='<figure><figcaption>📸 Tu dictado (la foto que enviaste)</figcaption>'
+        +'<a class="dv-img" href="'+esc(dj.foto_alumno)+'" target="_blank" rel="noopener"><img src="'+esc(dj.foto_alumno)+'" alt="Tu dictado" loading="lazy"></a></figure>';
+    }
+    var sols=(dj.fotos_solucion||[]).filter(Boolean);
+    var solsCaducadas=!!(dj.fotos_caducan && (Date.parse(dj.fotos_caducan)||0)<=Date.now());
+    if(solsCaducadas && sols.length){
+      figs+='<figure><figcaption>✅ Solución (la pizarra del profesor)</figcaption>'
+        +'<div style="padding:26px 18px;color:#8ba3c7;font-size:13px;text-align:center">🕐 La foto de la solución ya no está disponible: se guarda 7 días desde la revisión.</div></figure>';
+    } else {
+      sols.forEach(function(u,k){
+        figs+='<figure><figcaption>✅ Solución'+(sols.length>1?(' '+(k+1)+' de '+sols.length):'')+' (la pizarra del profesor)</figcaption>'
+          +'<a class="dv-img" href="'+esc(u)+'" target="_blank" rel="noopener"><img src="'+esc(u)+'" alt="Solución del dictado" loading="lazy"></a></figure>';
+      });
+    }
+    if(!figs) figs='<div class="alu-vacio" style="grid-column:1/-1">No hay imágenes disponibles de este dictado.</div>';
+    v.innerHTML='<div class="dv-head"><div class="dv-tit">🎧 '+(dj.numero!=null?('Dictado nº '+esc(dj.numero)):'Dictado')+' · tu foto y la solución</div>'
+      +'<button class="dv-close" aria-label="Cerrar" title="Cerrar">✕</button></div>'
+      +'<div class="dv-body">'+figs+'</div>'
+      +'<div class="dv-tip">Toca una imagen para abrirla a tamaño completo en otra pestaña.</div>';
+    document.body.appendChild(v);
+    var onEsc=function(e){ if(e.key==='Escape'){ e.stopPropagation(); cierra(); } };
+    var cierra=function(){ try{ v.remove(); }catch(e){} document.removeEventListener('keydown',onEsc,true); };
+    v.querySelector('.dv-close').addEventListener('click',cierra);
+    v.addEventListener('click',function(e){ if(e.target===v) cierra(); });
+    // captura: que el Escape cierre SOLO el visor (no también la campana de detrás)
+    document.addEventListener('keydown',onEsc,true);
+  }
   function modalEl(){
     var m=document.getElementById('alu-modal'); if(m) return m;
     m=document.createElement('div'); m.className='alu-modal'; m.id='alu-modal';
@@ -1801,7 +1835,7 @@ function showEnig(kind){
     // redundante — la bienvenida animada + el mini-tour ya cubren ese
     // momento. La ocultamos y la auto-marcamos leída (más abajo).
     function esNotifValidacion(o){
-      if(!o || (o.payload_json && (o.payload_json.ficha_id || o.payload_json.envio_id))) return false;
+      if(!o || (o.payload_json && (o.payload_json.ficha_id || o.payload_json.envio_id || o.payload_json.dictado_revision))) return false;
       return /valida|verificad/i.test(String(o.titulo||'')+' '+String(o.cuerpo||''));
     }
     var listTodas=list;
@@ -1971,6 +2005,53 @@ function showEnig(kind){
           +qAccion
           +'</div></div>';
       }
+      // DICTADO REVISADO (Iago jul-2026) · el profesor revisó la autocorrección
+      // en Dictados Profesional: verde ✓ si la dio por buena, morado si ajustó
+      // la nota (con su comentario), y botón para ver el dictado y la solución.
+      if(o.payload_json && o.payload_json.dictado_revision){
+        var dj=o.payload_json;
+        var esCorr=(dj.resultado==='corregida');
+        var fmtN=function(v){
+          if(v==null || !isFinite(+v)) return '—';
+          var s=(+v).toFixed(2).replace(/\.?0+$/,'').replace('.',',');
+          return s===''?'0':s;
+        };
+        var cabTit=(dj.numero!=null?('Dictado nº '+esc(dj.numero)):'Tu último dictado')+' · nota revisada';
+        var badge=esCorr
+          ? '<span class="dictado-badge corr">✎ CORREGIDA POR EL PROFESOR</span>'
+          : '<span class="dictado-badge ok">✓ VERIFICADA</span>';
+        var cuerpoD=esCorr
+          ? 'Iago ha revisado tu autocorrección y ha ajustado la nota.'
+          : 'Iago ha revisado tu autocorrección y la ha dado por buena. ¡Bien corregido!';
+        var notasHTML='<div class="dictado-notas">'
+          +(esCorr
+            ? '<span class="dictado-nota-alumno">Tu corrección: <s>'+fmtN(dj.nota_alumno)+'</s></span>'
+              +'<span class="dictado-flecha">→</span>'
+              +'<span class="dictado-nota-final">Nota de Iago <b>'+fmtN(dj.nota_final)+'</b></span>'
+            : '<span class="dictado-nota-final ok">Tu nota <b>'+fmtN(dj.nota_final)+'</b><span style="color:#4ade80;font-weight:900">✓</span></span>')
+          +'</div>';
+        var comentHTML=(esCorr && dj.comentario && String(dj.comentario).trim())
+          ? '<div class="dictado-coment"><b>💬 Comentario de Iago:</b> '+esc(dj.comentario)+'</div>'
+          : '';
+        // las fotos de la SOLUCIÓN caducan a los 7 días (limpieza del bucket);
+        // la foto del propio alumno no caduca (va con su dictado)
+        var solsCaducadas=!!(dj.fotos_caducan && (Date.parse(dj.fotos_caducan)||0)<=Date.now());
+        var hayFotos=!!(dj.foto_alumno || (!solsCaducadas && dj.fotos_solucion && dj.fotos_solucion.length));
+        var verHTML=hayFotos
+          ? '<button class="alu-dictado-ver" data-id-notif="'+esc(o.id)+'">👀 Ver '+((solsCaducadas||!(dj.fotos_solucion&&dj.fotos_solucion.length))?'mi dictado':'dictado y solución')+'</button>'
+          : '';
+        return '<div class="alu-item dictado'+(o.leido?'':' no-leido')+'" data-id="'+esc(o.id)+'">'
+          +'<div class="neb-mini" aria-hidden="true"><i class="n1"></i><i class="n2"></i><i class="n3"></i></div>'
+          +'<span class="alu-dot"></span>'
+          +'<div class="alu-item-main">'
+          +'<div class="alu-item-tit">🎧 '+cabTit+' '+badge+'</div>'
+          +'<div class="alu-item-cuerpo">'+esc(cuerpoD)+'</div>'
+          +notasHTML
+          +comentHTML
+          +verHTML
+          +'<div class="alu-item-fecha">'+fecha(o.creado_en)+(dj.fecha_dictado?(' · dictado del '+esc(dj.fecha_dictado.split('-').reverse().join('/'))):'')+'</div>'
+          +'</div></div>';
+      }
       var fid=(o.payload_json && o.payload_json.ficha_id) ? o.payload_json.ficha_id : '';
       var pj=o.payload_json||{};
       var hecha=esHecha(o);
@@ -2074,6 +2155,18 @@ function showEnig(kind){
         window.location.href='https://iagonaron.github.io/teoriapro/?fichaId='+encodeURIComponent(fid)+'&cuenta='+encodeURIComponent(cuentaId()||'')+(nnum?('&n='+encodeURIComponent(nnum)):'')+(pfin?('&fin='+encodeURIComponent(pfin)):'')+(pgra?('&gracia='+encodeURIComponent(pgra)):'');
       });
     });
+    // DICTADO REVISADO · "Ver dictado y solución": abre el visor con la foto
+    // del alumno y la(s) de la solución, y marca la notificación como leída.
+    Array.prototype.forEach.call(body.querySelectorAll('.alu-dictado-ver'),function(b){
+      b.addEventListener('click',function(ev){
+        ev.stopPropagation();
+        var nid=b.getAttribute('data-id-notif');
+        var o=null;
+        for(var k=0;k<listTodas.length;k++){ if(String(listTodas[k].id)===String(nid)){ o=listTodas[k]; break; } }
+        if(o && !o.leido){ var item=b.closest('.alu-item'); marcar(nid,item); }
+        abrirVisorDictado((o&&o.payload_json)||{});
+      });
+    });
     // Clic en una notificación sin acción: solo marcar leído.
     Array.prototype.forEach.call(body.querySelectorAll('.alu-item.no-leido'),function(el){
       el.addEventListener('click',function(){ marcar(el.getAttribute('data-id'),el); });
@@ -2168,7 +2261,49 @@ function showEnig(kind){
       '.alu-item-quiz.hecha .alu-item-tit{color:#aab2cc}'+
       '.alu-item-quiz.hecha .alu-item-cuerpo{color:#7d86a6}'+
       '.alu-item-quiz.hecha .alu-dot{visibility:hidden}'+
-      '@media (prefers-reduced-motion:reduce){.alu-item.ficha .neb-mini i,.alu-item.ficha .alu-hacer,.alu-item-quiz .quiz-blobs i,.alu-quiz-go{animation:none!important}.portal-bell.ficha-pendiente::before,.portal-bell.ficha-pendiente::after,.portal-bell.ficha-pendiente .pb-bell,.portal-bell-prog,.alu-item-prog .aip-bar i{animation:none!important}}';
+      '@media (prefers-reduced-motion:reduce){.alu-item.ficha .neb-mini i,.alu-item.ficha .alu-hacer,.alu-item-quiz .quiz-blobs i,.alu-quiz-go{animation:none!important}.portal-bell.ficha-pendiente::before,.portal-bell.ficha-pendiente::after,.portal-bell.ficha-pendiente .pb-bell,.portal-bell-prog,.alu-item-prog .aip-bar i{animation:none!important}}'+
+      /* DICTADO REVISADO (Iago jul-2026) · tarjeta de la campana cuando el
+         profesor revisa la autocorrección de Dictados Profesional. Paleta
+         azul de la app de dictados (#4a9eff) sobre el fondo del portal;
+         verde = verificada tal cual, morado = corregida por el profesor. */
+      '.alu-item.dictado{position:relative;overflow:hidden;border:1px solid rgba(74,158,255,.45);border-radius:12px;margin:8px 0;padding:10px 12px;background:linear-gradient(160deg,#0d1e35 0%,#0a1626 45%,#070f1c 100%)}'+
+      '.alu-item.dictado .neb-mini{position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none;filter:blur(26px);opacity:.5}'+
+      '.alu-item.dictado .neb-mini i{position:absolute;border-radius:50%;display:block}'+
+      '.alu-item.dictado .neb-mini .n1{width:120px;height:120px;left:-24px;top:-34px;background:#4a9eff;animation:pnDrift1 21s ease-in-out infinite}'+
+      '.alu-item.dictado .neb-mini .n2{width:110px;height:110px;right:-28px;top:-18px;background:#2563eb;animation:pnDrift2 25s ease-in-out infinite}'+
+      '.alu-item.dictado .neb-mini .n3{width:130px;height:120px;right:14%;bottom:-44px;background:#38bdf8;animation:pnDrift3 23s ease-in-out infinite}'+
+      '.alu-item.dictado .alu-dot,.alu-item.dictado .alu-item-main{position:relative;z-index:1}'+
+      '.alu-item.dictado .alu-item-tit{color:#e3efff}'+
+      '.alu-item.dictado .alu-item-cuerpo{color:#b7cdea}'+
+      '.alu-item.dictado .alu-item-fecha{color:#6d84ab}'+
+      '.dictado-badge{display:inline-flex;align-items:center;gap:6px;font-size:10.5px;font-weight:900;letter-spacing:.08em;border-radius:7px;padding:3px 9px;vertical-align:1px}'+
+      '.dictado-badge.ok{color:#062b1a;background:linear-gradient(90deg,#4ade80,#22c98a)}'+
+      '.dictado-badge.corr{color:#fff;background:linear-gradient(90deg,#c084fc,#8b5cf6)}'+
+      '.dictado-notas{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:9px}'+
+      '.dictado-nota-final{display:inline-flex;align-items:baseline;gap:6px;background:rgba(74,158,255,.12);border:1px solid rgba(74,158,255,.5);border-radius:10px;padding:7px 13px;color:#dcecff;font-weight:800;font-size:13px}'+
+      '.dictado-nota-final b{font-size:21px;color:#fff;font-variant-numeric:tabular-nums}'+
+      '.dictado-nota-final.ok{background:rgba(74,222,128,.10);border-color:rgba(74,222,128,.5)}'+
+      '.dictado-nota-final.ok b{color:#8ff5b8}'+
+      '.dictado-nota-alumno{font-size:12.5px;font-weight:700;color:#8ba3c7}'+
+      '.dictado-nota-alumno s{opacity:.85}'+
+      '.dictado-flecha{color:#c084fc;font-weight:900}'+
+      '.dictado-coment{margin-top:9px;background:rgba(192,132,252,.10);border:1px solid rgba(192,132,252,.45);border-left:4px solid #c084fc;border-radius:10px;padding:9px 12px;color:#ead9ff;font-size:12.5px;line-height:1.55;white-space:pre-wrap}'+
+      '.dictado-coment b{color:#d8b4fe}'+
+      '.alu-dictado-ver{margin-top:9px;display:inline-flex;align-items:center;gap:7px;border:1px solid rgba(74,158,255,.55);background:rgba(74,158,255,.12);color:#bcd9ff;border-radius:8px;padding:8px 13px;font-weight:800;font-size:12.5px;cursor:pointer}'+
+      '.alu-dictado-ver:hover{background:rgba(74,158,255,.22)}'+
+      '.alu-item.dictado.hecha-vista{opacity:.85}'+
+      /* visor de dictado + solución (pantalla completa, por encima de la campana) */
+      '.dictado-visor{position:fixed;inset:0;z-index:120;display:flex;flex-direction:column;background:rgba(4,8,18,.94);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}'+
+      '.dictado-visor .dv-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 18px;color:#e3efff}'+
+      '.dictado-visor .dv-tit{font-weight:900;font-size:15px}'+
+      '.dictado-visor .dv-close{flex:none;width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.25);color:#fff;font-size:15px;font-weight:800;cursor:pointer}'+
+      '.dictado-visor .dv-body{flex:1;overflow:auto;padding:0 16px 26px;display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:14px;align-content:start;max-width:1100px;margin:0 auto;width:100%;box-sizing:border-box}'+
+      '.dictado-visor figure{margin:0;background:#0d1626;border:1px solid rgba(74,158,255,.35);border-radius:14px;overflow:hidden;display:flex;flex-direction:column}'+
+      '.dictado-visor figcaption{padding:9px 13px;font-size:12.5px;font-weight:800;color:#bcd9ff;display:flex;align-items:center;gap:8px}'+
+      '.dictado-visor .dv-img{display:block;width:100%;background:#060b14}'+
+      '.dictado-visor .dv-img img{display:block;width:100%;height:auto;max-height:64vh;object-fit:contain;cursor:zoom-in}'+
+      '.dictado-visor .dv-tip{padding:0 16px 12px;text-align:center;color:#6d84ab;font-size:11.5px}'+
+      '@media (prefers-reduced-motion:reduce){.alu-item.dictado .neb-mini i{animation:none!important}}';
     document.head.appendChild(s);
   }
   function start(){
