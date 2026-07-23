@@ -1787,16 +1787,16 @@ function showEnig(kind){
     var old=document.getElementById('dictado-visor'); if(old) old.remove();
     var v=document.createElement('div'); v.className='dictado-visor'; v.id='dictado-visor';
     var figs='';
-    if(dj.foto_alumno){
-      figs+='<figure><figcaption>📸 Tu dictado (la foto que enviaste)</figcaption>'
-        +'<a class="dv-img" href="'+esc(dj.foto_alumno)+'" target="_blank" rel="noopener"><img src="'+esc(dj.foto_alumno)+'" alt="Tu dictado" loading="lazy"></a></figure>';
-    }
-    var sols=(dj.fotos_solucion||[]).filter(Boolean);
-    var solsCaducadas=!!(dj.fotos_caducan && (Date.parse(dj.fotos_caducan)||0)<=Date.now());
-    if(solsCaducadas && sols.length){
-      figs+='<figure><figcaption>✅ Solución (la pizarra del profesor)</figcaption>'
-        +'<div style="padding:26px 18px;color:#8ba3c7;font-size:13px;text-align:center">🕐 La foto de la solución ya no está disponible: se guarda 7 días desde la revisión.</div></figure>';
+    // (Iago 23-jul) TODAS las fotos caducan a los 7 días de la revisión
+    var caducadas=!!(dj.fotos_caducan && (Date.parse(dj.fotos_caducan)||0)<=Date.now());
+    if(caducadas){
+      figs='<div class="alu-vacio" style="grid-column:1/-1">🕐 Las fotos de este dictado ya no están disponibles: se guardan 7 días desde la revisión. Tu nota y el comentario siguen en la notificación.</div>';
     } else {
+      if(dj.foto_alumno){
+        figs+='<figure><figcaption>📸 Tu dictado (la foto que enviaste)</figcaption>'
+          +'<a class="dv-img" href="'+esc(dj.foto_alumno)+'" target="_blank" rel="noopener"><img src="'+esc(dj.foto_alumno)+'" alt="Tu dictado" loading="lazy"></a></figure>';
+      }
+      var sols=(dj.fotos_solucion||[]).filter(Boolean);
       sols.forEach(function(u,k){
         figs+='<figure><figcaption>✅ Solución'+(sols.length>1?(' '+(k+1)+' de '+sols.length):'')+' (la pizarra del profesor)</figcaption>'
           +'<a class="dv-img" href="'+esc(u)+'" target="_blank" rel="noopener"><img src="'+esc(u)+'" alt="Solución del dictado" loading="lazy"></a></figure>';
@@ -1808,6 +1808,15 @@ function showEnig(kind){
       +'<div class="dv-body">'+figs+'</div>'
       +'<div class="dv-tip">Toca una imagen para abrirla a tamaño completo en otra pestaña.</div>';
     document.body.appendChild(v);
+    // si un archivo ya fue borrado (limpieza de 7 días), sustituir la imagen
+    // rota por una nota amable en su propia tarjeta
+    v.querySelectorAll('.dv-img img').forEach(function(im){
+      im.onerror=function(){
+        var f=im.closest('figure'); if(!f) return;
+        var cap=f.querySelector('figcaption'); var capHTML=cap?cap.outerHTML:'';
+        f.innerHTML=capHTML+'<div style="padding:26px 18px;color:#8ba3c7;font-size:13px;text-align:center">🕐 Esta imagen ya no está disponible (se guarda 7 días desde la revisión).</div>';
+      };
+    });
     var onEsc=function(e){ if(e.key==='Escape'){ e.stopPropagation(); cierra(); } };
     var cierra=function(){ try{ v.remove(); }catch(e){} document.removeEventListener('keydown',onEsc,true); };
     v.querySelector('.dv-close').addEventListener('click',cierra);
@@ -2033,13 +2042,14 @@ function showEnig(kind){
         var comentHTML=(esCorr && dj.comentario && String(dj.comentario).trim())
           ? '<div class="dictado-coment"><b>💬 Comentario de Iago:</b> '+esc(dj.comentario)+'</div>'
           : '';
-        // las fotos de la SOLUCIÓN caducan a los 7 días (limpieza del bucket);
-        // la foto del propio alumno no caduca (va con su dictado)
-        var solsCaducadas=!!(dj.fotos_caducan && (Date.parse(dj.fotos_caducan)||0)<=Date.now());
-        var hayFotos=!!(dj.foto_alumno || (!solsCaducadas && dj.fotos_solucion && dj.fotos_solucion.length));
+        // (Iago 23-jul) TODAS las fotos (la del alumno y la solución) se
+        // guardan 7 días desde la revisión; después el visor se retira y
+        // quedan la nota y el comentario, que no caducan.
+        var fotosCaducadas=!!(dj.fotos_caducan && (Date.parse(dj.fotos_caducan)||0)<=Date.now());
+        var hayFotos=!fotosCaducadas && !!(dj.foto_alumno || (dj.fotos_solucion && dj.fotos_solucion.length));
         var verHTML=hayFotos
-          ? '<button class="alu-dictado-ver" data-id-notif="'+esc(o.id)+'">👀 Ver '+((solsCaducadas||!(dj.fotos_solucion&&dj.fotos_solucion.length))?'mi dictado':'dictado y solución')+'</button>'
-          : '';
+          ? '<button class="alu-dictado-ver" data-id-notif="'+esc(o.id)+'">👀 Ver dictado y solución</button>'
+          : (dj.fotos_caducan?'<div style="margin-top:8px;font-size:11.5px;color:#6d84ab">🕐 Las fotos del dictado se guardan 7 días.</div>':'');
         return '<div class="alu-item dictado'+(o.leido?'':' no-leido')+'" data-id="'+esc(o.id)+'">'
           +'<div class="neb-mini" aria-hidden="true"><i class="n1"></i><i class="n2"></i><i class="n3"></i></div>'
           +'<span class="alu-dot"></span>'
@@ -4561,6 +4571,17 @@ window.DictadoClase = (function(){
     var ys=new Date(Date.UTC(date.getUTCFullYear(),0,1));
     return { anio:date.getUTCFullYear(), semana:Math.ceil((((date-ys)/86400000)+1)/7) };
   }
+  // SEMANA DOCENTE (Iago 23-jul-2026): el dictado activo caduca el VIERNES a
+  // las 19:00 (fin de la semana de Iago, igual que las fichas). A partir de
+  // ese momento la tarjeta pasa a mirar la semana siguiente — así nunca
+  // conviven dos dictados aunque el siguiente ya esté preparado.
+  function semanaDocenteRef(){
+    var now=new Date();
+    var mon=new Date(now); mon.setHours(0,0,0,0);
+    mon.setDate(mon.getDate()-((mon.getDay()+6)%7));
+    var fri19=new Date(mon); fri19.setDate(mon.getDate()+4); fri19.setHours(19,0,0,0);
+    return (now>fri19)? new Date(mon.getTime()+7*864e5) : now;
+  }
 
   // VexFlow + piano bajo demanda (mismas versiones que la vista iPad)
   var _libsProm=null;
@@ -4578,7 +4599,7 @@ window.DictadoClase = (function(){
 
   function _filas(rows){ return (rows||[]).filter(function(f){ return f && f.dictado; }); }
   async function consulta(){
-    var iw=isoWeek(new Date());
+    var iw=isoWeek(semanaDocenteRef());
     var url=SBU+'/rest/v1/suite_dictados_clase?select=*'+
       '&anio=eq.'+iw.anio+'&semana_iso=eq.'+iw.semana+
       '&curso=in.('+CURSOS.join(',')+')&order=curso.asc';
@@ -4601,7 +4622,7 @@ window.DictadoClase = (function(){
     try{
       await libs();
       // relectura SIN caché: si cambiaste el tempo desde otro dispositivo, se respeta
-      var iw=isoWeek(new Date());
+      var iw=isoWeek(semanaDocenteRef());
       var r=await fetch(SBU+'/rest/v1/suite_dictados_clase?select=*'+
         '&curso=eq.'+encodeURIComponent(cursoSel)+'&anio=eq.'+iw.anio+'&semana_iso=eq.'+iw.semana,
         {headers:{'apikey':SBK,'Authorization':'Bearer '+SBK,'Cache-Control':'no-cache'}});
@@ -4637,7 +4658,7 @@ window.DictadoClase = (function(){
             '<span class="da-badge">Solo profesor</span></h2>'+
           '<p>Esta semana (semana '+res.iw.semana+'/'+res.iw.anio+') no hay ningún dictado guardado para '+
             CURSOS.join(', ')+'.<br><b>Últimos en la base:</b> '+lista+
-            '.<br><span style="opacity:.75">La tarjeta solo reproduce el de la semana ISO actual: revisa en qué semana del Diario guardaste el dictado.</span></p>'+
+            '.<br><span style="opacity:.75">La tarjeta reproduce el de la semana docente actual (cambia al siguiente el viernes a las 19:00): revisa en qué semana del Diario guardaste el dictado.</span></p>'+
           '</div>';
         host.insertBefore(card0, host.firstChild);
       }
