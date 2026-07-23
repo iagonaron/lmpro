@@ -1940,7 +1940,7 @@ function showEnig(kind){
               +(fHecha
                 ? '<div class="ts-parte-sub">Entregada. ¡Buen trabajo!</div>'
                 : ((fpj.fin_normal)?'<div class="alu-item-plazo" data-fin="'+esc(fpj.fin_normal)+'" data-gracia="'+esc(fpj.fin_gracia||'')+'" style="font-size:11.5px;font-weight:700;font-variant-numeric:tabular-nums"></div>':'')
-                  +'<button class="alu-hacer ts-ficha-go" data-ficha="'+esc(fpj.ficha_id||'')+'" data-n="'+esc(fpj.numero||'')+'" data-nid="'+esc(fN.id)+'">Hacer la ficha →</button>')
+                  +'<button class="alu-hacer ts-ficha-go" data-ficha="'+esc(fpj.ficha_id||'')+'" data-n="'+esc(fpj.numero||'')+'" data-fin="'+esc(fpj.fin_normal||'')+'" data-gracia="'+esc(fpj.fin_gracia||'')+'" data-nid="'+esc(fN.id)+'">Hacer la ficha →</button>')
               +'</div>';
           } else {
             partes+='<div class="ts-parte ts-ficha"><div class="ts-parte-tit">🖊 Ficha '+esc(tj.ficha.numero)+' de teoría</div>'
@@ -1991,7 +1991,7 @@ function showEnig(kind){
       if(fid){
         accionHTML=hecha
           ? '<span class="alu-hecha-badge">✓ Entregada</span>'
-          : '<button class="alu-hacer'+(prog?' alu-continuar':'')+'" data-ficha="'+esc(fid)+'" data-n="'+esc(pj.numero!=null?pj.numero:'')+'" style="margin-top:8px;background:linear-gradient(90deg,#e9c96a,#c8862b);color:#1a1305;border:0;border-radius:8px;padding:8px 12px;font-weight:700;font-size:13px;cursor:pointer">'+(prog?'Continuar la ficha ('+prog.hechos+'/'+prog.total+') →':'Hacer la ficha →')+'</button>';
+          : '<button class="alu-hacer'+(prog?' alu-continuar':'')+'" data-ficha="'+esc(fid)+'" data-n="'+esc(pj.numero!=null?pj.numero:'')+'" data-fin="'+esc(pj.fin_normal||'')+'" data-gracia="'+esc(pj.fin_gracia||'')+'" style="margin-top:8px;background:linear-gradient(90deg,#e9c96a,#c8862b);color:#1a1305;border:0;border-radius:8px;padding:8px 12px;font-weight:700;font-size:13px;cursor:pointer">'+(prog?'Continuar la ficha ('+prog.hechos+'/'+prog.total+') →':'Hacer la ficha →')+'</button>';
       }
       return '<div class="alu-item'+((o.leido||hecha)?'':' no-leido')+(fid?' ficha':'')+(hecha?' hecha':'')+(extra?' alu-extra-pin':'')+'" data-id="'+esc(o.id)+'"'+(fid?(' data-ficha="'+esc(fid)+'"'):'')+'>'
         
@@ -2044,8 +2044,9 @@ function showEnig(kind){
         ev.stopPropagation();
         var fid=b.getAttribute('data-ficha')||'', nnum=b.getAttribute('data-n')||'';
         var nid=b.getAttribute('data-nid'); var item=b.closest('.alu-item');
+        var pfin=b.getAttribute('data-fin')||'', pgra=b.getAttribute('data-gracia')||'';
         if(nid) marcar(nid,item);
-        window.location.href='https://iagonaron.github.io/teoriapro/?fichaId='+encodeURIComponent(fid)+'&cuenta='+encodeURIComponent(cuentaId()||'')+(nnum?('&n='+encodeURIComponent(nnum)):'');
+        window.location.href='https://iagonaron.github.io/teoriapro/?fichaId='+encodeURIComponent(fid)+'&cuenta='+encodeURIComponent(cuentaId()||'')+(nnum?('&n='+encodeURIComponent(nnum)):'')+(pfin?('&fin='+encodeURIComponent(pfin)):'')+(pgra?('&gracia='+encodeURIComponent(pgra)):'');
       });
     });
     // FASE 7 · "Empezar el quiz": marca leído y abre RITMO at home con la
@@ -2067,9 +2068,10 @@ function showEnig(kind){
         ev.stopPropagation();
         var fid=b.getAttribute('data-ficha');
         var nnum=b.getAttribute('data-n')||'';
+        var pfin=b.getAttribute('data-fin')||'', pgra=b.getAttribute('data-gracia')||'';
         var item=b.closest('.alu-item'), nid=item&&item.getAttribute('data-id');
         if(nid) marcar(nid,item);
-        window.location.href='https://iagonaron.github.io/teoriapro/?fichaId='+encodeURIComponent(fid)+'&cuenta='+encodeURIComponent(cuentaId()||'')+(nnum?('&n='+encodeURIComponent(nnum)):'');
+        window.location.href='https://iagonaron.github.io/teoriapro/?fichaId='+encodeURIComponent(fid)+'&cuenta='+encodeURIComponent(cuentaId()||'')+(nnum?('&n='+encodeURIComponent(nnum)):'')+(pfin?('&fin='+encodeURIComponent(pfin)):'')+(pgra?('&gracia='+encodeURIComponent(pgra)):'');
       });
     });
     // Clic en una notificación sin acción: solo marcar leído.
