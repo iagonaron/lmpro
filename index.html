@@ -1578,6 +1578,181 @@ function showEnig(kind){
   function parteHecha(envio,parte){ return !!_semanaHechos[envio+'_'+parte]; }
   /* FASE 8 · visor de lecciones (capturas del libro): pantalla completa,
      desplazable, y al FINAL el botón «✓ Ya la estudié» que marca la parte. */
+
+  /* ======== ANOTACIONES DEL ALUMNO EN LAS LECCIONES (Iago jul-2026) ========
+     Subrayador de colores + notas de texto sobre cada captura. Básico y táctil:
+     · modo MOVER por defecto (el dedo hace scroll); con un rotulador activo,
+       el trazo se dibuja y el scroll se bloquea solo sobre la partitura;
+     · notas de texto: toca donde quieras; se arrastra por su pestaña; ✕ borra;
+     · deshacer (últimos trazos/notas), goma de trazos y borrar todo (con confirmación);
+     · se guarda en ESTE dispositivo (localStorage) por alumno + lección + página. */
+  function tsAnotar(ov, clave, cid){
+    var PREF='ts_anot_'+(cid||'anon')+'_'+clave+'_';
+    if(!document.getElementById('ts-anot-css')){
+      var st=document.createElement('style'); st.id='ts-anot-css';
+      st.textContent=
+        '.anot-bar{position:sticky;top:0;z-index:5;display:flex;gap:6px;align-items:center;flex-wrap:wrap;background:linear-gradient(180deg,rgba(38,26,10,.97),rgba(24,16,6,.95));border:1px solid rgba(212,175,55,.4);border-radius:12px;padding:7px 9px;margin:0 0 12px;box-shadow:0 8px 26px rgba(0,0,0,.4)}'+
+        '.anot-tit{font:800 10.5px/1 Arial;letter-spacing:.12em;color:#d9c9a0;text-transform:uppercase;margin-right:2px}'+
+        '.anot-b{border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.06);color:#e8dcc0;border-radius:9px;padding:7px 10px;font:700 12.5px Arial;cursor:pointer;line-height:1;touch-action:manipulation}'+
+        '.anot-b.on{border-color:#ffd678;background:rgba(255,214,120,.18);color:#ffe9b8;box-shadow:0 0 0 1px rgba(255,214,120,.35)}'+
+        '.anot-sw{width:14px;height:14px;border-radius:4px;display:inline-block;vertical-align:-2px;margin-right:5px}'+
+        '.anot-wrap{position:relative}'+
+        '.anot-canvas{position:absolute;inset:0;width:100%;height:100%;border-radius:12px;pointer-events:none}'+
+        '.anot-wrap.dibujo .anot-canvas{pointer-events:auto;touch-action:none;cursor:crosshair}'+
+        '.anot-nota{position:absolute;z-index:3;min-width:92px;max-width:46%;background:#fff7c8;color:#4a3a10;border:1px solid #d8b84a;border-radius:8px;box-shadow:0 6px 18px rgba(0,0,0,.3);font:600 13px/1.35 Arial;padding:17px 8px 7px}'+
+        '.anot-nota-txt{outline:none;min-height:16px;word-wrap:break-word}'+
+        '.anot-nota-top{position:absolute;left:0;top:0;right:0;height:14px;background:rgba(216,184,74,.5);border-radius:7px 7px 0 0;cursor:grab;touch-action:none}'+
+        '.anot-nota-x{position:absolute;right:2px;top:0;border:0;background:transparent;color:#7a5c14;font:800 12px Arial;cursor:pointer;padding:1px 4px;z-index:4}';
+      document.head.appendChild(st);
+    }
+    var imgs=Array.prototype.slice.call(ov.querySelectorAll('img'));
+    if(!imgs.length) return;
+    var host=ov.firstChild;
+    var bar=document.createElement('div'); bar.className='anot-bar';
+    bar.innerHTML='<span class="anot-tit">✏️ Anotar</span>'
+      +'<button class="anot-b on" data-t="mano">✋ Mover</button>'
+      +'<button class="anot-b" data-t="c0"><span class="anot-sw" style="background:#ffde3c"></span>Subrayar</button>'
+      +'<button class="anot-b" data-t="c1"><span class="anot-sw" style="background:#50e68c"></span>Verde</button>'
+      +'<button class="anot-b" data-t="c2"><span class="anot-sw" style="background:#ff6eb4"></span>Rosa</button>'
+      +'<button class="anot-b" data-t="nota">📝 Nota</button>'
+      +'<button class="anot-b" data-t="goma">🧽 Goma</button>'
+      +'<span style="flex:1 1 auto"></span>'
+      +'<button class="anot-b" data-t="undo">↶ Deshacer</button>'
+      +'<button class="anot-b" data-t="clear">🗑 Borrar todo</button>';
+    host.insertBefore(bar, host.children[1]||null);
+    var COLORS=['rgba(255,222,60,.5)','rgba(80,230,140,.45)','rgba(255,110,180,.45)'];
+    var tool='mano', pages=[], hist=[], clearArm=null;
+    function save(pg){ try{ localStorage.setItem(PREF+pg.idx, JSON.stringify(pg.data)); }catch(e){} }
+    function load(idx){ try{ var s=localStorage.getItem(PREF+idx); if(s) return JSON.parse(s); }catch(e){} return {strokes:[],notes:[]}; }
+    function redraw(pg){
+      var cv=pg.canvas, ctx=cv.getContext('2d');
+      ctx.clearRect(0,0,cv.width,cv.height);
+      ctx.globalCompositeOperation='multiply';
+      ctx.lineCap='round'; ctx.lineJoin='round';
+      var W=cv.width, H=cv.height;
+      pg.data.strokes.forEach(function(sk){
+        ctx.strokeStyle=sk.c; ctx.lineWidth=Math.max(6,sk.w*W);
+        ctx.beginPath();
+        sk.p.forEach(function(pt,i){ var x=pt[0]*W,y=pt[1]*H; if(i===0)ctx.moveTo(x,y); else ctx.lineTo(x,y); });
+        if(sk.p.length===1){ ctx.lineTo(sk.p[0][0]*W+0.1, sk.p[0][1]*H); }
+        ctx.stroke();
+      });
+    }
+    function placeNotes(pg){
+      Array.prototype.forEach.call(pg.wrap.querySelectorAll('.anot-nota'),function(e){ e.remove(); });
+      pg.data.notes.forEach(function(nt,k){ pg.wrap.appendChild(mkNota(pg,nt,k)); });
+    }
+    function mkNota(pg,nt,k){
+      var d=document.createElement('div'); d.className='anot-nota';
+      d.style.left=(nt.x*100)+'%'; d.style.top=(nt.y*100)+'%';
+      d.innerHTML='<div class="anot-nota-top"></div><button class="anot-nota-x" aria-label="Borrar nota">✕</button><div class="anot-nota-txt" contenteditable="true"></div>';
+      d.querySelector('.anot-nota-txt').textContent=nt.t||'';
+      var x=d.querySelector('.anot-nota-x');
+      x.addEventListener('pointerdown',function(ev){ ev.stopPropagation(); });
+      x.addEventListener('click',function(ev){ ev.stopPropagation(); pg.data.notes.splice(k,1); save(pg); placeNotes(pg); });
+      var txt=d.querySelector('.anot-nota-txt');
+      txt.addEventListener('blur',function(){ nt.t=txt.textContent||''; save(pg); });
+      txt.addEventListener('pointerdown',function(ev){ ev.stopPropagation(); });
+      var top=d.querySelector('.anot-nota-top');
+      top.addEventListener('pointerdown',function(ev){
+        ev.preventDefault(); ev.stopPropagation();
+        var r=pg.wrap.getBoundingClientRect();
+        var move=function(e2){ nt.x=Math.min(.96,Math.max(0,(e2.clientX-r.left)/r.width)); nt.y=Math.min(.97,Math.max(0,(e2.clientY-r.top)/r.height));
+          d.style.left=(nt.x*100)+'%'; d.style.top=(nt.y*100)+'%'; };
+        var up=function(){ document.removeEventListener('pointermove',move); document.removeEventListener('pointerup',up); save(pg); };
+        document.addEventListener('pointermove',move); document.addEventListener('pointerup',up);
+      });
+      return d;
+    }
+    function fit(pg){
+      var w=pg.img.clientWidth, h=pg.img.clientHeight;
+      if(!w||!h) return;
+      var dpr=Math.min(2,window.devicePixelRatio||1);
+      pg.canvas.width=Math.round(w*dpr); pg.canvas.height=Math.round(h*dpr);
+      redraw(pg);
+    }
+    function borraEn(pg,nx,ny){
+      var TH=0.022;
+      for(var i=pg.data.strokes.length-1;i>=0;i--){
+        var sk=pg.data.strokes[i];
+        for(var j=0;j<sk.p.length;j++){
+          var dx=sk.p[j][0]-nx, dy=sk.p[j][1]-ny;
+          if(dx*dx+dy*dy<TH*TH){ pg.data.strokes.splice(i,1); redraw(pg); return; }
+        }
+      }
+    }
+    imgs.forEach(function(im,idx){
+      var wrap=document.createElement('div'); wrap.className='anot-wrap';
+      im.parentNode.insertBefore(wrap,im); wrap.appendChild(im);
+      var cv=document.createElement('canvas'); cv.className='anot-canvas'; wrap.appendChild(cv);
+      var pg={idx:idx,img:im,canvas:cv,wrap:wrap,data:load(idx),cur:null,borrando:false};
+      pages.push(pg);
+      var listo=function(){ fit(pg); placeNotes(pg); };
+      if(im.complete && im.naturalWidth>0) listo();
+      im.addEventListener('load',listo);
+      cv.addEventListener('pointerdown',function(ev){
+        if(tool==='mano') return;
+        ev.preventDefault();
+        var r=cv.getBoundingClientRect();
+        var nx=(ev.clientX-r.left)/r.width, ny=(ev.clientY-r.top)/r.height;
+        if(tool==='nota'){
+          var nt={x:Math.min(.9,nx),y:ny,t:''};
+          pg.data.notes.push(nt); hist.push({pg:pg,t:'nota'}); save(pg); placeNotes(pg);
+          var ns=pg.wrap.querySelectorAll('.anot-nota'); var el=ns[ns.length-1];
+          if(el){ var tx=el.querySelector('.anot-nota-txt'); setTimeout(function(){ try{ tx.focus(); }catch(e){} },60); }
+          setTool('mano', bar.querySelector('[data-t="mano"]'));   // una nota por toque: volver a Mover
+          return;
+        }
+        if(tool==='goma'){ pg.borrando=true; borraEn(pg,nx,ny); try{ cv.setPointerCapture(ev.pointerId); }catch(e){} return; }
+        pg.cur={c:COLORS[parseInt(tool.slice(1),10)]||COLORS[0],w:0.016,p:[[nx,ny]]};
+        pg.data.strokes.push(pg.cur);
+        try{ cv.setPointerCapture(ev.pointerId); }catch(e){}
+        redraw(pg);
+      });
+      cv.addEventListener('pointermove',function(ev){
+        var r=cv.getBoundingClientRect();
+        var nx=(ev.clientX-r.left)/r.width, ny=(ev.clientY-r.top)/r.height;
+        if(pg.borrando){ borraEn(pg,nx,ny); return; }
+        if(!pg.cur) return;
+        ev.preventDefault();
+        var p=pg.cur.p, u=p[p.length-1];
+        if(Math.abs(nx-u[0])>0.003||Math.abs(ny-u[1])>0.003){ p.push([nx,ny]); redraw(pg); }
+      });
+      var fin=function(){
+        if(pg.cur){ hist.push({pg:pg,t:'trazo'}); save(pg); pg.cur=null; }
+        if(pg.borrando){ pg.borrando=false; save(pg); }
+      };
+      cv.addEventListener('pointerup',fin); cv.addEventListener('pointercancel',fin);
+    });
+    function setTool(t,btn){
+      tool=t;
+      Array.prototype.forEach.call(bar.querySelectorAll('.anot-b'),function(b){ b.classList.remove('on'); });
+      if(btn) btn.classList.add('on');
+      pages.forEach(function(pg){ pg.wrap.classList.toggle('dibujo', t!=='mano'); });
+    }
+    bar.addEventListener('click',function(ev){
+      var b=ev.target.closest('.anot-b'); if(!b) return;
+      try{ b.blur(); }catch(e){}   // que un espacio/enter posterior no re-dispare el botón
+      var t=b.getAttribute('data-t');
+      if(t==='undo'){
+        var h=hist.pop(); if(!h) return;
+        if(h.t==='trazo') h.pg.data.strokes.pop();
+        else if(h.t==='nota') h.pg.data.notes.pop();
+        save(h.pg); redraw(h.pg); placeNotes(h.pg);
+        return;
+      }
+      if(t==='clear'){
+        if(!clearArm){ b.textContent='¿Seguro? Toca otra vez'; clearArm=setTimeout(function(){ b.innerHTML='🗑 Borrar todo'; clearArm=null; },2600); return; }
+        clearTimeout(clearArm); clearArm=null; b.innerHTML='🗑 Borrar todo';
+        pages.forEach(function(pg){ pg.data={strokes:[],notes:[]}; save(pg); redraw(pg); placeNotes(pg); });
+        hist.length=0;
+        return;
+      }
+      setTool(t,b);
+    });
+    var onRz=function(){ if(!ov.isConnected){ window.removeEventListener('resize',onRz); return; } pages.forEach(fit); };
+    window.addEventListener('resize',onRz);
+  }
   function abrirVisorLecciones(envio, imgs, parte, titulo){
     parte=parte||'lecciones'; titulo=titulo||'Lecciones de la semana';
     var old=document.getElementById('ts-visor'); if(old) old.remove();
@@ -1604,6 +1779,7 @@ function showEnig(kind){
       +(ya?'':'<div style="margin-top:10px;font:600 12px \'Helvetica Neue\',Arial,sans-serif;color:#8a93a8">Si sales sin marcarla, esta lección seguirá apareciendo como pendiente en tus notificaciones.</div>')+'</div></div>';
     ov.innerHTML=inner;
     document.body.appendChild(ov);
+    try{ tsAnotar(ov, String(envio||'x')+'_'+String(parte||'lecciones'), cuentaId()); }catch(e){ console.warn('[anot]',e); }
     // Iago 3-jul: si la captura ya no existe (barrido de 14 dias, o se quito
     // del Diario despues de enviarla), el <img> roto pintaba un recuadro
     // blanco enorme con una "?". Lo sustituimos por un aviso claro.
@@ -1770,8 +1946,12 @@ function showEnig(kind){
         if(rl && rl.ok && Array.isArray(rl.notificaciones)){
           var ocultas=rl.notificaciones.filter(function(o){
             var pj=o.payload_json||{};
-            if(o.leido || !pj.ficha_id || !pj.fin_normal) return false;
-            return ((Date.parse(pj.fin_normal)||0) - 7*864e5) > Date.now();
+            if(o.leido) return false;
+            if(pj.ficha_id && pj.fin_normal) return ((Date.parse(pj.fin_normal)||0) - 7*864e5) > Date.now();
+            // Iago jul-2026: las "Tareas de la semana" (lecciones de ritmo) encienden la
+            // campana SOLO durante 7 días; después siguen en la lista pero sin globo.
+            if(pj.tareas_semana && pj.semana_envio_id) return ((Date.parse(o.creado_en)||0) + 7*864e5) <= Date.now();
+            return false;
           }).length;
           n=Math.max(0,n-ocultas);
         }
@@ -2238,17 +2418,17 @@ function showEnig(kind){
       '.alu-hecha-check{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;margin-left:6px;border-radius:50%;background:#d4af37;color:#062b26;font-size:12px;font-weight:900;vertical-align:middle}'+
       '.alu-hecha-badge{display:inline-flex;align-items:center;gap:7px;margin-top:8px;font-size:13px;font-weight:800;color:#d4af37;background:rgba(34,201,138,.10);border:1px solid rgba(34,201,138,.45);border-radius:8px;padding:7px 12px}'+
       // FASE 8 · tarjeta "Tareas de la semana" + pin de TIEMPO EXTRA
-      '.alu-item.alu-item-tareas{border:2px solid rgba(255,214,120,.65);border-radius:16px;margin:10px 0;padding:12px 14px;background:linear-gradient(165deg,rgba(255,214,120,.12),rgba(24,15,60,.7) 45%,rgba(8,5,24,.85));box-shadow:0 10px 34px rgba(0,0,0,.35),inset 0 0 0 1px rgba(255,214,120,.12)}'+'.alu-item.alu-item-tareas .alu-item-tit{font-size:15px;letter-spacing:.02em}'+'.ts-carta-row{font:700 12px \'Helvetica Neue\',Arial,sans-serif;color:#cfc7f5;margin:2px 0 4px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}'+'.ts-ver-intro{display:inline-block;font:800 11.5px \'Helvetica Neue\',Arial,sans-serif;color:#052e16;background:linear-gradient(135deg,#7ef0c0,#34d399);border-radius:999px;padding:4px 11px;text-decoration:none;white-space:nowrap}'+'.ts-ver-intro:hover{filter:brightness(1.08)}'+'.ts-lec-chips{display:flex;gap:6px;flex-wrap:wrap}'+'.ts-lec-chip{font:800 12px \'Helvetica Neue\',Arial,sans-serif;border-radius:999px;padding:6px 12px;cursor:pointer;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#e8e4ff}'+'.ts-lec-chip.abre{border-color:rgba(52,211,153,.6);background:linear-gradient(90deg,rgba(255,214,120,.16),rgba(52,211,153,.16));color:#d9ffef}'+'.ts-lec-chip.hecha{cursor:default;border-color:rgba(62,233,166,.5);background:rgba(62,233,166,.1);color:#7ef0c0;filter:none}'+'.ts-lec-chip.abre.hecha{cursor:pointer}'+'.ts-lec-chip.abre.hecha:hover{background:rgba(62,233,166,.18)}'+'.ts-parte.ts-hecha .ts-lec-chip.abre.hecha{pointer-events:auto}'+
+      '.alu-item.alu-item-tareas{border:2px solid rgba(255,214,120,.65);border-radius:16px;margin:10px 0;padding:12px 14px;background:linear-gradient(165deg,rgba(255,214,120,.16),rgba(64,46,16,.72) 45%,rgba(28,19,7,.92));box-shadow:0 10px 34px rgba(0,0,0,.35),inset 0 0 0 1px rgba(255,214,120,.12)}'+'.alu-item.alu-item-tareas .alu-item-tit{font-size:15px;letter-spacing:.02em}'+'.ts-carta-row{font:700 12px \'Helvetica Neue\',Arial,sans-serif;color:#e6d6ac;margin:2px 0 4px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}'+'.ts-ver-intro{display:inline-block;font:800 11.5px \'Helvetica Neue\',Arial,sans-serif;color:#052e16;background:linear-gradient(135deg,#7ef0c0,#34d399);border-radius:999px;padding:4px 11px;text-decoration:none;white-space:nowrap}'+'.ts-ver-intro:hover{filter:brightness(1.08)}'+'.ts-lec-chips{display:flex;gap:6px;flex-wrap:wrap}'+'.ts-lec-chip{font:800 12px \'Helvetica Neue\',Arial,sans-serif;border-radius:999px;padding:6px 12px;cursor:pointer;border:1px solid rgba(255,235,190,.3);background:rgba(255,222,150,.08);color:#f0e6c8}'+'.ts-lec-chip.abre{border-color:rgba(52,211,153,.6);background:linear-gradient(90deg,rgba(255,214,120,.16),rgba(52,211,153,.16));color:#d9ffef}'+'.ts-lec-chip.hecha{cursor:default;border-color:rgba(62,233,166,.5);background:rgba(62,233,166,.1);color:#7ef0c0;filter:none}'+'.ts-lec-chip.abre.hecha{cursor:pointer}'+'.ts-lec-chip.abre.hecha:hover{background:rgba(62,233,166,.18)}'+'.ts-parte.ts-hecha .ts-lec-chip.abre.hecha{pointer-events:auto}'+
       '.alu-item-tareas .alu-item-tit{color:#ffe4a8}'+
       '.ts-partes{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:8px;margin-top:8px}'+'.ts-parte{padding:9px 11px;border-radius:11px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.045);display:flex;flex-direction:column;gap:5px}'+'.ts-parte .ts-marcar,.ts-parte .alu-quiz-go,.ts-parte .ts-ver-lecciones{margin-top:auto;align-self:flex-start}'+
-      '.ts-parte-tit{font-size:12.5px;font-weight:800;color:#f1ecff}'+
+      '.ts-parte-tit{font-size:12.5px;font-weight:800;color:#f3e9cf}'+
       '.ts-parte-tit b{color:#ffd678}'+
-      '.ts-parte-sub{font-size:11.5px;color:#b9b0dd;white-space:pre-wrap;max-height:64px;overflow:auto}'+
+      '.ts-parte-sub{font-size:11.5px;color:#c9b98f;white-space:pre-wrap;max-height:64px;overflow:auto}'+
       '.ts-check{color:#7ef0c0}'+
       '.ts-parte.ts-hecha{filter:grayscale(1);opacity:.55}'+
       '.ts-marcar,.ts-ver-lecciones{margin-top:8px;border:0;border-radius:8px;padding:8px 13px;font-weight:800;font-size:12.5px;cursor:pointer}'+
-      '.ts-ver-lecciones{color:#08301f;background:linear-gradient(90deg,#ffd678,#b8860b 55%,#5bd0ff);box-shadow:0 6px 20px rgba(52,211,153,.3)}'+
-      '.ts-marcar{color:#e8e4ff;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.25)}'+
+      '.ts-ver-lecciones{color:#241703;background:linear-gradient(90deg,#ffe49a,#b8860b);box-shadow:0 6px 20px rgba(212,175,55,.35)}'+
+      '.ts-marcar{color:#f0e6c8;background:rgba(255,222,150,.1);border:1px solid rgba(255,235,190,.3)}'+
       '.ts-marcar:hover{background:rgba(255,255,255,.16)}'+
       '.alu-item-tareas.hecha{opacity:.72;border-color:rgba(148,163,184,.3)}'+
       '.alu-item.alu-extra-pin{border:1px solid #ff2d6a;border-radius:12px;margin:8px 0;padding:10px 12px;box-shadow:0 0 0 1px rgba(255,45,106,.45),0 8px 26px rgba(255,45,106,.25);animation:pinLatido 1.5s ease-in-out infinite;background:linear-gradient(100deg,#4a0d24 0%,#2e0817 55%,#1a0510 100%)!important;align-items:center}'+'.alu-item.alu-extra-pin .alu-item-main{display:flex;flex-wrap:wrap;align-items:center;gap:4px 14px}'+'.alu-item.alu-extra-pin .alu-item-tit{flex:0 0 auto}'+'.alu-item.alu-extra-pin .alu-item-cuerpo{flex:1 1 260px;font-size:12px;line-height:1.4;margin:0}'+'.alu-item.alu-extra-pin .alu-item-plazo{flex:0 0 auto;margin:0!important}'+'.alu-item.alu-extra-pin .alu-item-fecha{display:none}'+'.alu-item.alu-extra-pin .alu-hacer{flex:0 0 auto;margin:0}'+'.alu-item.alu-extra-pin .neb-mini{display:none}'+'.alu-item.alu-extra-pin .alu-item-cuerpo{color:#ffd6e2;font-weight:700}'+
@@ -4647,25 +4827,9 @@ window.DictadoClase = (function(){
     var old=document.getElementById('da-card'); if(old) old.remove();
     if(!res) return;
     if(!res.rows.length){
-      // Sin dictado ESTA semana: nota de diagnóstico visible solo para el tester
-      if(res.ultimos && res.ultimos.length){
-        var card0=document.createElement('div');
-        card0.id='da-card'; card0.className='{CARD_CLASS} da-card'.replace('{CARD_CLASS}','');
-        card0.className=(document.querySelector('.app-card.pro-card')?'app-card pro-card':'app-card')+' da-card';
-        card0.style.opacity='.75';
-        var lista=res.ultimos.map(function(f){
-          return 'nº '+(f.numero!=null?f.numero:'¿?')+' · '+f.curso+' · semana '+f.semana_iso+'/'+f.anio;
-        }).join('  ·  ');
-        card0.innerHTML='<div class="edge"></div><div class="info">'+
-          '<div class="kick area audicion">Audición · Diario del profesor</div>'+
-          '<h2 class="nm"><span class="hl">DICTADO</span> <span class="dim">ACTIVO</span>'+
-            '<span class="da-badge">Solo profesor</span></h2>'+
-          '<p>Esta semana (semana '+res.iw.semana+'/'+res.iw.anio+') no hay ningún dictado guardado para '+
-            CURSOS.join(', ')+'.<br><b>Últimos en la base:</b> '+lista+
-            '.<br><span style="opacity:.75">La tarjeta reproduce el de la semana docente actual (cambia al siguiente el viernes a las 19:00): revisa en qué semana del Diario guardaste el dictado.</span></p>'+
-          '</div>';
-        host.insertBefore(card0, host.firstChild);
-      }
+      // Iago jul-2026: sin dictado esta semana, la tarjeta NO se pinta (tampoco
+      // para el tester). El diagnóstico de "últimos en la base" era ruido; queda
+      // en la consola por si hace falta investigar.
       return;
     }
     var card=document.createElement('div');
