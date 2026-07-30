@@ -1595,7 +1595,7 @@ function showEnig(kind){
         '.anot-tit{font:800 10.5px/1 Arial;letter-spacing:.12em;color:#d9c9a0;text-transform:uppercase;margin-right:2px}'+
         '.anot-b{border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.06);color:#e8dcc0;border-radius:9px;padding:7px 10px;font:700 12.5px Arial;cursor:pointer;line-height:1;touch-action:manipulation}'+
         '.anot-b.on{border-color:#ffd678;background:rgba(255,214,120,.18);color:#ffe9b8;box-shadow:0 0 0 1px rgba(255,214,120,.35)}'+
-        '.anot-sw{width:14px;height:14px;border-radius:4px;display:inline-block;vertical-align:-2px;margin-right:5px}'+
+        '.anot-sw{width:18px;height:18px;border-radius:5px;display:inline-block;vertical-align:-4px}'+'.anot-b.anot-color{padding:6px 8px;line-height:0}'+
         '.anot-wrap{position:relative}'+
         '.anot-canvas{position:absolute;inset:0;width:100%;height:100%;border-radius:12px;pointer-events:none}'+
         '.anot-wrap.dibujo .anot-canvas{pointer-events:auto;touch-action:none;cursor:crosshair}'+
@@ -1610,17 +1610,17 @@ function showEnig(kind){
     var host=ov.firstChild;
     var bar=document.createElement('div'); bar.className='anot-bar';
     bar.innerHTML='<span class="anot-tit">✏️ Anotar</span>'
-      +'<button class="anot-b on" data-t="mano">✋ Mover</button>'
-      +'<button class="anot-b" data-t="c0"><span class="anot-sw" style="background:#ffde3c"></span>Subrayar</button>'
-      +'<button class="anot-b" data-t="c1"><span class="anot-sw" style="background:#50e68c"></span>Verde</button>'
-      +'<button class="anot-b" data-t="c2"><span class="anot-sw" style="background:#ff6eb4"></span>Rosa</button>'
+      +'<button class="anot-b anot-color" data-t="c0" aria-label="Subrayar amarillo"><span class="anot-sw" style="background:#ffde3c"></span></button>'
+      +'<button class="anot-b anot-color" data-t="c1" aria-label="Subrayar verde"><span class="anot-sw" style="background:#50e68c"></span></button>'
+      +'<button class="anot-b anot-color" data-t="c2" aria-label="Subrayar rosa"><span class="anot-sw" style="background:#ff6eb4"></span></button>'
+      +'<button class="anot-b anot-color" data-t="c3" aria-label="Subrayar azul"><span class="anot-sw" style="background:#5ab4ff"></span></button>'
       +'<button class="anot-b" data-t="nota">📝 Nota</button>'
       +'<button class="anot-b" data-t="goma">🧽 Goma</button>'
       +'<span style="flex:1 1 auto"></span>'
       +'<button class="anot-b" data-t="undo">↶ Deshacer</button>'
       +'<button class="anot-b" data-t="clear">🗑 Borrar todo</button>';
     host.insertBefore(bar, host.children[1]||null);
-    var COLORS=['rgba(255,222,60,.5)','rgba(80,230,140,.45)','rgba(255,110,180,.45)'];
+    var COLORS=['rgba(255,222,60,.5)','rgba(80,230,140,.45)','rgba(255,110,180,.45)','rgba(90,180,255,.45)'];
     var tool='mano', pages=[], hist=[], clearArm=null;
     function save(pg){ try{ localStorage.setItem(PREF+pg.idx, JSON.stringify(pg.data)); }catch(e){} }
     function load(idx){ try{ var s=localStorage.getItem(PREF+idx); if(s) return JSON.parse(s); }catch(e){} return {strokes:[],notes:[]}; }
@@ -1631,7 +1631,7 @@ function showEnig(kind){
       ctx.lineCap='round'; ctx.lineJoin='round';
       var W=cv.width, H=cv.height;
       pg.data.strokes.forEach(function(sk){
-        ctx.strokeStyle=sk.c; ctx.lineWidth=Math.max(6,sk.w*W);
+        ctx.strokeStyle=sk.c; ctx.lineWidth=Math.max(3,sk.w*W);
         ctx.beginPath();
         sk.p.forEach(function(pt,i){ var x=pt[0]*W,y=pt[1]*H; if(i===0)ctx.moveTo(x,y); else ctx.lineTo(x,y); });
         if(sk.p.length===1){ ctx.lineTo(sk.p[0][0]*W+0.1, sk.p[0][1]*H); }
@@ -1700,11 +1700,11 @@ function showEnig(kind){
           pg.data.notes.push(nt); hist.push({pg:pg,t:'nota'}); save(pg); placeNotes(pg);
           var ns=pg.wrap.querySelectorAll('.anot-nota'); var el=ns[ns.length-1];
           if(el){ var tx=el.querySelector('.anot-nota-txt'); setTimeout(function(){ try{ tx.focus(); }catch(e){} },60); }
-          setTool('mano', bar.querySelector('[data-t="mano"]'));   // una nota por toque: volver a Mover
+          setTool('mano', null);   // una nota por toque: soltar la herramienta
           return;
         }
         if(tool==='goma'){ pg.borrando=true; borraEn(pg,nx,ny); try{ cv.setPointerCapture(ev.pointerId); }catch(e){} return; }
-        pg.cur={c:COLORS[parseInt(tool.slice(1),10)]||COLORS[0],w:0.016,p:[[nx,ny]]};
+        pg.cur={c:COLORS[parseInt(tool.slice(1),10)]||COLORS[0],w:0.008,p:[[nx,ny]]};
         pg.data.strokes.push(pg.cur);
         try{ cv.setPointerCapture(ev.pointerId); }catch(e){}
         redraw(pg);
@@ -1748,6 +1748,8 @@ function showEnig(kind){
         hist.length=0;
         return;
       }
+      // tocar la herramienta activa la SUELTA (sin herramienta = mover/scroll)
+      if(b.classList.contains('on')){ setTool('mano', null); return; }
       setTool(t,b);
     });
     var onRz=function(){ if(!ov.isConnected){ window.removeEventListener('resize',onRz); return; } pages.forEach(fit); };
@@ -1770,13 +1772,11 @@ function showEnig(kind){
       inner+=(imgs.length>1?'<div style="font:700 11px/1 \'Helvetica Neue\',Arial,sans-serif;color:#8a93a8;letter-spacing:.12em;text-transform:uppercase;margin:14px 0 6px 2px">Página '+(i+1)+'</div>':'')
         +'<img src="'+esc(u)+'" alt="Lección '+(i+1)+'" loading="lazy" style="display:block;width:100%;height:auto;border-radius:12px;background:#fff;box-shadow:0 12px 34px rgba(0,0,0,.45);image-rendering:-webkit-optimize-contrast">';
     });
-    var ya=parteHecha(envio,parte);
-    // Iago 3-jul: pantalla de ESTUDIO — sobria, sin estímulos. Botón discreto.
+    // Iago jul-2026: ENTRAR en el visor ya marca la lección como estudiada.
+    // Sin botón de marcar ni aviso: abajo, solo Salir.
     inner+='<div style="text-align:center;margin-top:22px">'
-      +(ya
-        ? '<button id="tsVisorCerrar2" style="border:1px solid rgba(255,255,255,.25);border-radius:12px;padding:12px 26px;font:700 14px \'Helvetica Neue\',Arial;cursor:pointer;color:#c8cfdd;background:rgba(255,255,255,.05)">Salir</button>'
-        : '<button id="tsVisorHecho" style="border:1px solid rgba(154,217,189,.45);border-radius:12px;padding:12px 24px;font:700 14px \'Helvetica Neue\',Arial;cursor:pointer;color:#c9ead9;background:rgba(62,150,110,.14)">✓ Salir y marcar como estudiado</button>')
-      +(ya?'':'<div style="margin-top:10px;font:600 12px \'Helvetica Neue\',Arial,sans-serif;color:#8a93a8">Si sales sin marcarla, esta lección seguirá apareciendo como pendiente en tus notificaciones.</div>')+'</div></div>';
+      +'<button id="tsVisorCerrar2" style="border:1px solid rgba(255,255,255,.25);border-radius:12px;padding:12px 26px;font:700 14px \'Helvetica Neue\',Arial;cursor:pointer;color:#c8cfdd;background:rgba(255,255,255,.05)">Salir</button>'
+      +'</div></div>';
     ov.innerHTML=inner;
     document.body.appendChild(ov);
     try{ tsAnotar(ov, String(envio||'x')+'_'+String(parte||'lecciones'), cuentaId()); }catch(e){ console.warn('[anot]',e); }
@@ -1800,13 +1800,10 @@ function showEnig(kind){
     document.getElementById('tsVisorCerrar').onclick=function(){ ov.remove(); };
     var c2=document.getElementById('tsVisorCerrar2');
     if(c2) c2.onclick=function(){ ov.remove(); };
-    var bh=document.getElementById('tsVisorHecho');
-    if(bh) bh.onclick=async function(){
-      bh.disabled=true; bh.textContent='Guardando…';
-      await marcarParte(envio,parte);
-      ov.remove();
-      try{ render(); }catch(e){}
-    };
+    // marcar al ABRIR (una sola vez) y refrescar lista + campana por detrás
+    if(!parteHecha(envio,parte)){
+      marcarParte(envio,parte).then(function(){ try{ render(); }catch(e){} try{ refrescar(); }catch(e){} });
+    }
   }
   async function marcarParte(envio,parte){
     var id=cuentaId(); if(!id) return false;
@@ -2049,8 +2046,12 @@ function showEnig(kind){
     var esQuiz=function(o){ return !!(o.payload_json && o.payload_json.quiz && o.payload_json.envio_id && !o.payload_json.tareas_semana); };
     var esQuizHecho=function(o){ return esQuiz(o) && !!_quizHechos[o.payload_json.envio_id]; };
     var esTareas=function(o){ return !!(o.payload_json && o.payload_json.tareas_semana && o.payload_json.semana_envio_id); };
+    // Iago jul-2026: la tarea vive UNA semana (viernes 19:00 → viernes 18:59).
+    // Pasado ese plazo se da por hecha aunque no se haya abierto todo.
+    var tareaCaducada=function(o){ return ((Date.parse(o.creado_en)||0) + 7*864e5) <= Date.now(); };
     var tareasHecha=function(o){
       if(!esTareas(o)) return false;
+      if(tareaCaducada(o)) return true;
       var pj=o.payload_json, se=pj.semana_envio_id;
       if(pj.quiz && pj.quiz.envio_id && !_quizHechos[pj.quiz.envio_id]) return false;
       var lecs=(pj.lecciones||[]).filter(function(l){ return l && l.n!=null; });
@@ -2128,10 +2129,11 @@ function showEnig(kind){
           lecList=[{n:null, imgs:tj.lecciones_imgs}];   // compat con envíos viejos
         }
         if(lecList.length){
-          var todasLec=lecList.every(function(l){ return parteHecha(se,l.n!=null?('leccion_'+l.n):'lecciones'); });
+          var caducLec=tareaCaducada(o);
+          var todasLec=caducLec || lecList.every(function(l){ return parteHecha(se,l.n!=null?('leccion_'+l.n):'lecciones'); });
           var chips=lecList.map(function(l){
             var parte=(l.n!=null)?('leccion_'+l.n):'lecciones';
-            var hechaL=parteHecha(se,parte);
+            var hechaL=parteHecha(se,parte)||caducLec;
             var lbl=(l.n!=null)?('Lección '+esc(l.n)):'Lecciones';
             if(hechaL && l.imgs && l.imgs.length)
               return '<button class="ts-lec-chip abre hecha" title="Reabrir para repasar" data-envio="'+esc(se)+'" data-parte="'+esc(parte)+'" data-lbl="'+esc(lbl)+'" data-imgs="'+esc(JSON.stringify(l.imgs))+'">✓ '+lbl+'</button>';
@@ -2144,8 +2146,8 @@ function showEnig(kind){
             +'<div class="ts-parte-tit">📚 Lecciones de ritmo'+(todasLec?' <b class="ts-check">✓</b>':'')+'</div>'
             +((tj.carta_ritmo&&tj.carta_ritmo.id)?('<div class="ts-carta-row">Lecciones de la carta <b>'+esc(tj.carta_ritmo.id)+'</b>'+(tj.carta_ritmo.nombre?(' · '+esc(tj.carta_ritmo.nombre)):'')+' <a class="ts-ver-intro" target="_blank" rel="noopener" href="https://iagonaron.github.io/ritmopro/?introCarta='+encodeURIComponent(tj.carta_ritmo.id)+'">▸ Ver explicación interactiva</a></div>'):'')
             +'<div class="ts-lec-chips">'+chips+'</div>'
-            +(todasLec?'<div class="ts-parte-sub">Estudiadas. El viernes se tocan en clase. (Puedes reabrirlas para repasar.)</div>'
-                      :'<div class="ts-parte-sub">Toca cada lección para estudiarla. Mientras no las marques como estudiadas, esta tarea seguirá pendiente.</div>')
+            +(todasLec?'<div class="ts-parte-sub">'+(caducLec?'🕐 Semana cerrada: estas lecciones ya se tocaron en clase. (Puedes reabrirlas para repasar.)':'Estudiadas. El viernes se tocan en clase. (Puedes reabrirlas para repasar.)')+'</div>'
+                      :'<div class="ts-parte-sub">Toca cada lección para estudiarla: al abrirla queda marcada automáticamente.</div>')
             +'</div>';
         }
         // 3º-bis se pinta después; primero preparar OTRAS
@@ -3251,7 +3253,7 @@ function showEnig(kind){
     try{ var s=JSON.parse(localStorage.getItem('lmpro_session')||'null'); return !!(s&&s.id&&s.estado==='validado'); }catch(e){ return false; }
   }
   var PASOS=[
-    { sel:'#alu-campana-btn', tit:'🔔 Tus tareas', txt:'Cada viernes a las 19:00 te llegan aquí las Tareas de la semana: las lecciones de ritmo (abre cada captura para marcarla como estudiada) y la ficha de teoría — hazla desde su aviso y pulsa «enviar al profesor»: ¡tienes una semana de plazo y otra de gracia!' },
+    { sel:'#alu-campana-btn', tit:'🔔 Tus tareas', txt:'Cada viernes a las 19:00 te llegan aquí las Tareas de la semana: las lecciones de ritmo (con abrirlas ya quedan estudiadas) y la ficha de teoría — hazla desde su aviso y pulsa «enviar al profesor»: ¡tienes una semana de plazo y otra de gracia!' },
     { sel:'#alu-msj-btn', tit:'✉️ Habla con tu profe', txt:'Por aquí recibirás mensajes y consejos del profe. Y tú puedes escribirle cuando quieras: dudas, problemas con una tarea… lo que sea.' },
     { sel:'#btn-mis-resultados', tit:'📊 Mis resultados', txt:'Aquí puedes consultar tus resultados, progreso y estadísticas. Sin sorpresas: siempre sabrás cómo vas.' },
     { sel:'.apps', tit:'🎵 Las apps', txt:'Y aquí abajo, las aplicaciones para practicar por libre todo lo que quieras: Ritmo, Teoría, Intervalia, Entonación, Dictado… Cuanto más las uses, más fácil será todo.' }
