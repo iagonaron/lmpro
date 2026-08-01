@@ -1098,7 +1098,7 @@ function mostrarPanel(id){
 function abrirLogin(){
   const s=getSession();
   const n=document.getElementById('logNombre'), p=document.getElementById('logPass'), r=document.getElementById('logRecordar');
-  if(s && s.recordar){ if(s.nombre) n.value=s.nombre; if(s.pass) p.value=s.pass; if(r) r.checked=true; }
+  if(s && s.recordar){ if(s.nombre) n.value=s.nombre; if(r) r.checked=true; }   // FP5: ya no se pre-rellena la contraseña (no se guarda)
   mostrarPanel('alumnoLogin');
   setTimeout(()=>{ try{ (n.value? p:n).focus(); }catch(e){} }, 60);
 }
@@ -1256,7 +1256,7 @@ async function alumnoRegistrar(){
     return;
   }
   const recordar=document.getElementById('regRecordar').checked;
-  setSession({ id:r.id, nombre, estado:'pendiente', recordar, pass: recordar?pass:undefined });
+  setSession({ id:r.id, nombre, estado:'pendiente', recordar });   // FP5: la contraseña ya no se guarda en el dispositivo
   mostrarPanel('alumnoPendiente');
 }
 
@@ -1280,7 +1280,7 @@ async function alumnoEntrar(){
   // La bienvenida encadena el tour a mano: silenciamos su auto-lanzamiento
   // para que no se abra debajo de la tarjeta (carrera de los ~1,6s).
   if(reciénValidado){ try{ localStorage.setItem('alu_tour_visto_pro', String(Date.now())); }catch(e){} }
-  setSession({ id:r.id, nombre:r.nombre, estado:r.estado, alumno_canon_id:r.alumno_canon_id, grupo_id:r.grupo_id, recordar, pass: recordar?pass:undefined });
+  setSession({ id:r.id, nombre:r.nombre, estado:r.estado, alumno_canon_id:r.alumno_canon_id, grupo_id:r.grupo_id, recordar });   // FP5: la contraseña ya no se guarda en el dispositivo
   if(r.estado==='validado'){ unlockGate(); if(reciénValidado){ setTimeout(()=>mostrarBienvenidaValidada(r.nombre), 500); } }
   else if(r.estado==='rechazado'){ err.textContent='Tu solicitud no fue aceptada. Habla con Iago en clase.'; }
   else { mostrarPanel('alumnoPendiente'); }   // pendiente
@@ -1387,6 +1387,8 @@ function submitGate(){
       // Auto-salto del gate para un alumno YA validado (sesión recordada).
       // Refresca el estado por si Iago lo validó/rechazó desde la última vez.
       const s=getSession();
+      // FP5: barrido de contraseñas guardadas por versiones anteriores (ya no se almacenan)
+      if(s && s.pass){ delete s.pass; setSession(s); }
       if(s && s.id){
         // r3: se re-comprueba SIEMPRE que haya cuenta en el dispositivo, aunque
         // la sesión guardada dijera 'pendiente' — si Iago validó desde entonces,
@@ -1400,6 +1402,10 @@ function submitGate(){
         if(r && r.ok && r.estado){
           setSession(Object.assign({}, s, { estado:r.estado, alumno_canon_id:r.alumno_canon_id, grupo_id:r.grupo_id }));
         }
+        // FP5: la cuenta ya no existe en el servidor (p. ej. purga de curso nuevo)
+        // → se limpia la sesión y el dispositivo vuelve al estado de invitado.
+        // OJO: solo con 'no_existe' explícito; un fallo de red ('red'/'excepcion') NO borra nada.
+        if(r && !r.ok && r.error==='no_existe'){ clearSession(); }
       }
       // Si en este dispositivo ya hay una cuenta de alumno registrada (aunque
       // esté pendiente), no mostramos el cartel de invitado: vamos directos al
