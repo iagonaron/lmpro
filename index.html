@@ -80,6 +80,7 @@
   .hero{text-align:center;margin:46px 0 48px;position:relative;z-index:75}
   .hero-title{font-size:68px;font-weight:900;letter-spacing:-.01em;margin:0;line-height:1;display:inline-flex;align-items:baseline;justify-content:center}
   .hero-lockup{display:inline-block}
+  .gate-lockup .hero-grade{font-size:9.5px;font-weight:700;margin-top:3px;opacity:.9}
   .hero-grade{display:flex;justify-content:space-between;margin-top:5px;font-size:15px;font-weight:800;color:var(--gold1);line-height:1}
   .hero-grade b{font-weight:800}
   .hero-grade .gs{width:.65em}
@@ -245,7 +246,7 @@
   .gate-devices svg{width:17px;height:17px;fill:none;stroke:#98875e;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
   .gate-devices .gd-no{stroke:#cf7a5a;opacity:.9}
   .gate-devices .gd-slash{stroke:#cf7a5a;stroke-width:1.9}
-  .gate-logo{font-size:34px;margin:0 0 14px;line-height:1;justify-content:center}
+  .gate-logo{font-size:40px;margin:0 0 14px;line-height:1;justify-content:center}
   .gate-logo .t-home{font-size:.42em}
   /* logo PRO estático dentro del gate (sin la animación de estampado) */
   body.intro .gate-logo .t-lm{animation:none!important;opacity:1!important;transform:none!important}
@@ -253,7 +254,7 @@
     background:none!important;border:none!important;box-shadow:none!important;padding:0!important;border-radius:0!important;
     color:var(--gold1)!important;font-weight:300!important;letter-spacing:-.01em!important}
   body.intro .gate-logo .t-home{animation:none!important;opacity:1!important;transform:rotate(-3deg)!important;clip-path:none!important}
-  .gate-card h3{margin:0 0 8px;font-size:22px;color:#f5edd8;font-weight:800;letter-spacing:.02em}
+  .gate-card h3{margin:2px 0 10px;font-size:16px;color:#f5edd8;font-weight:600;letter-spacing:.08em}
   .gate-card p{margin:0 0 22px;font-size:14px;color:#c4b288;line-height:1.6}
   .gate-input{width:100%;box-sizing:border-box;background:#0e0a02;border:1px solid #3a2c10;border-radius:11px;
     padding:13px 16px;font-size:15px;color:#f5edd8;text-align:center;letter-spacing:.06em;outline:none;transition:border-color .15s,box-shadow .15s}
@@ -840,11 +841,10 @@
       <svg viewBox="0 0 24 24" class="gd-ok"><rect x="3" y="6" width="18" height="12" rx="1.8"/><line x1="18" y1="11" x2="18" y2="13"/></svg>
       <svg viewBox="0 0 24 24" class="gd-no"><rect x="8" y="3" width="8" height="18" rx="1.8"/><line x1="11" y1="18" x2="13" y2="18"/><line x1="4" y1="3.5" x2="20" y2="20.5" class="gd-slash"/></svg>
     </div>
-    <div class="hero-lockup"><h1 class="hero-title gate-logo" aria-label="LM at home (Grado Profesional)"><span class="t-lm">LM</span><span class="t-home">at home</span></h1>
+    <div class="hero-lockup gate-lockup"><h1 class="hero-title gate-logo" aria-label="LM at home (Grado Profesional)"><span class="t-lm">LM</span><span class="t-home">at home</span></h1>
     <div class="hero-grade" aria-hidden="true"><b>G</b><b>R</b><b>A</b><b>D</b><b>O</b><i class="gs"></i><b>P</b><b>R</b><b>O</b><b>F</b><b>E</b><b>S</b><b>I</b><b>O</b><b>N</b><b>A</b><b>L</b></div></div>
     <div id="gatePass">
       <h3>Acceso a la suite</h3>
-      <p>Recursos de uso interno.</p>
       <input class="gate-input" id="gateInput" type="password" placeholder="Contraseña" autocomplete="off" autocapitalize="off" spellcheck="false">
       <label class="gate-remember"><input type="checkbox" id="gateRemember"> Recordar en este dispositivo</label>
       <button class="gate-go" onclick="submitGate()">Entrar como invitado</button>
@@ -856,7 +856,6 @@
         <button class="gate-linkbtn" onclick="abrirRegistro()">Registrarme</button>
         <button class="gate-linkbtn gate-linkbtn2" onclick="abrirLogin()">Ya tengo cuenta</button>
       </div>
-      <div style="margin-top:14px;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#98875e;opacity:.6">suite GP-A · r8</div>
     </div>
     <div id="gateMobile" style="display:none">
       <div class="gm-icon">
