@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LMGP at home</title>
+<title>LM at home · GP</title>
 <link rel="icon" type="image/svg+xml" href="icon.svg">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<meta name="apple-mobile-web-app-title" content="LMGP at home">
+<meta name="apple-mobile-web-app-title" content="LM at home GP">
 <meta name="theme-color" content="#160f04">
 <link rel="manifest" href="manifest.webmanifest">
 <style>
@@ -44,7 +44,7 @@
   .portal-gp{border:1px solid rgba(212,175,55,.55);font-size:15px;padding:7px 18px;border-radius:9px;cursor:pointer;background:linear-gradient(135deg,rgba(212,175,55,.16),rgba(184,134,11,.08));transition:background .15s,border-color .15s,box-shadow .15s;line-height:1;text-decoration:none}
   .portal-gp:hover{background:linear-gradient(135deg,rgba(212,175,55,.30),rgba(184,134,11,.18));border-color:rgba(212,175,55,.85);box-shadow:0 4px 16px rgba(212,175,55,.30)}
   .back-lmeav{color:#d4af37;font-weight:800;letter-spacing:.06em}
-  /* botón "LMGE" — mismo formato recuadro que el botón LMGP, pero en azul (elemental) */
+  /* botón "LMGE" — mismo formato recuadro que el botón LM at home GP, pero en azul (elemental) */
   .visit-elem{border:1px solid rgba(91,157,255,.55);font-size:15px;padding:7px 18px;border-radius:9px;cursor:pointer;text-decoration:none;background:linear-gradient(135deg,rgba(91,157,255,.16),rgba(58,79,134,.08));transition:background .15s,border-color .15s,box-shadow .15s;line-height:1}
   .visit-elem .ve-lm{color:#fff;font-weight:900;letter-spacing:.01em}
   .visit-elem .ve-eav{color:#5b9dff;font-weight:300;letter-spacing:.04em}
@@ -79,9 +79,13 @@
   /* ===== HERO con animación ===== */
   .hero{text-align:center;margin:46px 0 48px;position:relative;z-index:75}
   .hero-title{font-size:68px;font-weight:900;letter-spacing:-.01em;margin:0;line-height:1;display:inline-flex;align-items:baseline;justify-content:center}
+  .hero-lockup{display:inline-block}
+  .hero-grade{display:flex;justify-content:space-between;margin-top:5px;font-size:15px;font-weight:800;color:var(--gold1);line-height:1}
+  .hero-grade b{font-weight:800}
+  .hero-grade .gs{width:.65em}
   .hero-title .t-lm{color:var(--ink);font-weight:900}
   .hero-title .t-pro{color:var(--gold1);font-weight:300;white-space:pre;transition:letter-spacing .35s ease, padding .35s ease, background .35s ease}
-  .hero-title .t-home{font-size:.42em;font-style:italic;font-family:Georgia,serif;font-weight:500;color:#d8caa6;transform:rotate(-3deg);margin-left:.28em;display:inline-block}
+  .hero-title .t-home{font-size:.52em;font-style:italic;font-family:Georgia,serif;font-weight:500;color:#d8caa6;transform:rotate(-3deg);margin-left:.28em;display:inline-block}
   .hero .tag{font-size:16px;color:var(--muted);margin:16px 0 0;position:relative;z-index:75;line-height:1.5}
   .hero .tag b{color:var(--ink);font-weight:800}
   .hero .tag .tag-grade{display:inline-block;margin-top:6px;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold1);font-weight:700}
@@ -836,7 +840,8 @@
       <svg viewBox="0 0 24 24" class="gd-ok"><rect x="3" y="6" width="18" height="12" rx="1.8"/><line x1="18" y1="11" x2="18" y2="13"/></svg>
       <svg viewBox="0 0 24 24" class="gd-no"><rect x="8" y="3" width="8" height="18" rx="1.8"/><line x1="11" y1="18" x2="13" y2="18"/><line x1="4" y1="3.5" x2="20" y2="20.5" class="gd-slash"/></svg>
     </div>
-    <h1 class="hero-title gate-logo" aria-label="LMGP at home"><span class="t-lm">LM</span><span class="t-pro">GP</span><span class="t-home">at home</span></h1>
+    <div class="hero-lockup"><h1 class="hero-title gate-logo" aria-label="LM at home (Grado Profesional)"><span class="t-lm">LM</span><span class="t-home">at home</span></h1>
+    <div class="hero-grade" aria-hidden="true"><b>G</b><b>R</b><b>A</b><b>D</b><b>O</b><i class="gs"></i><b>P</b><b>R</b><b>O</b><b>F</b><b>E</b><b>S</b><b>I</b><b>O</b><b>N</b><b>A</b><b>L</b></div></div>
     <div id="gatePass">
       <h3>Acceso a la suite</h3>
       <p>Recursos de uso interno.</p>
@@ -912,7 +917,7 @@
         <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5l3 2"/></svg>
       </div>
       <h3>Cuenta creada</h3>
-      <p>Tu profesor <b>Iago</b> recibirá tu solicitud. En cuanto te valide, tendrás acceso a todas las funciones de LMGP at home.<br>Mientras tanto, puedes usar las apps como invitado.</p>
+      <p>Tu profesor <b>Iago</b> recibirá tu solicitud. En cuanto te valide, tendrás acceso a todas las funciones de LM at home.<br>Mientras tanto, puedes usar las apps como invitado.</p>
       <button class="gate-go" onclick="continuarComoInvitadoPend()">Continuar</button>
       <button class="gate-secondary gate-back" onclick="abrirLogin()">Ya me validaron: entrar</button>
     </div>
@@ -952,10 +957,11 @@
   </div>
 
   <div class="hero">
-    <h1 class="hero-title" id="heroTitle" aria-label="LMGP at home">
-      <span class="t-lm">LM</span><span class="t-pro" id="tPro">GP</span><span class="t-home" id="tHome">at home</span>
+    <div class="hero-lockup"><h1 class="hero-title" id="heroTitle" aria-label="LM at home (Grado Profesional)">
+      <span class="t-lm">LM</span><span class="t-home" id="tHome">at home</span>
     </h1>
-    <p class="tag">Entrenamiento avanzado de Lenguaje Musical… <b>¡desde casa!</b><br><span class="tag-grade">Grado Profesional</span></p>
+    <div class="hero-grade" aria-hidden="true"><b>G</b><b>R</b><b>A</b><b>D</b><b>O</b><i class="gs"></i><b>P</b><b>R</b><b>O</b><b>F</b><b>E</b><b>S</b><b>I</b><b>O</b><b>N</b><b>A</b><b>L</b></div></div>
+    <p class="tag">Entrenamiento avanzado de Lenguaje Musical… <b>¡desde casa!</b></p>
   </div>
 
   <div class="apps">
@@ -1012,7 +1018,7 @@
 
   </div>
 
-  <div class="foot">LMGP at home · by Iago González Alonso</div>
+  <div class="foot">LM at home · by Iago González Alonso</div>
 
   <p class="foot-legal" style="text-align:center;max-width:620px;margin:12px auto 0;font-size:11px;line-height:1.6;color:var(--muted2);opacity:.85">
     Material complementario de apoyo al trabajo de clase de grado profesional; no sustituye la enseñanza presencial. Proyecto educativo sin ánimo de lucro, en constante revisión y orientado a la programación del centro. Al ser una primera versión, puede contener algún error: disculpa las molestias y gracias por la confianza.
@@ -1139,7 +1145,7 @@ function mostrarBienvenidaValidada(nombre){
       '<div class="bv-titulo">¡Cuenta validada' + (primer ? ', '+primer : '') + '!</div>'+
       '<div class="bv-texto">Iago ya ha comprobado tu <b>nº de expediente</b>: esta cuenta es oficialmente tuya. '+
       'A partir de ahora entras siempre con tu nombre y tu contraseña. '+
-      'Pulsa <b>¡Empezar!</b> y te enseño el portal LMGP at home (GP) en un momento.</div>'+
+      'Pulsa <b>¡Empezar!</b> y te enseño el portal LM at home (GP) en un momento.</div>'+
       '<button type="button" class="bv-go">¡Empezar!</button>'+
     '</div>';
   document.body.appendChild(ov);
@@ -1442,7 +1448,7 @@ function tryTeoria(){
   else { showEnig('teoria'); }
 }
 function tryPortalGP(){
-  const pin=prompt('LMGP — introduce la contraseña:');
+  const pin=prompt('LM at home GP — introduce la contraseña:');
   if(pin==null) return;
   if(pin.trim().toLowerCase()==='hamilton'){
     window.location.href='https://iagonaron.github.io/lmpro/';
