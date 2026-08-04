@@ -1,6 +1,6 @@
 {
-  "name": "LMPRO at home",
-  "short_name": "LMPRO",
+  "name": "LMGP at home",
+  "short_name": "LMGP",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#160f04",
