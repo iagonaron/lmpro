@@ -2062,11 +2062,10 @@ function showEnig(kind){
   function modalEl(){
     var m=document.getElementById('alu-modal'); if(m) return m;
     m=document.createElement('div'); m.className='alu-modal'; m.id='alu-modal';
-    m.innerHTML='<div class="alu-card"><div class="alu-head"><h3>Tus notificaciones</h3><div><button class="alu-todo" id="alu-todo">Marcar todo leído</button><button class="alu-close" id="alu-close" aria-label="Cerrar">&times;</button></div></div><div class="alu-body" id="alu-body"></div></div>';
+    m.innerHTML='<div class="alu-card"><div class="alu-head"><h3>Tus notificaciones</h3><div><button class="alu-close" id="alu-close" aria-label="Cerrar">&times;</button></div></div><div class="alu-body" id="alu-body"></div></div>';
     document.body.appendChild(m);
     m.addEventListener('click',function(e){ if(e.target===m) cerrar(); });
     m.querySelector('#alu-close').addEventListener('click',cerrar);
-    m.querySelector('#alu-todo').addEventListener('click',marcarTodo);
     return m;
   }
   async function render(){
