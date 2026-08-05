@@ -1525,6 +1525,94 @@ function showEnig(kind){
   // el botón de la notificación a "Continuar la ficha →".
   // ============================================================
   var _progresos={};   // ficha_id -> {hechos,total,t}
+  // (5-ago) fechas de plazo por ficha, sacadas de las notificaciones: sirven
+  // para que una ficha CADUCADA (plazo+gracia vencidos, sin entregar) no
+  // cuente como "a medias" en la píldora ni anime la campana.
+  var _fichaPlazos={};   // ficha_id -> {fin,gracia}
+  var _plazosPedidos=false;
+  function anotarPlazos(arr){
+    try{ (arr||[]).forEach(function(o){ var pj=(o&&o.payload_json)||{}; if(pj.ficha_id && pj.fin_normal) _fichaPlazos[pj.ficha_id]={fin:pj.fin_normal,gracia:pj.fin_gracia||''}; }); }catch(e){}
+  }
+  function plazoVencidoDe(fid){
+    var p=_fichaPlazos[fid]; if(!p) return false;
+    var st=estadoPlazo(p.fin,p.gracia);
+    return !!(st && st.fase==='fin');
+  }
+  // (6-ago Iago, v2) núcleo compartido por render() y refrescar(): una «Tareas
+  // de la semana» está RESUELTA cuando sus CUATRO parcelas lo están — quiz
+  // completado, lecciones estudiadas (abiertas o «marcar como estudiadas»),
+  // «otras» marcadas y ficha entregada (o con su plazo ya vencido) — o cuando
+  // la semana caducó (7 días).
+  function tareasHechaCore(o, fichasPorNumero){
+    var pj=(o&&o.payload_json)||{}, se=pj.semana_envio_id;
+    if(((Date.parse(o.creado_en)||0) + 7*864e5) <= Date.now()) return true;   // semana caducada
+    if(pj.quiz && pj.quiz.envio_id && !_quizHechos[pj.quiz.envio_id]) return false;
+    var lecs=(pj.lecciones||[]).filter(function(l){ return l && l.n!=null; });
+    if(lecs.length){ if(!lecs.every(function(l){ return parteHecha(se,'leccion_'+l.n); })) return false; }
+    else if((pj.lecciones_imgs&&pj.lecciones_imgs.length) && !parteHecha(se,'lecciones')) return false;
+    if(pj.otras && !parteHecha(se,'otras')) return false;
+    if(pj.ficha && pj.ficha.numero!=null){
+      var fN=(fichasPorNumero||{})[String(pj.ficha.numero)];
+      if(!fN) return false;
+      var fpj2=fN.payload_json||{};
+      if(!((fpj2.ficha_id && _entregadas[fpj2.ficha_id]) || plazoFinDe(fpj2))) return false;
+    }
+    return true;
+  }
+  function plazoFinDe(pj){
+    if(!pj || !pj.fin_normal) return false;
+    var st=estadoPlazo(pj.fin_normal, pj.fin_gracia||'');
+    return !!(st && st.fase==='fin');
+  }
+  function esValidacionTxt(o){
+    if(!o || (o.payload_json && (o.payload_json.ficha_id || o.payload_json.envio_id || o.payload_json.dictado_revision))) return false;
+    return /valida|verificad/i.test(String(o.titulo||'')+' '+String(o.cuerpo||''));
+  }
+  // (6-ago Iago, v2) la campana cuenta COSAS PENDIENTES, no notificaciones sin
+  // leer: cada parcela pendiente de cada semana activa (quiz, lecciones, otras,
+  // ficha en plazo) vale 1; las fichas/quizzes sueltos pendientes valen 1; los
+  // avisos y revisiones de dictado sin leer valen 1. Ficha + quiz + lecciones = 3.
+  function contarPendientes(list){
+    var fmap=fichasPorNumeroDe(list), n=0, enMarco={};
+    (list||[]).forEach(function(o){                       // 1ª pasada: semanas
+      var pj=(o&&o.payload_json)||{};
+      if(!(pj.tareas_semana && pj.semana_envio_id)) return;
+      if(((Date.parse(o.creado_en)||0)+7*864e5)<=Date.now()) return;   // semana caducada
+      var se=pj.semana_envio_id;
+      if(pj.quiz && pj.quiz.envio_id && !_quizHechos[pj.quiz.envio_id]) n++;
+      var lecs=(pj.lecciones||[]).filter(function(l){ return l && l.n!=null; });
+      if(lecs.length){ if(!lecs.every(function(l){ return parteHecha(se,'leccion_'+l.n); })) n++; }
+      else if((pj.lecciones_imgs||[]).length && !parteHecha(se,'lecciones')) n++;
+      if(pj.otras && !parteHecha(se,'otras')) n++;
+      if(pj.ficha && pj.ficha.numero!=null){
+        var fN=fmap[String(pj.ficha.numero)];
+        if(fN){
+          enMarco[String(fN.id)]=true;
+          var fpj=fN.payload_json||{};
+          if(fpj.ficha_id && !_entregadas[fpj.ficha_id] && !plazoFinDe(fpj)) n++;
+        }
+      }
+    });
+    (list||[]).forEach(function(o){                       // 2ª pasada: sueltas
+      var pj=(o&&o.payload_json)||{};
+      if(pj.tareas_semana && pj.semana_envio_id) return;
+      if(pj.ficha_id && pj.fin_normal){
+        if(enMarco[String(o.id)]) return;                                    // ya contada en su marco
+        if(((Date.parse(pj.fin_normal)||0) - 7*864e5) > Date.now()) return;  // aún no activada
+        if(_entregadas[pj.ficha_id]) return;
+        if(plazoFinDe(pj)) return;                                           // caducada
+        n++; return;
+      }
+      if(pj.quiz && pj.envio_id){ if(!_quizHechos[pj.envio_id]) n++; return; }
+      if(pj.dictado_revision){ if(!o.leido) n++; return; }
+      if(!o.leido && !esValidacionTxt(o)) n++;                               // aviso sin leer
+    });
+    return n;
+  }
+  function fichasPorNumeroDe(arr){
+    var m={}; try{ (arr||[]).forEach(function(o){ var pj=(o&&o.payload_json)||{}; if(pj.ficha_id && pj.numero!=null) m[String(pj.numero)]=o; }); }catch(e){}
+    return m;
+  }
   // FASE 6.9 · fichas ya ENTREGADAS: se pintan en gris con ✓ verde y sin
   // botón/cuenta atrás, para que el alumno no crea que tiene algo pendiente.
   // Fuentes: marcador localStorage que deja el player al entregar (instantáneo,
@@ -1871,28 +1959,19 @@ function showEnig(kind){
     // FASE 6.9 · una ficha ENTREGADA nunca cuenta como "a medias" (restos de
     // progreso que no llegaron a borrarse, p. ej. entrega desde otro equipo).
     Object.keys(_progresos).forEach(function(fid){ if(_entregadas[fid]) delete _progresos[fid]; });
+    // (5-ago) una ficha con plazo+gracia YA vencidos tampoco cuenta como "a
+    // medias": ni píldora dorada ni animación (el player ya no la abriría).
+    Object.keys(_progresos).forEach(function(fid){ if(plazoVencidoDe(fid)) delete _progresos[fid]; });
     return _progresos;
   }
   function pintarCampanaProgreso(){
+    // (6-ago Iago, v2) el «X/Y» de la ficha a medias vive ahora DENTRO de la
+    // tarjeta (parcela de la ficha); la campana queda solo con el número de
+    // cosas pendientes. Aquí solo se limpia cualquier resto anterior.
     var b=btn(); if(!b) return;
-    var keys=Object.keys(_progresos||{});
-    var pend=keys.length>0;
-    b.classList.toggle('ficha-pendiente',pend);
+    b.classList.remove('ficha-pendiente');
     var pill=document.getElementById('alu-campana-prog');
-    if(pend){
-      var p=_progresos[keys[0]];
-      if(!pill){
-        pill=document.createElement('span');
-        pill.id='alu-campana-prog';
-        pill.className='portal-bell-prog';
-        b.appendChild(pill);
-      }
-      pill.textContent=(keys.length>1)?(keys.length+' a medias'):(p.hechos+'/'+p.total);
-      b.title='Tienes una ficha pendiente de terminar ('+p.hechos+' de '+p.total+' ejercicios hechos)';
-    } else if(pill){
-      pill.remove();
-      b.title='Notificaciones';
-    }
+    if(pill){ pill.remove(); b.title='Notificaciones'; }
   }
   function ultimo(){ try{ var v=parseInt(localStorage.getItem(LS_ULT),10); return isNaN(v)?null:v; }catch(e){ return null; } }
   function guardar(n){ try{ localStorage.setItem(LS_ULT,String(n)); }catch(e){} }
@@ -1916,33 +1995,25 @@ function showEnig(kind){
     // FASE 7.3 · barrido perezoso: materializa las notificaciones de quizzes
     // PROGRAMADOS cuya hora ya se cumplió (idempotente, sin datos sensibles).
     try{ await rpc('suite_quiz_barrer',{}); }catch(e){}
-    var r=await rpc('suite_alumno_notif_contador',{p_cuenta_id:id});
-    var n=(r && r.ok)?(r.no_leidos||0):0;
-    // FASE 8 · las fichas todavía NO activadas (llegan el viernes 19:00) no
-    // deben encender el globo: se descuentan del contador.
-    if(n>0){
-      try{
-        var rl=await rpc('suite_alumno_notif_listar',{p_cuenta_id:id});
-        if(rl && rl.ok && Array.isArray(rl.notificaciones)){
-          var ocultas=rl.notificaciones.filter(function(o){
-            var pj=o.payload_json||{};
-            if(o.leido) return false;
-            if(pj.ficha_id && pj.fin_normal) return ((Date.parse(pj.fin_normal)||0) - 7*864e5) > Date.now();
-            // Iago jul-2026: las "Tareas de la semana" (lecciones de ritmo) encienden la
-            // campana SOLO durante 7 días; después siguen en la lista pero sin globo.
-            if(pj.tareas_semana && pj.semana_envio_id) return ((Date.parse(o.creado_en)||0) + 7*864e5) <= Date.now();
-            return false;
-          }).length;
-          n=Math.max(0,n-ocultas);
-        }
-      }catch(e){}
-    }
+    // (6-ago Iago, v2) la campana pone el NÚMERO DE COSAS pendientes — ficha
+    // por hacer o a medias (en plazo), quiz, lecciones sin estudiar, «otras»
+    // sin marcar y avisos sin leer. Ficha + quiz + lecciones = «3». Cada cosa
+    // completada baja el número sola, sin tener que abrir el panel.
+    var n=0;
+    try{
+      var rl=await rpc('suite_alumno_notif_listar',{p_cuenta_id:id});
+      if(rl && rl.ok && Array.isArray(rl.notificaciones)){
+        anotarPlazos(rl.notificaciones); _plazosPedidos=true;
+        try{ await cargarEntregadas(id); }catch(e2){}
+        try{ await cargarQuizHechos(id); }catch(e2){}
+        try{ await cargarSemanaHechos(id); }catch(e2){}
+        try{ await cargarProgresos(id); }catch(e2){}
+        n=contarPendientes(rl.notificaciones);
+      }
+    }catch(e){}
     if(bd){ bd.textContent=n>99?'99+':String(n); bd.classList.toggle('hidden',n===0); }
     if(b) b.classList.toggle('hay-avisos',n>0);
     var prev=ultimo(); if(prev!=null && n>prev) onda(); guardar(n);
-    // FASE 6.7/6.9 · entregadas + fichas a medias → estado de la campana
-    try{ await cargarEntregadas(id); }catch(e){}
-    try{ await cargarProgresos(id); }catch(e){}
     pintarCampanaProgreso();
   }
   // DICTADO REVISADO (Iago jul-2026) · visor a pantalla completa con la foto
@@ -2004,6 +2075,7 @@ function showEnig(kind){
     var id=cuentaId(); if(!id){ body.innerHTML='<div class="alu-vacio">Inicia sesión para ver tus notificaciones.</div>'; return; }
     var r=await rpc('suite_alumno_notif_listar',{p_cuenta_id:id});
     var list=(r && r.ok && Array.isArray(r.notificaciones))?r.notificaciones:[];
+    anotarPlazos(list); _plazosPedidos=true;   // (5-ago) fechas para la píldora de la campana
     // 3-jul (Iago): la notificación de 'cuenta validada' del servidor es
     // redundante — la bienvenida animada + el mini-tour ya cubren ese
     // momento. La ocultamos y la auto-marcamos leída (más abajo).
@@ -2032,21 +2104,11 @@ function showEnig(kind){
     // Iago jul-2026: la tarea vive UNA semana (viernes 19:00 → viernes 18:59).
     // Pasado ese plazo se da por hecha aunque no se haya abierto todo.
     var tareaCaducada=function(o){ return ((Date.parse(o.creado_en)||0) + 7*864e5) <= Date.now(); };
+    // (6-ago Iago) el peso lo llevan FICHA + QUIZ + OTRAS; las lecciones son
+    // recordatorio (núcleo compartido con el descuento del globo en refrescar).
     var tareasHecha=function(o){
       if(!esTareas(o)) return false;
-      if(tareaCaducada(o)) return true;
-      var pj=o.payload_json, se=pj.semana_envio_id;
-      if(pj.quiz && pj.quiz.envio_id && !_quizHechos[pj.quiz.envio_id]) return false;
-      var lecs=(pj.lecciones||[]).filter(function(l){ return l && l.n!=null; });
-      if(lecs.length){
-        if(!lecs.every(function(l){ return parteHecha(se,'leccion_'+l.n); })) return false;
-      } else if((pj.lecciones_imgs&&pj.lecciones_imgs.length) && !parteHecha(se,'lecciones')) return false;
-      if(pj.otras && !parteHecha(se,'otras')) return false;
-      if(pj.ficha && pj.ficha.numero!=null){
-        var fN=_fichaPorNumero[String(pj.ficha.numero)];
-        if(!fN || !(fN.payload_json&&fN.payload_json.ficha_id&&_entregadas[fN.payload_json.ficha_id])) return false;
-      }
-      return true;
+      return tareasHechaCore(o, _fichaPorNumero);
     };
     // FASE 8.3 · mapa de notificaciones de FICHA por número, y qué números
     // están absorbidos por un marco semanal (para no pintarlas sueltas).
@@ -2081,23 +2143,36 @@ function showEnig(kind){
       var t=Date.now();
       return t>fin && (!fg || t<=fg);
     };
+    // (Iago 5-ago) FICHA CADUCADA: plazo Y semana de gracia vencidos sin
+    // entregar. El player ya no la abre («El plazo de esta ficha ya venció»),
+    // así que aquí desaparece del panel y se auto-marca leída (más abajo):
+    // una notificación que solo lleva a un callejón sin salida no debe seguir
+    // sonando. Misma condición exacta que la fase 'fin' del contador visible.
+    var fichaCaducada=function(o){
+      var pj=(o&&o.payload_json)||{}, f=pj.ficha_id||'';
+      if(!f || _entregadas[f] || !pj.fin_normal) return false;
+      var st=estadoPlazo(pj.fin_normal, pj.fin_gracia||'');
+      return !!(st && st.fase==='fin');
+    };
     var esHecha=function(o){ var f=(o.payload_json&&o.payload_json.ficha_id)||''; return !!(f && _entregadas[f]) || esQuizHecho(o) || tareasHecha(o); };
-    list=list.filter(function(o){ return !fichaOculta(o) && !fichaAbsorbida(o); });
+    list=list.filter(function(o){ return !fichaOculta(o) && !fichaAbsorbida(o) && !fichaCaducada(o); });
     list.sort(function(a,b){
       var pa=(enTiempoExtra(a)?-1:0)+(esHecha(a)?1:0);
       var pb=(enTiempoExtra(b)?-1:0)+(esHecha(b)?1:0);
       return pa-pb;
     });
-    body.innerHTML=list.map(function(o){
+    body.innerHTML=(list.length?list.map(function(o){
       // FASE 8 · TARJETA AGRUPADA "Tareas de la semana": quiz → lecciones → otras.
       if(esTareas(o)){
         var tj=o.payload_json, se=tj.semana_envio_id;
         var hechaT=tareasHecha(o);
+        var caduSem=tareaCaducada(o);   // (6-ago) semana cerrada: sin bolitas
         var partes='';
         // 1º · QUIZ
         if(tj.quiz && tj.quiz.envio_id){
           var qh=!!_quizHechos[tj.quiz.envio_id];
           partes+='<div class="ts-parte ts-quiz'+(qh?' ts-hecha':'')+'">'
+            +((qh||caduSem)?'':'<span class="ts-dot" aria-hidden="true"></span>')
             +'<div class="ts-parte-tit">🥁 Quiz de ritmo · Carta '+esc(tj.quiz.carta||'')+(tj.quiz.nombre?' · '+esc(tj.quiz.nombre):'')+(qh?' <b class="ts-check">✓</b>':'')+'</div>'
             +(qh?'<div class="ts-parte-sub">Ya lo completaste. ¡Buen trabajo!</div>'
                 :'<button class="alu-quiz-go" data-envio="'+esc(tj.quiz.envio_id)+'" data-carta="'+esc(tj.quiz.carta||'')+'">▶ Empezar el quiz</button>')
@@ -2112,11 +2187,12 @@ function showEnig(kind){
           lecList=[{n:null, imgs:tj.lecciones_imgs}];   // compat con envíos viejos
         }
         if(lecList.length){
-          var caducLec=tareaCaducada(o);
-          var todasLec=caducLec || lecList.every(function(l){ return parteHecha(se,l.n!=null?('leccion_'+l.n):'lecciones'); });
+          // (6-ago Iago) las lecciones son RECORDATORIO: abrirlas las marca (queda
+          // el ✓ en su chip), pero no pesan en la campana ni en el «hecha» de la
+          // tarjeta, y el único texto de ayuda es «Pulsa la lección para verla.»
           var chips=lecList.map(function(l){
             var parte=(l.n!=null)?('leccion_'+l.n):'lecciones';
-            var hechaL=parteHecha(se,parte)||caducLec;
+            var hechaL=parteHecha(se,parte);
             var lbl=(l.n!=null)?('Lección '+esc(l.n)):'Lecciones';
             if(hechaL && l.imgs && l.imgs.length)
               return '<button class="ts-lec-chip abre hecha" title="Reabrir para repasar" data-envio="'+esc(se)+'" data-parte="'+esc(parte)+'" data-lbl="'+esc(lbl)+'" data-imgs="'+esc(JSON.stringify(l.imgs))+'">✓ '+lbl+'</button>';
@@ -2125,18 +2201,22 @@ function showEnig(kind){
               return '<button class="ts-lec-chip abre" data-envio="'+esc(se)+'" data-parte="'+esc(parte)+'" data-lbl="'+esc(lbl)+'" data-imgs="'+esc(JSON.stringify(l.imgs))+'">📖 '+lbl+'</button>';
             return '<button class="ts-lec-chip marca" data-envio="'+esc(se)+'" data-parte="'+esc(parte)+'">☐ '+lbl+'</button>';
           }).join('');
-          partes+='<div class="ts-parte ts-lecciones'+(todasLec?' ts-hecha':'')+'">'
-            +'<div class="ts-parte-tit">📚 Lecciones de ritmo'+(todasLec?' <b class="ts-check">✓</b>':'')+'</div>'
+          var lecPend=!caduSem && !lecList.every(function(l){ return parteHecha(se,(l.n!=null)?('leccion_'+l.n):'lecciones'); });
+          var lecPartes=lecList.map(function(l){ return (l.n!=null)?('leccion_'+l.n):'lecciones'; });
+          partes+='<div class="ts-parte ts-lecciones">'
+            +(lecPend?'<span class="ts-dot" aria-hidden="true"></span>':'')
+            +'<div class="ts-parte-tit">📚 Lecciones de ritmo</div>'
             +((tj.carta_ritmo&&tj.carta_ritmo.id)?('<div class="ts-carta-row">Lecciones de la carta <b>'+esc(tj.carta_ritmo.id)+'</b>'+(tj.carta_ritmo.nombre?(' · '+esc(tj.carta_ritmo.nombre)):'')+' <a class="ts-ver-intro" target="_blank" rel="noopener" href="https://iagonaron.github.io/ritmopro/?introCarta='+encodeURIComponent(tj.carta_ritmo.id)+'">▸ Ver explicación interactiva</a></div>'):'')
             +'<div class="ts-lec-chips">'+chips+'</div>'
-            +(todasLec?'<div class="ts-parte-sub">'+(caducLec?'🕐 Semana cerrada: estas lecciones ya se tocaron en clase. (Puedes reabrirlas para repasar.)':'Estudiadas. El viernes se tocan en clase. (Puedes reabrirlas para repasar.)')+'</div>'
-                      :'<div class="ts-parte-sub">Toca cada lección para estudiarla: al abrirla queda marcada automáticamente.</div>')
+            +'<div class="ts-parte-sub">Pulsa la lección para verla.</div>'
+            +(lecPend?'<button class="ts-marcar ts-lec-todas" data-envio="'+esc(se)+'" data-partes="'+esc(JSON.stringify(lecPartes))+'">✓ Marcar como estudiadas</button>':'')
             +'</div>';
         }
         // 3º-bis se pinta después; primero preparar OTRAS
         if(tj.otras){
           var oh=parteHecha(se,'otras');
           partes+='<div class="ts-parte ts-otras'+(oh?' ts-hecha':'')+'">'
+            +((oh||caduSem)?'':'<span class="ts-dot" aria-hidden="true"></span>')
             +'<div class="ts-parte-tit">📝 Otras tareas'+(oh?' <b class="ts-check">✓</b>':'')+'</div>'
             +'<div class="ts-parte-sub ts-otras-txt">'+esc(tj.otras)+'</div>'
             +(oh?'':'<button class="ts-marcar" data-envio="'+esc(se)+'" data-parte="otras">☐ Hecho</button>')
@@ -2147,12 +2227,21 @@ function showEnig(kind){
           var fN=_fichaPorNumero[String(tj.ficha.numero)];
           if(fN){
             var fpj=fN.payload_json||{}, fHecha=!!(fpj.ficha_id && _entregadas[fpj.ficha_id]);
-            partes+='<div class="ts-parte ts-ficha'+(fHecha?' ts-hecha':'')+'">'
+            var fCad=!fHecha && fichaCaducada(fN);   // (5-ago) caducada: texto en gris, sin botón muerto
+            // (6-ago Iago, v2) la ficha A MEDIAS enseña su avance AQUÍ, en su
+            // propia parcela: «⏸ X de Y ejercicios hechos» + barra + Continuar.
+            var fProg=(!fHecha && !fCad && fpj.ficha_id && _progresos[fpj.ficha_id])?_progresos[fpj.ficha_id]:null;
+            var fPct=fProg?Math.max(0,Math.min(100,Math.round(fProg.hechos*100/Math.max(1,fProg.total)))):0;
+            partes+='<div class="ts-parte ts-ficha'+((fHecha||fCad)?' ts-hecha':'')+'">'
+              +((fHecha||fCad)?'':'<span class="ts-dot" aria-hidden="true"></span>')
               +'<div class="ts-parte-tit">🖊 Ficha '+esc(tj.ficha.numero)+' de teoría'+(fHecha?' <b class="ts-check">✓</b>':'')+'</div>'
               +(fHecha
                 ? '<div class="ts-parte-sub">Entregada. ¡Buen trabajo!</div>'
+                : fCad
+                ? '<div class="ts-parte-sub">🕐 El plazo de esta ficha ya venció.</div>'
                 : ((fpj.fin_normal)?'<div class="alu-item-plazo" data-fin="'+esc(fpj.fin_normal)+'" data-gracia="'+esc(fpj.fin_gracia||'')+'" style="font-size:11.5px;font-weight:700;font-variant-numeric:tabular-nums"></div>':'')
-                  +'<button class="alu-hacer ts-ficha-go" data-ficha="'+esc(fpj.ficha_id||'')+'" data-n="'+esc(fpj.numero||'')+'" data-fin="'+esc(fpj.fin_normal||'')+'" data-gracia="'+esc(fpj.fin_gracia||'')+'" data-nid="'+esc(fN.id)+'">Hacer la ficha →</button>')
+                  +(fProg?'<div class="alu-item-prog"><span class="aip-txt">⏸ Ficha a medias · '+fProg.hechos+' de '+fProg.total+' ejercicios hechos</span><span class="aip-bar"><i style="width:'+fPct+'%"></i></span></div>':'')
+                  +'<button class="alu-hacer ts-ficha-go" data-ficha="'+esc(fpj.ficha_id||'')+'" data-n="'+esc(fpj.numero||'')+'" data-fin="'+esc(fpj.fin_normal||'')+'" data-gracia="'+esc(fpj.fin_gracia||'')+'" data-nid="'+esc(fN.id)+'">'+(fProg?('Continuar la ficha ('+fProg.hechos+'/'+fProg.total+') →'):'Hacer la ficha →')+'</button>')
               +'</div>';
           } else {
             partes+='<div class="ts-parte ts-ficha"><div class="ts-parte-tit">🖊 Ficha '+esc(tj.ficha.numero)+' de teoría</div>'
@@ -2264,21 +2353,36 @@ function showEnig(kind){
         +'<div class="alu-item-fecha">'+fecha(o.creado_en)+'</div>'
         +accionHTML
         +'</div></div>';
-    }).join('');
+    }).join(''):'<div class="alu-vacio">Todavía no tienes notificaciones.</div>');
     // FASE 6.9 · las entregadas no leídas se marcan LEÍDAS solas (el alumno
     // ya cumplió: que el globito rojo no le persiga). Un solo refresco al final.
-    var autoLeer=listTodas.filter(function(o){ return (esHecha(o)||esNotifValidacion(o)) && !o.leido; });
+    // (5-ago) las fichas CADUCADAS sin entregar también se auto-marcan leídas:
+    // ya no llevan a ningún sitio (el player las rechaza) y no deben dar globo.
+    var autoLeer=listTodas.filter(function(o){ return (esHecha(o)||esNotifValidacion(o)||fichaCaducada(o)) && !o.leido; });
     if(autoLeer.length){
       Promise.all(autoLeer.map(function(o){ return rpc('suite_alumno_marcar_leido',{p_cuenta_id:id,p_notif_id:o.id}); }))
         .then(function(){ refrescar(); }).catch(function(){});
     }
     // FASE 8 · marcar una parte de las tareas ("Ya las estudié" / "Hecho")
-    Array.prototype.forEach.call(body.querySelectorAll('.ts-marcar'),function(b){
+    Array.prototype.forEach.call(body.querySelectorAll('.ts-marcar:not(.ts-lec-todas)'),function(b){
       b.addEventListener('click',async function(ev){
         ev.stopPropagation();
         b.disabled=true; b.textContent='Guardando…';
         await marcarParte(b.getAttribute('data-envio'), b.getAttribute('data-parte'));
         render();                                   // repinta con la parte en gris
+        try{ refrescar(); }catch(e){}               // (6-ago) y baja el número de la campana
+      });
+    });
+    // (6-ago Iago, v2) «✓ Marcar como estudiadas»: marca TODAS las lecciones de
+    // la semana de una vez, sin abrirlas (para quien estudió del libro físico).
+    Array.prototype.forEach.call(body.querySelectorAll('.ts-lec-todas'),function(b){
+      b.addEventListener('click',async function(ev){
+        ev.stopPropagation();
+        b.disabled=true; b.textContent='Guardando…';
+        var ps=[]; try{ ps=JSON.parse(b.getAttribute('data-partes')||'[]'); }catch(e){}
+        for(var k=0;k<ps.length;k++){ await marcarParte(b.getAttribute('data-envio'), ps[k]); }
+        render();
+        try{ refrescar(); }catch(e){}
       });
     });
     // FASE 8.3 · chips de lección: con capturas abre el visor de ESA lección;
@@ -2296,6 +2400,7 @@ function showEnig(kind){
         b.disabled=true; b.textContent='Guardando…';
         await marcarParte(b.getAttribute('data-envio'), b.getAttribute('data-parte'));
         render();
+        try{ refrescar(); }catch(e){}               // (6-ago) y baja el número de la campana
       });
     });
     // FASE 8.3 · ficha DENTRO del marco: mismo destino que "Hacer la ficha"
@@ -2403,7 +2508,7 @@ function showEnig(kind){
       '.alu-hecha-check{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;margin-left:6px;border-radius:50%;background:#d4af37;color:#062b26;font-size:12px;font-weight:900;vertical-align:middle}'+
       '.alu-hecha-badge{display:inline-flex;align-items:center;gap:7px;margin-top:8px;font-size:13px;font-weight:800;color:#d4af37;background:rgba(34,201,138,.10);border:1px solid rgba(34,201,138,.45);border-radius:8px;padding:7px 12px}'+
       // FASE 8 · tarjeta "Tareas de la semana" + pin de TIEMPO EXTRA
-      '.alu-item.alu-item-tareas{border:2px solid rgba(255,214,120,.65);border-radius:16px;margin:10px 0;padding:12px 14px;background:linear-gradient(165deg,rgba(255,214,120,.16),rgba(64,46,16,.72) 45%,rgba(28,19,7,.92));box-shadow:0 10px 34px rgba(0,0,0,.35),inset 0 0 0 1px rgba(255,214,120,.12)}'+'.alu-item.alu-item-tareas .alu-item-tit{font-size:15px;letter-spacing:.02em}'+'.ts-carta-row{font:700 12px \'Helvetica Neue\',Arial,sans-serif;color:#e6d6ac;margin:2px 0 4px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}'+'.ts-ver-intro{display:inline-block;font:800 11.5px \'Helvetica Neue\',Arial,sans-serif;color:#052e16;background:linear-gradient(135deg,#7ef0c0,#34d399);border-radius:999px;padding:4px 11px;text-decoration:none;white-space:nowrap}'+'.ts-ver-intro:hover{filter:brightness(1.08)}'+'.ts-lec-chips{display:flex;gap:6px;flex-wrap:wrap}'+'.ts-lec-chip{font:800 12px \'Helvetica Neue\',Arial,sans-serif;border-radius:999px;padding:6px 12px;cursor:pointer;border:1px solid rgba(255,235,190,.3);background:rgba(255,222,150,.08);color:#f0e6c8}'+'.ts-lec-chip.abre{border-color:rgba(52,211,153,.6);background:linear-gradient(90deg,rgba(255,214,120,.16),rgba(52,211,153,.16));color:#d9ffef}'+'.ts-lec-chip.hecha{cursor:default;border-color:rgba(62,233,166,.5);background:rgba(62,233,166,.1);color:#7ef0c0;filter:none}'+'.ts-lec-chip.abre.hecha{cursor:pointer}'+'.ts-lec-chip.abre.hecha:hover{background:rgba(62,233,166,.18)}'+'.ts-parte.ts-hecha .ts-lec-chip.abre.hecha{pointer-events:auto}'+
+      '.alu-item.alu-item-tareas{border:2px solid rgba(255,214,120,.65);border-radius:16px;margin:10px 0;padding:12px 14px;background:linear-gradient(165deg,rgba(255,214,120,.16),rgba(64,46,16,.72) 45%,rgba(28,19,7,.92));box-shadow:0 10px 34px rgba(0,0,0,.35),inset 0 0 0 1px rgba(255,214,120,.12)}'+'.alu-item.alu-item-tareas .alu-item-tit{font-size:15px;letter-spacing:.02em}'+'.ts-carta-row{font:700 12px \'Helvetica Neue\',Arial,sans-serif;color:#e6d6ac;margin:2px 0 4px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}'+'.ts-ver-intro{display:inline-block;font:800 11.5px \'Helvetica Neue\',Arial,sans-serif;color:#052e16;background:linear-gradient(135deg,#7ef0c0,#34d399);border-radius:999px;padding:4px 11px;text-decoration:none;white-space:nowrap}'+'.ts-ver-intro:hover{filter:brightness(1.08)}'+'.ts-lec-chips{display:flex;gap:6px;flex-wrap:wrap}.ts-parte{position:relative}.ts-dot{position:absolute;top:8px;right:8px;width:9px;height:9px;border-radius:50%;background:#ff4d5e;box-shadow:0 0 0 0 rgba(255,77,94,.55);animation:tsDot 1.6s ease-out infinite}@keyframes tsDot{0%{box-shadow:0 0 0 0 rgba(255,77,94,.55)}70%{box-shadow:0 0 0 8px rgba(255,77,94,0)}100%{box-shadow:0 0 0 0 rgba(255,77,94,0)}}@media (prefers-reduced-motion:reduce){.ts-dot{animation:none}}'+'.ts-lec-chip{font:800 12px \'Helvetica Neue\',Arial,sans-serif;border-radius:999px;padding:6px 12px;cursor:pointer;border:1px solid rgba(255,235,190,.3);background:rgba(255,222,150,.08);color:#f0e6c8}'+'.ts-lec-chip.abre{border-color:rgba(52,211,153,.6);background:linear-gradient(90deg,rgba(255,214,120,.16),rgba(52,211,153,.16));color:#d9ffef}'+'.ts-lec-chip.hecha{cursor:default;border-color:rgba(62,233,166,.5);background:rgba(62,233,166,.1);color:#7ef0c0;filter:none}'+'.ts-lec-chip.abre.hecha{cursor:pointer}'+'.ts-lec-chip.abre.hecha:hover{background:rgba(62,233,166,.18)}'+'.ts-parte.ts-hecha .ts-lec-chip.abre.hecha{pointer-events:auto}'+
       '.alu-item-tareas .alu-item-tit{color:#ffe4a8}'+
       '.ts-partes{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:8px;margin-top:8px}'+'.ts-parte{padding:9px 11px;border-radius:11px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.045);display:flex;flex-direction:column;gap:5px}'+'.ts-parte .ts-marcar,.ts-parte .alu-quiz-go,.ts-parte .ts-ver-lecciones{margin-top:auto;align-self:flex-start}'+
       '.ts-parte-tit{font-size:12.5px;font-weight:800;color:#f3e9cf}'+
