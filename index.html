@@ -458,10 +458,10 @@
 /* ── la ceremonia: foco sobre el portal, resto a oscuras ── */
 .medrev-veo{
   position:fixed;z-index:100010;border-radius:21px;pointer-events:none;
-  box-shadow:0 0 0 9999px rgba(4,7,18,.88),
+  box-shadow:0 0 0 9999px rgba(4,7,18,.55),
              0 0 0 3px #ffd678,
-             0 0 44px rgba(255,214,120,.75);
-  transition:all .45s cubic-bezier(.4,0,.2,1);
+             0 0 44px rgba(255,214,120,.7);
+  transition:box-shadow .45s cubic-bezier(.4,0,.2,1);
 }
 .medrev-card{
   position:fixed;z-index:100011;max-width:340px;
@@ -5176,7 +5176,7 @@ window.DictadoClase = (function(){
   var CLAVE_VISTAS = 'lmpro_medallas_vistas';
   var _abiertas = {};      // u -> true
   var _cola = [], _paso = 0, _foco = null, _card = null, _clic = null, _ctx = null, _demo = false;
-  var _hamDesde = null;
+  var _hamDesde = null, _el = null, _sigue = 0;
 
   /* ── sesión ───────────────────────────────────────────────────────── */
   function ses(){
@@ -5293,16 +5293,27 @@ window.DictadoClase = (function(){
   }
 
   /* ── ceremonia ────────────────────────────────────────────────────── */
+  /* el halo sigue al icono aunque la página se mueva */
+  function encuadrar(){
+    if(!_foco || !_el) return;
+    var r = _el.getBoundingClientRect(), pad = 9;
+    _foco.style.left   = (r.left - pad) + 'px';
+    _foco.style.top    = (r.top  - pad) + 'px';
+    _foco.style.width  = (r.width  + pad*2) + 'px';
+    _foco.style.height = (r.height + pad*2) + 'px';
+    if(!_card) return;
+    var ch = _card.offsetHeight || 150, cw = Math.min(340, window.innerWidth - 24);
+    var top = r.bottom + pad + 14;
+    if(top + ch > window.innerHeight - 12) top = Math.max(12, r.top - pad - 14 - ch);
+    var left = Math.min(Math.max(12, r.left + r.width/2 - cw/2), window.innerWidth - cw - 12);
+    _card.style.top = top + 'px'; _card.style.left = left + 'px'; _card.style.maxWidth = cw + 'px';
+  }
   function colocar(){
     var m = _cola[_paso];
     var el = document.querySelector('.med[data-u="'+m.u+'"]');
     if(!el){ siguiente(); return; }
+    _el = el;
     try{ el.scrollIntoView({block:'center'}); }catch(e){}
-    function encuadrar(){
-      var r = el.getBoundingClientRect(), pad = 9;
-      _foco.style.left=(r.left-pad)+'px'; _foco.style.top=(r.top-pad)+'px';
-      _foco.style.width=(r.width+pad*2)+'px'; _foco.style.height=(r.height+pad*2)+'px';
-    }
     encuadrar();
     setTimeout(encuadrar, 260);
     setTimeout(function(){
@@ -5322,13 +5333,7 @@ window.DictadoClase = (function(){
           'ver el vídeo de Jaime Altozano antes de empezar.'
         : 'Ya puedes acceder al portal interactivo de <b>' + m.n + '</b>.';
       _card.querySelector('.medrev-kick').textContent = m.video ? 'Nueva tarea' : 'Portal desbloqueado';
-
-      var r = el.getBoundingClientRect(), pad = 9;
-      var ch=_card.offsetHeight||190, cw=Math.min(340, window.innerWidth-24);
-      var top = r.bottom + pad + 14;
-      if(top+ch > window.innerHeight-12) top = Math.max(12, r.top-pad-14-ch);
-      var left = Math.min(Math.max(12, r.left + r.width/2 - cw/2), window.innerWidth-cw-12);
-      _card.style.top=top+'px'; _card.style.left=left+'px'; _card.style.maxWidth=cw+'px';
+      encuadrar();
     }, 340);
   }
   function _tecla(ev){ if(ev.key==='Escape'||ev.key==='Enter'||ev.key===' ') siguiente(); }
@@ -5340,12 +5345,14 @@ window.DictadoClase = (function(){
   function cerrar(){
     if(!_demo) marcarTodasVistas();
     _demo = false;
+    if(_sigue) cancelAnimationFrame(_sigue); _sigue = 0;
     if(_foco) _foco.remove();
     if(_card) _card.remove();
     if(_clic) _clic.remove();
-    _foco=_card=_clic=null; _paso=0; _cola=[];
+    _foco=_card=_clic=null; _el=null; _paso=0; _cola=[];
     document.removeEventListener('keydown', _tecla);
     window.removeEventListener('resize', colocar);
+    window.removeEventListener('scroll', encuadrar, true);
     pintar();
   }
   function marcarTodasVistas(){
@@ -5371,6 +5378,16 @@ window.DictadoClase = (function(){
     _card.querySelector('.medrev-x').addEventListener('click', siguiente);
     document.addEventListener('keydown', _tecla);
     window.addEventListener('resize', colocar);
+    window.addEventListener('scroll', encuadrar, true);
+    /* durante el primer segundo el halo se reajusta cada fotograma: así no
+       se descuadra aunque la portada aún esté acabando de entrar */
+    var t0 = 0;
+    (function pega(ts){
+      if(!_foco) return;
+      if(!t0) t0 = ts || 0;
+      encuadrar();
+      if(!ts || ts - t0 < 1400) _sigue = requestAnimationFrame(pega);
+    })();
     colocar();
   }
 
