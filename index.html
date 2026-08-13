@@ -384,13 +384,13 @@
 }
 .med-grid{
   display:grid;
-  grid-template-columns:repeat(4,var(--med-cel,46px));
-  grid-auto-rows:var(--med-cel,46px);
+  grid-template-columns:repeat(4,var(--med-cel,60px));
+  grid-auto-rows:var(--med-cel,60px);
   gap:6px;
 }
 
 .med{
-  position:relative;width:var(--med-cel,46px);height:var(--med-cel,46px);padding:0;
+  position:relative;width:var(--med-cel,60px);height:var(--med-cel,60px);padding:0;
   border-radius:12px;border:1px solid rgba(212,175,55,.18);
   background:#100b04;cursor:default;overflow:hidden;
   transition:transform .25s cubic-bezier(.34,1.56,.64,1),border-color .25s,box-shadow .25s;
@@ -405,7 +405,7 @@
 .med.locked img{filter:grayscale(1) brightness(.34) contrast(.62) blur(1.1px);opacity:.5}
 .med.locked::after{
   content:'?';position:absolute;inset:0;display:grid;place-items:center;
-  font:800 15px "Helvetica Neue",Arial,sans-serif;color:rgba(216,202,166,.30);
+  font:800 19px "Helvetica Neue",Arial,sans-serif;color:rgba(216,202,166,.30);
   text-shadow:0 1px 3px rgba(0,0,0,.7);
 }
 .med.locked::before{
@@ -451,7 +451,7 @@
 .medrev-card{
   position:fixed;z-index:100011;max-width:340px;
   background:#141a2e;border:1px solid rgba(255,214,120,.5);border-radius:16px;
-  padding:18px 20px 16px;box-shadow:0 22px 70px rgba(0,0,0,.65);
+  padding:17px 20px 18px;box-shadow:0 22px 70px rgba(0,0,0,.65);
   transition:all .45s cubic-bezier(.4,0,.2,1);
   font-family:"Helvetica Neue",Arial,sans-serif;
 }
@@ -459,20 +459,11 @@
 .medrev-card h4{margin:0 0 7px;font:800 17px "Helvetica Neue",Arial;color:#fff}
 .medrev-card p{margin:0 0 15px;font:400 13.5px/1.55 "Helvetica Neue",Arial;color:#dbe2f1}
 .medrev-card p b{color:#ffd678;font-weight:800}
-.medrev-pie{display:flex;align-items:center;justify-content:space-between;gap:10px}
-.medrev-luego{background:none;border:none;color:#8a93a8;font:700 12px "Helvetica Neue",Arial;cursor:pointer;padding:6px 2px}
-.medrev-luego:hover{color:#c3ccdd}
-.medrev-ir{
-  border:0;border-radius:10px;padding:10px 18px;font:800 13px "Helvetica Neue",Arial;
-  cursor:pointer;color:#062b26;background:linear-gradient(90deg,#ffd678,#b8860b);
-}
-.medrev-ir:hover{filter:brightness(1.07)}
-.medrev-dots{display:flex;gap:5px}
-.medrev-dots i{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.25)}
-.medrev-dots i.on{background:#ffd678}
+.medrev-card p{margin:0}
+.medrev-clic{position:fixed;inset:0;z-index:100009;cursor:pointer}
 
 /* en pantallas justas, el casillero baja debajo del título */
-@media (max-width:1040px){
+@media (max-width:1100px){
   .medallero{position:static;transform:none;margin:24px auto 0;width:max-content}
 }
 
@@ -5129,7 +5120,7 @@ window.DictadoClase = (function(){
   var IMG = window.__MED_IMG__ || {};
   var CLAVE_VISTAS = 'lmpro_medallas_vistas';
   var _abiertas = {};      // u -> true
-  var _cola = [], _paso = 0, _foco = null, _card = null, _ctx = null, _demo = false;
+  var _cola = [], _paso = 0, _foco = null, _card = null, _clic = null, _ctx = null, _demo = false;
 
   /* ── sesión ───────────────────────────────────────────────────────── */
   function ses(){
@@ -5235,16 +5226,35 @@ window.DictadoClase = (function(){
   function ajustar(){
     var caja = document.getElementById('medallero');
     if(!caja || caja.hidden) return;
-    var lock = document.querySelector('.hero-lockup');
-    var tag  = document.querySelector('.hero .tag');
-    if(!lock) return;
-    var alto = lock.offsetHeight;
-    if(tag){ alto += tag.offsetHeight + (parseFloat(getComputedStyle(tag).marginTop) || 0); }
-    var cab = caja.querySelector('.med-cab');
-    var pad = (parseFloat(getComputedStyle(caja).paddingTop) || 0) * 2;
-    var estorbo = pad + (cab ? cab.offsetHeight + 6 : 0) + 6;   /* 6 = hueco entre filas */
-    var cel = Math.round((alto - estorbo) / 2);
-    cel = Math.max(38, Math.min(74, cel));
+    /* el bloque del título con su frase: el .hero mide justo eso, porque
+       la tarjeta va posicionada encima y no cuenta para su altura */
+    var hero = document.querySelector('.hero');
+    if(!hero) return;
+    var alto = hero.offsetHeight;
+    if(alto < 40){                                   /* por si midiéramos en mal momento */
+      var lock = document.querySelector('.hero-lockup');
+      var tag  = document.querySelector('.hero .tag');
+      alto = (lock ? lock.offsetHeight : 88) +
+             (tag ? tag.offsetHeight + (parseFloat(getComputedStyle(tag).marginTop) || 0) : 40);
+    }
+    /* las DOS FILAS de iconos suman lo que mide el título con su frase;
+       la tarjeta, con su marco, sobresale un poco por arriba y por abajo */
+    var cel = Math.round((alto - 6) / 2);                       /* 6 = hueco entre filas */
+
+    /* que nunca se pegue al texto: se mide el ancho real de la frase
+       y del título, y se deja aire entre ellos y la tarjeta */
+    var texto = 0;
+    ['.hero-lockup', '.hero .tag'].forEach(function(sel){
+      var el = document.querySelector(sel); if(!el) return;
+      var w = 0;
+      try{ var rg = document.createRange(); rg.selectNodeContents(el); w = rg.getBoundingClientRect().width; }catch(e){}
+      texto = Math.max(texto, w || el.getBoundingClientRect().width);
+    });
+    var pad   = (parseFloat(getComputedStyle(caja).paddingLeft) || 11) * 2;
+    var libre = (hero.clientWidth - texto) / 2 - 20;             /* 20 = aire mínimo */
+    var celMax = Math.floor((libre - pad - 18) / 4);             /* 18 = 3 huecos de 6 */
+    if(celMax > 30) cel = Math.min(cel, celMax);
+    cel = Math.max(44, Math.min(96, cel));
     caja.style.setProperty('--med-cel', cel + 'px');
   }
   window.addEventListener('resize', ajustar);
@@ -5270,13 +5280,7 @@ window.DictadoClase = (function(){
 
       _card.querySelector('h4').textContent = '¡' + m.n + '!';
       _card.querySelector('p').innerHTML =
-        'Ya puedes acceder al portal interactivo de <b>' + m.n + '</b> — ' + m.sub + '.';
-      var dots = _card.querySelector('.medrev-dots');
-      dots.innerHTML = _cola.map(function(_,i){ return '<i'+(i===_paso?' class="on"':'')+'></i>'; }).join('');
-      dots.style.display = _cola.length>1 ? '' : 'none';
-      _card.querySelector('.medrev-ir').onclick = function(){
-        window.open(m.url, '_blank', 'noopener'); siguiente();
-      };
+        'Ya puedes acceder al portal interactivo de <b>' + m.n + '</b>.';
 
       var ch=_card.offsetHeight||190, cw=Math.min(340, window.innerWidth-24);
       var top = r.bottom + pad + 14;
@@ -5285,6 +5289,7 @@ window.DictadoClase = (function(){
       _card.style.top=top+'px'; _card.style.left=left+'px'; _card.style.maxWidth=cw+'px';
     }, 340);
   }
+  function _tecla(ev){ if(ev.key==='Escape'||ev.key==='Enter'||ev.key===' ') siguiente(); }
   function siguiente(){
     _paso++;
     if(_paso >= _cola.length){ cerrar(); return; }
@@ -5295,7 +5300,9 @@ window.DictadoClase = (function(){
     _demo = false;
     if(_foco) _foco.remove();
     if(_card) _card.remove();
-    _foco=_card=null; _paso=0; _cola=[];
+    if(_clic) _clic.remove();
+    _foco=_card=_clic=null; _paso=0; _cola=[];
+    document.removeEventListener('keydown', _tecla);
     window.removeEventListener('resize', colocar);
     pintar();
   }
@@ -5311,17 +5318,16 @@ window.DictadoClase = (function(){
     _card = document.createElement('div'); _card.className='medrev-card';
     _card.innerHTML =
       '<div class="medrev-kick">Insignia desbloqueada</div>'+
-      '<h4></h4><p></p>'+
-      '<div class="medrev-pie">'+
-        '<div style="display:flex;align-items:center;gap:12px">'+
-          '<div class="medrev-dots"></div>'+
-          '<button type="button" class="medrev-luego">Ahora no</button>'+
-        '</div>'+
-        '<button type="button" class="medrev-ir">Entrar →</button>'+
-      '</div>';
+      '<h4></h4><p></p>';
+    _clic = document.createElement('div'); _clic.className='medrev-clic';
+    _clic.title = 'Pulsa para volver al portal';
+    document.body.appendChild(_clic);
     document.body.appendChild(_foco);
     document.body.appendChild(_card);
-    _card.querySelector('.medrev-luego').addEventListener('click', siguiente);
+    /* se cierra pulsando en cualquier sitio: que decida el alumno */
+    _clic.addEventListener('click', siguiente);
+    _card.addEventListener('click', siguiente);
+    document.addEventListener('keydown', _tecla);
     window.addEventListener('resize', colocar);
     colocar();
   }
