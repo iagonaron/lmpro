@@ -362,35 +362,36 @@
 /* @MEDALLERO */
 /* ═══════════ CASILLERO DE INSIGNIAS · portada GP ═══════════ */
 
-.hero{display:flex;align-items:center;justify-content:center;gap:44px;flex-wrap:wrap}
-.hero .tag{flex:0 0 100%}
-.hero-lockup{text-align:left}
+/* el título vuelve a su sitio: centrado, con su frase justo debajo */
+.hero{position:relative}
+.hero-lockup{display:inline-block;text-align:left}
 
 .medallero{
-  flex:0 0 auto;position:relative;
-  padding:14px 16px 12px;border-radius:18px;
-  border:1px solid rgba(212,175,55,.28);
-  background:linear-gradient(180deg,rgba(34,25,8,.72),rgba(16,11,4,.72));
-  box-shadow:0 1px 0 rgba(255,236,180,.07) inset,0 18px 50px rgba(0,0,0,.45);
+  position:absolute;right:0;top:50%;transform:translateY(-50%);
+  display:flex;flex-direction:column;
+  padding:9px 11px;border-radius:16px;
+  border:1px solid rgba(212,175,55,.26);
+  background:linear-gradient(180deg,rgba(34,25,8,.66),rgba(16,11,4,.66));
+  box-shadow:0 1px 0 rgba(255,236,180,.06) inset,0 14px 40px rgba(0,0,0,.4);
   -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
   z-index:76;
 }
 .medallero[hidden]{display:none}
 .med-cab{
-  font:800 9.5px/1 "Helvetica Neue",Arial,sans-serif;letter-spacing:.19em;
-  text-transform:uppercase;color:var(--muted2);text-align:center;margin-bottom:11px;
+  flex:none;
+  font:800 8.5px/1 "Helvetica Neue",Arial,sans-serif;letter-spacing:.19em;
+  text-transform:uppercase;color:var(--muted2);text-align:center;margin-bottom:6px;
 }
-.med-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}
-.med-pie{
-  margin-top:10px;text-align:center;
-  font:600 10.5px/1.35 "Helvetica Neue",Arial,sans-serif;color:var(--muted2);
-  max-width:23ch;margin-left:auto;margin-right:auto;
+.med-grid{
+  display:grid;
+  grid-template-columns:repeat(4,var(--med-cel,46px));
+  grid-auto-rows:var(--med-cel,46px);
+  gap:6px;
 }
-.med-pie b{color:var(--gold-soft);font-weight:800}
 
 .med{
-  position:relative;width:64px;height:64px;padding:0;border-radius:15px;
-  border:1px solid rgba(212,175,55,.18);
+  position:relative;width:var(--med-cel,46px);height:var(--med-cel,46px);padding:0;
+  border-radius:12px;border:1px solid rgba(212,175,55,.18);
   background:#100b04;cursor:default;overflow:hidden;
   transition:transform .25s cubic-bezier(.34,1.56,.64,1),border-color .25s,box-shadow .25s;
   -webkit-tap-highlight-color:transparent;
@@ -404,17 +405,17 @@
 .med.locked img{filter:grayscale(1) brightness(.34) contrast(.62) blur(1.1px);opacity:.5}
 .med.locked::after{
   content:'?';position:absolute;inset:0;display:grid;place-items:center;
-  font:800 21px "Helvetica Neue",Arial,sans-serif;color:rgba(216,202,166,.30);
+  font:800 15px "Helvetica Neue",Arial,sans-serif;color:rgba(216,202,166,.30);
   text-shadow:0 1px 3px rgba(0,0,0,.7);
 }
 .med.locked::before{
-  content:'';position:absolute;inset:0;border-radius:15px;
+  content:'';position:absolute;inset:0;border-radius:12px;
   box-shadow:0 2px 10px rgba(0,0,0,.55) inset;
 }
 
 /* — abierta — */
 .med.open{cursor:pointer;border-color:rgba(212,175,55,.55)}
-.med.open:hover{transform:translateY(-3px) scale(1.05);border-color:var(--gold1);
+.med.open:hover{transform:translateY(-3px) scale(1.06);border-color:var(--gold1);
   box-shadow:0 10px 26px rgba(0,0,0,.55),0 0 0 1px rgba(233,201,106,.5)}
 .med.open:active{transform:translateY(-1px) scale(1.02)}
 .med.open:focus-visible{outline:2px solid var(--gold1);outline-offset:3px}
@@ -441,7 +442,7 @@
 
 /* ── la ceremonia: foco sobre la insignia, resto a oscuras ── */
 .medrev-veo{
-  position:fixed;z-index:100010;border-radius:19px;pointer-events:none;
+  position:fixed;z-index:100010;border-radius:17px;pointer-events:none;
   box-shadow:0 0 0 9999px rgba(4,7,18,.88),
              0 0 0 3px #ffd678,
              0 0 44px rgba(255,214,120,.75);
@@ -470,17 +471,9 @@
 .medrev-dots i{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.25)}
 .medrev-dots i.on{background:#ffd678}
 
-.med-probar{
-  display:block;margin:8px auto 0;background:none;border:none;cursor:pointer;
-  font:700 10px "Helvetica Neue",Arial;letter-spacing:.1em;text-transform:uppercase;
-  color:rgba(168,150,106,.75);
-}
-.med-probar:hover{color:var(--gold-soft)}
-
-@media (max-width:900px){
-  .hero{gap:28px}
-  .hero-lockup{text-align:center}
-  .med{width:56px;height:56px}
+/* en pantallas justas, el casillero baja debajo del título */
+@media (max-width:1040px){
+  .medallero{position:static;transform:none;margin:24px auto 0;width:max-content}
 }
 
 /* /@MEDALLERO */
@@ -1090,7 +1083,6 @@
     <aside class="medallero" id="medallero" hidden aria-label="Insignias del curso">
       <div class="med-cab">Insignias del curso</div>
       <div class="med-grid" id="medGrid"></div>
-      <div class="med-pie" id="medPie"></div>
     </aside>
     <!-- /@MEDALLERO -->
     <p class="tag">Entrenamiento avanzado de Lenguaje Musical… <b>¡desde casa!</b></p>
@@ -5137,7 +5129,7 @@ window.DictadoClase = (function(){
   var IMG = window.__MED_IMG__ || {};
   var CLAVE_VISTAS = 'lmpro_medallas_vistas';
   var _abiertas = {};      // u -> true
-  var _cola = [], _paso = 0, _foco = null, _card = null, _ctx = null;
+  var _cola = [], _paso = 0, _foco = null, _card = null, _ctx = null, _demo = false;
 
   /* ── sesión ───────────────────────────────────────────────────────── */
   function ses(){
@@ -5231,34 +5223,31 @@ window.DictadoClase = (function(){
       b.classList.toggle('open', ok);
       b.classList.toggle('locked', !ok);
       b.setAttribute('aria-label', m.n + (ok ? '' : ' (bloqueada)'));
-      b.setAttribute('title', ok ? (m.n + ' · ' + m.sub) : 'Aún no disponible');
+      b.setAttribute('title', ok ? (m.n + ' · ' + m.sub)
+        : (val ? 'Aún no disponible' : 'Entra con tu cuenta para desbloquearla'));
     });
 
-    var pie = document.getElementById('medPie');
-    if(pie){
-      if(!val){
-        pie.innerHTML = 'Entra con tu cuenta de alumno para ir desbloqueándolas.';
-      }else{
-        var n = MEDALLAS.filter(function(m){ return _abiertas[m.u]; }).length;
-        pie.innerHTML = n
-          ? '<b>'+n+' de '+MEDALLAS.length+'</b> desbloqueadas. Pulsa una para entrar.'
-          : 'Se irán abriendo a medida que avancemos el curso.';
-      }
-    }
     caja.hidden = false;
-
-    // atajo de prueba, solo para la cuenta de tester
-    if(esTester() && !document.getElementById('medProbar')){
-      var b2 = document.createElement('button');
-      b2.id='medProbar'; b2.type='button'; b2.className='med-probar';
-      b2.textContent='↻ Repetir la revelación';
-      b2.addEventListener('click', function(){
-        try{ localStorage.removeItem(claveVistas()); }catch(e){}
-        location.reload();
-      });
-      caja.appendChild(b2);
-    }
+    ajustar();
   }
+
+  /* la tarjeta mide justo lo que el título y su frase */
+  function ajustar(){
+    var caja = document.getElementById('medallero');
+    if(!caja || caja.hidden) return;
+    var lock = document.querySelector('.hero-lockup');
+    var tag  = document.querySelector('.hero .tag');
+    if(!lock) return;
+    var alto = lock.offsetHeight;
+    if(tag){ alto += tag.offsetHeight + (parseFloat(getComputedStyle(tag).marginTop) || 0); }
+    var cab = caja.querySelector('.med-cab');
+    var pad = (parseFloat(getComputedStyle(caja).paddingTop) || 0) * 2;
+    var estorbo = pad + (cab ? cab.offsetHeight + 6 : 0) + 6;   /* 6 = hueco entre filas */
+    var cel = Math.round((alto - estorbo) / 2);
+    cel = Math.max(38, Math.min(74, cel));
+    caja.style.setProperty('--med-cel', cel + 'px');
+  }
+  window.addEventListener('resize', ajustar);
 
   /* ── ceremonia ────────────────────────────────────────────────────── */
   function colocar(){
@@ -5302,7 +5291,8 @@ window.DictadoClase = (function(){
     colocar();
   }
   function cerrar(){
-    marcarTodasVistas();
+    if(!_demo) marcarTodasVistas();
+    _demo = false;
     if(_foco) _foco.remove();
     if(_card) _card.remove();
     _foco=_card=null; _paso=0; _cola=[];
@@ -5370,6 +5360,13 @@ window.DictadoClase = (function(){
     }
     if(esTester()){ MEDALLAS.forEach(function(m){ _abiertas[m.u]=true; }); }
 
+    var q = /[?&]demo=([^&#]*)/.exec(location.search);
+    if(q){
+      pintar();
+      setTimeout(function(){ demo(decodeURIComponent(q[1]||'')); }, 1100);
+      return;
+    }
+
     var v = vistas();
     if(v === null){
       // primera visita de esta cuenta: lo que ya estuviera abierto no es
@@ -5389,7 +5386,34 @@ window.DictadoClase = (function(){
     setTimeout(function(){ ceremonia(nuevas); }, 900);
   }
 
-  window.Medallero = { pintar:pintar, recargar:arrancar };
+  /* ── ensayo: ver la ceremonia cuando quieras, sin tocar nada ───────
+     · desde la barra de direcciones:  …/?demo=insignias      (una)
+                                       …/?demo=todas          (las ocho)
+                                       …/?demo=transporte     (esa)
+     · o desde la consola del navegador:  Medallero.demo()               */
+  function demo(cual){
+    var lista;
+    var txt = (cual==null ? '' : String(cual)).toLowerCase();
+    if(txt === 'todas' || txt === 'all'){
+      lista = MEDALLAS.slice();
+    }else if(txt && txt !== 'insignias' && txt !== '1' && txt !== 'si'){
+      lista = MEDALLAS.filter(function(m){
+        return m.u === txt || m.n.toLowerCase().indexOf(txt) === 0;
+      });
+    }else{
+      var ab = MEDALLAS.filter(function(m){ return _abiertas[m.u]; });
+      lista = [ ab.length ? ab[ab.length-1] : MEDALLAS[0] ];
+    }
+    if(!lista.length){ console.warn('[medallero] no encuentro esa insignia'); return; }
+    _demo = true;
+    lista.forEach(function(m){
+      var b = document.querySelector('.med[data-u="'+m.u+'"]');
+      if(b){ b.classList.remove('open','abriendo'); b.classList.add('locked'); }
+    });
+    setTimeout(function(){ ceremonia(lista); }, 400);
+  }
+
+  window.Medallero = { pintar:pintar, recargar:arrancar, demo:demo };
 
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', arrancar);
   else arrancar();
