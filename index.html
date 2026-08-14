@@ -362,11 +362,15 @@
 /* @MEDALLERO */
 /* ═══════════ PORTALES INTERACTIVOS · portada GP ═══════════ */
 
-/* una sola fila de ocho, como primera tarjeta de la parrilla */
+/* las tarjetas de la parrilla eran content-box y se salían 62 px por la
+   derecha: en pantallas justas el margen izquierdo y el derecho no
+   coincidían. Con border-box quedan centradas de verdad. */
+.wrap .app-card,.wrap .medallero{box-sizing:border-box}
+
+/* una sola fila de nueve, como primera tarjeta de la parrilla */
 .medallero{
   position:relative;
-  /* mismo ancho y sangría que las tarjetas de apps, que son content-box */
-  box-sizing:content-box;width:calc(100% + 36px);
+  width:100%;
   padding:14px 12px;border-radius:18px;
   border:1px solid var(--line);
   background:linear-gradient(180deg,var(--panel2),var(--panel));
@@ -451,7 +455,7 @@
 }
 
 @media (max-width:820px){
-  .medallero{width:100%;padding:12px}
+  .medallero{padding:12px}
   .med-grid{grid-template-columns:repeat(5,minmax(0,1fr))}
 }
 
