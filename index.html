@@ -5428,7 +5428,8 @@ window.DictadoClase = (function(){
       (d.medallas||[]).forEach(function(m){ if(m.abierta) _abiertas[m.unidad]=true; });
       if(d.hamilton && d.hamilton.abierta){ _abiertas.ham = true; _hamDesde = d.hamilton.desde || null; }
     }
-    if(esTester()){ MEDALLAS.forEach(function(m){ _abiertas[m.u]=true; }); }
+    /* (3-sep-2026) el tester ya NO fuerza todas las insignias abiertas: ve
+       exactamente lo que ve un alumno. Para verlas todas sigue ?demo= */
 
     var q = /[?&]demo=([^&#]*)/.exec(location.search);
     if(q){
