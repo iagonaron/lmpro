@@ -1058,7 +1058,7 @@ body.intro.cards-in .medallero{animation:cardIn .5s ease forwards}
     </div>
     <div id="alumnoRegistro" style="display:none">
       <h3>Crear cuenta de alumno</h3>
-      <p>Solo para alumnos de Iago. El <b>nº de expediente</b> se pide una única vez: Iago lo contrasta con tu expediente real para validar que eres tú. Después entrarás siempre con tu nombre y tu contraseña.</p>
+      <p>Solo para alumnos de Iago. Introduce tu <b>nº de expediente</b> para confirmar que eres tú: si coincide con la lista de clase, tu cuenta queda validada al momento; si no, Iago la revisará a mano. Después entrarás siempre con tu nombre y tu contraseña.</p>
       <input class="gate-input txt" id="regNombre" type="text" placeholder="Nombre y apellidos" autocomplete="off" autocapitalize="words" spellcheck="false">
       <input class="gate-input txt" id="regExp" type="text" placeholder="Nº de expediente del alumno" autocomplete="off" autocapitalize="off" spellcheck="false">
       <div class="gate-note" id="ayudaExpediente"><b>Nº de expediente:</b> disponible para consulta en CentrosNet o en el carnet de alumno.</div>
@@ -1094,7 +1094,7 @@ body.intro.cards-in .medallero{animation:cardIn .5s ease forwards}
         <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5l3 2"/></svg>
       </div>
       <h3>Cuenta creada</h3>
-      <p>Tu profesor <b>Iago</b> recibirá tu solicitud. En cuanto te valide, tendrás acceso a todas las funciones de LM at home.<br>Mientras tanto, puedes usar las apps como invitado.</p>
+      <p>El nº de expediente no coincide con la lista de clase (o aún no está cargado), así que tu profesor <b>Iago</b> recibirá tu solicitud y la validará a mano. En cuanto te valide, tendrás acceso a todas las funciones de LM at home.<br>Mientras tanto, puedes usar las apps como invitado.</p>
       <button class="gate-go" onclick="continuarComoInvitadoPend()">Continuar</button>
       <button class="gate-secondary gate-back" onclick="abrirLogin()">Ya me validaron: entrar</button>
     </div>
@@ -1310,7 +1310,7 @@ function bienvenidaCSS(){
       '.bv-chispas i{display:none}}';
   document.head.appendChild(st);
 }
-function mostrarBienvenidaValidada(nombre){
+function mostrarBienvenidaValidada(nombre, auto){
   bienvenidaCSS();
   const primer=(String(nombre||'').trim().split(/\s+/)[0])||'';
   const ov=document.createElement('div');
@@ -1326,7 +1326,7 @@ function mostrarBienvenidaValidada(nombre){
       '<svg class="bv-check" viewBox="0 0 104 104"><circle class="c" cx="52" cy="52" r="48"/>'+
       '<path class="t" d="M33 54 L47 68 L73 40"/></svg>'+
       '<div class="bv-titulo">¡Cuenta validada' + (primer ? ', '+primer : '') + '!</div>'+
-      '<div class="bv-texto">Iago ya ha comprobado tu <b>nº de expediente</b>: esta cuenta es oficialmente tuya. '+
+      '<div class="bv-texto">' + (auto ? 'Tu <b>nº de expediente</b> coincide con la lista de clase: esta cuenta es oficialmente tuya. ' : 'Iago ya ha comprobado tu <b>nº de expediente</b>: esta cuenta es oficialmente tuya. ') +
       'A partir de ahora entras siempre con tu nombre y tu contraseña. '+
       'Pulsa <b>¡Empezar!</b> y te enseño el portal LM at home (GP) en un momento.</div>'+
       '<button type="button" class="bv-go">¡Empezar!</button>'+
@@ -1417,6 +1417,13 @@ async function alumnoRegistrar(){
     return;
   }
   const recordar=document.getElementById('regRecordar').checked;
+  // Diario 52: si el expediente casó con la lista precargada, la cuenta ya viene validada → entrar directamente.
+  if(r.estado==='validado'){
+    try{ localStorage.setItem('alu_tour_visto', String(Date.now())); }catch(e){}
+    setSession({ id:r.id, nombre:r.nombre||nombre, estado:'validado', alumno_canon_id:r.alumno_canon_id, grupo_id:r.grupo_id, recordar });
+    unlockGate(); setTimeout(()=>mostrarBienvenidaValidada(r.nombre||nombre, true), 500);
+    return;
+  }
   setSession({ id:r.id, nombre, estado:'pendiente', recordar });   // FP5: la contraseña ya no se guarda en el dispositivo
   mostrarPanel('alumnoPendiente');
 }
