@@ -2848,6 +2848,7 @@ function showEnig(kind){
   function sesiones(){
     var out=[];
     (_st.rows||[]).forEach(function(e){
+      if(e.eval_tipo==='inicial'||e.trimestre==='inicial') return; /* 6-sep-2026: la Ev. Inicial nunca se muestra al alumno */
       if(((e.eval_tipo)||'sesion')!=='sesion') return;
       if(e.sin_evaluar) return;
       var ap=apartadoDe(e);
@@ -2874,6 +2875,7 @@ function showEnig(kind){
     }
     (_st.rows||[]).forEach(function(e){
       var t=null;
+      if(e.eval_tipo==='inicial'||e.trimestre==='inicial') return; /* 6-sep-2026 */
       if(e.eval_tipo==='examen_1T') t='1T';
       else if(e.eval_tipo==='examen_2T') t='2T';
       else if(e.eval_tipo==='examen_3T') t='3T';
