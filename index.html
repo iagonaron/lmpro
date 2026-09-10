@@ -75,6 +75,8 @@
     font-size:15px; font-weight:600; color:#f7e6a8; transform:rotate(-3deg);
     text-shadow:0 1px 4px rgba(0,0,0,.9), 0 0 10px rgba(0,0,0,.55); }
   @media (prefers-reduced-motion: reduce){ .carrusel-btn .cb-spiral svg{ animation:none; } }
+  /* (10-sep-2026) Carrusel solo para alumnos validados */
+  body:not(.alu-validado) .carrusel-btn{ display:none; }
 
   /* ===== HERO con animación ===== */
   .hero{text-align:center;margin:46px 0 48px;position:relative;z-index:75}
@@ -1492,6 +1494,7 @@ function unlockGate(){
     document.body.classList.remove('locked');
     g.style.display='none';
     if(window.AluCampana) window.AluCampana.refrescar();
+    if(window.__LM_MEDALLERO_REARRANCAR__) window.__LM_MEDALLERO_REARRANCAR__();
   }, 1100);
 }
 function submitGate(){
@@ -2171,7 +2174,11 @@ function showEnig(kind){
   function pintarBienvenida(){
     var s=ses(), w=document.getElementById('portal-welcome');
     if(!w) return;
-    if(s && s.id && s.estado==='validado'){
+    var val=!!(s && s.id && s.estado==='validado');
+    // (10-sep-2026) Solo alumnos validados: PreDict PRO Carrusel y los portales
+    // interactivos (medallero) no existen para el invitado.
+    document.body.classList.toggle('alu-validado', val);
+    if(val){
       var nom=document.getElementById('portal-welcome-nombre');
       if(nom) nom.textContent=s.nombre||'';
       w.style.display='';
@@ -5287,7 +5294,8 @@ window.DictadoClase = (function(){
         : (val ? 'Aún no disponible' : 'Entra con tu cuenta para desbloquearlo'));
     });
 
-    caja.hidden = false;
+    // (10-sep-2026) el medallero solo existe para alumnos validados (o ?demo=)
+    caja.hidden = !(val || /[?&]demo=/.test(location.search));
   }
 
 
@@ -5558,6 +5566,9 @@ window.DictadoClase = (function(){
   }
 
   window.__LM_HAM__ = { tarea:hamTarea, decorar:hamDecorar };
+  // (10-sep-2026) tras entrar/validarse en la misma carga, el medallero se
+  // vuelve a montar (unlockGate llama a AluCampana.refrescar → aquí).
+  window.__LM_MEDALLERO_REARRANCAR__ = function(){ try{ arrancar(); }catch(e){} };
 
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', arrancar);
   else arrancar();
