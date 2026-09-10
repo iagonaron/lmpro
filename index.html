@@ -3,6 +3,23 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Sentry (10-sep-2026): errores JS en producción. Sin datos personales: solo el id anónimo de la cuenta como etiqueta. -->
+<script src="https://js.sentry-cdn.com/c2f1bb8373171bd486ca2ec64d472b33.min.js" crossorigin="anonymous"></script>
+<script>
+window.sentryOnLoad=function(){
+  if(/^(localhost|127\.0\.0\.1)$/.test(location.hostname)) return;
+  Sentry.init({
+    release:'portal-gp@2026-09-10', environment:'production', sendDefaultPii:false,
+    initialScope:{ tags:{ app:'gp' } },
+    ignoreErrors:['ResizeObserver loop','Non-Error promise rejection','AbortError','Load failed','NetworkError','Failed to fetch'],
+    beforeSend:function(ev){
+      try{ var s=JSON.parse(localStorage.getItem('lmpro_session')||'null'); if(s&&s.id){ ev.tags=ev.tags||{}; ev.tags.cuenta=String(s.id); ev.tags.estado=String(s.estado||''); } }catch(e){}
+      if(ev.user) delete ev.user;
+      return ev;
+    }
+  });
+};
+</script>
 <title>LM at home · GP</title>
 <link rel="icon" type="image/svg+xml" href="icon.svg?v=5">
 <link rel="apple-touch-icon" href="apple-touch-icon.png?v=5">
