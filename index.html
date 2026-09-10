@@ -298,6 +298,7 @@
   .gate-q{font-size:13px;font-weight:800;color:var(--ink);margin-bottom:3px;text-align:left}
   .gate-mini{font-size:11.5px;line-height:1.5;color:var(--muted2);margin:0 0 8px;text-align:left}
   .gate-linkbtn2{color:var(--muted2)}
+  .gate{overflow-y:auto;align-items:flex-start}.gate-card{margin:auto}   /* 10-sep-2026: la tarjeta crece (invitado desplegable) y no se corta en pantallas bajas */
   .gate-back{margin-top:8px}
   /* ===== Campana de notificaciones del alumno validado ===== */
   .portal-bell{position:relative;border:1px solid rgba(212,175,55,.55);background:linear-gradient(135deg,rgba(212,175,55,.14),rgba(184,134,11,.06));border-radius:11px;padding:8px 10px;cursor:pointer;line-height:0;transition:background .15s,border-color .15s,box-shadow .15s}
@@ -1023,19 +1024,6 @@ body.intro.cards-in .medallero{animation:cardIn .5s ease forwards}
     </div>
     <div class="hero-lockup gate-lockup"><h1 class="hero-title gate-logo" aria-label="LM at home (Grado Profesional)"><span class="t-lm">LM</span><span class="t-home">at home</span></h1>
     <div class="hero-grade" aria-hidden="true"><b>G</b><b>R</b><b>A</b><b>D</b><b>O</b><i class="gs"></i><b>P</b><b>R</b><b>O</b><b>F</b><b>E</b><b>S</b><b>I</b><b>O</b><b>N</b><b>A</b><b>L</b></div></div>
-    <div id="gatePass" style="display:none">
-      <h3>Acceso como invitado</h3>
-      <p class="gate-mini" style="text-align:center">Como invitado tienes el <b>90%</b> de las funciones y puedes practicar libremente.</p>
-      <input class="gate-input" id="gateInput" type="password" placeholder="Contraseña del aula" autocomplete="off" autocapitalize="off" spellcheck="false">
-      <label class="gate-remember"><input type="checkbox" id="gateRemember"> Recordar en este dispositivo</label>
-      <button class="gate-go" onclick="submitGate()">Entrar como invitado</button>
-      <div class="gate-err" id="gateErr"></div>
-      <div class="gate-help">¿No tienes la contraseña? Pídela a cualquier profesor de Lenguaje Musical del CMUS A Coruña.</div>
-      <div class="gate-alt">
-        <div class="gate-q" style="text-align:center">¿Eres alumno/a de Iago?</div>
-        <button class="gate-linkbtn" onclick="abrirLogin()">Entrar como alumno</button>
-      </div>
-    </div>
     <div id="gateMobile" style="display:none">
       <div class="gm-icon">
         <svg viewBox="0 0 24 24"><rect x="8" y="3" width="8" height="18" rx="1.8"/><line x1="11" y1="18" x2="13" y2="18"/><line x1="4" y1="3.5" x2="20" y2="20.5" class="gd-slash"/></svg>
@@ -1047,26 +1035,33 @@ body.intro.cards-in .medallero{animation:cardIn .5s ease forwards}
     </div>
     <div id="alumnoLogin">
       <h3>Alumnos de Iago González</h3>
-      <p>Entra con tu nombre y tu contraseña.</p>
+      <p>Escribe tu <b>nombre completo</b> y tu contraseña. Si es tu primera vez, te pediremos el nº de expediente.</p>
       <input class="gate-input txt" id="logNombre" type="text" placeholder="Nombre y apellidos" autocomplete="off" autocapitalize="words" spellcheck="false">
       <input class="gate-input" id="logPass" type="password" placeholder="Contraseña" autocomplete="off" autocapitalize="off" spellcheck="false">
       <label class="gate-remember"><input type="checkbox" id="logRecordar" checked> Recordar en este dispositivo</label>
       <button class="gate-go" id="logBtn" onclick="alumnoEntrar()">Entrar</button>
       <div class="gate-err" id="alumnoLoginErr"></div>
-      <button class="gate-secondary" onclick="abrirRegistro()">Primera vez · Crear mi cuenta</button>
       <button class="gate-linkbtn gate-linkbtn2" onclick="abrirReset()">¿Olvidaste tu contraseña?</button>
       <div class="gate-alt">
         <div class="gate-q" style="text-align:center;font-size:14px">¿No eres alumno/a de Iago?</div>
-        <button class="gate-secondary" style="margin-top:8px;font-weight:800" onclick="abrirInvitado()">Acceder como invitado</button>
+        <button class="gate-secondary" id="btnInvitado" style="margin-top:8px;font-weight:800" onclick="abrirInvitado()">Acceder como invitado ▾</button>
+        <div id="gatePass" style="display:none">
+          <p class="gate-mini" style="text-align:center;margin-top:12px">Como invitado tienes el <b>90%</b> de las funciones y puedes practicar libremente.</p>
+          <input class="gate-input" id="gateInput" type="password" placeholder="Contraseña del aula" autocomplete="off" autocapitalize="off" spellcheck="false">
+          <label class="gate-remember"><input type="checkbox" id="gateRemember"> Recordar en este dispositivo</label>
+          <button class="gate-go" onclick="submitGate()">Entrar como invitado</button>
+          <div class="gate-err" id="gateErr"></div>
+          <div class="gate-help">¿No tienes la contraseña? Pídesela a cualquier profesor de Lenguaje Musical del CMUS A Coruña.</div>
+        </div>
       </div>
     </div>
     <div id="alumnoRegistro" style="display:none">
-      <h3>Crear cuenta de alumno</h3>
-      <p>Solo para alumnos de Iago. Introduce tu <b>nº de expediente</b> para confirmar que eres tú: si coincide con la lista de clase, tu cuenta queda validada al momento; si no, Iago la revisará a mano. Después entrarás siempre con tu nombre y tu contraseña.</p>
+      <h3>Primera vez</h3>
+      <p id="regIntro">No hay ninguna cuenta con ese nombre. Si es tu primera vez, introduce tu <b>nº de expediente</b> para confirmar que eres alumno/a de Iago: si coincide con la lista de clase, entras al momento; si no, Iago lo revisará. A partir de ahora entrarás siempre con tu nombre y tu contraseña.</p>
       <input class="gate-input txt" id="regNombre" type="text" placeholder="Nombre y apellidos" autocomplete="off" autocapitalize="words" spellcheck="false">
       <input class="gate-input txt" id="regExp" type="text" placeholder="Nº de expediente del alumno" autocomplete="off" autocapitalize="off" spellcheck="false">
       <details class="gate-note" id="ayudaExpediente" style="text-align:left;cursor:pointer"><summary style="font-weight:800;color:var(--ink)">¿Dónde encuentro mi nº de expediente?</summary><div style="margin-top:6px">En el <b>carnet de alumno</b> del conservatorio y en <b>CentrosNET</b> (la web/app de la secretaría del centro, en los datos del alumno). Si no lo encuentras, pídeselo a Iago en clase.</div></details>
-      <input class="gate-input" id="regPass" type="password" placeholder="Elige una contraseña" autocomplete="off" autocapitalize="off" spellcheck="false">
+      <input class="gate-input" id="regPass" type="password" placeholder="Tu contraseña" autocomplete="off" autocapitalize="off" spellcheck="false" style="display:none">
       <label class="gate-remember"><input type="checkbox" id="regRecordar" checked> Recordar en este dispositivo</label>
       <div class="gate-note"><b>Pensada para ordenador</b> y adaptada para tablet. <b>No es una app para móvil.</b></div>
       <label class="gate-remember" style="justify-content:flex-start;align-items:flex-start;text-align:left;gap:8px;line-height:1.35;width:100%;box-sizing:border-box;margin-top:12px">
@@ -1077,9 +1072,9 @@ body.intro.cards-in .medallero{animation:cardIn .5s ease forwards}
         <input type="checkbox" id="regConsentPolitica" style="margin-top:2px;flex:0 0 auto">
         <span>He leído y acepto la <a href="politica-privacidad.html" target="_blank" rel="noopener" style="color:var(--area-entonacion,#5b9dff);font-weight:700;text-decoration:underline">política de privacidad</a>.</span>
       </label>
-      <button class="gate-go" id="regBtn" onclick="alumnoRegistrar()">Crear mi cuenta</button>
+      <button class="gate-go" id="regBtn" onclick="alumnoRegistrar()">Crear mi cuenta y entrar</button>
       <div class="gate-err" id="alumnoRegistroErr"></div>
-      <button class="gate-secondary gate-back" onclick="abrirLogin()">Ya tengo cuenta · Volver</button>
+      <button class="gate-secondary gate-back" onclick="abrirLogin()">Ya tenía cuenta · Volver a intentarlo</button>
     </div>
     <div id="alumnoReset" style="display:none">
       <h3>Recuperar contraseña</h3>
@@ -1096,9 +1091,8 @@ body.intro.cards-in .medallero{animation:cardIn .5s ease forwards}
         <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5l3 2"/></svg>
       </div>
       <h3>Cuenta creada</h3>
-      <p>El nº de expediente no coincide con la lista de clase (o aún no está cargado), así que tu profesor <b>Iago</b> recibirá tu solicitud y la validará a mano. En cuanto te valide, tendrás acceso a todas las funciones de LM at home.<br>Mientras tanto, puedes usar las apps como invitado.</p>
+      <p>El nº de expediente no coincide con la lista de clase (o aún no está cargado), así que tu profesor <b>Iago</b> recibirá tu solicitud y la validará a mano. <b>En cuanto te valide, la próxima vez que entres verás la confirmación</b> y tendrás acceso a todas las funciones de LM at home.<br>Mientras tanto, puedes usar las apps como invitado.</p>
       <button class="gate-go" onclick="continuarComoInvitadoPend()">Continuar</button>
-      <button class="gate-secondary gate-back" onclick="abrirLogin()">Ya me validaron: entrar</button>
     </div>
   </div>
 </div>
@@ -1254,7 +1248,7 @@ async function callRPC(fn, args){
 
 // ---- Cambio de panel dentro de la tarjeta del gate ----
 function mostrarPanel(id){
-  ['gatePass','gateMobile','alumnoLogin','alumnoRegistro','alumnoPendiente','alumnoReset'].forEach(p=>{
+  ['gateMobile','alumnoLogin','alumnoRegistro','alumnoPendiente','alumnoReset'].forEach(p=>{
     const el=document.getElementById(p); if(el) el.style.display=(p===id)?'':'none';
   });
 }
@@ -1273,10 +1267,23 @@ function abrirRegistro(){
   setTimeout(()=>{ try{ document.getElementById('regNombre').focus(); }catch(e){} }, 60);
 }
 function continuarComoInvitadoPend(){ unlockGate(); }
+// 10-sep-2026: primera vez = continuación de «Entrar» (nombre y contraseña ya escritos)
+function abrirPrimeraVez(nombre, pass){
+  const n=document.getElementById('regNombre'), p=document.getElementById('regPass'), rc=document.getElementById('regRecordar');
+  if(n) n.value=nombre||''; if(p) p.value=pass||'';
+  if(rc){ const lr=document.getElementById('logRecordar'); rc.checked = lr ? lr.checked : true; }
+  const e=document.getElementById('alumnoRegistroErr'); if(e) e.textContent='';
+  mostrarPanel('alumnoRegistro');
+  setTimeout(()=>{ try{ document.getElementById('regExp').focus(); }catch(e){} }, 60);
+}
 // 10-sep-2026: la pantalla inicial es la de ALUMNO; el invitado va por este enlace.
-function abrirInvitado(){
-  mostrarPanel('gatePass');
-  setTimeout(()=>{ try{ document.getElementById('gateInput').focus(); }catch(e){} }, 60);
+function abrirInvitado(abrir){
+  mostrarPanel('alumnoLogin');
+  const g=document.getElementById('gatePass'), b=document.getElementById('btnInvitado');
+  const on = (abrir===undefined) ? (g.style.display==='none') : !!abrir;
+  g.style.display = on ? '' : 'none';
+  if(b) b.textContent = on ? 'Acceder como invitado ▴' : 'Acceder como invitado ▾';
+  if(on) setTimeout(()=>{ try{ const i=document.getElementById('gateInput'); i.focus(); i.scrollIntoView({block:'center',behavior:'smooth'}); }catch(e){} }, 60);
 }
 
 /* ===== Bienvenida "Cuenta validada" (tutorial · tarjeta 1) =====
@@ -1369,7 +1376,9 @@ async function alumnoResetear(){
   if(exp.length<3){ err.textContent='Escribe tu nº de expediente.'; return; }
   if(pass.length<4){ err.textContent='La contraseña nueva debe tener al menos 4 caracteres.'; return; }
   const btn=document.getElementById('resBtn'); btn.disabled=true; btn.textContent='Cambiando…';
-  const r=await callRPC('suite_pass_reset', { p_nombre:nombre, p_expediente:exp, p_pass:pass });
+  // 10-sep-2026: v2 acepta también el expediente de la lista de Iago y deja registro para la campana del Diario
+  let r=await callRPC('suite_pass_reset_v2', { p_nombre:nombre, p_expediente:exp, p_pass:pass, p_ua:(navigator.userAgent||'').slice(0,300) });
+  if(!r.ok && (r.error==='red' || r.error==='excepcion')) r=await callRPC('suite_pass_reset', { p_nombre:nombre, p_expediente:exp, p_pass:pass });
   btn.disabled=false; btn.textContent='Cambiar mi contraseña';
   if(!r.ok){
     err.textContent = r.error==='no_coincide' ? 'El nombre o el nº de expediente no coinciden con ninguna cuenta.'
@@ -1441,10 +1450,18 @@ async function alumnoEntrar(){
   const err=document.getElementById('alumnoLoginErr'); err.textContent='';
   if(!nombre || !pass){ err.textContent='Escribe tu nombre y tu contraseña.'; return; }
   const btn=document.getElementById('logBtn'); btn.disabled=true; btn.textContent='Entrando…';
-  const r=await callRPC('suite_login_alumno', { p_nombre:nombre, p_pass:pass });
+  // 10-sep-2026: puerta única. v2 distingue «no existe» (→ primera vez) de «contraseña incorrecta».
+  let r=await callRPC('suite_login_alumno_v2', { p_nombre:nombre, p_pass:pass });
+  if(!r.ok && (r.error==='red' || r.error==='excepcion')) r=await callRPC('suite_login_alumno', { p_nombre:nombre, p_pass:pass });
   btn.disabled=false; btn.textContent='Entrar';
   if(!r.ok){
-    err.textContent = r.error==='credenciales' ? 'Nombre o contraseña incorrectos. Si no la recuerdas, usa «¿Olvidaste tu contraseña?».'
+    if(r.error==='no_existe'){
+      if(pass.length<4){ err.textContent='Es tu primera vez: elige una contraseña de al menos 4 caracteres.'; return; }
+      abrirPrimeraVez(nombre, pass); return;
+    }
+    err.textContent = r.error==='pass' ? 'Contraseña incorrecta. Si no la recuerdas, usa «¿Olvidaste tu contraseña?».'
+                    : r.error==='nombre_corto' ? 'Escribe tu nombre y apellidos.'
+                    : r.error==='credenciales' ? 'Nombre o contraseña incorrectos. Si no la recuerdas, usa «¿Olvidaste tu contraseña?».'
                     : 'No se pudo entrar. Revisa tu conexión e inténtalo de nuevo.';
     return;
   }
@@ -1478,13 +1495,12 @@ function isMobileDevice(){
   return uaPhone || narrow;
 }
 function showMobileNotice(){
-  document.getElementById('gatePass').style.display='none';
+  document.getElementById('alumnoLogin').style.display='none';
   document.getElementById('gateMobile').style.display='';
 }
 function backToPass(){
   document.getElementById('gateMobile').style.display='none';
-  document.getElementById('gatePass').style.display='';
-  try{ document.getElementById('gateInput').focus(); }catch(e){}
+  abrirInvitado(true);
 }
 function continueAnyway(){ unlockGate(); }
 function unlockGate(){
@@ -1542,7 +1558,7 @@ function submitGate(){
     setTimeout(()=>{
       try{
         const inp=document.getElementById('gateInput');
-        if(document.getElementById('gatePass').style.display!=='none'){
+        if(document.getElementById('gatePass').style.display!=='none' && document.getElementById('alumnoLogin').style.display!=='none'){
           inp.focus();
           if(remembered){ inp.setSelectionRange(inp.value.length, inp.value.length); }
         } else if(document.getElementById('alumnoLogin').style.display!=='none'){
@@ -1574,8 +1590,11 @@ function submitGate(){
         // el alumno entra directo sin volver a teclear nada.
         const r=await callRPC('suite_estado_cuenta', { p_id:s.id });
         if(r && r.ok && r.estado==='validado'){
+          const reciénValidado = (s.estado && s.estado!=='validado');
           setSession(Object.assign({}, s, { estado:'validado', alumno_canon_id:r.alumno_canon_id, grupo_id:r.grupo_id }));
+          if(reciénValidado){ try{ localStorage.setItem('alu_tour_visto', String(Date.now())); }catch(e){} }
           saltarGate();
+          if(reciénValidado){ setTimeout(()=>mostrarBienvenidaValidada(s.nombre), 900); }   // 10-sep-2026: bienvenida también cuando Iago validó a mano
           return;
         }
         if(r && r.ok && r.estado){
@@ -1591,7 +1610,7 @@ function submitGate(){
       // login con el nombre y la contraseña ya puestos (si pidió recordar).
       const s2=getSession();
       if(s2 && s2.id){ abrirLogin(); }
-      else if(remembered){ mostrarPanel('gatePass'); }   // invitado con contraseña recordada y sin cuenta
+      else if(remembered){ abrirInvitado(true); }   // invitado con contraseña recordada y sin cuenta
       else { abrirLogin(); }
       mostrarGate();
     })();
@@ -1600,10 +1619,10 @@ function submitGate(){
   document.addEventListener('keydown',e=>{
     if(e.key!=='Enter' || !document.body.classList.contains('locked')) return;
     const vis=id=>{ const el=document.getElementById(id); return el && el.style.display!=='none'; };
-    if(vis('alumnoLogin')) alumnoEntrar();
+    if(vis('alumnoLogin') && document.activeElement && document.activeElement.id==='gateInput') submitGate();
+    else if(vis('alumnoLogin')) alumnoEntrar();
     else if(vis('alumnoRegistro')) alumnoRegistrar();
     else if(vis('alumnoReset')) alumnoResetear();
-    else if(vis('gatePass')) submitGate();
   });
 })();
 
