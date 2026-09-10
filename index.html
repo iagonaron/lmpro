@@ -1056,8 +1056,8 @@ body.intro.cards-in .medallero{animation:cardIn .5s ease forwards}
       <button class="gate-secondary" onclick="abrirRegistro()">Primera vez · Crear mi cuenta</button>
       <button class="gate-linkbtn gate-linkbtn2" onclick="abrirReset()">¿Olvidaste tu contraseña?</button>
       <div class="gate-alt">
-        <div class="gate-q" style="text-align:center">¿No eres alumno/a de Iago?</div>
-        <button class="gate-linkbtn" onclick="abrirInvitado()">Acceder como invitado</button>
+        <div class="gate-q" style="text-align:center;font-size:14px">¿No eres alumno/a de Iago?</div>
+        <button class="gate-secondary" style="margin-top:8px;font-weight:800" onclick="abrirInvitado()">Acceder como invitado</button>
       </div>
     </div>
     <div id="alumnoRegistro" style="display:none">
@@ -1065,7 +1065,7 @@ body.intro.cards-in .medallero{animation:cardIn .5s ease forwards}
       <p>Solo para alumnos de Iago. Introduce tu <b>nº de expediente</b> para confirmar que eres tú: si coincide con la lista de clase, tu cuenta queda validada al momento; si no, Iago la revisará a mano. Después entrarás siempre con tu nombre y tu contraseña.</p>
       <input class="gate-input txt" id="regNombre" type="text" placeholder="Nombre y apellidos" autocomplete="off" autocapitalize="words" spellcheck="false">
       <input class="gate-input txt" id="regExp" type="text" placeholder="Nº de expediente del alumno" autocomplete="off" autocapitalize="off" spellcheck="false">
-      <div class="gate-note" id="ayudaExpediente"><b>Nº de expediente:</b> disponible para consulta en CentrosNet o en el carnet de alumno.</div>
+      <details class="gate-note" id="ayudaExpediente" style="text-align:left;cursor:pointer"><summary style="font-weight:800;color:var(--ink)">¿Dónde encuentro mi nº de expediente?</summary><div style="margin-top:6px">En el <b>carnet de alumno</b> del conservatorio y en <b>CentrosNET</b> (la web/app de la secretaría del centro, en los datos del alumno). Si no lo encuentras, pídeselo a Iago en clase.</div></details>
       <input class="gate-input" id="regPass" type="password" placeholder="Elige una contraseña" autocomplete="off" autocapitalize="off" spellcheck="false">
       <label class="gate-remember"><input type="checkbox" id="regRecordar" checked> Recordar en este dispositivo</label>
       <div class="gate-note"><b>Pensada para ordenador</b> y adaptada para tablet. <b>No es una app para móvil.</b></div>
