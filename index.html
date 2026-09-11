@@ -1501,7 +1501,7 @@ async function alumnoRegistrar(){
   if(r.estado==='validado'){
     try{ localStorage.setItem('alu_tour_visto', String(Date.now())); }catch(e){}
     setSession({ id:r.id, nombre:r.nombre||nombre, estado:'validado', alumno_canon_id:r.alumno_canon_id, grupo_id:r.grupo_id, recordar });
-    unlockGate(); setTimeout(()=>mostrarBienvenidaValidada(r.nombre||nombre, true), 500);
+    unlockGateAlumno(()=>mostrarBienvenidaValidada(r.nombre||nombre, true));
     return;
   }
   setSession({ id:r.id, nombre, estado:'pendiente', recordar });   // FP5: la contraseña ya no se guarda en el dispositivo
@@ -1538,7 +1538,7 @@ async function alumnoEntrar(){
   // para que no se abra debajo de la tarjeta (carrera de los ~1,6s).
   if(reciénValidado){ try{ localStorage.setItem('alu_tour_visto_pro', String(Date.now())); }catch(e){} }
   setSession({ id:r.id, nombre:r.nombre, estado:r.estado, alumno_canon_id:r.alumno_canon_id, grupo_id:r.grupo_id, recordar });   // FP5: la contraseña ya no se guarda en el dispositivo
-  if(r.estado==='validado'){ unlockGate(); if(reciénValidado){ setTimeout(()=>mostrarBienvenidaValidada(r.nombre), 500); } }
+  if(r.estado==='validado'){ unlockGateAlumno(reciénValidado ? ()=>mostrarBienvenidaValidada(r.nombre) : null); }
   else if(r.estado==='rechazado'){ err.textContent='Tu solicitud no fue aceptada. Habla con Iago en clase.'; }
   else { mostrarPanel('alumnoPendiente'); }   // pendiente
 }
@@ -1559,15 +1559,21 @@ function isMobileDevice(){
   const narrow=minSide>0 && minSide<=480;
   return uaPhone || narrow;
 }
-function showMobileNotice(){
-  document.getElementById('alumnoLogin').style.display='none';
-  document.getElementById('gateMobile').style.display='';
+let _avisoOrigen='invitado', _trasEntrar=null;
+function showMobileNotice(origen, tras){
+  _avisoOrigen = origen || 'invitado'; _trasEntrar = tras || null;
+  mostrarPanel('gateMobile');
 }
 function backToPass(){
   document.getElementById('gateMobile').style.display='none';
-  abrirInvitado(true);
+  if(_avisoOrigen==='alumno'){ abrirLogin(); } else { abrirInvitado(true); }
 }
-function continueAnyway(){ unlockGate(); }
+function continueAnyway(){ const t=_trasEntrar; _trasEntrar=null; unlockGate(); if(t) setTimeout(t, 500); }
+// 11-sep-2026: los alumnos también reciben el aviso de móvil (Iago lo pidió), antes de entrar
+function unlockGateAlumno(tras){
+  if(isMobileDevice()){ showMobileNotice('alumno', tras); }
+  else { unlockGate(); if(tras) setTimeout(tras, 500); }
+}
 function unlockGate(){
   const g=document.getElementById('gate');
   // 1) el portal empieza a emerger (nítido) bajo el gate
@@ -1596,7 +1602,7 @@ function submitGate(){
       else{ localStorage.removeItem(GATE_KEY); }
     }catch(e){}
     // contraseña correcta: si es móvil, mostramos el aviso antes de revelar
-    if(isMobileDevice()){ showMobileNotice(); }
+    if(isMobileDevice()){ showMobileNotice('invitado'); }
     else{ unlockGate(); }
   } else {
     err.textContent='Contraseña incorrecta';
@@ -1659,6 +1665,11 @@ function submitGate(){
           const reciénValidado = (s.estado && s.estado!=='validado');
           setSession(Object.assign({}, s, { estado:'validado', alumno_canon_id:r.alumno_canon_id, grupo_id:r.grupo_id }));
           if(reciénValidado){ try{ localStorage.setItem('alu_tour_visto', String(Date.now())); }catch(e){} }
+          if(isMobileDevice()){   // 11-sep-2026: en móvil, aviso también al alumno validado antes de entrar
+            showMobileNotice('alumno', reciénValidado ? ()=>mostrarBienvenidaValidada(s.nombre) : null);
+            mostrarGate();
+            return;
+          }
           saltarGate();
           if(reciénValidado){ setTimeout(()=>mostrarBienvenidaValidada(s.nombre), 900); }   // 10-sep-2026: bienvenida también cuando Iago validó a mano
           return;
