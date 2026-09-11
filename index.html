@@ -289,6 +289,13 @@ if(window.Sentry && !/^(localhost|127\.0\.0\.1)$/.test(location.hostname)){
   .gate-secondary{width:100%;margin-top:10px;background:transparent;border:1px solid #3a2c10;color:#98875e;
     border-radius:11px;padding:11px;font-size:13.5px;font-weight:700;letter-spacing:.03em;cursor:pointer;transition:border-color .15s,color .15s}
   .gate-secondary:hover{border-color:var(--gold1);color:#f5edd8}
+  .gate-tag{margin:0 0 14px!important;font-size:13px;color:var(--muted);line-height:1.5}
+  .gate-puerta{width:100%;margin-top:10px;background:rgba(127,127,127,.08);border:1.5px solid var(--line);color:var(--ink);
+    border-radius:11px;padding:14px;font-size:15px;font-weight:900;letter-spacing:.04em;cursor:pointer;transition:background .15s,border-color .15s,box-shadow .15s}
+  .gate-puerta:hover,.gate-puerta.on{border-color:var(--gold1);background:rgba(212,175,55,.10)}
+  #alumnoForm{margin-top:12px}
+  #gatePass{margin-top:4px}
+  #alumnoLogin .gate-input:first-of-type{margin-top:0}
   .gate-invitado{width:100%;margin-top:2px;background:rgba(212,175,55,.10);border:1.5px solid var(--gold1);color:#f5edd8;
     border-radius:11px;padding:13px;font-size:14.5px;font-weight:900;letter-spacing:.04em;cursor:pointer;transition:background .15s,box-shadow .15s}
   .gate-invitado:hover{background:rgba(212,175,55,.18);box-shadow:0 6px 20px rgba(212,175,55,.25)}
@@ -1053,16 +1060,18 @@ body.intro.cards-in .medallero{animation:cardIn .5s ease forwards}
       <button class="gate-secondary" onclick="backToPass()">Volver</button>
     </div>
     <div id="alumnoLogin">
-      <h3>Alumnos de Iago González</h3>
-      <p>Aprendizaje interactivo, retos semanales, seguimiento de resultados.</p>
+      <p class="gate-tag">Entrenamiento avanzado de Lenguaje Musical… <b>¡desde casa!</b></p>
+      <button class="gate-puerta" id="btnAlumno" onclick="abrirAlumno()">Soy alumno de Iago ▾</button>
+      <div id="alumnoForm" style="display:none">
+      <p class="gate-mini" style="text-align:center;margin:0 0 10px">Aprendizaje interactivo, retos semanales, seguimiento de resultados.</p>
       <input class="gate-input txt" id="logNombre" type="text" placeholder="Nombre y apellidos" autocomplete="off" autocapitalize="words" spellcheck="false">
       <input class="gate-input" id="logPass" type="password" placeholder="Contraseña" autocomplete="off" autocapitalize="off" spellcheck="false">
       <label class="gate-remember"><input type="checkbox" id="logRecordar" checked> Recordar en este dispositivo</label>
       <button class="gate-go" id="logBtn" onclick="alumnoEntrar()">Entrar</button>
       <div class="gate-err" id="alumnoLoginErr"></div>
       <button class="gate-linkbtn gate-linkbtn2" onclick="abrirReset()">¿Olvidaste tu contraseña?</button>
-      <div class="gate-alt">
-        <button class="gate-invitado" id="btnInvitado" onclick="abrirInvitado()">Acceder como invitado ▾</button>
+      </div>
+      <button class="gate-puerta" id="btnInvitado" onclick="abrirInvitado()">Acceder como invitado ▾</button>
         <div id="gatePass" style="display:none">
           <p class="gate-mini" style="text-align:center;margin-top:12px">Como invitado tienes el <b>90%</b> de las funciones y puedes practicar libremente.</p>
           <input class="gate-input" id="gateInput" type="password" placeholder="Contraseña del aula" autocomplete="off" autocapitalize="off" spellcheck="false">
@@ -1071,7 +1080,6 @@ body.intro.cards-in .medallero{animation:cardIn .5s ease forwards}
           <button class="gate-go" onclick="submitGate()">Entrar como invitado</button>
           <div class="gate-err" id="gateErr"></div>
         </div>
-      </div>
     </div>
     <div id="alumnoRegistro" style="display:none">
       <h3>Primera vez</h3>
@@ -1270,7 +1278,20 @@ function mostrarPanel(id){
     const el=document.getElementById(p); if(el) el.style.display=(p===id)?'':'none';
   });
 }
+function abrirAlumno(abrir){
+  mostrarPanel('alumnoLogin');
+  const f=document.getElementById('alumnoForm'), b=document.getElementById('btnAlumno');
+  const on = (abrir===undefined) ? (f.style.display==='none') : !!abrir;
+  f.style.display = on ? '' : 'none';
+  if(b){ b.textContent = on ? 'Soy alumno de Iago ▴' : 'Soy alumno de Iago ▾'; b.classList.toggle('on',on); }
+  if(on){
+    const g=document.getElementById('gatePass'), bi=document.getElementById('btnInvitado');
+    if(g) g.style.display='none'; if(bi){ bi.textContent='Acceder como invitado ▾'; bi.classList.remove('on'); }
+    setTimeout(()=>{ try{ const n=document.getElementById('logNombre'), p=document.getElementById('logPass'); (n.value? p:n).focus(); }catch(e){} }, 60);
+  }
+}
 function abrirLogin(){
+  abrirAlumno(true);
   const s=getSession();
   const n=document.getElementById('logNombre'), p=document.getElementById('logPass'), r=document.getElementById('logRecordar');
   if(s && s.recordar){ if(s.nombre) n.value=s.nombre; if(r) r.checked=true; }   // FP5: ya no se pre-rellena la contraseña (no se guarda)
@@ -1300,7 +1321,8 @@ function abrirInvitado(abrir){
   const g=document.getElementById('gatePass'), b=document.getElementById('btnInvitado');
   const on = (abrir===undefined) ? (g.style.display==='none') : !!abrir;
   g.style.display = on ? '' : 'none';
-  if(b) b.textContent = on ? 'Acceder como invitado ▴' : 'Acceder como invitado ▾';
+  if(b){ b.textContent = on ? 'Acceder como invitado ▴' : 'Acceder como invitado ▾'; b.classList.toggle('on',on); }
+  if(on){ const f=document.getElementById('alumnoForm'), ba=document.getElementById('btnAlumno'); if(f) f.style.display='none'; if(ba){ ba.textContent='Soy alumno de Iago ▾'; ba.classList.remove('on'); } }
   if(on) setTimeout(()=>{ try{ const i=document.getElementById('gateInput'); i.focus(); i.scrollIntoView({block:'center',behavior:'smooth'}); }catch(e){} }, 60);
 }
 
@@ -1467,6 +1489,7 @@ async function alumnoEntrar(){
   const pass=document.getElementById('logPass').value||'';
   const err=document.getElementById('alumnoLoginErr'); err.textContent='';
   if(!nombre || !pass){ err.textContent='Escribe tu nombre y tu contraseña.'; return; }
+  try{ localStorage.setItem('lm_puerta','alumno'); }catch(e){}   // 11-sep-2026: la próxima vez se abre esta puerta
   const btn=document.getElementById('logBtn'); btn.disabled=true; btn.textContent='Entrando…';
   // 10-sep-2026: puerta única. v2 distingue «no existe» (→ primera vez) de «contraseña incorrecta».
   let r=await callRPC('suite_login_alumno_v2', { p_nombre:nombre, p_pass:pass });
@@ -1543,6 +1566,7 @@ function submitGate(){
   if(val.trim().normalize('NFC')===GATE_PASS){
     err.textContent='';
     const remember=document.getElementById('gateRemember').checked;
+    try{ localStorage.setItem('lm_puerta','invitado'); }catch(e){}   // 11-sep-2026: la próxima vez se abre esta puerta
     try{
       if(remember){ localStorage.setItem(GATE_KEY,'1'); }
       else{ localStorage.removeItem(GATE_KEY); }
@@ -1629,7 +1653,12 @@ function submitGate(){
       const s2=getSession();
       if(s2 && s2.id){ abrirLogin(); }
       else if(remembered){ abrirInvitado(true); }   // invitado con contraseña recordada y sin cuenta
-      else { abrirLogin(); }
+      else {   // 11-sep-2026: portada comprimida (dos puertas); se abre la última puerta usada en este dispositivo
+        let puerta=null; try{ puerta=localStorage.getItem('lm_puerta'); }catch(e){}
+        if(puerta==='alumno'){ abrirLogin(); }
+        else if(puerta==='invitado'){ abrirInvitado(true); }
+        else { mostrarPanel('alumnoLogin'); abrirAlumno(false); }
+      }
       mostrarGate();
     })();
   });
