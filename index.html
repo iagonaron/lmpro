@@ -289,6 +289,9 @@ if(window.Sentry && !/^(localhost|127\.0\.0\.1)$/.test(location.hostname)){
   .gate-secondary{width:100%;margin-top:10px;background:transparent;border:1px solid #3a2c10;color:#98875e;
     border-radius:11px;padding:11px;font-size:13.5px;font-weight:700;letter-spacing:.03em;cursor:pointer;transition:border-color .15s,color .15s}
   .gate-secondary:hover{border-color:var(--gold1);color:#f5edd8}
+  .gate-invitado{width:100%;margin-top:2px;background:rgba(212,175,55,.10);border:1.5px solid var(--gold1);color:#f5edd8;
+    border-radius:11px;padding:13px;font-size:14.5px;font-weight:900;letter-spacing:.04em;cursor:pointer;transition:background .15s,box-shadow .15s}
+  .gate-invitado:hover{background:rgba(212,175,55,.18);box-shadow:0 6px 20px rgba(212,175,55,.25)}
   .gate-card.shake{animation:gateShake .4s cubic-bezier(.36,.07,.19,.97)}
   @keyframes gateShake{10%,90%{transform:translateX(-2px)}20%,80%{transform:translateX(4px)}30%,50%,70%{transform:translateX(-7px)}40%,60%{transform:translateX(7px)}}
   @media (prefers-reduced-motion: reduce){
@@ -1051,7 +1054,7 @@ body.intro.cards-in .medallero{animation:cardIn .5s ease forwards}
     </div>
     <div id="alumnoLogin">
       <h3>Alumnos de Iago González</h3>
-      <p>Escribe tu <b>nombre completo</b> y tu contraseña. Si es tu primera vez, te pediremos el nº de expediente.</p>
+      <p>Aprendizaje interactivo, retos semanales, seguimiento de resultados.</p>
       <input class="gate-input txt" id="logNombre" type="text" placeholder="Nombre y apellidos" autocomplete="off" autocapitalize="words" spellcheck="false">
       <input class="gate-input" id="logPass" type="password" placeholder="Contraseña" autocomplete="off" autocapitalize="off" spellcheck="false">
       <label class="gate-remember"><input type="checkbox" id="logRecordar" checked> Recordar en este dispositivo</label>
@@ -1059,15 +1062,14 @@ body.intro.cards-in .medallero{animation:cardIn .5s ease forwards}
       <div class="gate-err" id="alumnoLoginErr"></div>
       <button class="gate-linkbtn gate-linkbtn2" onclick="abrirReset()">¿Olvidaste tu contraseña?</button>
       <div class="gate-alt">
-        <div class="gate-q" style="text-align:center;font-size:14px">¿No eres alumno/a de Iago?</div>
-        <button class="gate-secondary" id="btnInvitado" style="margin-top:8px;font-weight:800" onclick="abrirInvitado()">Acceder como invitado ▾</button>
+        <button class="gate-invitado" id="btnInvitado" onclick="abrirInvitado()">Acceder como invitado ▾</button>
         <div id="gatePass" style="display:none">
           <p class="gate-mini" style="text-align:center;margin-top:12px">Como invitado tienes el <b>90%</b> de las funciones y puedes practicar libremente.</p>
           <input class="gate-input" id="gateInput" type="password" placeholder="Contraseña del aula" autocomplete="off" autocapitalize="off" spellcheck="false">
+          <div class="gate-help" style="margin-top:8px;text-align:center">¿No tienes la contraseña? Pídesela a cualquier profesor de Lenguaje Musical del CMUS A Coruña.</div>
           <label class="gate-remember"><input type="checkbox" id="gateRemember"> Recordar en este dispositivo</label>
           <button class="gate-go" onclick="submitGate()">Entrar como invitado</button>
           <div class="gate-err" id="gateErr"></div>
-          <div class="gate-help">¿No tienes la contraseña? Pídesela a cualquier profesor de Lenguaje Musical del CMUS A Coruña.</div>
         </div>
       </div>
     </div>
