@@ -293,6 +293,9 @@ if(window.Sentry && !/^(localhost|127\.0\.0\.1)$/.test(location.hostname)){
   .gate-puerta{width:100%;margin-top:10px;background:rgba(127,127,127,.08);border:1.5px solid var(--line);color:var(--ink);
     border-radius:11px;padding:14px;font-size:15px;font-weight:900;letter-spacing:.04em;cursor:pointer;transition:background .15s,border-color .15s,box-shadow .15s}
   .gate-puerta:hover,.gate-puerta.on{border-color:var(--gold1);background:rgba(212,175,55,.10)}
+  .gate-puerta{transition:background .25s,border-color .25s,box-shadow .35s,transform .25s}
+  .gate-puerta:active{transform:scale(.985)}
+  .gate-puerta.on{box-shadow:0 0 0 3px rgba(127,127,127,.06),0 8px 26px rgba(0,0,0,.25)}
   #alumnoForm{margin-top:12px}
   #gatePass{margin-top:4px}
   #alumnoLogin .gate-input:first-of-type{margin-top:0}
@@ -1278,15 +1281,36 @@ function mostrarPanel(id){
     const el=document.getElementById(p); if(el) el.style.display=(p===id)?'':'none';
   });
 }
+// 11-sep-2026: despliegue/pliegue suave (altura + opacidad + deslizamiento), sin saltos
+function plegable(el, on){
+  if(!el) return;
+  const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(el._anim){ try{ el._anim.cancel(); }catch(e){} el._anim=null; }
+  if(reduce || !el.animate){ el.style.display = on ? '' : 'none'; return; }
+  const ease='cubic-bezier(.22,1,.36,1)';
+  if(on){
+    if(el.style.display!=='none' && !el._closing) return;
+    el._closing=false; el.style.display=''; el.style.overflow='hidden';
+    const h=el.scrollHeight;
+    el._anim=el.animate([{height:'0px',opacity:0,transform:'translateY(-10px)'},{height:h+'px',opacity:1,transform:'translateY(0)'}],{duration:460,easing:ease});
+    el._anim.onfinish=()=>{ el.style.overflow=''; el._anim=null; };
+  } else {
+    if(el.style.display==='none') return;
+    el._closing=true; el.style.overflow='hidden';
+    const h=el.offsetHeight;
+    el._anim=el.animate([{height:h+'px',opacity:1,transform:'translateY(0)'},{height:'0px',opacity:0,transform:'translateY(-10px)'}],{duration:340,easing:ease});
+    el._anim.onfinish=()=>{ el.style.display='none'; el.style.overflow=''; el._anim=null; el._closing=false; };
+  }
+}
 function abrirAlumno(abrir){
   mostrarPanel('alumnoLogin');
   const f=document.getElementById('alumnoForm'), b=document.getElementById('btnAlumno');
-  const on = (abrir===undefined) ? (f.style.display==='none') : !!abrir;
-  f.style.display = on ? '' : 'none';
+  const on = (abrir===undefined) ? (f.style.display==='none' || f._closing) : !!abrir;
+  plegable(f, on);
   if(b){ b.textContent = on ? 'Soy alumno de Iago ▴' : 'Soy alumno de Iago ▾'; b.classList.toggle('on',on); }
   if(on){
     const g=document.getElementById('gatePass'), bi=document.getElementById('btnInvitado');
-    if(g) g.style.display='none'; if(bi){ bi.textContent='Acceder como invitado ▾'; bi.classList.remove('on'); }
+    plegable(g, false); if(bi){ bi.textContent='Acceder como invitado ▾'; bi.classList.remove('on'); }
     setTimeout(()=>{ try{ const n=document.getElementById('logNombre'), p=document.getElementById('logPass'); (n.value? p:n).focus(); }catch(e){} }, 60);
   }
 }
@@ -1319,10 +1343,10 @@ function abrirPrimeraVez(nombre, pass){
 function abrirInvitado(abrir){
   mostrarPanel('alumnoLogin');
   const g=document.getElementById('gatePass'), b=document.getElementById('btnInvitado');
-  const on = (abrir===undefined) ? (g.style.display==='none') : !!abrir;
-  g.style.display = on ? '' : 'none';
+  const on = (abrir===undefined) ? (g.style.display==='none' || g._closing) : !!abrir;
+  plegable(g, on);
   if(b){ b.textContent = on ? 'Acceder como invitado ▴' : 'Acceder como invitado ▾'; b.classList.toggle('on',on); }
-  if(on){ const f=document.getElementById('alumnoForm'), ba=document.getElementById('btnAlumno'); if(f) f.style.display='none'; if(ba){ ba.textContent='Soy alumno de Iago ▾'; ba.classList.remove('on'); } }
+  if(on){ const f=document.getElementById('alumnoForm'), ba=document.getElementById('btnAlumno'); plegable(f, false); if(ba){ ba.textContent='Soy alumno de Iago ▾'; ba.classList.remove('on'); } }
   if(on) setTimeout(()=>{ try{ const i=document.getElementById('gateInput'); i.focus(); i.scrollIntoView({block:'center',behavior:'smooth'}); }catch(e){} }, 60);
 }
 
