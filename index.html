@@ -1282,36 +1282,38 @@ function mostrarPanel(id){
   });
 }
 // 11-sep-2026: despliegue/pliegue suave (altura + opacidad + deslizamiento), sin saltos
-function plegable(el, on){
+function plegable(el, on, after){
   if(!el) return;
   const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   if(el._anim){ try{ el._anim.cancel(); }catch(e){} el._anim=null; }
-  if(reduce || !el.animate){ el.style.display = on ? '' : 'none'; return; }
+  if(reduce || !el.animate){ el.style.display = on ? '' : 'none'; if(on && after) after(); return; }
   const ease='cubic-bezier(.22,1,.36,1)';
   if(on){
-    if(el.style.display!=='none' && !el._closing) return;
+    if(el.style.display!=='none' && !el._closing){ if(after) after(); return; }
     el._closing=false; el.style.display=''; el.style.overflow='hidden';
-    const h=el.scrollHeight;
-    el._anim=el.animate([{height:'0px',opacity:0,transform:'translateY(-10px)'},{height:h+'px',opacity:1,transform:'translateY(0)'}],{duration:460,easing:ease});
-    el._anim.onfinish=()=>{ el.style.overflow=''; el._anim=null; };
+    const cs=getComputedStyle(el), mt=cs.marginTop, mb=cs.marginBottom;
+    const h=el.getBoundingClientRect().height;
+    el._anim=el.animate([{height:'0px',marginTop:'0px',marginBottom:'0px',opacity:0,transform:'translateY(-8px)'},{height:h+'px',marginTop:mt,marginBottom:mb,opacity:1,transform:'translateY(0)'}],{duration:480,easing:ease,fill:'forwards'});
+    el._anim.onfinish=()=>{ const an=el._anim; el.style.overflow=''; el._anim=null; try{ an.cancel(); }catch(e){} if(after) after(); };
   } else {
     if(el.style.display==='none') return;
     el._closing=true; el.style.overflow='hidden';
-    const h=el.offsetHeight;
-    el._anim=el.animate([{height:h+'px',opacity:1,transform:'translateY(0)'},{height:'0px',opacity:0,transform:'translateY(-10px)'}],{duration:340,easing:ease});
-    el._anim.onfinish=()=>{ el.style.display='none'; el.style.overflow=''; el._anim=null; el._closing=false; };
+    try{ if(document.activeElement && el.contains(document.activeElement)) document.activeElement.blur(); }catch(e){}
+    const cs=getComputedStyle(el), mt=cs.marginTop, mb=cs.marginBottom;
+    const h=el.getBoundingClientRect().height;
+    el._anim=el.animate([{height:h+'px',marginTop:mt,marginBottom:mb,opacity:1,transform:'translateY(0)'},{height:'0px',marginTop:'0px',marginBottom:'0px',opacity:0,transform:'translateY(-8px)'}],{duration:360,easing:ease,fill:'forwards'});
+    el._anim.onfinish=()=>{ const an=el._anim; el.style.display='none'; el.style.overflow=''; el._anim=null; el._closing=false; try{ an.cancel(); }catch(e){} };
   }
 }
 function abrirAlumno(abrir){
   mostrarPanel('alumnoLogin');
   const f=document.getElementById('alumnoForm'), b=document.getElementById('btnAlumno');
   const on = (abrir===undefined) ? (f.style.display==='none' || f._closing) : !!abrir;
-  plegable(f, on);
+  plegable(f, on, ()=>{ try{ const n=document.getElementById('logNombre'), p=document.getElementById('logPass'); (n.value? p:n).focus({preventScroll:true}); }catch(e){} });
   if(b){ b.textContent = on ? 'Soy alumno de Iago ▴' : 'Soy alumno de Iago ▾'; b.classList.toggle('on',on); }
   if(on){
     const g=document.getElementById('gatePass'), bi=document.getElementById('btnInvitado');
     plegable(g, false); if(bi){ bi.textContent='Acceder como invitado ▾'; bi.classList.remove('on'); }
-    setTimeout(()=>{ try{ const n=document.getElementById('logNombre'), p=document.getElementById('logPass'); (n.value? p:n).focus(); }catch(e){} }, 60);
   }
 }
 function abrirLogin(){
@@ -1320,7 +1322,6 @@ function abrirLogin(){
   const n=document.getElementById('logNombre'), p=document.getElementById('logPass'), r=document.getElementById('logRecordar');
   if(s && s.recordar){ if(s.nombre) n.value=s.nombre; if(r) r.checked=true; }   // FP5: ya no se pre-rellena la contraseña (no se guarda)
   mostrarPanel('alumnoLogin');
-  setTimeout(()=>{ try{ (n.value? p:n).focus(); }catch(e){} }, 60);
 }
 function abrirRegistro(){
   const s=getSession();
@@ -1344,10 +1345,9 @@ function abrirInvitado(abrir){
   mostrarPanel('alumnoLogin');
   const g=document.getElementById('gatePass'), b=document.getElementById('btnInvitado');
   const on = (abrir===undefined) ? (g.style.display==='none' || g._closing) : !!abrir;
-  plegable(g, on);
+  plegable(g, on, ()=>{ try{ document.getElementById('gateInput').focus({preventScroll:true}); }catch(e){} });
   if(b){ b.textContent = on ? 'Acceder como invitado ▴' : 'Acceder como invitado ▾'; b.classList.toggle('on',on); }
   if(on){ const f=document.getElementById('alumnoForm'), ba=document.getElementById('btnAlumno'); plegable(f, false); if(ba){ ba.textContent='Soy alumno de Iago ▾'; ba.classList.remove('on'); } }
-  if(on) setTimeout(()=>{ try{ const i=document.getElementById('gateInput'); i.focus(); i.scrollIntoView({block:'center',behavior:'smooth'}); }catch(e){} }, 60);
 }
 
 /* ===== Bienvenida "Cuenta validada" (tutorial · tarjeta 1) =====
