@@ -5836,7 +5836,8 @@ window.DictadoClase = (function(){
     var M=MODOS[modo()];
     actual=sel; var t=sel.t;
     var q=encodeURIComponent((t.titulo||'')+' '+(t.artistas||''));
-    var fecha=t.release_date?new Date(t.release_date).toLocaleDateString('es-ES',{day:'numeric',month:'short'}):'';
+    // clasico = viene del plan B (lo mas escuchado del genero, no un estreno): no se ensena fecha
+    var fecha=(!t.clasico && t.release_date)?new Date(t.release_date).toLocaleDateString('es-ES',{day:'numeric',month:'short'}):'';
     s.innerHTML='<div class="tz-tira">'+
       '<div class="tz-head"><span class="tz-tit">'+M.tit+'</span><span class="tz-sub">'+M.sub+'</span>'+
       '<span class="tz-chip">'+esc(LABELS[sel.genero]||sel.genero)+'</span></div>'+
@@ -5844,7 +5845,7 @@ window.DictadoClase = (function(){
       '<div class="tz-body"><div class="tz-player" id="tz-player">'+playerHTML(t)+'</div>'+
       '<div class="tz-side"><button type="button" class="tz-dado" id="tz-dado"><span class="d">🎲</span>'+M.dado+'</button>'+
       '<a class="tz-link" target="_blank" rel="noopener" href="https://open.spotify.com/search/'+q+'">'+(t.spotify_track_id?'Abrir en Spotify ↗':'Buscar en Spotify ↗')+'</a></div></div>'+
-      '<div class="tz-meta">'+esc(t.titulo||'')+(t.artistas?' · '+esc(t.artistas):'')+(fecha?' · salió el '+esc(fecha):'')+'</div></div>';
+      '<div class="tz-meta">'+esc(t.titulo||'')+(t.artistas?' · '+esc(t.artistas):'')+(t.clasico?' · todo un clásico':(fecha?' · salió el '+esc(fecha):''))+'</div></div>';
     var d=document.getElementById('tz-dado');
     d.onclick=function(){ d.classList.add('gira'); SND.dado(); setTimeout(function(){ d.classList.remove('gira'); pintar(modo()==='default'?otroGenero():elegirFijo(null, actual&&actual.t&&actual.t.track_id),false); destellos(10); },420); };
     s.querySelectorAll('.tz-btn').forEach(function(b){ b.onclick=function(){ SND.dado(); var tid=b.dataset.t; var f=tid?fijos().filter(function(x){return x.track_id===tid;})[0]:null; pintar(f?{genero:f.grupo,t:f,fijo:true}:elegirFijo(b.dataset.g),false); destellos(8); }; });
