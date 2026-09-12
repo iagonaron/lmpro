@@ -5728,7 +5728,7 @@ window.DictadoClase = (function(){
 </script>
 <!-- /@SORTEO-BTN -->
 <!-- @TEMAZO · «Temazo de la semana» (12-sep-2026) · solo alumnos con cuenta validada (GP).
-     Cuando las tareas de la semana están completas, la tira se despliega bajo los portales
+     Cuando las tareas de la semana están completas, la tira se despliega ENCIMA de los portales
      interactivos (deslizamiento + destellos + sonido) con una canción recién salida de su
      estilo (suite_temazos, elegidas los viernes 9:30). Dado = otro género. Visible 24 h.
      Fuera de eso no existe. Se puede quitar borrando este bloque y la sección #temazo. -->
@@ -5785,7 +5785,7 @@ window.DictadoClase = (function(){
     if(sec) return sec;
     var med=document.getElementById('medallero'); if(!med) return null;
     sec=document.createElement('section'); sec.id='temazo'; sec.setAttribute('aria-label','Temazo de la semana');
-    med.insertAdjacentElement('afterend',sec);
+    med.insertAdjacentElement('beforebegin',sec);   // encima de los portales interactivos
     return sec;
   }
   async function cargar(){
