@@ -5688,5 +5688,36 @@ window.DictadoClase = (function(){
 
 </script>
 <!-- /@MEDALLERO -->
+<!-- @SORTEO-BTN · (12-sep-2026) acceso discreto al sorteo de lecciones (Ev. inicial ritmo entonado).
+     Solo con la cuenta tester validada y solo hasta el 27-sep-2026; después no pinta nada y se puede borrar. -->
+<script>
+(function(){
+  'use strict';
+  var HASTA=new Date('2026-09-27T23:59:59+02:00');
+  function norm(s){ return String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/\s+/g,' ').trim().toLowerCase(); }
+  function ses(){ try{ return JSON.parse(localStorage.getItem('lmpro_session')||'null'); }catch(e){ return null; } }
+  function esTester(){ var s=ses(); return !!(s && s.estado==='validado' && /tester/.test(norm(s.nombre))); }
+  function pintar(){
+    try{
+      var old=document.getElementById('sorteo-btn');
+      if(new Date()>HASTA || !esTester()){ if(old) old.remove(); return; }
+      if(old) return;
+      var host=document.querySelector('.topbar-right'); if(!host) return;
+      var a=document.createElement('a');
+      a.id='sorteo-btn'; a.href='SORTEO/'; a.title='Sorteo de lecciones · Ev. inicial (solo profesor)'; a.setAttribute('aria-label','Sorteo de lecciones');
+      a.style.cssText='display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:999px;border:1px solid rgba(212,175,55,.45);color:#e9c96a;font-size:12px;font-weight:700;text-decoration:none;letter-spacing:.02em;background:rgba(212,175,55,.08);transition:.2s';
+      a.innerHTML='<span style="font-size:15px;line-height:1">🎲</span><span>Sorteo</span>';
+      a.onmouseenter=function(){ a.style.background='rgba(212,175,55,.2)'; a.style.transform='translateY(-1px)'; };
+      a.onmouseleave=function(){ a.style.background='rgba(212,175,55,.08)'; a.style.transform='none'; };
+      var by=host.querySelector('.by');
+      if(by) host.insertBefore(a, by); else host.appendChild(a);
+    }catch(e){}
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', pintar); else pintar();
+  window.addEventListener('storage', pintar);
+  setInterval(pintar, 4000);   // tras entrar con la cuenta en la misma carga
+})();
+</script>
+<!-- /@SORTEO-BTN -->
 </body>
 </html>
