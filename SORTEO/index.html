@@ -399,13 +399,13 @@ function sortear(){
   s.resultado=res; s.enviado=null; guardar(G()); renderAll();
   return res;
 }
-$('#btn-sortear').onclick=function(){ ac(); var r=sortear(); if(r) show(r); };
+$('#btn-sortear').onclick=function(){ ac(); var r=sortear(); if(r){ precargar(r); show(r); } };
 $('#btn-ver').onclick=function(){ var r=S().resultado; if(!r) return; st.res=r; $('#st-grupo').textContent=G().nombre; $('#st-carta').textContent=tituloCarta(); stage.classList.add('on'); fin(); };
 // decisión del alumno en el escenario
 function decidir(banear){
   var r=st.res[st.i]; if(!r||r.decidida) return;
   if(banear && !r.baneada){
-    r.baneada=r.leccion; r.leccion=sacarLeccion([r.baneada]); guardar(G());
+    r.baneada=r.leccion; r.leccion=sacarLeccion([r.baneada]); guardar(G()); precargar([r]);
     // tachado + ✕ gigante y vuelta a girar para el mismo alumno
     st.pausado=true; clearTimeout(st.timer); cancelAnimationFrame(st.raf);
     elImg.classList.remove('urgente'); elImg.classList.add('tachada','decidida'); SND.tachar();
@@ -483,7 +483,7 @@ function pasoAlumno(reintento){
         $('#st-img-nombre').textContent=r.nombre; $('#st-img-lec').textContent='Lección '+r.leccion+(r.baneada?' (2ª tirada)':'');
         $('#st-banear').disabled=!!r.baneada; $('#st-banear').textContent=r.baneada?'✕ Sin baneos':'✕ Banear (1 vez)';
         elImg.classList.remove('decidida','urgente','tachada'); st.lastSeg=null; $('#st-cd').textContent=Math.round(T_IMAGEN/1000); SND.aparece();
-        $('#st-img-marco').innerHTML=imgs.length?imgs.map(function(u){return '<img src="'+u+'" alt="Lección '+r.leccion+'">';}).join(''):'<div style="color:#333;padding:30px;text-align:center">Sin captura de la lección '+r.leccion+' en el libro.</div>';
+        $('#st-img-marco').innerHTML=imgs.length?imgs.map(function(u){return '<img src="'+u+'" alt="Lección '+r.leccion+'" onerror="var el=this;if(!el.dataset.r){el.dataset.r=1;setTimeout(function(){el.src=el.src.split(\'?\')[0]+\'?r=\'+Date.now();},1500);}">';}).join(''):'<div style="color:#333;padding:30px;text-align:center">Sin captura de la lección '+r.leccion+' en el libro.</div>';
         elNombre.classList.remove('in'); elNum.classList.remove('in'); elLbl.classList.remove('in');
         elImg.classList.add('on');
         espera(T_IMAGEN,function(){ decidir(false); });   // sin decisión en 10 s → aceptada
@@ -507,8 +507,8 @@ $('#st-prev').onclick=function(){ st.pausado=false; $('#st-pausa').textContent='
 function cerrar(){ limpiar(); stage.classList.remove('on'); renderAll(); }
 $('#st-salir').onclick=cerrar; $('#st-cerrar').onclick=cerrar;
 document.addEventListener('keydown',function(e){ if(!stage.classList.contains('on')) return; if(e.key===' '){ e.preventDefault(); $('#st-pausa').click(); } if(e.key==='ArrowRight') $('#st-next').click(); if(e.key==='ArrowLeft') $('#st-prev').click(); if(e.key==='Escape') cerrar(); });
-// precarga de imágenes del bombo para que aparezcan al instante
-function precargar(){ try{ poolDisponible().forEach(function(n){ imgsDe(n).forEach(function(u){ var im=new Image(); im.src=u; }); }); }catch(e){} }
+// precarga SOLO de las lecciones que han salido, escalonada (Supabase limita ráfagas: 429)
+function precargar(res){ try{ var urls=[]; (res||S().resultado||[]).forEach(function(r){ imgsDe(r.leccion).forEach(function(u){ urls.push(u); }); }); urls.forEach(function(u,i){ setTimeout(function(){ var im=new Image(); im.src=u; }, 250*i); }); }catch(e){} }
 
 /* ================= envío al Diario ================= */
 async function enviar(btn){
@@ -554,7 +554,7 @@ async function refrescarAlumnos(){
   }catch(e){ console.warn('[sorteo] alumnos',e); }
 }
 
-renderAll(); precargar(); refrescarAlumnos();
+renderAll(); refrescarAlumnos();
 })();
 </script>
 </body>
