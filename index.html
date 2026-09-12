@@ -5884,6 +5884,10 @@ window.DictadoClase = (function(){
     if(_ultimo===st.envio_id && s.classList.contains('tz-on')) return;   // ya pintada
     if(!datos){ datos=await cargar(); if(!datos) return; }
     if(modo()==='default' && !(datos.temazos||[]).length) return;
+    // Sin estilo preferido en su ficha del Diario (genero_musical vacío): NO se le
+    // enseña la tira. Es distinto de «Me gusta de todo» (valor 'todo'), que sí la ve
+    // y le sale un estilo al azar. Así el temazo solo llega a quien ya dijo qué le gusta.
+    if(modo()==='default' && !datos.genero) return;
     _ultimo=st.envio_id;
     pintar(modo()==='default'?elegir(datos.genero):elegirFijo(null), primera);
   }
