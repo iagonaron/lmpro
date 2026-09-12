@@ -553,18 +553,31 @@ async function enviar(btn){
 $('#btn-enviar').onclick=function(){ enviar(this); };
 $('#st-enviar').onclick=function(){ enviar(this); };
 
-/* ================= refresco de alumnos desde Supabase ================= */
+/* ================= grupos y alumnos desde Supabase (curso escolar activo) =================
+   Cada curso se leen los grupos GP del curso escolar más reciente (grupos_canon) y sus
+   alumnos (alumnos_canon): no hay que tocar nada al cambiar de año. La lista de arriba
+   es solo el respaldo si Supabase no responde. */
 async function refrescarAlumnos(){
   if(!sb) return;
   try{
-    var r=await sb.from('alumnos_canon').select('id,nombre,apellidos,orden,grupo_id,activo').in('grupo_id',GRUPOS.map(function(g){return g.id;})).eq('activo',true).order('orden');
-    if(r.error||!r.data||!r.data.length) return;
-    GRUPOS.forEach(function(g){
-      var lst=r.data.filter(function(a){return a.grupo_id===g.id && !/protester|tester/i.test(a.apellidos||'');}).map(function(a){return [a.id,(a.nombre+' '+(a.apellidos||'')).trim()];});
-      if(lst.length) g.alumnos=lst;
-    });
-    renderAlus();
-  }catch(e){ console.warn('[sorteo] alumnos',e); }
+    var ce=await sb.from('cursos_escolares').select('id').order('fecha_inicio',{ascending:false}).limit(1);
+    var cursoEsc=(ce.data&&ce.data[0])?ce.data[0].id:null;
+    var q=sb.from('grupos_canon').select('id,codigo,tipo').eq('tipo','GP').order('codigo');
+    if(cursoEsc) q=q.eq('curso_escolar',cursoEsc);
+    var g=await q; if(g.error||!g.data||!g.data.length) return;
+    var r=await sb.from('alumnos_canon').select('id,nombre,apellidos,orden,grupo_id,activo').in('grupo_id',g.data.map(function(x){return x.id;})).eq('activo',true).order('orden');
+    if(r.error||!r.data) return;
+    var nuevos=g.data.map(function(x){
+      var m=String(x.codigo).match(/^(\d)Gp([A-Z])$/);
+      return {codigo:x.codigo, id:x.id, nombre:m?(m[1]+'º GP '+m[2]):x.codigo,
+        alumnos:r.data.filter(function(a){return a.grupo_id===x.id && !/protester|tester/i.test(a.apellidos||'');}).map(function(a){return [a.id,(a.nombre+' '+(a.apellidos||'')).trim()];})};
+    }).filter(function(x){return x.alumnos.length;});
+    if(!nuevos.length) return;
+    GRUPOS.length=0; nuevos.forEach(function(x){GRUPOS.push(x);});
+    if(gIdx>=GRUPOS.length) gIdx=0;
+    // curso 2Gp… → el bombo/imágenes son de 2º GP; si algún día hay 1º GP, avisar
+    renderAll();
+  }catch(e){ console.warn('[sorteo] grupos',e); }
 }
 
 renderAll(); refrescarAlumnos();
