@@ -69,6 +69,7 @@
   .lec.hecha{border-color:var(--ok)} .lec.hecha .n{opacity:.25} .lec.hecha .x{display:flex;color:var(--ok);text-shadow:0 0 18px rgba(34,197,94,.5)}
   .lec .tag{position:absolute;bottom:5px;left:0;right:0;text-align:center;font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;display:none}
   .lec.ban .tag{display:block;color:var(--ban)} .lec.hecha .tag{display:block;color:var(--ok)}
+  .lec.prof{border-color:var(--hecha)} .lec.prof .n{opacity:.25} .lec.prof .x{display:flex;color:var(--hecha);text-shadow:0 0 18px rgba(59,130,246,.6)} .lec.prof .tag{display:block;color:var(--hecha)}
   .contadores{display:flex;gap:14px;margin:12px 0 0;font-size:12.5px;color:var(--muted2);flex-wrap:wrap}
   .contadores b{color:var(--ink)}
   .dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px;vertical-align:-1px}
@@ -126,6 +127,9 @@
   .st-img .cab{width:100%}
   .st-dec{display:flex;gap:12px;justify-content:center;margin-top:4px}
   .btn.banear{background:linear-gradient(135deg,#f87171,#b91c1c);color:#fff}
+  .btn.banprof{background:linear-gradient(135deg,#60a5fa,#1d4ed8);color:#fff}
+  .st-baneada.prof{color:var(--hecha);text-shadow:0 0 60px rgba(59,130,246,.6)}
+  .st-tacha.prof{background:var(--hecha);box-shadow:0 0 30px rgba(59,130,246,.8)}
   .st-img.decidida .st-dec{visibility:hidden}
   .st-baneada{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:clamp(120px,30vw,360px);font-weight:900;color:var(--ban);text-shadow:0 0 60px rgba(229,72,77,.6);pointer-events:none;animation:lockPop .5s cubic-bezier(.2,1.6,.4,1)}
   .st-img.urgente .cab .cd{color:var(--ban);animation:palpita .5s ease-in-out infinite}
@@ -231,6 +235,7 @@
     <div class="st-dec" id="st-dec">
       <button class="btn ok" id="st-aceptar">✔ Aceptar</button>
       <button class="btn banear" id="st-banear">✕ Banear (1 vez)</button>
+      <button class="btn banprof" id="st-banprof" title="Baneo del profesor: no gasta el baneo del alumno">🎓 Baneo profesor</button>
     </div>
   </div>
   <div class="st-fin" id="st-fin">
@@ -347,7 +352,7 @@ function semanaObjetivo(){
 /* ================= bombo ================= */
 function rangoDe(txt){ var m=String(txt||'').match(/(\d+)\s*[-–—]\s*(\d+)/); var a=m?+m[1]:RANGO_DEF[0], b=m?+m[2]:RANGO_DEF[1]; if(a>b){var t=a;a=b;b=t;} return [Math.max(1,a),Math.min(240,b)]; }
 function poolBase(){ var r=rangoDe(S().rango), out=[]; for(var n=r[0];n<=r[1];n++) if(!EXCLUIDAS[n]) out.push(n); return out; }
-function usadas(){ var s=S(), set={}; (s.resultado||[]).forEach(function(x){ if(x.leccion) set[x.leccion]=1; if(x.baneada) set[x.baneada]=1; }); return set; }
+function usadas(){ var s=S(), set={}; (s.resultado||[]).forEach(function(x){ if(x.leccion) set[x.leccion]=1; if(x.baneada) set[x.baneada]=1; (x.banProf||[]).forEach(function(n){set[n]=1;}); }); return set; }
 function poolDisponible(){ var u=usadas(); return poolBase().filter(function(n){return !u[n];}); }
 function tituloCarta(){ var r=rangoDe(S().rango); return LIBRO+' · lecciones '+r[0]+'–'+r[1]; }
 function sacarLeccion(excluir){ var u=usadas(); (excluir||[]).forEach(function(n){u[n]=1;}); var p=poolBase().filter(function(n){return !u[n];}); if(!p.length) p=poolBase(); return p[Math.floor(Math.random()*p.length)]; }
@@ -359,11 +364,11 @@ function renderTabs(){
 }
 function renderLecs(){
   var s=S(), base=poolBase(), u={}, b={};
-  (s.resultado||[]).forEach(function(x){ if(x.leccion) u[x.leccion]=x.nombre.split(' ')[0]; if(x.baneada) b[x.baneada]=x.nombre.split(' ')[0]; });
+  var bp={}; (s.resultado||[]).forEach(function(x){ if(x.leccion) u[x.leccion]=x.nombre.split(' ')[0]; if(x.baneada) b[x.baneada]=x.nombre.split(' ')[0]; (x.banProf||[]).forEach(function(n){bp[n]='profe';}); });
   $('#rango').value=s.rango; var r=rangoDe(s.rango); $('#rango-txt').textContent=r[0]+' a '+r[1];
   $('#lecs').innerHTML=base.map(function(n){
-    var cls=b[n]?' ban':(u[n]?' hecha':'');
-    return '<div class="lec'+cls+'" data-n="'+n+'" title="'+(b[n]?'baneada por '+b[n]:(u[n]?u[n]:''))+'"><span class="pre">lección</span><span class="n">'+n+'</span><span class="x">'+(b[n]?'✕':'✓')+'</span><span class="tag">'+(b[n]?b[n]:(u[n]||''))+'</span></div>';
+    var cls=b[n]?' ban':(bp[n]?' prof':(u[n]?' hecha':''));
+    return '<div class="lec'+cls+'" data-n="'+n+'" title="'+(b[n]?'baneada por '+b[n]:(bp[n]?'baneada por el profesor':(u[n]?u[n]:'')))+'"><span class="pre">lección</span><span class="n">'+n+'</span><span class="x">'+((b[n]||bp[n])?'✕':'✓')+'</span><span class="tag">'+(b[n]?b[n]:(bp[n]?'profe':(u[n]||'')))+'</span></div>';
   }).join('');
   $('#c-pool').textContent=poolDisponible().length; $('#c-ban').textContent=Object.keys(b).length;
   $('#btn-sortear').disabled=!poolDisponible().length;
@@ -406,15 +411,16 @@ function sortear(){
 $('#btn-sortear').onclick=function(){ ac(); var r=sortear(); if(r){ precargar(r); show(r); } };
 $('#btn-ver').onclick=function(){ var r=S().resultado; if(!r) return; st.res=r; $('#st-grupo').textContent=G().nombre; $('#st-carta').textContent=tituloCarta(); stage.classList.add('on'); fin(); };
 // decisión del alumno en el escenario
-function decidir(banear){
+function decidir(banear,prof){
   var r=st.res[st.i]; if(!r||r.decidida) return;
-  if(banear && !r.baneada){
-    r.baneada=r.leccion; r.leccion=sacarLeccion([r.baneada]); guardar(G()); precargar([r]);
+  if(banear && (prof || !r.baneada)){
+    if(prof){ r.banProf=(r.banProf||[]); r.banProf.push(r.leccion); } else { r.baneada=r.leccion; }
+    r.leccion=sacarLeccion([r.baneada].concat(r.banProf||[])); guardar(G()); precargar([r]);
     // tachado + ✕ gigante y vuelta a girar para el mismo alumno
     st.pausado=true; clearTimeout(st.timer); cancelAnimationFrame(st.raf);
     elImg.classList.remove('urgente'); elImg.classList.add('tachada','decidida'); SND.tachar();
-    var tacha=document.createElement('div'); tacha.className='st-tacha'; $('#st-img-marco').style.position='relative'; $('#st-img-marco').appendChild(tacha);
-    var x=document.createElement('div'); x.className='st-baneada'; x.textContent='✕'; setTimeout(function(){ stage.appendChild(x); },350);
+    var tacha=document.createElement('div'); tacha.className='st-tacha'+(prof?' prof':''); $('#st-img-marco').style.position='relative'; $('#st-img-marco').appendChild(tacha);
+    var x=document.createElement('div'); x.className='st-baneada'+(prof?' prof':''); x.textContent='✕'; setTimeout(function(){ stage.appendChild(x); },350);
     setTimeout(function(){ x.remove(); tacha.remove(); elImg.classList.remove('tachada'); st.pausado=false; pasoAlumno(true); },1700);
     return;
   }
@@ -424,7 +430,8 @@ function decidir(banear){
   setTimeout(function(){ st.pausado=false; $('#st-pausa').textContent='⏸ Pausa'; st.i++; pasoAlumno(); },1400);
 }
 $('#st-aceptar').onclick=function(){ decidir(false); };
-$('#st-banear').onclick=function(){ decidir(true); };
+$('#st-banear').onclick=function(){ decidir(true,false); };
+$('#st-banprof').onclick=function(){ decidir(true,true); };
 
 /* ================= sonidos (Web Audio, sin archivos) ================= */
 var AC=null;
@@ -485,7 +492,7 @@ function pasoAlumno(reintento){
       espera(T_LOCK,function(){
         st.fase='imagen';
         var imgs=imgsDe(r.leccion);
-        $('#st-img-nombre').textContent=r.nombre; $('#st-img-lec').textContent='Lección '+r.leccion+(r.baneada?' (2ª tirada)':'');
+        $('#st-img-nombre').textContent=r.nombre; $('#st-img-lec').textContent='Lección '+r.leccion+((r.baneada||(r.banProf&&r.banProf.length))?' (nueva tirada)':'');
         $('#st-banear').disabled=!!r.baneada; $('#st-banear').textContent=r.baneada?'✕ Sin baneos':'✕ Banear (1 vez)';
         elImg.classList.remove('decidida','urgente','tachada'); st.lastSeg=null; $('#st-cd').textContent=Math.round(T_IMAGEN/1000); SND.aparece();
         $('#st-img-marco').innerHTML=imgs.length?imgs.map(function(u){return '<img src="'+u+'" alt="Lección '+r.leccion+'" onerror="var el=this;if(!el.dataset.r){el.dataset.r=1;setTimeout(function(){el.src=el.src.split(\'?\')[0]+\'?r=\'+Date.now();},1500);}">';}).join(''):'<div style="color:#333;padding:30px;text-align:center">Sin captura de la lección '+r.leccion+' en el libro.</div>';
@@ -527,7 +534,7 @@ async function enviar(btn){
       curso:CURSO, grupo_codigo:g.codigo, grupo_canon_id:g.id, anio:w.anio, semana_iso:w.semana,
       alumno_canon_id:r.id, alumno_nombre:r.nombre, leccion:r.leccion,
       carta:'R5', carta_titulo:tituloCarta(),
-      baneos:{libro:LIBRO,rango:[r0[0],r0[1]],baneada_por_alumno:r.baneada||null},
+      baneos:{libro:LIBRO,rango:[r0[0],r0[1]],baneada_por_alumno:r.baneada||null,baneadas_por_profesor:r.banProf||[]},
       contexto:'ev_inicial', updated_at:new Date().toISOString() }; });
     // los ausentes de hoy no llevan lección: se borran si había algo previo
     var r1=await sb.from('suite_sorteo_lecciones').delete().eq('grupo_codigo',g.codigo).eq('anio',w.anio).eq('semana_iso',w.semana);
