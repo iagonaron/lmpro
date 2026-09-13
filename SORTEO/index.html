@@ -158,6 +158,28 @@
   .st-fin .fila span{overflow:hidden;text-overflow:ellipsis;min-width:0}
   .st-fin .fila b{color:var(--gold-soft);font-size:22px;flex:none}
 
+  /* ---------- ronda de géneros favoritos (antes del sorteo) ---------- */
+  .st-gen{display:none;flex-direction:column;align-items:center;gap:8px;width:min(96vw,1280px)}
+  .st-gen.on{display:flex}
+  .st-gen .quien{font-size:clamp(24px,3.8vw,44px);font-weight:900;margin:0;line-height:1.1}
+  .st-gen .pide{margin:0;font-size:clamp(13px,1.6vw,18px);color:var(--muted)}
+  .st-gen .cuenta{font-size:clamp(12px,1.4vw,15px);color:var(--gold-soft);font-weight:700;min-height:1.3em}
+  .st-gen .familias{display:flex;flex-direction:column;gap:7px;width:100%;margin:4px 0 2px}
+  .st-gen .fam{display:flex;gap:7px;flex-wrap:wrap;justify-content:center}
+  .st-gen .fam-lbl{width:100%;font-size:clamp(9px,1vw,11px);letter-spacing:.2em;text-transform:uppercase;
+    color:var(--gold2);font-weight:700;margin-bottom:-1px;text-align:center}
+  .st-gen .gen{
+    background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:12px;
+    padding:6px 13px;font-size:clamp(13px,1.55vw,19px);font-weight:700;color:var(--ink);
+    display:inline-flex;align-items:center;gap:7px;white-space:nowrap;cursor:pointer;
+    transition:transform .12s,background .15s,border-color .15s;font-family:inherit}
+  .st-gen .gen:hover{background:rgba(255,255,255,.12)}
+  .st-gen .gen.on{background:linear-gradient(135deg,var(--gold1),var(--gold2));color:#160f04;
+    border-color:var(--gold-soft);transform:scale(1.05);box-shadow:0 6px 18px rgba(212,175,55,.35)}
+  .st-gen .gen.todo{border-color:var(--gold2);background:rgba(212,175,55,.12)}
+  .st-gen .gen .e{font-size:1.2em;line-height:1}
+  .st-gen .gen[disabled]{opacity:.32;cursor:not-allowed;transform:none}
+
   /* gate */
   .gate{max-width:520px;margin:60px auto;text-align:center}
   .gate p{color:var(--muted)}
@@ -201,6 +223,7 @@
 
   <div class="acciones">
     <button class="btn primary" id="btn-sortear">🎲 ¡Sortear!</button>
+    <button class="btn ghost" id="btn-generos">🎵 Estilos favoritos</button>
     <button class="btn ghost" id="btn-ver" disabled>📋 Ver reparto</button>
     <button class="btn ok" id="btn-enviar" disabled>📤 Enviar al Diario (semana que viene)</button>
     <button class="btn ghost" id="btn-reset" title="Quita el resultado de este grupo">↺ Limpiar</button>
@@ -244,6 +267,21 @@
     <div class="row" style="justify-content:center;margin-top:10px">
       <button class="btn ok" id="st-enviar">📤 Enviar al Diario (semana que viene)</button>
       <button class="btn ghost" id="st-cerrar">Cerrar</button>
+    </div>
+  </div>
+  <!-- Ronda de géneros favoritos: sale ANTES del sorteo, alumno por alumno. Él dice los
+       estilos que le gustan (hasta 5), se guardan en su ficha y el Temazo de la semana
+       va rotando entre ellos. -->
+  <div class="st-gen" id="st-gen">
+    <p class="quien" id="st-gen-quien">—</p>
+    <p class="pide">¿Qué estilos te gustan? Elige hasta <b>5</b></p>
+    <div class="familias" id="st-gen-fam"></div>
+    <div class="cuenta" id="st-gen-cuenta"></div>
+    <div class="row" style="justify-content:center;margin-top:2px">
+      <button class="btn ok" id="st-gen-next">Siguiente →</button>
+      <button class="btn banear" id="st-gen-novino">🚫 No vino</button>
+      <button class="btn ghost" id="st-gen-atras">← Atrás</button>
+      <button class="btn ghost" id="st-gen-saltar">Saltar al sorteo</button>
     </div>
   </div>
   <div class="st-prog" id="st-prog"></div>
@@ -408,7 +446,8 @@ function sortear(){
   s.resultado=res; s.enviado=null; guardar(G()); renderAll();
   return res;
 }
-$('#btn-sortear').onclick=function(){ ac(); var r=sortear(); if(r){ precargar(r); show(r); } };
+$('#btn-sortear').onclick=function(){ ac(); genRonda(function(){ var r=sortear(); if(r){ precargar(r); show(r); } }); };
+$('#btn-generos').onclick=function(){ ac(); genRonda(null); };
 $('#btn-ver').onclick=function(){ var r=S().resultado; if(!r) return; st.res=r; $('#st-grupo').textContent=G().nombre; $('#st-carta').textContent=tituloCarta(); stage.classList.add('on'); fin(); };
 // decisión del alumno en el escenario
 function decidir(banear,prof){
@@ -522,6 +561,112 @@ $('#st-salir').onclick=cerrar; $('#st-cerrar').onclick=cerrar;
 document.addEventListener('keydown',function(e){ if(!stage.classList.contains('on')) return; if(e.key===' '){ e.preventDefault(); $('#st-pausa').click(); } if(e.key==='ArrowRight') $('#st-next').click(); if(e.key==='ArrowLeft') $('#st-prev').click(); if(e.key==='Escape') cerrar(); });
 // precarga SOLO de las lecciones que han salido, escalonada (Supabase limita ráfagas: 429)
 function precargar(res){ try{ var urls=[]; (res||S().resultado||[]).forEach(function(r){ imgsDe(r.leccion).forEach(function(u){ urls.push(u); }); }); urls.forEach(function(u,i){ setTimeout(function(){ var im=new Image(); im.src=u; }, 250*i); }); }catch(e){} }
+
+
+/* ============ ronda de géneros favoritos (antes del sorteo) ============
+   Por cada alumno del grupo sale su nombre y los 36 estilos. Él dice los que le gustan
+   (hasta 5) y se guardan en su ficha (alumnos_perfil.generos_musicales) para que el
+   «Temazo de la semana» del portal vaya rotando entre ellos. «No vino» lo deja fuera del
+   sorteo de lecciones y le pone «Me gusta de todo», para que no se quede sin temazo. */
+var GEN_MAX = 5;
+var GEN_FAMILIAS = [
+  ['Pop y rock', [['pop','Pop','✨'],['pop-espanol','Pop español','🇪🇸'],['rock','Rock','🎸'],['indie','Indie','🎧'],['metal','Metal','🤘'],['punk','Punk','🧷']]],
+  ['Urbano', [['hiphop','Hip hop','🎤'],['rap-espanol','Rap español','🎙️'],['trap','Trap','💎'],['reggaeton','Reggaetón','🔥']]],
+  ['Latino', [['latin-pop','Pop latino','🌴'],['bachata','Bachata','💃'],['salsa','Salsa','🕺'],['cumbia','Cumbia','🪗'],['flamenco','Flamenco','👏']]],
+  ['Negra y raíces', [['rnb','R&B','💜'],['soul','Soul','🎺'],['funk','Funk','🕶️'],['jazz','Jazz','🎷'],['blues','Blues','🌧️'],['country','Country','🤠'],['folk','Folk','🪕'],['galega','Música gallega','🍀'],['afrobeats','Afrobeats','🥁'],['dancehall','Dancehall','🌞'],['kizomba','Kizomba','🌍']]],
+  ['Electrónica', [['electronica','Electrónica / EDM','🎛️'],['house','House','🏠'],['techno','Techno','⚡'],['dnb','Drum & bass','🌀'],['lofi','Lo-fi','🌙']]],
+  ['Asia', [['kpop','K-pop','🇰🇷'],['jpop-anime','J-pop / anime','🌸']]],
+  ['Pantalla y clásica', [['bso','Bandas sonoras','🎬'],['clasica','Clásica','🎻'],['musicales','Musicales','🎭']]]
+];
+var gr = { alus:[], i:0, sel:[], activa:false, alSalir:null };
+var elGen = $('#st-gen');
+
+function genPintaRejilla(){
+  var h = '<div class="fam"><button type="button" class="gen todo" data-g="todo"><span class="e">🎲</span>Me gusta de todo</button></div>';
+  GEN_FAMILIAS.forEach(function(f){
+    h += '<div class="fam"><span class="fam-lbl">' + f[0] + '</span>' + f[1].map(function(g){
+      return '<button type="button" class="gen" data-g="' + g[0] + '"><span class="e">' + g[2] + '</span>' + esc(g[1]) + '</button>';
+    }).join('') + '</div>';
+  });
+  $('#st-gen-fam').innerHTML = h;
+  Array.prototype.forEach.call($('#st-gen-fam').querySelectorAll('.gen'), function(b){
+    b.onclick = function(){ genToggle(b.dataset.g); };
+  });
+}
+function genToggle(k){
+  var i = gr.sel.indexOf(k);
+  if(i >= 0) gr.sel.splice(i, 1);
+  else {
+    if(k === 'todo') gr.sel = ['todo'];
+    else { gr.sel = gr.sel.filter(function(x){ return x !== 'todo'; }); if(gr.sel.length >= GEN_MAX) return; gr.sel.push(k); }
+  }
+  try{ SND.aparece(); }catch(e){}
+  genPintaSel();
+}
+function genPintaSel(){
+  var lleno = gr.sel.length >= GEN_MAX && gr.sel.indexOf('todo') < 0;
+  Array.prototype.forEach.call($('#st-gen-fam').querySelectorAll('.gen'), function(b){
+    var on = gr.sel.indexOf(b.dataset.g) >= 0;
+    b.classList.toggle('on', on);
+    b.disabled = !on && lleno && b.dataset.g !== 'todo';
+  });
+  $('#st-gen-cuenta').textContent = gr.sel.length ? (gr.sel.length + (gr.sel.length === 1 ? ' elegido' : ' elegidos') + (lleno ? ' · ya son 5' : '')) : 'Sin elegir todavía';
+}
+function genPaso(){
+  if(gr.i >= gr.alus.length) return genTerminar();
+  var a = gr.alus[gr.i];
+  gr.sel = (a.gen || []).slice();
+  $('#st-gen-quien').textContent = a.nombre;
+  elProg.textContent = (gr.i + 1) + ' / ' + gr.alus.length;
+  $('#st-gen-atras').disabled = gr.i === 0;
+  genPintaSel();
+}
+function genGuardar(a){
+  a.gen = gr.sel.slice();
+  try{ localStorage.setItem('lm_gen_' + a.id, JSON.stringify(a.gen)); }catch(e){}
+  if(sb && a.gen.length){
+    sb.rpc('suite_generos_guardar', { p_alumno_canon_id: a.id, p_generos: a.gen })
+      .then(function(r){ if(r.error) console.log('[generos]', a.nombre, r.error.message); })
+      .catch(function(e){ console.log('[generos]', String(e)); });
+  }
+}
+function genTerminar(){
+  gr.activa = false;
+  elGen.classList.remove('on');
+  var n = gr.alus.filter(function(a){ return (a.gen || []).length; }).length;
+  if(n) aviso('🎵 Estilos guardados: ' + n + ' de ' + gr.alus.length + '. Ya salen en su ficha del Diario.', 'ok');
+  renderAll();
+  if(gr.alSalir) { var f = gr.alSalir; gr.alSalir = null; f(); }
+}
+function genRonda(despues){
+  var g = G(), s = S();
+  if(!g || !g.alumnos || !g.alumnos.length){ aviso('Este grupo no tiene alumnos.', 'err'); return; }
+  gr.alus = g.alumnos.map(function(a){
+    var prev = null;
+    try{ prev = JSON.parse(localStorage.getItem('lm_gen_' + a[0]) || 'null'); }catch(e){}
+    return { id:a[0], nombre:a[1], gen: prev || [] };
+  });
+  gr.i = 0; gr.activa = true; gr.alSalir = despues || null;
+  genPintaRejilla();
+  limpiar();
+  $('#st-grupo').textContent = g.nombre;
+  $('#st-carta').textContent = 'Estilos favoritos';
+  stage.classList.add('on');
+  elGen.classList.add('on');
+  genPaso();
+}
+$('#st-gen-next').onclick = function(){ genGuardar(gr.alus[gr.i]); gr.i++; genPaso(); };
+$('#st-gen-atras').onclick = function(){ if(gr.i > 0){ genGuardar(gr.alus[gr.i]); gr.i--; genPaso(); } };
+$('#st-gen-saltar').onclick = function(){ genGuardar(gr.alus[gr.i]); gr.i = gr.alus.length; genPaso(); };
+
+$('#st-gen-novino').onclick = function(){
+  var a = gr.alus[gr.i], s = S();
+  gr.sel = ['todo'];                 // sin él delante, le vale de todo
+  genGuardar(a);
+  s.fuera[a.id] = true;              // y queda fuera del sorteo de lecciones
+  guardar(G());
+  gr.i++; genPaso();
+};
 
 /* ================= envío al Diario ================= */
 async function enviar(btn){
