@@ -2324,7 +2324,18 @@ function showEnig(kind){
         try{
           var _sem=(rl.notificaciones||[]).filter(function(o){ var pj=(o&&o.payload_json)||{}; return pj.tareas_semana && pj.semana_envio_id && (((Date.parse(o.creado_en)||0)+7*864e5)>Date.now()); });
           var _fm=fichasPorNumeroDe(rl.notificaciones);
-          var _est={activa:_sem.length>0, completa:_sem.length>0 && _sem.every(function(o){ return tareasHechaCore(o,_fm); }), envio_id:_sem.length?_sem[0].payload_json.semana_envio_id:null};
+          // (13-sep-2026, Iago) El temazo hay que GANÁRSELO: si la semana se publicó sin
+          // ninguna tarea dentro, no cuenta como «completada» y la tira no aparece.
+          var _hayTareas=function(o){ var pj=(o&&o.payload_json)||{};
+            return !!((pj.quiz && pj.quiz.envio_id)
+                   || (pj.lecciones||[]).filter(function(l){ return l && l.n!=null; }).length
+                   || (pj.lecciones_imgs||[]).length
+                   || pj.otras
+                   || (pj.ficha && pj.ficha.numero!=null)); };
+          var _conTareas=_sem.filter(_hayTareas);
+          var _est={activa:_sem.length>0,
+                    completa:_conTareas.length>0 && _conTareas.every(function(o){ return tareasHechaCore(o,_fm); }),
+                    envio_id:_conTareas.length?_conTareas[0].payload_json.semana_envio_id:(_sem.length?_sem[0].payload_json.semana_envio_id:null)};
           document.dispatchEvent(new CustomEvent('lm-semana-estado',{detail:_est}));
         }catch(e){}
       }
