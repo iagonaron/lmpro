@@ -179,6 +179,13 @@
   .st-gen .gen.todo{border-color:var(--gold2);background:rgba(212,175,55,.12)}
   .st-gen .gen .e{font-size:1.2em;line-height:1}
   .st-gen .gen[disabled]{opacity:.32;cursor:not-allowed;transform:none}
+  .st-gen .otro-caja{display:flex;gap:7px;align-items:center;justify-content:center;flex-wrap:wrap;margin-top:2px}
+  .st-gen .otro-caja input{
+    background:rgba(255,255,255,.07);border:1px solid var(--line);border-radius:12px;color:var(--ink);
+    padding:7px 13px;font-size:clamp(13px,1.5vw,18px);font-weight:700;font-family:inherit;
+    width:min(70vw,340px);text-align:center}
+  .st-gen .otro-caja input:focus{outline:none;border-color:var(--gold2);background:rgba(255,255,255,.12)}
+  .st-gen .otro-caja input::placeholder{color:var(--muted2);font-weight:400}
 
   /* gate */
   .gate{max-width:520px;margin:60px auto;text-align:center}
@@ -276,6 +283,11 @@
     <p class="quien" id="st-gen-quien">—</p>
     <p class="pide">¿Qué estilos te gustan? Elige hasta <b>5</b></p>
     <div class="familias" id="st-gen-fam"></div>
+    <div class="otro-caja">
+      <button type="button" class="gen todo" id="st-gen-otro-btn"><span class="e">✏️</span>Otro…</button>
+      <input id="st-gen-otro" type="text" maxlength="60" hidden
+             placeholder="¿cuál? escríbelo: drill, shoegaze, bolero, ska…" autocomplete="off">
+    </div>
     <div class="cuenta" id="st-gen-cuenta"></div>
     <div class="row" style="justify-content:center;margin-top:2px">
       <button class="btn ok" id="st-gen-next">Siguiente →</button>
@@ -616,6 +628,10 @@ function genPaso(){
   if(gr.i >= gr.alus.length) return genTerminar();
   var a = gr.alus[gr.i];
   gr.sel = (a.gen || []).slice();
+  var inp = $('#st-gen-otro');
+  inp.value = a.otro || '';
+  inp.hidden = !a.otro;
+  $('#st-gen-otro-btn').classList.toggle('on', !!a.otro);
   $('#st-gen-quien').textContent = a.nombre;
   elProg.textContent = (gr.i + 1) + ' / ' + gr.alus.length;
   $('#st-gen-atras').disabled = gr.i === 0;
@@ -623,9 +639,10 @@ function genPaso(){
 }
 function genGuardar(a){
   a.gen = gr.sel.slice();
-  try{ localStorage.setItem('lm_gen_' + a.id, JSON.stringify(a.gen)); }catch(e){}
-  if(sb && a.gen.length){
-    sb.rpc('suite_generos_guardar', { p_alumno_canon_id: a.id, p_generos: a.gen })
+  a.otro = ($('#st-gen-otro').value || '').trim().slice(0, 60);
+  try{ localStorage.setItem('lm_gen_' + a.id, JSON.stringify({ g:a.gen, o:a.otro })); }catch(e){}
+  if(sb && (a.gen.length || a.otro)){
+    sb.rpc('suite_generos_guardar', { p_alumno_canon_id: a.id, p_generos: a.gen, p_otro: a.otro || null })
       .then(function(r){ if(r.error) console.log('[generos]', a.nombre, r.error.message); })
       .catch(function(e){ console.log('[generos]', String(e)); });
   }
@@ -644,7 +661,8 @@ function genRonda(despues){
   gr.alus = g.alumnos.map(function(a){
     var prev = null;
     try{ prev = JSON.parse(localStorage.getItem('lm_gen_' + a[0]) || 'null'); }catch(e){}
-    return { id:a[0], nombre:a[1], gen: prev || [] };
+    if(Array.isArray(prev)) prev = { g:prev, o:'' };          // formato anterior
+    return { id:a[0], nombre:a[1], gen:(prev && prev.g) || [], otro:(prev && prev.o) || '' };
   });
   gr.i = 0; gr.activa = true; gr.alSalir = despues || null;
   genPintaRejilla();
@@ -655,6 +673,13 @@ function genRonda(despues){
   elGen.classList.add('on');
   genPaso();
 }
+$('#st-gen-otro-btn').onclick = function(){
+  var inp = $('#st-gen-otro');
+  inp.hidden = !inp.hidden;
+  this.classList.toggle('on', !inp.hidden);
+  if(!inp.hidden) inp.focus(); else inp.value = '';
+};
+$('#st-gen-otro').onkeydown = function(e){ if(e.key === 'Enter'){ e.preventDefault(); $('#st-gen-next').click(); } };
 $('#st-gen-next').onclick = function(){ genGuardar(gr.alus[gr.i]); gr.i++; genPaso(); };
 $('#st-gen-atras').onclick = function(){ if(gr.i > 0){ genGuardar(gr.alus[gr.i]); gr.i--; genPaso(); } };
 $('#st-gen-saltar').onclick = function(){ genGuardar(gr.alus[gr.i]); gr.i = gr.alus.length; genPaso(); };
@@ -662,6 +687,7 @@ $('#st-gen-saltar').onclick = function(){ genGuardar(gr.alus[gr.i]); gr.i = gr.a
 $('#st-gen-novino').onclick = function(){
   var a = gr.alus[gr.i], s = S();
   gr.sel = ['todo'];                 // sin él delante, le vale de todo
+  $('#st-gen-otro').value = '';
   genGuardar(a);
   s.fuera[a.id] = true;              // y queda fuera del sorteo de lecciones
   guardar(G());
