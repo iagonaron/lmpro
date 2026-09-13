@@ -5740,6 +5740,25 @@ window.DictadoClase = (function(){
     border:1px solid rgba(123,176,255,.55);box-shadow:0 14px 40px rgba(47,124,240,.35),inset 0 0 0 1px rgba(255,255,255,.06);
     color:#eaf4ff;opacity:0;transform:translateY(-14px);transition:opacity .7s ease .35s,transform .7s ease .35s}
   #temazo.tz-on .tz-tira{opacity:1;transform:none}
+  /* 13-sep-2026 · nebulosa: dos capas de manchas de luz que se mueven muy despacio,
+     para que el azul tenga vidilla sin distraer de la canción. */
+  .tz-neb{position:absolute;inset:-30%;pointer-events:none;mix-blend-mode:screen;filter:blur(22px);opacity:.7;
+    background:radial-gradient(38% 46% at 22% 30%,rgba(125,205,255,.55),transparent 62%),
+               radial-gradient(32% 40% at 74% 26%,rgba(90,140,255,.5),transparent 65%),
+               radial-gradient(46% 54% at 56% 80%,rgba(165,125,255,.42),transparent 66%);
+    animation:tzNeb 34s ease-in-out infinite alternate}
+  .tz-neb.b{filter:blur(30px);opacity:.45;animation:tzNeb2 52s ease-in-out infinite alternate;
+    background:radial-gradient(30% 36% at 86% 64%,rgba(150,240,255,.45),transparent 64%),
+               radial-gradient(40% 44% at 12% 76%,rgba(70,120,230,.45),transparent 66%),
+               radial-gradient(26% 30% at 46% 12%,rgba(220,235,255,.35),transparent 62%)}
+  @keyframes tzNeb{0%{transform:translate3d(-3%,-2%,0) scale(1.05) rotate(0deg)}
+                   50%{transform:translate3d(2%,3%,0) scale(1.16) rotate(4deg)}
+                   100%{transform:translate3d(-2%,1%,0) scale(1.08) rotate(-3deg)}}
+  @keyframes tzNeb2{0%{transform:translate3d(3%,2%,0) scale(1.12) rotate(2deg)}
+                    50%{transform:translate3d(-3%,-3%,0) scale(1.02) rotate(-5deg)}
+                    100%{transform:translate3d(1%,-1%,0) scale(1.14) rotate(3deg)}}
+  .tz-tira > *:not(.tz-neb){position:relative;z-index:1}
+  @media (prefers-reduced-motion:reduce){ .tz-neb{animation:none} }
   .tz-tira::before{content:"";position:absolute;inset:-40%;background:conic-gradient(from 0deg,transparent 0 70%,rgba(255,255,255,.35) 78%,transparent 86%);
     animation:tzSweep 2.2s ease-out .5s 1;pointer-events:none;opacity:0}
   @keyframes tzSweep{0%{opacity:0;transform:rotate(0deg)}15%{opacity:1}100%{opacity:0;transform:rotate(360deg)}}
@@ -5771,7 +5790,7 @@ window.DictadoClase = (function(){
 <script>
 (function(){
   'use strict';
-  var LABELS={todo:'Me gusta de todo',pop:'Pop','pop-espanol':'Pop español',rock:'Rock',indie:'Indie',hiphop:'Hip hop','rap-espanol':'Rap español',trap:'Trap',reggaeton:'Reggaetón','latin-pop':'Pop latino',bachata:'Bachata',salsa:'Salsa',cumbia:'Cumbia',kizomba:'Kizomba',afrobeats:'Afrobeats',dancehall:'Dancehall',rnb:'R&B',soul:'Soul',funk:'Funk',jazz:'Jazz',blues:'Blues',country:'Country',folk:'Folk',flamenco:'Flamenco',galega:'Música gallega / celta',electronica:'Electrónica / EDM',house:'House',techno:'Techno',dnb:'Drum & bass',lofi:'Lo-fi',kpop:'K-pop','jpop-anime':'J-pop / anime',metal:'Metal',punk:'Punk',bso:'Bandas sonoras',clasica:'Clásica',musicales:'Musicales',
+  var LABELS={todo:'Me gusta de todo',pop:'Pop',rock:'Rock',indie:'Indie',hiphop:'Rap / Hip hop',trap:'Trap',reggaeton:'Reggaetón','latin-pop':'Pop latino',bachata:'Bachata',salsa:'Salsa',cumbia:'Cumbia',kizomba:'Kizomba',afrobeats:'Afrobeats',dancehall:'Dancehall',rnb:'R&B',soul:'Soul',funk:'Funk',jazz:'Jazz',blues:'Blues',country:'Country',folk:'Folk',flamenco:'Flamenco',galega:'Música gallega / celta',electronica:'Electrónica / EDM',house:'House',techno:'Techno',dnb:'Drum & bass',lofi:'Lo-fi',kpop:'K-pop','jpop-anime':'J-pop / anime',metal:'Metal',punk:'Punk',bso:'Bandas sonoras',clasica:'Clásica',musicales:'Musicales',
     // estilos afrolatinos de la unidad 7 y jamaicanos, como estilos propios (13-sep-2026)
     merengue:'Merengue',bolero:'Bolero',samba:'Samba','bossa-nova':'Bossa nova',mambo:'Mambo',
     reggae:'Reggae',ska:'Ska',tango:'Tango',
@@ -5864,7 +5883,7 @@ window.DictadoClase = (function(){
     var q=encodeURIComponent((t.titulo||'')+' '+(t.artistas||''));
     // clasico = viene del plan B (lo mas escuchado del genero, no un estreno): no se ensena fecha
     var fecha=(!t.clasico && t.release_date)?new Date(t.release_date).toLocaleDateString('es-ES',{day:'numeric',month:'short'}):'';
-    s.innerHTML='<div class="tz-tira">'+
+    s.innerHTML='<div class="tz-tira"><div class="tz-neb" aria-hidden="true"></div><div class="tz-neb b" aria-hidden="true"></div>'+
       '<div class="tz-head"><span class="tz-tit">'+M.tit+'</span><span class="tz-sub">'+M.sub+'</span>'+
       '<span class="tz-chip">'+esc(LABELS[sel.genero]||sel.genero)+'</span></div>'+
       botonesHTML(sel)+
@@ -5909,6 +5928,9 @@ window.DictadoClase = (function(){
     if(Date.now()-ts>HORAS*3600e3){ s.classList.remove('tz-on'); return; }
     if(_ultimo===st.envio_id && s.classList.contains('tz-on')) return;   // ya pintada
     if(!datos){ datos=await cargar(); if(!datos) return; }
+    // interruptor general desde Supabase (app_config.temazo_visible): mientras esté
+    // apagado no se pinta la tira a nadie, tampoco a la cuenta tester.
+    if(datos.visible===false){ s.classList.remove('tz-on'); return; }
     if(modo()==='default' && !(datos.temazos||[]).length) return;
     // Sin estilo preferido en su ficha del Diario (genero_musical vacío): NO se le
     // enseña la tira. Es distinto de «Me gusta de todo» (valor 'todo'), que sí la ve
