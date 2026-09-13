@@ -5795,11 +5795,32 @@ window.DictadoClase = (function(){
     try{ var r=await c.rpc('suite_temazo_semana',{p_cuenta_id:id}); if(r.error||!r.data||!r.data.ok) return null; return r.data; }catch(e){ return null; }
   }
   function porGenero(){ var m={}; (datos.temazos||[]).forEach(function(t){ (m[t.genero]=m[t.genero]||[]).push(t); }); return m; }
+  // El alumno puede tener VARIOS estilos favoritos (hasta 5, recogidos en clase con la
+  // pantalla del sorteo). Se elige entre ellos con tres criterios, por orden:
+  //   1. que no sea el estilo que le tocó la semana pasada (se guarda en su navegador),
+  //   2. que esa semana el estilo tenga un ESTRENO y no un clásico — así le llega lo nuevo,
+  //   3. a suertes entre los que queden.
+  function misGeneros(){
+    var g=(datos&&datos.generos)||[];
+    if(!g.length && datos && datos.genero) g=[datos.genero];
+    return g.filter(function(x){ return x; });
+  }
+  function ultimoGenero(){ try{ return localStorage.getItem('lm_temazo_gen_'+cuenta())||''; }catch(e){ return ''; } }
+  function recordarGenero(g){ try{ localStorage.setItem('lm_temazo_gen_'+cuenta(), g||''); }catch(e){} }
   function elegir(genero, evitar){
     var m=porGenero(), keys=Object.keys(m); if(!keys.length) return null;
-    var g=genero; if(!g||g==='todo'||!m[g]) g=keys[Math.floor(Math.random()*keys.length)];
-    var lista=m[g].filter(function(t){ return !evitar||t.track_id!==evitar; });
-    var t=lista.length?lista[0]:m[g][0];
+    var mios=misGeneros().filter(function(x){ return x!=='todo' && m[x]; });
+    if(!mios.length) mios=keys.slice();                      // «Me gusta de todo» o sin ficha: cualquiera
+    var prev=ultimoGenero();
+    var sinRepe=mios.filter(function(x){ return x!==prev; });
+    if(sinRepe.length) mios=sinRepe;                          // 1· no repetir el de la semana pasada
+    var conEstreno=mios.filter(function(x){ return (m[x]||[]).some(function(t){ return !t.clasico; }); });
+    if(conEstreno.length) mios=conEstreno;                    // 2· preferir el estilo que tenga novedad
+    var g=genero && genero!=='todo' && m[genero] && misGeneros().length<=1 ? genero
+                                                             : mios[Math.floor(Math.random()*mios.length)];
+    var lista=(m[g]||[]).filter(function(t){ return !evitar||t.track_id!==evitar; });
+    var t=lista.length?lista[0]:(m[g]||[])[0];
+    if(t) recordarGenero(g);
     return t?{genero:g,t:t}:null;
   }
   function otroGenero(){
@@ -5889,7 +5910,7 @@ window.DictadoClase = (function(){
     // Sin estilo preferido en su ficha del Diario (genero_musical vacío): NO se le
     // enseña la tira. Es distinto de «Me gusta de todo» (valor 'todo'), que sí la ve
     // y le sale un estilo al azar. Así el temazo solo llega a quien ya dijo qué le gusta.
-    if(modo()==='default' && !datos.genero) return;
+    if(modo()==='default' && !datos.genero && !(datos.generos||[]).length) return;
     _ultimo=st.envio_id;
     pintar(modo()==='default'?elegir(datos.genero):elegirFijo(null), primera);
   }
