@@ -159,7 +159,20 @@
   .st-fin .fila b{color:var(--gold-soft);font-size:22px;flex:none}
 
   /* ---------- ronda de géneros favoritos (antes del sorteo) ---------- */
-  .stage.fase-gen{justify-content:flex-start;padding-top:52px}
+  /* 13-sep-2026 · la ronda de estilos tiene que caber entera; si no cabe (pantalla
+     pequeña o proyector), que se pueda rodar con la rueda en vez de quedar cortada. */
+  .stage.fase-gen{justify-content:flex-start;padding:14px 16px 28px;overflow-y:auto;-webkit-overflow-scrolling:touch}
+  .stage.fase-gen .st-gen{margin-top:0}
+  .stage.fase-gen .st-gen .quien{font-size:clamp(19px,2.4vw,30px)}
+  .stage.fase-gen .st-gen .pide{font-size:clamp(12px,1.3vw,15px)}
+  .stage.fase-gen .st-gen .familias{gap:4px}
+  .stage.fase-gen .st-gen .fam{gap:5px}
+  .stage.fase-gen .st-gen .gen{padding:6px 11px;font-size:clamp(12px,1.25vw,15px);border-radius:11px}
+  .stage.fase-gen .st-gen .fam-lbl{margin-top:2px}
+  /* 13-sep-2026 · el nombre y el numerazo de la ruleta estaban solo transparentes en
+     esta fase, no ocultos, y empujaban toda la rejilla hacia abajo. */
+  .stage.fase-gen .st-nombre,.stage.fase-gen .st-num,.stage.fase-gen .st-lbl{display:none}
+  .st-gen .fam .otro-caja{margin:0}
   .st-gen{display:none;flex-direction:column;align-items:center;gap:6px;width:min(96vw,1320px)}
   .st-gen.on{display:flex}
   .st-gen .quien{font-size:clamp(22px,3.2vw,38px);font-weight:900;margin:0;line-height:1.05}
@@ -603,6 +616,9 @@ function genPintaRejilla(){
     }).join('') + '</div>';
   });
   $('#st-gen-fam').innerHTML = h;
+  // «Otro…» va en la misma fila que «Me gusta de todo», a su derecha (Iago, 13-sep-2026).
+  try{ var _prim = $('#st-gen-fam').querySelector('.fam'), _caja = document.querySelector('.otro-caja');
+       if(_prim && _caja) _prim.appendChild(_caja); }catch(e){}
   Array.prototype.forEach.call($('#st-gen-fam').querySelectorAll('.gen'), function(b){
     b.onclick = function(){ genToggle(b.dataset.g); };
   });
