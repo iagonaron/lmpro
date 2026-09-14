@@ -5958,5 +5958,32 @@ window.DictadoClase = (function(){
 })();
 </script>
 <!-- /@TEMAZO -->
+<script>
+/* (Iago 14-sep-2026) Igual que en el portal de elemental: al volver del quiz o
+   de la ficha con el botón atrás, Safari restaura la página de su caché y las
+   tareas seguían apareciendo sin hacer. Y con #tareas en la URL se abre la
+   campana sola, que es a donde mandan RITMO at home y TEORÍA at home al acabar. */
+(function(){
+  try{
+    window.addEventListener('pageshow', function(e){ if(e && e.persisted) location.reload(); });
+    function abrirTareasSiToca(){
+      if((location.hash||'').indexOf('tareas')===-1) return;
+      var t0=Date.now();
+      var iv=setInterval(function(){
+        try{
+          if(window.AluCampana && typeof AluCampana.abrir==='function'){
+            var b=document.getElementById('alu-campana-btn');
+            if(b && b.style.display!=='none'){ clearInterval(iv); AluCampana.abrir(); return; }
+          }
+        }catch(e){}
+        if(Date.now()-t0>12000) clearInterval(iv);
+      },350);
+    }
+    if(document.readyState==='complete') abrirTareasSiToca();
+    else window.addEventListener('load', abrirTareasSiToca);
+    window.addEventListener('hashchange', abrirTareasSiToca);
+  }catch(e){}
+})();
+</script>
 </body>
 </html>
