@@ -3473,7 +3473,7 @@ function showEnig(kind){
           +'<div class="mr-card"><div class="mr-card-tit">Tu evolución durante el curso</div>'+svgEvolucion(ss)
             +'<div class="mr-leyenda">'+ORDEN_AP.map(function(ap){ return '<span class="mr-chip" style="--apc:'+APARTADOS[ap].color+'">'+esc(APARTADOS[ap].label)+'</span>'; }).join('')+'</div></div>'
           +bloqueUltimas(ss)
-        : '<div class="mr-card"><div class="mr-vacio">Todavía no hay notas registradas en tu cuenta. En cuanto entregues fichas y hagas ejercicios de la Suite, tus resultados aparecerán aquí. ✨</div></div>')
+        : '<div class="mr-card"><div class="mr-vacio">Todavía no hay notas registradas en tu cuenta. En cuanto empieces a tener notas de clase, de tareas y de exámenes, verás aquí tus resultados. ✨</div></div>')
       +'<div class="mr-nota-pie">Todo proviene del Diario del profesor: la media de clase, las notas de examen y las Notas del trimestre (boletín). El radar y la evolución muestran tus notas reales.</div>';
 
     Array.prototype.forEach.call(body.querySelectorAll('.mr-chip-trim'),function(b){
