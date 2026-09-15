@@ -1493,7 +1493,8 @@ async function alumnoRegistrar(){
     err.textContent = r.error==='nombre_corto' ? 'Escribe tu nombre y apellidos.'
                     : r.error==='pass_corta'   ? 'La contraseña debe tener al menos 4 caracteres.'
                     : (r.error==='falta_consentimiento'||r.error==='falta_version') ? 'Falta el consentimiento. Marca las dos casillas.'
-                    : 'No se pudo crear la cuenta. Revisa tu conexión e inténtalo de nuevo.';
+                    : r.error==='expediente_corto' ? 'Escribe el nº de expediente completo.'
+                    : ((r.error==='red'||r.error==='excepcion') ? 'No se pudo crear la cuenta. Revisa tu conexión e inténtalo de nuevo.' : 'No se pudo crear la cuenta ('+String(r.error||'error')+'). Si se repite, avisa a Iago.');
     return;
   }
   const recordar=document.getElementById('regRecordar').checked;
@@ -1527,7 +1528,7 @@ async function alumnoEntrar(){
     err.textContent = r.error==='pass' ? 'Contraseña incorrecta. Si no la recuerdas, usa «¿Olvidaste tu contraseña?».'
                     : r.error==='nombre_corto' ? 'Escribe tu nombre y apellidos.'
                     : r.error==='credenciales' ? 'Nombre o contraseña incorrectos. Si no la recuerdas, usa «¿Olvidaste tu contraseña?».'
-                    : 'No se pudo entrar. Revisa tu conexión e inténtalo de nuevo.';
+                    : ((r.error==='red'||r.error==='excepcion') ? 'No se pudo entrar. Revisa tu conexión e inténtalo de nuevo.' : 'No se pudo entrar ('+String(r.error||'error')+'). Si se repite, avisa a Iago.');
     return;
   }
   const recordar=document.getElementById('logRecordar').checked;
@@ -1916,7 +1917,7 @@ function showEnig(kind){
     return n;
   }
   function fichasPorNumeroDe(arr){
-    var m={}; try{ (arr||[]).forEach(function(o){ var pj=(o&&o.payload_json)||{}; if(pj.ficha_id && pj.numero!=null) m[String(pj.numero)]=o; }); }catch(e){}
+    var m={}; try{ (arr||[]).forEach(function(o){ var pj=(o&&o.payload_json)||{}; if(pj.ficha_id && pj.numero!=null){ var k8=String(pj.numero), p8=m[k8]; if(!p8 || (Date.parse(o.creado_en||'')||0) >= (Date.parse(p8.creado_en||'')||0)) m[k8]=o; } }); }catch(e){}
     return m;
   }
   // FASE 6.9 · fichas ya ENTREGADAS: se pintan en gris con ✓ verde y sin
@@ -2160,6 +2161,18 @@ function showEnig(kind){
     // Iago 3-jul: si la captura ya no existe (barrido de 14 dias, o se quito
     // del Diario despues de enviarla), el <img> roto pintaba un recuadro
     // blanco enorme con una "?". Lo sustituimos por un aviso claro.
+    // marcar al VER la primera captura (una sola vez) y refrescar lista + campana por detrás.
+    // (Iago 15-sep-2026) Antes se marcaba al ABRIR aunque no cargara ninguna imagen.
+    var _marcado=false;
+    function marcarAlVer(){
+      if(_marcado || parteHecha(envio,parte)) return; _marcado=true;
+      marcarParte(envio,parte).then(function(ok){
+        if(!ok){ // segundo intento a los 4 s; si tampoco, el chip se queda sin ✓ y el alumno puede marcarlo a mano
+          setTimeout(function(){ marcarParte(envio,parte).then(function(){ try{ render(); }catch(e){} try{ refrescar(); }catch(e){} }); }, 4000);
+          return; }
+        try{ render(); }catch(e){} try{ refrescar(); }catch(e){} });
+    }
+    if(!imgs || !imgs.length) marcarAlVer();   // sin capturas no hay nada que esperar
     Array.prototype.forEach.call(ov.querySelectorAll('img'), function(im){
       function caida(){
         var av=document.createElement('div');
@@ -2172,19 +2185,13 @@ function showEnig(kind){
         im.replaceWith(av);
       }
       im.onerror=caida;
+      im.onload=function(){ try{ marcarAlVer(); }catch(e){} };   // (15-sep) solo cuenta como estudiada si se vio al menos una captura
       if(im.complete && im.naturalWidth===0) caida();
+      else if(im.complete && im.naturalWidth>0){ try{ marcarAlVer(); }catch(e){} }
     });
     document.getElementById('tsVisorCerrar').onclick=function(){ ov.remove(); };
     var c2=document.getElementById('tsVisorCerrar2');
     if(c2) c2.onclick=function(){ ov.remove(); };
-    // marcar al ABRIR (una sola vez) y refrescar lista + campana por detrás
-    if(!parteHecha(envio,parte)){
-      marcarParte(envio,parte).then(function(ok){
-        if(!ok){ // segundo intento a los 4 s; si tampoco, el chip se queda sin ✓ y el alumno puede marcarlo a mano
-          setTimeout(function(){ marcarParte(envio,parte).then(function(){ try{ render(); }catch(e){} try{ refrescar(); }catch(e){} }); }, 4000);
-          return; }
-        try{ render(); }catch(e){} try{ refrescar(); }catch(e){} });
-    }
   }
   // (Iago 15-sep-2026) Antes se daba por hecha la parte ANTES de hablar con
   // Supabase y se devolvía true pasara lo que pasara: si el guardado fallaba,
@@ -2419,7 +2426,14 @@ function showEnig(kind){
     body.innerHTML='<div class="alu-vacio">Cargando…</div>';
     var id=cuentaId(); if(!id){ body.innerHTML='<div class="alu-vacio">Inicia sesión para ver tus notificaciones.</div>'; return; }
     var r=await rpc('suite_alumno_notif_listar',{p_cuenta_id:id});
-    var list=(r && r.ok && Array.isArray(r.notificaciones))?r.notificaciones:[];
+    // (Iago 15-sep-2026) Antes un fallo de red se pintaba igual que «no hay
+    // nada»: el alumno se iba convencido de que esta semana no tenía tareas.
+    if(!(r && r.ok && Array.isArray(r.notificaciones))){
+      body.innerHTML='<div class="alu-vacio">No he podido cargar tus notificaciones ('+String((r&&r.error)||'sin conexión').replace(/</g,'&lt;')+').<br><button type="button" id="aluReintentar" class="ts-marcar" style="margin-top:10px">↻ Reintentar</button></div>';
+      var rb=body.querySelector('#aluReintentar'); if(rb) rb.onclick=function(){ render(); };
+      return;
+    }
+    var list=r.notificaciones;
     try{ if(window.__LM_HAM__){ var _h=window.__LM_HAM__.tarea(); if(_h) list=[_h].concat(list); } }catch(e){}
     anotarPlazos(list); _plazosPedidos=true;   // (5-ago) fechas para la píldora de la campana
     // 3-jul (Iago): la notificación de 'cuenta validada' del servidor es
@@ -2461,7 +2475,9 @@ function showEnig(kind){
     var _fichaPorNumero={}, _fichasEnMarco={};
     list.forEach(function(o){
       var pj=o.payload_json||{};
-      if(pj.ficha_id && pj.numero!=null) _fichaPorNumero[String(pj.numero)]=o;
+      // (15-sep) si dos notificaciones de ficha comparten número (reenvío), manda la MÁS RECIENTE
+      if(pj.ficha_id && pj.numero!=null){ var k9=String(pj.numero), prev9=_fichaPorNumero[k9];
+        if(!prev9 || (Date.parse(o.creado_en||'')||0) >= (Date.parse(prev9.creado_en||'')||0)) _fichaPorNumero[k9]=o; }
     });
     list.forEach(function(o){
       var pj=o.payload_json||{};
@@ -2547,14 +2563,16 @@ function showEnig(kind){
               return '<button class="ts-lec-chip abre" data-envio="'+esc(se)+'" data-parte="'+esc(parte)+'" data-lbl="'+esc(lbl)+'" data-imgs="'+esc(JSON.stringify(l.imgs))+'">📖 '+lbl+'</button>';
             return '<button class="ts-lec-chip marca" data-envio="'+esc(se)+'" data-parte="'+esc(parte)+'">☐ '+lbl+'</button>';
           }).join('');
-          var lecPend=!caduSem && !lecList.every(function(l){ return parteHecha(se,(l.n!=null)?('leccion_'+l.n):'lecciones'); });
+          // (15-sep) igual que en elemental: con todas estudiadas el bloque entero se atenúa con su ✓
+          var lecTodas=lecList.every(function(l){ return parteHecha(se,(l.n!=null)?('leccion_'+l.n):'lecciones'); });
+          var lecPend=!caduSem && !lecTodas;
           var lecPartes=lecList.map(function(l){ return (l.n!=null)?('leccion_'+l.n):'lecciones'; });
-          partes+='<div class="ts-parte ts-lecciones">'
+          partes+='<div class="ts-parte ts-lecciones'+(lecTodas?' ts-hecha':'')+'">'
             +(lecPend?'<span class="ts-dot" aria-hidden="true"></span>':'')
-            +'<div class="ts-parte-tit">📚 Lecciones de ritmo</div>'
+            +'<div class="ts-parte-tit">📚 Lecciones de ritmo'+(lecTodas?' <b class="ts-check">✓</b>':'')+'</div>'
             +((tj.carta_ritmo&&tj.carta_ritmo.id)?('<div class="ts-carta-row">Lecciones de la carta <b>'+esc(tj.carta_ritmo.id)+'</b>'+(tj.carta_ritmo.nombre?(' · '+esc(tj.carta_ritmo.nombre)):'')+' <a class="ts-ver-intro" target="_blank" rel="noopener" href="https://iagonaron.github.io/ritmopro/?introCarta='+encodeURIComponent(tj.carta_ritmo.id)+'">▸ Ver explicación interactiva</a></div>'):'')
             +'<div class="ts-lec-chips">'+chips+'</div>'
-            +'<div class="ts-parte-sub">Pulsa la lección para verla.</div>'
+            +'<div class="ts-parte-sub">'+(lecTodas?'Ya las estudiaste. Púlsalas para repasarlas.':'Pulsa la lección para verla.')+'</div>'
             +(lecPend?'<button class="ts-marcar ts-lec-todas" data-envio="'+esc(se)+'" data-partes="'+esc(JSON.stringify(lecPartes))+'">✓ Marcar como estudiadas</button>':'')
             +'</div>';
         }
@@ -5956,9 +5974,10 @@ window.DictadoClase = (function(){
     if(id && esTester()){ st={activa:true,completa:true,envio_id:TESTER_ID}; }
     if(!id||!st||!st.activa||!st.completa||!st.envio_id){ s.classList.remove('tz-on'); return; }
     var k=clave(st.envio_id), ts=0; try{ ts=parseInt(localStorage.getItem(k)||'0',10)||0; }catch(e){}
-    var primera=false;
-    if(!ts){ ts=Date.now(); primera=true; try{ localStorage.setItem(k,String(ts)); }catch(e){} }
-    if(Date.now()-ts>HORAS*3600e3){ s.classList.remove('tz-on'); return; }
+    // (Iago 15-sep-2026) el reloj de 24 h se sella SOLO cuando la tira se pinta de verdad
+    // (antes se sellaba aquí, antes de las comprobaciones: si faltaba el estilo, la red
+    // o el interruptor, las 24 h corrían sin que el alumno la hubiera visto nunca).
+    if(ts && Date.now()-ts>HORAS*3600e3){ s.classList.remove('tz-on'); return; }
     if(_ultimo===st.envio_id && s.classList.contains('tz-on')) return;   // ya pintada
     if(!datos){ datos=await cargar(); if(!datos) return; }
     // interruptor general desde Supabase (app_config.temazo_visible): mientras esté
@@ -5969,6 +5988,8 @@ window.DictadoClase = (function(){
     // enseña la tira. Es distinto de «Me gusta de todo» (valor 'todo'), que sí la ve
     // y le sale un estilo al azar. Así el temazo solo llega a quien ya dijo qué le gusta.
     if(modo()==='default' && !datos.genero && !(datos.generos||[]).length) return;
+    var primera=false;
+    if(!ts){ ts=Date.now(); primera=true; try{ localStorage.setItem(k,String(ts)); }catch(e){} }
     _ultimo=st.envio_id;
     pintar(modo()==='default'?elegir(datos.genero):elegirFijo(null), primera);
   }
