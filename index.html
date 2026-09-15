@@ -12,7 +12,7 @@ if(window.Sentry && !/^(localhost|127\.0\.0\.1)$/.test(location.hostname)){
     initialScope:{ tags:{ app:'gp' } },
     ignoreErrors:['ResizeObserver loop','Non-Error promise rejection','AbortError','Load failed','NetworkError','Failed to fetch'],
     beforeSend:function(ev){
-      try{ var s=JSON.parse(localStorage.getItem('lmpro_session')||'null'); if(s&&s.id){ ev.tags=ev.tags||{}; ev.tags.cuenta=String(s.id); ev.tags.estado=String(s.estado||''); } }catch(e){}
+      try{ var s=(JSON.parse(localStorage.getItem('lmpro_session')||'null')||window.__LM_SES||null); if(s&&s.id){ ev.tags=ev.tags||{}; ev.tags.cuenta=String(s.id); ev.tags.estado=String(s.estado||''); } }catch(e){}
       if(ev.user) delete ev.user;
       return ev;
     }
@@ -1262,9 +1262,13 @@ function sbClient(){
   if(!_sbClient && window.supabase){ _sbClient=window.supabase.createClient(SB_URL, SB_ANON); }
   return _sbClient;
 }
-function getSession(){ try{ return JSON.parse(localStorage.getItem(SESSION_KEY)||'null'); }catch(e){ return null; } }
-function setSession(s){ try{ localStorage.setItem(SESSION_KEY, JSON.stringify(s)); }catch(e){} }
-function clearSession(){ try{ localStorage.removeItem(SESSION_KEY); }catch(e){} }
+// (Iago 15-sep-2026) Si el navegador bloquea el almacenamiento (iPad con cookies
+// restringidas, modo privado), la sesión vive en memoria mientras dure la pestaña y
+// se avisa al alumno: antes entraba «bien» pero sin campana, sin bienvenida y sin
+// resultados, y al recargar volvía al principio sin ninguna explicación.
+function getSession(){ try{ var v=JSON.parse(localStorage.getItem(SESSION_KEY)||'null'); if(v) return v; }catch(e){} return window.__LM_SES||null; }
+function setSession(s){ window.__LM_SES=s; try{ localStorage.setItem(SESSION_KEY, JSON.stringify(s)); if(!localStorage.getItem(SESSION_KEY)) throw new Error('sin_storage'); }catch(e){ try{ setTimeout(function(){ if(typeof toast==='function') toast('Tu navegador bloquea el almacenamiento: al cerrar la pestaña tendrás que entrar de nuevo.'); }, 1200); }catch(e2){} } }
+function clearSession(){ window.__LM_SES=null; try{ localStorage.removeItem(SESSION_KEY); }catch(e){} }
 async function callRPC(fn, args){
   try{
     const c=sbClient();
@@ -1500,7 +1504,7 @@ async function alumnoRegistrar(){
   const recordar=document.getElementById('regRecordar').checked;
   // Diario 52: si el expediente casó con la lista precargada, la cuenta ya viene validada → entrar directamente.
   if(r.estado==='validado'){
-    try{ localStorage.setItem('alu_tour_visto', String(Date.now())); }catch(e){}
+    try{ localStorage.setItem('alu_tour_visto_pro', String(Date.now())); }catch(e){}
     setSession({ id:r.id, nombre:r.nombre||nombre, estado:'validado', alumno_canon_id:r.alumno_canon_id, grupo_id:r.grupo_id, recordar });
     unlockGateAlumno(()=>mostrarBienvenidaValidada(r.nombre||nombre, true));
     return;
@@ -1587,6 +1591,7 @@ function unlockGate(){
     document.body.classList.remove('locked');
     g.style.display='none';
     if(window.AluCampana) window.AluCampana.refrescar();
+    if(window.AluTour && window.AluTour.autoSiProcede) window.AluTour.autoSiProcede();   // (15-sep) el tour también en el primer login, no solo en la visita siguiente
     if(window.__LM_MEDALLERO_REARRANCAR__) window.__LM_MEDALLERO_REARRANCAR__();
   }, 1100);
 }
@@ -1665,7 +1670,7 @@ function submitGate(){
         if(r && r.ok && r.estado==='validado'){
           const reciénValidado = (s.estado && s.estado!=='validado');
           setSession(Object.assign({}, s, { estado:'validado', alumno_canon_id:r.alumno_canon_id, grupo_id:r.grupo_id }));
-          if(reciénValidado){ try{ localStorage.setItem('alu_tour_visto', String(Date.now())); }catch(e){} }
+          if(reciénValidado){ try{ localStorage.setItem('alu_tour_visto_pro', String(Date.now())); }catch(e){} }
           if(isMobileDevice()){   // 11-sep-2026: en móvil, aviso también al alumno validado antes de entrar
             showMobileNotice('alumno', reciénValidado ? ()=>mostrarBienvenidaValidada(s.nombre) : null);
             mostrarGate();
@@ -1677,6 +1682,14 @@ function submitGate(){
         }
         if(r && r.ok && r.estado){
           setSession(Object.assign({}, s, { estado:r.estado, alumno_canon_id:r.alumno_canon_id, grupo_id:r.grupo_id }));
+        }
+        // (Iago 15-sep-2026) Sin respuesta del servidor (red del centro filtrando, caída
+        // pasajera): si este dispositivo ya tenía la cuenta VALIDADA, entra igual con lo
+        // guardado y se avisa; antes se le pedía la contraseña y fallaba con «revisa tu conexión».
+        if(r && !r.ok && (r.error==='red' || r.error==='excepcion') && s.estado==='validado' && !isMobileDevice()){
+          saltarGate();
+          try{ setTimeout(function(){ if(typeof toast==='function') toast('Sin conexión con el servidor: has entrado con tu sesión guardada, pero las tareas pueden no cargar hasta que vuelva.'); }, 1500); }catch(e){}
+          return;
         }
         // FP5: la cuenta ya no existe en el servidor (p. ej. purga de curso nuevo)
         // → se limpia la sesión y el dispositivo vuelve al estado de invitado.
@@ -1787,7 +1800,7 @@ function showEnig(kind){
   var POLL=30000;
   var _cli=null,_timer=null,_nuevoT=null,_cdTimer=null;
   function cli(){ if(!_cli && window.supabase){ _cli=window.supabase.createClient(SB_URL,SB_ANON); } return _cli; }
-  function ses(){ try{ return JSON.parse(localStorage.getItem('lmpro_session')||'null'); }catch(e){ return null; } }
+  function ses(){ try{ return (JSON.parse(localStorage.getItem('lmpro_session')||'null')||window.__LM_SES||null); }catch(e){ return window.__LM_SES||null; } }
   function cuentaId(){ var s=ses(); return (s && s.id && s.estado==='validado') ? s.id : null; }
   function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
   function fecha(iso){ if(!iso) return ''; var d=new Date(iso); if(isNaN(d)) return String(iso).slice(0,10); return ('0'+d.getDate()).slice(-2)+'/'+('0'+(d.getMonth()+1)).slice(-2); }
@@ -1850,9 +1863,14 @@ function showEnig(kind){
   // completado, lecciones estudiadas (abiertas o «marcar como estudiadas»),
   // «otras» marcadas y ficha entregada (o con su plazo ya vencido) — o cuando
   // la semana caducó (7 días).
+  /* (Iago 15-sep-2026) «una semana» = mismo día y hora 7 días después EN HORA LOCAL
+     (con 7×24 h exactas, en los cambios de hora de marzo/octubre la semana se cerraba
+     una hora antes o después de lo debido). */
+  function semanaDespues(iso){ var t=Date.parse(iso||''); if(!t) return 0; var d=new Date(t); d.setDate(d.getDate()+7); return d.getTime(); }
+  function semanaAntes(iso){ var t=Date.parse(iso||''); if(!t) return 0; var d=new Date(t); d.setDate(d.getDate()-7); return d.getTime(); }
   function tareasHechaCore(o, fichasPorNumero){
     var pj=(o&&o.payload_json)||{}, se=pj.semana_envio_id;
-    if(((Date.parse(o.creado_en)||0) + 7*864e5) <= Date.now()) return true;   // semana caducada
+    if(semanaDespues(o.creado_en) <= Date.now()) return true;   // semana caducada
     if(pj.quiz && pj.quiz.envio_id && !_quizHechos[pj.quiz.envio_id]) return false;
     var lecs=(pj.lecciones||[]).filter(function(l){ return l && l.n!=null; });
     if(lecs.length){ if(!lecs.every(function(l){ return parteHecha(se,'leccion_'+l.n); })) return false; }
@@ -1884,7 +1902,7 @@ function showEnig(kind){
     (list||[]).forEach(function(o){                       // 1ª pasada: semanas
       var pj=(o&&o.payload_json)||{};
       if(!(pj.tareas_semana && pj.semana_envio_id)) return;
-      if(((Date.parse(o.creado_en)||0)+7*864e5)<=Date.now()) return;   // semana caducada
+      if(semanaDespues(o.creado_en)<=Date.now()) return;   // semana caducada
       var se=pj.semana_envio_id;
       if(pj.quiz && pj.quiz.envio_id && !_quizHechos[pj.quiz.envio_id]) n++;
       var lecs=(pj.lecciones||[]).filter(function(l){ return l && l.n!=null; });
@@ -1905,7 +1923,7 @@ function showEnig(kind){
       if(pj.tareas_semana && pj.semana_envio_id) return;
       if(pj.ficha_id && pj.fin_normal){
         if(enMarco[String(o.id)]) return;                                    // ya contada en su marco
-        if(((Date.parse(pj.fin_normal)||0) - 7*864e5) > Date.now()) return;  // aún no activada
+        if(semanaAntes(pj.fin_normal) > Date.now()) return;  // aún no activada
         if(_entregadas[pj.ficha_id]) return;
         if(plazoFinDe(pj)) return;                                           // caducada
         n++; return;
@@ -2346,7 +2364,7 @@ function showEnig(kind){
         n=contarPendientes(rl.notificaciones);
         // (12-sep-2026) estado de las «Tareas de la semana» para el Temazo de la semana (@TEMAZO)
         try{
-          var _sem=(rl.notificaciones||[]).filter(function(o){ var pj=(o&&o.payload_json)||{}; return pj.tareas_semana && pj.semana_envio_id && (((Date.parse(o.creado_en)||0)+7*864e5)>Date.now()); });
+          var _sem=(rl.notificaciones||[]).filter(function(o){ var pj=(o&&o.payload_json)||{}; return pj.tareas_semana && pj.semana_envio_id && (semanaDespues(o.creado_en)>Date.now()); });
           var _fm=fichasPorNumeroDe(rl.notificaciones);
           // (13-sep-2026, Iago) El temazo hay que GANÁRSELO: si la semana se publicó sin
           // ninguna tarea dentro, no cuenta como «completada» y la tira no aparece.
@@ -2463,7 +2481,7 @@ function showEnig(kind){
     var esTareas=function(o){ return !!(o.payload_json && o.payload_json.tareas_semana && o.payload_json.semana_envio_id); };
     // Iago jul-2026: la tarea vive UNA semana (viernes 19:00 → viernes 18:59).
     // Pasado ese plazo se da por hecha aunque no se haya abierto todo.
-    var tareaCaducada=function(o){ return ((Date.parse(o.creado_en)||0) + 7*864e5) <= Date.now(); };
+    var tareaCaducada=function(o){ return semanaDespues(o.creado_en) <= Date.now(); };
     // (6-ago Iago) el peso lo llevan FICHA + QUIZ + OTRAS; las lecciones son
     // recordatorio (núcleo compartido con el descuento del globo en refrescar).
     var tareasHecha=function(o){
@@ -2495,7 +2513,7 @@ function showEnig(kind){
     var fichaOculta=function(o){
       var pj=o.payload_json||{}, f=pj.ficha_id||'';
       if(!f || _entregadas[f] || !pj.fin_normal) return false;
-      var act=(Date.parse(pj.fin_normal)||0) - 7*864e5;   // activa = entrega − 7 días
+      var act=semanaAntes(pj.fin_normal);   // activa = entrega − 7 días
       return act > Date.now();
     };
     var enTiempoExtra=function(o){
@@ -2994,7 +3012,7 @@ function showEnig(kind){
   var SB_ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndvaXB0a3lyeGticG52aW95cGl0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0NzI2ODYsImV4cCI6MjA5MjA0ODY4Nn0.B2nKgj5rD0rkdLeMIrd9KgD8lUPWsBT4Y7aCtmnvbjA';
   var _cli=null;
   function cli(){ if(!_cli && window.supabase){ _cli=window.supabase.createClient(SB_URL,SB_ANON); } return _cli; }
-  function ses(){ try{ return JSON.parse(localStorage.getItem('lmpro_session')||'null'); }catch(e){ return null; } }
+  function ses(){ try{ return (JSON.parse(localStorage.getItem('lmpro_session')||'null')||window.__LM_SES||null); }catch(e){ return window.__LM_SES||null; } }
   function cuentaId(){ var s=ses(); return (s && s.id && s.estado==='validado') ? s.id : null; }
   function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
 
@@ -3615,7 +3633,7 @@ function showEnig(kind){
 (function(){
   'use strict';
   function esc(x){return String(x==null?'':x).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
-  function cuentaId(){ try{ var s=JSON.parse(localStorage.getItem('lmpro_session')||'null'); return (s&&s.id&&s.estado==='validado')?s.id:null; }catch(e){ return null; } }
+  function cuentaId(){ try{ var s=(JSON.parse(localStorage.getItem('lmpro_session')||'null')||window.__LM_SES||null); return (s&&s.id&&s.estado==='validado')?s.id:null; }catch(e){ var s2=window.__LM_SES; return (s2&&s2.id&&s2.estado==='validado')?s2.id:null; } }
   var _cliMsj=null;
   function cli(){
     if(_cliMsj || !window.supabase) return _cliMsj;
@@ -3710,7 +3728,7 @@ function showEnig(kind){
   'use strict';
   var K='alu_tour_visto_pro';
   function cuentaValidada(){
-    try{ var s=JSON.parse(localStorage.getItem('lmpro_session')||'null'); return !!(s&&s.id&&s.estado==='validado'); }catch(e){ return false; }
+    try{ var s=(JSON.parse(localStorage.getItem('lmpro_session')||'null')||window.__LM_SES||null); return !!(s&&s.id&&s.estado==='validado'); }catch(e){ return false; }
   }
   var PASOS=[
     { sel:'#medallero:not([hidden])', tit:'🏅 Tus portales interactivos', txt:'Cada tema del curso tiene su portal interactivo. Aquí los tienes todos: al principio están en sombra y se van encendiendo a medida que avanzamos. Cuando se abra uno, te aviso.' },
@@ -5370,7 +5388,7 @@ window.DictadoClase = (function(){
 
   /* ── sesión ───────────────────────────────────────────────────────── */
   function ses(){
-    try{ return JSON.parse(localStorage.getItem('lmpro_session')||'null'); }catch(e){ return null; }
+    try{ return (JSON.parse(localStorage.getItem('lmpro_session')||'null')||window.__LM_SES||null); }catch(e){ return window.__LM_SES||null; }
   }
   function validada(){ var s=ses(); return !!(s && s.id && s.estado==='validado'); }
   function esTester(){ var s=ses(); return !!(s && /tester/i.test(s.nombre||'')); }
@@ -5754,7 +5772,7 @@ window.DictadoClase = (function(){
   // (12-sep-2026, Iago) visible cada curso del 1-sep al 15-oct (evaluación inicial), solo para el tester
   function enTemporada(){ var d=new Date(), m=d.getMonth()+1, dia=d.getDate(); return m===9 || (m===10 && dia<=15); }
   function norm(s){ return String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/\s+/g,' ').trim().toLowerCase(); }
-  function ses(){ try{ return JSON.parse(localStorage.getItem('lmpro_session')||'null'); }catch(e){ return null; } }
+  function ses(){ try{ return (JSON.parse(localStorage.getItem('lmpro_session')||'null')||window.__LM_SES||null); }catch(e){ return window.__LM_SES||null; } }
   function esTester(){ var s=ses(); return !!(s && s.estado==='validado' && /tester/.test(norm(s.nombre))); }
   function pintar(){
     try{
@@ -5851,7 +5869,7 @@ window.DictadoClase = (function(){
   var SBU='https://woiptkyrxkbpnvioypit.supabase.co';
   var SBK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndvaXB0a3lyeGticG52aW95cGl0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0NzI2ODYsImV4cCI6MjA5MjA0ODY4Nn0.B2nKgj5rD0rkdLeMIrd9KgD8lUPWsBT4Y7aCtmnvbjA';
   var _cli=null; function cli(){ if(!_cli && window.supabase) _cli=window.supabase.createClient(SBU,SBK); return _cli; }
-  function ses(){ try{ return JSON.parse(localStorage.getItem('lmpro_session')||'null'); }catch(e){ return null; } }
+  function ses(){ try{ return (JSON.parse(localStorage.getItem('lmpro_session')||'null')||window.__LM_SES||null); }catch(e){ return window.__LM_SES||null; } }
   function cuenta(){ var s=ses(); return (s && s.id && s.estado==='validado') ? s.id : null; }
   function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
 
