@@ -1949,13 +1949,17 @@ function showEnig(kind){
   var _quizHechos={};
   // FASE 8 · partes de "Tareas de la semana" marcadas: 'envio|parte' -> true
   var _semanaHechos={};
-  function semanaHechosLocal(id){
+  function semanaHechosLocal(id, maxEdadMs){
     var out={};
     try{
       var pref='suite_semana_hecho_'+id+'_';
       for(var k=0;k<localStorage.length;k++){
         var key=localStorage.key(k);
-        if(key && key.indexOf(pref)===0) out[key.slice(pref.length)]=true;   // '<envio>_<parte>'
+        if(key && key.indexOf(pref)===0){
+          // (15-sep) la marca local es un puente hasta que el servidor la confirma: con maxEdadMs solo valen las recientes
+          if(maxEdadMs){ var tv=parseInt(localStorage.getItem(key)||'0',10)||0; if(tv && (Date.now()-tv)>maxEdadMs) continue; }
+          out[key.slice(pref.length)]=true;
+        }   // '<envio>_<parte>'
       }
     }catch(e){}
     return out;
@@ -1965,6 +1969,7 @@ function showEnig(kind){
     try{
       var r=await rpc('suite_semana_hechos_de',{p_cuenta_id:id});
       if(r && r.ok && Array.isArray(r.hechos)){
+        out=semanaHechosLocal(id, 15*60e3);   // (15-sep) el servidor manda: las marcas locales solo puentean 15 min
         r.hechos.forEach(function(h){ if(h && h.envio_id) out[h.envio_id+'_'+h.parte]=true; });
       }
     }catch(e){}
@@ -2234,13 +2239,17 @@ function showEnig(kind){
     try{ b.disabled=false; b.textContent='⚠ No se guardó · reintentar'; b.classList.add('ts-marcar-fallo'); }catch(e){}
     try{ toast('No se pudo guardar. Comprueba la conexión y vuelve a pulsar.'); }catch(e){}
   }
-  function quizHechosLocal(id){
+  function quizHechosLocal(id, maxEdadMs){
     var out={};
     try{
       var pref='suite_quiz_hecho_'+id+'_';
       for(var k=0;k<localStorage.length;k++){
         var key=localStorage.key(k);
-        if(key && key.indexOf(pref)===0) out[key.slice(pref.length)]=true;
+        if(key && key.indexOf(pref)===0){
+          // (15-sep) la marca local es un puente hasta que el servidor la confirma: con maxEdadMs solo valen las recientes
+          if(maxEdadMs){ var tv=parseInt(localStorage.getItem(key)||'0',10)||0; if(tv && (Date.now()-tv)>maxEdadMs) continue; }
+          out[key.slice(pref.length)]=true;
+        }
       }
     }catch(e){}
     return out;
@@ -2249,18 +2258,23 @@ function showEnig(kind){
     var out=quizHechosLocal(id);
     var r=await rpc('suite_quiz_hechos_de',{p_cuenta_id:id});
     if(r && r.ok && Array.isArray(r.hechos)){
+      out=quizHechosLocal(id, 15*60e3);   // (15-sep) el servidor manda: las marcas locales solo puentean 15 min
       r.hechos.forEach(function(eid){ if(eid) out[eid]=true; });
     }
     _quizHechos=out;
     return out;
   }
-  function entregadasLocal(id){
+  function entregadasLocal(id, maxEdadMs){
     var out={};
     try{
       var pref='suite_ficha_hecha_'+id+'_';
       for(var k=0;k<localStorage.length;k++){
         var key=localStorage.key(k);
-        if(key && key.indexOf(pref)===0) out[key.slice(pref.length)]=true;
+        if(key && key.indexOf(pref)===0){
+          // (15-sep) la marca local es un puente hasta que el servidor la confirma: con maxEdadMs solo valen las recientes
+          if(maxEdadMs){ var tv=parseInt(localStorage.getItem(key)||'0',10)||0; if(tv && (Date.now()-tv)>maxEdadMs) continue; }
+          out[key.slice(pref.length)]=true;
+        }
       }
     }catch(e){}
     return out;
@@ -2269,6 +2283,7 @@ function showEnig(kind){
     var out=entregadasLocal(id);
     var r=await rpc('suite_fichas_entregadas',{p_cuenta_id:id});
     if(r && r.ok && Array.isArray(r.entregadas)){
+      out=entregadasLocal(id, 15*60e3);   // (15-sep) el servidor manda: las marcas locales solo puentean 15 min
       r.entregadas.forEach(function(fid){ if(fid) out[fid]=true; });
     }
     _entregadas=out;
