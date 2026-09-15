@@ -2179,18 +2179,35 @@ function showEnig(kind){
     if(c2) c2.onclick=function(){ ov.remove(); };
     // marcar al ABRIR (una sola vez) y refrescar lista + campana por detrás
     if(!parteHecha(envio,parte)){
-      marcarParte(envio,parte).then(function(){ try{ render(); }catch(e){} try{ refrescar(); }catch(e){} });
+      marcarParte(envio,parte).then(function(ok){
+        if(!ok){ // segundo intento a los 4 s; si tampoco, el chip se queda sin ✓ y el alumno puede marcarlo a mano
+          setTimeout(function(){ marcarParte(envio,parte).then(function(){ try{ render(); }catch(e){} try{ refrescar(); }catch(e){} }); }, 4000);
+          return; }
+        try{ render(); }catch(e){} try{ refrescar(); }catch(e){} });
     }
   }
+  // (Iago 15-sep-2026) Antes se daba por hecha la parte ANTES de hablar con
+  // Supabase y se devolvía true pasara lo que pasara: si el guardado fallaba,
+  // el alumno veía el ✓ en gris y nadie se enteraba. Ahora solo se marca en
+  // local cuando la base de datos ha dicho ok; si no, devuelve false y el
+  // botón lo dice («No se guardó · reintentar»).
   async function marcarParte(envio,parte){
     var id=cuentaId(); if(!id) return false;
-    _semanaHechos[envio+'_'+parte]=true;
-    try{ localStorage.setItem('suite_semana_hecho_'+id+'_'+envio+'_'+parte,String(Date.now())); }catch(e){}
+    var ok=false;
     try{
       var r=await rpc('suite_semana_marcar',{p_cuenta_id:id,p_envio_id:envio,p_parte:parte});
-      if(!(r && r.ok)) console.warn('[semana] marcar',r);
+      ok=!!(r && r.ok);
+      if(!ok) console.warn('[semana] marcar',r);
     }catch(e){ console.warn('[semana] marcar',e); }
-    return true;
+    if(ok){
+      _semanaHechos[envio+'_'+parte]=true;
+      try{ localStorage.setItem('suite_semana_hecho_'+id+'_'+envio+'_'+parte,String(Date.now())); }catch(e){}
+    }
+    return ok;
+  }
+  function marcarFallo(b){
+    try{ b.disabled=false; b.textContent='⚠ No se guardó · reintentar'; b.classList.add('ts-marcar-fallo'); }catch(e){}
+    try{ toast('No se pudo guardar. Comprueba la conexión y vuelve a pulsar.'); }catch(e){}
   }
   function quizHechosLocal(id){
     var out={};
@@ -2698,7 +2715,8 @@ function showEnig(kind){
       b.addEventListener('click',async function(ev){
         ev.stopPropagation();
         b.disabled=true; b.textContent='Guardando…';
-        await marcarParte(b.getAttribute('data-envio'), b.getAttribute('data-parte'));
+        var okM=await marcarParte(b.getAttribute('data-envio'), b.getAttribute('data-parte'));
+        if(!okM){ marcarFallo(b); return; }
         render();                                   // repinta con la parte en gris
         try{ refrescar(); }catch(e){}               // (6-ago) y baja el número de la campana
       });
@@ -2710,7 +2728,9 @@ function showEnig(kind){
         ev.stopPropagation();
         b.disabled=true; b.textContent='Guardando…';
         var ps=[]; try{ ps=JSON.parse(b.getAttribute('data-partes')||'[]'); }catch(e){}
-        for(var k=0;k<ps.length;k++){ await marcarParte(b.getAttribute('data-envio'), ps[k]); }
+        var todoOk=true;
+        for(var k=0;k<ps.length;k++){ if(!(await marcarParte(b.getAttribute('data-envio'), ps[k]))) todoOk=false; }
+        if(!todoOk){ marcarFallo(b); return; }
         render();
         try{ refrescar(); }catch(e){}
       });
@@ -2728,7 +2748,8 @@ function showEnig(kind){
       b.addEventListener('click',async function(ev){
         ev.stopPropagation();
         b.disabled=true; b.textContent='Guardando…';
-        await marcarParte(b.getAttribute('data-envio'), b.getAttribute('data-parte'));
+        var okC=await marcarParte(b.getAttribute('data-envio'), b.getAttribute('data-parte'));
+        if(!okC){ marcarFallo(b); return; }
         render();
         try{ refrescar(); }catch(e){}               // (6-ago) y baja el número de la campana
       });
@@ -2849,6 +2870,7 @@ function showEnig(kind){
       '.ts-marcar,.ts-ver-lecciones{margin-top:8px;border:0;border-radius:8px;padding:8px 13px;font-weight:800;font-size:12.5px;cursor:pointer}'+
       '.ts-ver-lecciones{color:#241703;background:linear-gradient(90deg,#ffe49a,#b8860b);box-shadow:0 6px 20px rgba(212,175,55,.35)}'+
       '.ts-marcar{color:#f0e6c8;background:rgba(255,222,150,.1);border:1px solid rgba(255,235,190,.3)}'+
+      '.ts-marcar.ts-marcar-fallo{color:#ffd1d9;background:rgba(255,92,128,.16);border-color:rgba(255,120,150,.6)}'+
       '.ts-marcar:hover{background:rgba(255,255,255,.16)}'+
       '.alu-item-tareas.hecha{opacity:.72;border-color:rgba(148,163,184,.3)}'+
       '.alu-item.alu-extra-pin{border:1px solid #ff2d6a;border-radius:12px;margin:8px 0;padding:10px 12px;box-shadow:0 0 0 1px rgba(255,45,106,.45),0 8px 26px rgba(255,45,106,.25);animation:pinLatido 1.5s ease-in-out infinite;background:linear-gradient(100deg,#4a0d24 0%,#2e0817 55%,#1a0510 100%)!important;align-items:center}'+'.alu-item.alu-extra-pin .alu-item-main{display:flex;flex-wrap:wrap;align-items:center;gap:4px 14px}'+'.alu-item.alu-extra-pin .alu-item-tit{flex:0 0 auto}'+'.alu-item.alu-extra-pin .alu-item-cuerpo{flex:1 1 260px;font-size:12px;line-height:1.4;margin:0}'+'.alu-item.alu-extra-pin .alu-item-plazo{flex:0 0 auto;margin:0!important}'+'.alu-item.alu-extra-pin .alu-item-fecha{display:none}'+'.alu-item.alu-extra-pin .alu-hacer{flex:0 0 auto;margin:0}'+'.alu-item.alu-extra-pin .neb-mini{display:none}'+'.alu-item.alu-extra-pin .alu-item-cuerpo{color:#ffd6e2;font-weight:700}'+
