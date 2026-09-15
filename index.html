@@ -348,7 +348,8 @@ if(window.Sentry && !/^(localhost|127\.0\.0\.1)$/.test(location.hostname)){
   .pw-resultados:hover{transform:translateY(-2px);border-color:var(--muted2);box-shadow:0 10px 26px rgba(140,100,20,.45)}
   .pw-resultados:active{transform:translateY(0)}
   .pw-resultados .pwr-chev{font-size:10px;opacity:.7;color:var(--muted)}
-  @media (max-width:560px){.portal-welcome .pw-hi{display:none}}
+  /* (15-sep) en el móvil también se lee «Bienvenido/a,» delante del nombre (antes se ocultaba) */
+  @media (max-width:560px){.portal-welcome .pw-hi{display:inline;font-size:.92em}}
   .portal-bell.hay-avisos::before,.portal-bell.hay-avisos::after{content:"";position:absolute;inset:0;border-radius:11px;border:2px solid rgba(212,175,55,.6);animation:alucamp-onda 2.4s ease-out infinite;pointer-events:none}
   .portal-bell.hay-avisos::after{animation-delay:1.2s}
   .portal-bell.hay-avisos .pb-bell{animation:alucamp-tintineo 2.4s ease-in-out infinite}
