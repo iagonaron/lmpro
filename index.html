@@ -3780,6 +3780,7 @@ function showEnig(kind){
     if(!el){ siguiente(); return; }
     try{ el.scrollIntoView({block:'center',behavior:'smooth'}); }catch(e){}
     setTimeout(function(){
+      if(!_foco || !_card) return;   // (15-sep) el tour ya se cerró antes de que llegara este paso
       var r=el.getBoundingClientRect();
       var pad=8;
       _foco.style.left=(r.left-pad)+'px'; _foco.style.top=(r.top-pad)+'px';
