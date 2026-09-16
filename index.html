@@ -2629,7 +2629,7 @@ function showEnig(kind){
             +((oh||caduSem)?'':'<span class="ts-dot" aria-hidden="true"></span>')
             +'<div class="ts-parte-tit">📝 '+esc(ot.titulo||'Otras tareas')+(oh?' <b class="ts-check">✓</b>':'')+'</div>'
             +(ot.sub?'<div class="ts-parte-sub ts-otras-txt">'+esc(ot.sub)+'</div>':'')
-            +(oh?'':'<button class="ts-marcar" data-envio="'+esc(se)+'" data-parte="'+esc(oParte)+'">☐ Hecho</button>')
+            +(oh?'':'<button class="ts-marcar" data-envio="'+esc(se)+'" data-parte="'+esc(oParte)+'">☐ '+esc(ot.boton||'Hecho')+'</button>')
             +'</div>';
         });
         // 4º · LA FICHA DE LA SEMANA, dentro del marco (por número)
