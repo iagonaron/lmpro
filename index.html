@@ -1870,6 +1870,17 @@ function showEnig(kind){
      una hora antes o después de lo debido). */
   function semanaDespues(iso){ var t=Date.parse(iso||''); if(!t) return 0; var d=new Date(t); d.setDate(d.getDate()+7); return d.getTime(); }
   function semanaAntes(iso){ var t=Date.parse(iso||''); if(!t) return 0; var d=new Date(t); d.setDate(d.getDate()-7); return d.getTime(); }
+  // (Iago 16-sep-2026) «Otras tareas» estructuradas: el envío puede traer
+  // otras = [{titulo, sub}] (una parcela por tarea, cada una con su «Hecho») o,
+  // como antes, un texto suelto. La primera parcela conserva la parte 'otras'
+  // por compatibilidad con lo ya marcado; las demás van como 'otra_1', 'otra_2'…
+  function otrasLista(pj){
+    var o=pj&&pj.otras; if(!o) return [];
+    if(Array.isArray(o)) return o.filter(function(x){ return x && (x.titulo||x.sub); });
+    return [{titulo:'Otras tareas', sub:String(o)}];
+  }
+  function otraParte(i){ return i===0?'otras':('otra_'+i); }
+  function otrasPendiente(pj,se){ return otrasLista(pj).some(function(x,i){ return !parteHecha(se,otraParte(i)); }); }
   function tareasHechaCore(o, fichasPorNumero){
     var pj=(o&&o.payload_json)||{}, se=pj.semana_envio_id;
     if(semanaDespues(o.creado_en) <= Date.now()) return true;   // semana caducada
@@ -1877,7 +1888,7 @@ function showEnig(kind){
     var lecs=(pj.lecciones||[]).filter(function(l){ return l && l.n!=null; });
     if(lecs.length){ if(!lecs.every(function(l){ return parteHecha(se,'leccion_'+l.n); })) return false; }
     else if((pj.lecciones_imgs&&pj.lecciones_imgs.length) && !parteHecha(se,'lecciones')) return false;
-    if(pj.otras && !parteHecha(se,'otras')) return false;
+    if(otrasPendiente(pj,se)) return false;
     if(pj.ficha && pj.ficha.numero!=null){
       var fN=(fichasPorNumero||{})[String(pj.ficha.numero)];
       if(!fN) return false;
@@ -1910,7 +1921,7 @@ function showEnig(kind){
       var lecs=(pj.lecciones||[]).filter(function(l){ return l && l.n!=null; });
       if(lecs.length){ if(!lecs.every(function(l){ return parteHecha(se,'leccion_'+l.n); })) n++; }
       else if((pj.lecciones_imgs||[]).length && !parteHecha(se,'lecciones')) n++;
-      if(pj.otras && !parteHecha(se,'otras')) n++;
+      if(otrasPendiente(pj,se)) n++;
       if(pj.ficha && pj.ficha.numero!=null){
         var fN=fmap[String(pj.ficha.numero)];
         if(fN){
@@ -2612,15 +2623,15 @@ function showEnig(kind){
             +'</div>';
         }
         // 3º-bis se pinta después; primero preparar OTRAS
-        if(tj.otras){
-          var oh=parteHecha(se,'otras');
+        otrasLista(tj).forEach(function(ot,oi){
+          var oParte=otraParte(oi), oh=parteHecha(se,oParte);
           partes+='<div class="ts-parte ts-otras'+(oh?' ts-hecha':'')+'">'
             +((oh||caduSem)?'':'<span class="ts-dot" aria-hidden="true"></span>')
-            +'<div class="ts-parte-tit">📝 Otras tareas'+(oh?' <b class="ts-check">✓</b>':'')+'</div>'
-            +'<div class="ts-parte-sub ts-otras-txt">'+esc(tj.otras)+'</div>'
-            +(oh?'':'<button class="ts-marcar" data-envio="'+esc(se)+'" data-parte="otras">☐ Hecho</button>')
+            +'<div class="ts-parte-tit">📝 '+esc(ot.titulo||'Otras tareas')+(oh?' <b class="ts-check">✓</b>':'')+'</div>'
+            +(ot.sub?'<div class="ts-parte-sub ts-otras-txt">'+esc(ot.sub)+'</div>':'')
+            +(oh?'':'<button class="ts-marcar" data-envio="'+esc(se)+'" data-parte="'+esc(oParte)+'">☐ Hecho</button>')
             +'</div>';
-        }
+        });
         // 4º · LA FICHA DE LA SEMANA, dentro del marco (por número)
         if(tj.ficha && tj.ficha.numero!=null){
           var fN=_fichaPorNumero[String(tj.ficha.numero)];
