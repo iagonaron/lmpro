@@ -619,11 +619,12 @@ function genPintaRejilla(){
   // «Otro…» va en la misma fila que «Me gusta de todo», a su derecha (Iago, 13-sep-2026).
   try{ var _prim = $('#st-gen-fam').querySelector('.fam'), _caja = document.querySelector('.otro-caja');
        if(_prim && _caja) _prim.appendChild(_caja); }catch(e){}
-  Array.prototype.forEach.call($('#st-gen-fam').querySelectorAll('.gen'), function(b){
+  Array.prototype.forEach.call($('#st-gen-fam').querySelectorAll('[data-g]'), function(b){
     b.onclick = function(){ genToggle(b.dataset.g); };
   });
 }
 function genToggle(k){
+  if(!k) return;                     // (17-sep-2026) sin genero no se toca la seleccion
   var i = gr.sel.indexOf(k);
   if(i >= 0) gr.sel.splice(i, 1);
   else {
@@ -635,12 +636,15 @@ function genToggle(k){
 }
 function genPintaSel(){
   var lleno = gr.sel.length >= GEN_MAX && gr.sel.indexOf('todo') < 0;
-  Array.prototype.forEach.call($('#st-gen-fam').querySelectorAll('.gen'), function(b){
+  Array.prototype.forEach.call($('#st-gen-fam').querySelectorAll('[data-g]'), function(b){
     var on = gr.sel.indexOf(b.dataset.g) >= 0;
     b.classList.toggle('on', on);
     b.disabled = !on && lleno && b.dataset.g !== 'todo';
   });
-  $('#st-gen-cuenta').textContent = gr.sel.length ? (gr.sel.length + (gr.sel.length === 1 ? ' elegido' : ' elegidos') + (lleno ? ' · ya son 5' : '')) : 'Sin elegir todavía';
+  var todo = gr.sel.indexOf('todo') >= 0;
+  $('#st-gen-cuenta').textContent = todo
+    ? '🎲 Me gusta de todo · vale, el Temazo irá rotando por todos los estilos'
+    : (gr.sel.length ? (gr.sel.length + (gr.sel.length === 1 ? ' elegido' : ' elegidos') + (lleno ? ' · ya son 5' : '')) : 'Sin elegir todavía');
 }
 function genPaso(){
   if(gr.i >= gr.alus.length) return genTerminar();
