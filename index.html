@@ -2744,9 +2744,9 @@ function showEnig(kind){
       }
       // @RECO · RECOMENDADO PARA TI (17-sep-2026, Iago) · si lleva media < 4 en
       // un apartado con al menos 4 notas de clase, una vez por semana le sale
-      // esta tarjeta con las apps que le vienen bien. Lleva el COLOR del
-      // apartado (rompe el dorado del portal a propósito) y un «Entendido».
-      // No cuenta como tarea pendiente: es consejo, no deberes.
+      // esta tarjeta. Lleva el COLOR del apartado (rompe el dorado a propósito),
+      // las apps como ENLACES dentro del propio texto y un ☐ Entendido igual que
+      // las tareas de la semana. No cuenta como tarea pendiente: es consejo.
       if(o.payload_json && o.payload_json.recomendacion){
         var rj=o.payload_json;
         var rc=String(rj.color||'#4a9eff');
@@ -2757,20 +2757,25 @@ function showEnig(kind){
           if(!isFinite(n)) return '74,158,255';
           return [(n>>16)&255,(n>>8)&255,n&255].join(',');
         })(rc);
-        var recoCorto=function(nm){ return String(nm||'').replace(/\s+at\s+home.*$/i,'').trim()||nm; };
-        var recoApps=(rj.apps||[]).map(function(a){
-          return '<a class="reco-app" href="'+esc(a.url)+'" target="_blank" rel="noopener">Abrir '+esc(recoCorto(a.nombre))+' \u2192</a>';
-        }).join('');
+        // el nombre de cada app, resaltado y enlazado DENTRO del texto (más compacto
+        // que un botón por app). Se sustituye el más largo primero, por si uno
+        // contuviese al otro.
+        var cuerpoR=esc(o.cuerpo||'');
+        (rj.apps||[]).slice().sort(function(a,b){
+          return String((b&&b.nombre)||'').length - String((a&&a.nombre)||'').length;
+        }).forEach(function(a){
+          var nm=esc((a&&a.nombre)||''); if(!nm) return;
+          cuerpoR=cuerpoR.split(nm).join('<a class="reco-lnk" href="'+esc(a.url)+'" target="_blank" rel="noopener">'+nm+'</a>');
+        });
         return '<div class="alu-item reco'+(o.leido?'':' no-leido')+'" data-id="'+esc(o.id)+'"'
-          +' style="--rc:'+esc(rc)+';--rc10:rgba('+rgbTxt+',.10);--rc22:rgba('+rgbTxt+',.22)">'
+          +' style="--rc:'+esc(rc)+';--rc06:rgba('+rgbTxt+',.06);--rc10:rgba('+rgbTxt+',.10);--rc18:rgba('+rgbTxt+',.18);--rc22:rgba('+rgbTxt+',.22)">'
           +'<span class="alu-dot"></span>'
           +'<div class="alu-item-main">'
-          +'<div class="alu-item-tit"><span class="reco-chip">\u2605 Recomendado para ti</span>'
+          +'<div class="alu-item-tit"><span class="reco-chip">★ Recomendado para ti</span>'
           +(rj.etiqueta?('<span class="reco-area">'+esc(rj.etiqueta)+'</span>'):'')+'</div>'
-          +'<div class="alu-item-cuerpo">'+esc(o.cuerpo||'')+'</div>'
+          +'<div class="alu-item-cuerpo">'+cuerpoR+'</div>'
           +'<div class="alu-item-fecha">'+fecha(o.creado_en)+'</div>'
-          +(recoApps?('<div class="reco-apps">'+recoApps+'</div>'):'')
-          +'<button type="button" class="reco-ok" data-reco-ok="'+esc(o.id)+'">Entendido</button>'
+          +'<button type="button" class="reco-ok" data-reco-ok="'+esc(o.id)+'">☐ Entendido</button>'
           +'</div></div>';
       }
       var fid=(o.payload_json && o.payload_json.ficha_id) ? o.payload_json.ficha_id : '';
@@ -3006,15 +3011,15 @@ function showEnig(kind){
       '.alu-item-quiz .quiz-blobs .q3{width:130px;height:120px;right:18%;bottom:-46px;background:#ff5ccd;animation:pnDrift3 21s ease-in-out infinite}'+
       '.alu-item-quiz .quiz-blobs .q4{width:100px;height:96px;left:22%;bottom:-40px;background:#ff9a3c;animation:pnDrift1 25s ease-in-out infinite}'+
       '/* @RECO · Recomendado para ti (17-sep-2026, Iago) · color del apartado */'+
-      '.alu-item.reco{position:relative;overflow:hidden;border-left:3px solid var(--rc)}'+
-      '.alu-item.reco::after{content:"";position:absolute;right:0;top:0;width:150px;height:150px;background:radial-gradient(circle at 100% 0%,var(--rc) 0%,transparent 70%);opacity:.16;pointer-events:none}'+
+      '.alu-item.reco{position:relative;overflow:hidden;border-left:3px solid var(--rc);background:linear-gradient(115deg,var(--rc22) 0%,var(--rc10) 42%,transparent 78%)}'+
+      '.alu-item.reco::after{content:"";position:absolute;right:0;top:0;width:170px;height:170px;background:radial-gradient(circle at 100% 0%,var(--rc) 0%,transparent 70%);opacity:.18;pointer-events:none}'+
+      '.alu-item.reco .alu-dot,.alu-item.reco .alu-item-main{position:relative;z-index:1}'+
       '.reco-chip{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:900;letter-spacing:.09em;text-transform:uppercase;color:var(--rc);border:1px solid var(--rc);border-radius:999px;padding:2px 9px;background:var(--rc10);vertical-align:middle}'+
       '.reco-area{font-size:12.5px;font-weight:800;color:var(--rc);margin-left:7px;vertical-align:middle}'+
-      '.reco-apps{display:flex;flex-wrap:wrap;gap:8px;margin-top:11px}'+
-      '.reco-app{display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-size:13px;font-weight:800;padding:8px 13px;border-radius:9px;color:var(--rc);border:1.5px solid var(--rc);background:var(--rc10);transition:background .15s,transform .15s}'+
-      '.reco-app:hover{background:var(--rc22);transform:translateY(-1px)}'+
-      '.reco-ok{margin-top:11px;display:inline-block;background:transparent;border:1px solid var(--line);color:var(--muted);border-radius:9px;padding:7px 15px;font-size:12.5px;font-weight:800;cursor:pointer}'+
-      '.reco-ok:hover{color:var(--ink);border-color:var(--rc)}'+
+      '.reco-lnk{color:var(--rc);font-weight:800;text-decoration:none;border-bottom:1px solid var(--rc22);padding-bottom:1px;white-space:nowrap}'+
+      '.reco-lnk:hover{border-bottom-color:var(--rc);background:var(--rc10);border-radius:3px}'+
+      '.reco-ok{margin-top:11px;display:inline-block;background:var(--rc10);border:1px solid var(--rc22);color:var(--rc);border-radius:9px;padding:7px 15px;font-size:12.5px;font-weight:800;cursor:pointer}'+
+      '.reco-ok:hover{background:var(--rc22);border-color:var(--rc)}'+
       '.alu-item-quiz .alu-dot,.alu-item-quiz .alu-item-main{position:relative;z-index:1}'+
       '.alu-item-quiz .alu-item-tit{color:#f6f3ff}'+
       '.alu-item-quiz .alu-item-cuerpo{color:#cfc7f5}'+
@@ -6266,11 +6271,15 @@ window.DictadoClase = (function(){
      Se puede quitar borrando este bloque y los cuatro enganches marcados @FORMATO.
      ============================================================ -->
 <style>
-  #lm-fmt-pill{display:none;align-items:center;gap:7px;border:1px solid var(--accent);
+  /* (17-sep-2026, Iago) centrada debajo de «Optimizado para ordenador y tablet»:
+     fuera de la línea de «Bienvenido/a», que estiraba el botón de Mis resultados. */
+  #lm-fmt-centro{position:absolute;left:50%;top:100%;transform:translateX(-50%);
+    margin-top:8px;z-index:4;display:none;white-space:nowrap}
+  #lm-fmt-centro.on{display:block}
+  #lm-fmt-pill{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--accent);
+    background:rgba(212,175,55,.14);
     background:color-mix(in srgb, var(--accent) 14%, transparent);color:var(--ink);
-    border-radius:999px;padding:7px 14px;font:700 13.5px "Helvetica Neue",Arial,sans-serif;cursor:pointer}
-  #lm-fmt-pill.on{display:inline-flex}
-  #lm-fmt-pill{margin-left:10px;vertical-align:middle}
+    border-radius:999px;padding:7px 14px;font:700 13.5px "Helvetica Neue",Arial,sans-serif;cursor:pointer;margin:0}
   #lm-fmt-pill .pt{width:7px;height:7px;border-radius:50%;background:var(--accent);display:block}
   #lm-fmt-pill:hover{filter:brightness(1.12)}
   .lmf-velo{position:fixed;inset:0;z-index:100020;background:rgba(5,8,20,.62);backdrop-filter:blur(3px);
@@ -6465,19 +6474,29 @@ window.DictadoClase = (function(){
   function pintarPastilla(){
     var b=document.getElementById('lm-fmt-pill');
     if(!b){
-      // (17-sep-2026, Iago) va a la derecha del nombre, en la linea de «Bienvenido/a»,
-      // no junto a la campana. Si esa linea no existiera, cae al lado de la campana.
-      var ancla=document.getElementById('btn-alu-salir') || document.getElementById('alu-campana-btn');
-      if(!ancla) return;
+      // (17-sep-2026, Iago) CENTRADA debajo de «Optimizado para ordenador y tablet».
+      // Antes iba dentro de la linea de «Bienvenido/a» y, al ser esa linea mas
+      // ancha, estiraba el boton de «Mis resultados» (align-self:stretch).
+      var opt=document.querySelector('.topbar .opt-mini');
+      var caja=document.getElementById('lm-fmt-centro');
+      if(!caja){
+        var ancla=opt || document.getElementById('alu-campana-btn');
+        if(!ancla) return;
+        caja=document.createElement('div'); caja.id='lm-fmt-centro';
+        ancla.insertAdjacentElement('afterend', caja);
+      }
       b=document.createElement('button');
       b.type='button'; b.id='lm-fmt-pill';
       b.onclick=function(){ cambiar(); };
-      ancla.insertAdjacentElement('afterend', b);
+      caja.appendChild(b);
     }
-    if(!cuenta() || !(_estado && _estado.elegido)){ b.classList.remove('on'); return; }
+    var caja2=document.getElementById('lm-fmt-centro');
+    if(!cuenta() || !(_estado && _estado.elegido)){
+      b.classList.remove('on'); if(caja2) caja2.classList.remove('on'); return;
+    }
     b.innerHTML='<span class="pt"></span> Formato '+esc(_estado.formato);
     b.title='Pulsa para cambiar de formato';
-    b.classList.add('on');
+    b.classList.add('on'); if(caja2) caja2.classList.add('on');
   }
 
   async function arranque(){ await cargar(); pintarPastilla(); }
