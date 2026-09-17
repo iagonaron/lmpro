@@ -5993,7 +5993,7 @@ window.DictadoClase = (function(){
   }
   function mmss(s){ s=Math.max(0,Math.floor(s||0)); return Math.floor(s/60)+':'+String(s%60).padStart(2,'0'); }
   function playerHTML(t){
-    if(t.preview_url){
+    if(t.preview_url || t.track_id){
       return '<button type="button" class="tz-pp" id="tz-pp" aria-label="Escuchar"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>'+
              '<div class="tz-eq" id="tz-eq" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>'+
              '<div class="tz-pista"><div class="tz-nombre"><b>'+esc(t.titulo||'')+'</b>'+(t.artistas?' <span>&middot; '+esc(t.artistas)+'</span>':'')+dato(t)+'</div>'+
@@ -6003,14 +6003,35 @@ window.DictadoClase = (function(){
     if(t.spotify_track_id) return '<iframe src="https://open.spotify.com/embed/track/'+esc(t.spotify_track_id)+'?utm_source=generator&theme=0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy" title="Spotify"></iframe>';
     return '<iframe src="https://widget.deezer.com/widget/dark/track/'+esc(t.track_id)+'?tracklist=false" allow="encrypted-media; clipboard-write" loading="lazy" title="Deezer"></iframe>';
   }
-  function montarPlayer(t){
+  // (17-sep-2026) Los enlaces de audio de Deezer van FIRMADOS y caducan a los pocos dias:
+  // el lote se hace el viernes y para el miercoles el guardado ya da 403. Deezer no deja
+  // pedirlos desde el navegador (sin CORS), asi que se piden a nuestra funcion temazo-preview,
+  // que los renueva desde el servidor. Si eso fallara, se prueba con el guardado.
+  async function urlFresca(t){
+    if(t.track_id){
+      try{
+        var r=await fetch(SBU+'/functions/v1/temazo-preview?track='+encodeURIComponent(t.track_id));
+        var j=await r.json();
+        if(j && j.ok && j.preview) return j.preview;
+      }catch(e){}
+    }
+    return t.preview_url||'';
+  }
+  async function montarPlayer(t){
     try{ if(AUDIO){ AUDIO.pause(); AUDIO=null; } }catch(e){}
-    var pp=document.getElementById('tz-pp'); if(!pp||!t.preview_url) return;
+    var pp=document.getElementById('tz-pp'); if(!pp) return;
     var eq=document.getElementById('tz-eq'), pr=document.getElementById('tz-prog'),
         ba=document.getElementById('tz-barra'), ti=document.getElementById('tz-tiempo');
     var ICO_PLAY='<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>',
         ICO_PAUSA='<svg viewBox="0 0 24 24"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>';
-    AUDIO=new Audio(t.preview_url); AUDIO.preload='metadata';
+    var mio=t;                                   // si le dan al dado, este montaje ya no vale
+    pp.disabled=true; pp.style.opacity='.55';
+    var src=await urlFresca(t);
+    if(actual && actual.t !== mio) return;       // cambio de cancion mientras llegaba
+    if(!src){ pp.style.opacity='.35'; pp.title='Este no se puede escuchar aqui: abrelo en Spotify'; return; }
+    pp.disabled=false; pp.style.opacity='';
+    AUDIO=new Audio(src); AUDIO.preload='metadata';
+    AUDIO.addEventListener('error',function(){ pp.style.opacity='.35'; pp.title='No se pudo cargar el audio'; });
     function pinta(){
       var d=AUDIO.duration||30, p=Math.min(100,(AUDIO.currentTime/d)*100);
       if(pr) pr.style.width=p+'%'; if(ti) ti.textContent=mmss(AUDIO.currentTime);
