@@ -6216,6 +6216,7 @@ window.DictadoClase = (function(){
     background:color-mix(in srgb, var(--accent) 14%, transparent);color:var(--ink);
     border-radius:999px;padding:7px 14px;font:700 13.5px "Helvetica Neue",Arial,sans-serif;cursor:pointer}
   #lm-fmt-pill.on{display:inline-flex}
+  #lm-fmt-pill{margin-left:10px;vertical-align:middle}
   #lm-fmt-pill .pt{width:7px;height:7px;border-radius:50%;background:var(--accent);display:block}
   #lm-fmt-pill:hover{filter:brightness(1.12)}
   .lmf-velo{position:fixed;inset:0;z-index:100020;background:rgba(5,8,20,.62);backdrop-filter:blur(3px);
@@ -6291,6 +6292,22 @@ window.DictadoClase = (function(){
   function filtrar(list){
     if(!esPapel() || !Array.isArray(list)) return list;
     var l=list.filter(function(o){ var pj=(o&&o.payload_json)||{}; return !pj.ficha_id; });
+    // (17-sep-2026, Iago) La ficha de la semana NO desaparece: se convierte en un
+    // recordatorio de entregarla EN PAPEL, con su boton «Entendido». Asi el numero
+    // de tareas es el mismo que el de un companero de formato digital, y la semana
+    // se puede dar por terminada (si no, nunca completaria y no se ganaria el temazo).
+    l.forEach(function(o){
+      var pj=(o&&o.payload_json)||{};
+      if(!pj.tareas_semana || !pj.ficha || pj.ficha.numero==null || pj.__papel) return;
+      var n=pj.ficha.numero;
+      pj.otras=(Array.isArray(pj.otras)?pj.otras.slice():[]).concat([{
+        titulo:'Entregar Ficha '+n+' en papel',
+        sub:'Esta ficha la haces en papel. Iago te la da en clase; entregasela cuando la tengas.',
+        boton:'Entendido'
+      }]);
+      delete pj.ficha;
+      pj.__papel=true;
+    });
     var corte=0;
     l.forEach(function(o){
       var pj=(o&&o.payload_json)||{};
@@ -6394,11 +6411,14 @@ window.DictadoClase = (function(){
   function pintarPastilla(){
     var b=document.getElementById('lm-fmt-pill');
     if(!b){
-      var campana=document.getElementById('alu-campana-btn'); if(!campana) return;
+      // (17-sep-2026, Iago) va a la derecha del nombre, en la linea de «Bienvenido/a»,
+      // no junto a la campana. Si esa linea no existiera, cae al lado de la campana.
+      var ancla=document.getElementById('btn-alu-salir') || document.getElementById('alu-campana-btn');
+      if(!ancla) return;
       b=document.createElement('button');
       b.type='button'; b.id='lm-fmt-pill';
       b.onclick=function(){ cambiar(); };
-      campana.insertAdjacentElement('afterend', b);
+      ancla.insertAdjacentElement('afterend', b);
     }
     if(!cuenta() || !(_estado && _estado.elegido)){ b.classList.remove('on'); return; }
     b.innerHTML='<span class="pt"></span> Formato '+esc(_estado.formato);
