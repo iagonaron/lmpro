@@ -1947,6 +1947,7 @@ function showEnig(kind){
         n++; return;
       }
       if(pj.quiz && pj.envio_id){ if(!_quizHechos[pj.envio_id]) n++; return; }
+      if(pj.recomendacion) return;                                          // @RECO: consejo, no tarea
       if(pj.dictado_revision){ if(!o.leido) n++; return; }
       if(!o.leido && !esValidacionTxt(o)) n++;                               // aviso sin leer
     });
@@ -2380,6 +2381,8 @@ function showEnig(kind){
     // FASE 7.3 · barrido perezoso: materializa las notificaciones de quizzes
     // PROGRAMADOS cuya hora ya se cumplió (idempotente, sin datos sensibles).
     try{ await rpc('suite_quiz_barrer',{}); }catch(e){}
+    // @RECO · materializa las recomendaciones de la semana (idempotente).
+    try{ await rpc('suite_recos_barrer',{p_cuenta_id:id}); }catch(e){}
     // (6-ago Iago, v2) la campana pone el NÚMERO DE COSAS pendientes — ficha
     // por hacer o a medias (en plazo), quiz, lecciones sin estudiar, «otras»
     // sin marcar y avisos sin leer. Ficha + quiz + lecciones = «3». Cada cosa
@@ -2739,6 +2742,37 @@ function showEnig(kind){
           +'<div class="alu-item-fecha">'+fecha(o.creado_en)+(dj.fecha_dictado?(' · dictado del '+esc(dj.fecha_dictado.split('-').reverse().join('/'))):'')+'</div>'
           +'</div></div>';
       }
+      // @RECO · RECOMENDADO PARA TI (17-sep-2026, Iago) · si lleva media < 4 en
+      // un apartado con al menos 4 notas de clase, una vez por semana le sale
+      // esta tarjeta con las apps que le vienen bien. Lleva el COLOR del
+      // apartado (rompe el dorado del portal a propósito) y un «Entendido».
+      // No cuenta como tarea pendiente: es consejo, no deberes.
+      if(o.payload_json && o.payload_json.recomendacion){
+        var rj=o.payload_json;
+        var rc=String(rj.color||'#4a9eff');
+        var rgbTxt=(function(h){
+          h=String(h).replace('#','');
+          if(h.length===3) h=h[0]+h[0]+h[1]+h[1]+h[2]+h[2];
+          var n=parseInt(h,16);
+          if(!isFinite(n)) return '74,158,255';
+          return [(n>>16)&255,(n>>8)&255,n&255].join(',');
+        })(rc);
+        var recoCorto=function(nm){ return String(nm||'').replace(/\s+at\s+home.*$/i,'').trim()||nm; };
+        var recoApps=(rj.apps||[]).map(function(a){
+          return '<a class="reco-app" href="'+esc(a.url)+'" target="_blank" rel="noopener">Abrir '+esc(recoCorto(a.nombre))+' \u2192</a>';
+        }).join('');
+        return '<div class="alu-item reco'+(o.leido?'':' no-leido')+'" data-id="'+esc(o.id)+'"'
+          +' style="--rc:'+esc(rc)+';--rc10:rgba('+rgbTxt+',.10);--rc22:rgba('+rgbTxt+',.22)">'
+          +'<span class="alu-dot"></span>'
+          +'<div class="alu-item-main">'
+          +'<div class="alu-item-tit"><span class="reco-chip">\u2605 Recomendado para ti</span>'
+          +(rj.etiqueta?('<span class="reco-area">'+esc(rj.etiqueta)+'</span>'):'')+'</div>'
+          +'<div class="alu-item-cuerpo">'+esc(o.cuerpo||'')+'</div>'
+          +'<div class="alu-item-fecha">'+fecha(o.creado_en)+'</div>'
+          +(recoApps?('<div class="reco-apps">'+recoApps+'</div>'):'')
+          +'<button type="button" class="reco-ok" data-reco-ok="'+esc(o.id)+'">Entendido</button>'
+          +'</div></div>';
+      }
       var fid=(o.payload_json && o.payload_json.ficha_id) ? o.payload_json.ficha_id : '';
       var pj=o.payload_json||{};
       var hecha=esHecha(o);
@@ -2875,6 +2909,16 @@ function showEnig(kind){
         abrirVisorDictado((o&&o.payload_json)||{});
       });
     });
+    // @RECO · «Entendido» de una recomendación: la marca leída y ya no vuelve
+    // hasta la semana siguiente (si sigue flojo en ese apartado).
+    Array.prototype.forEach.call(body.querySelectorAll('.reco-ok'),function(b){
+      b.addEventListener('click',function(ev){
+        ev.stopPropagation();
+        var it=b.closest('.alu-item');
+        marcar(b.getAttribute('data-reco-ok'), it);
+        if(it) it.classList.add('hecha');
+      });
+    });
     // Clic en una notificación sin acción: solo marcar leído.
     Array.prototype.forEach.call(body.querySelectorAll('.alu-item.no-leido'),function(el){
       el.addEventListener('click',function(){ marcar(el.getAttribute('data-id'),el); });
@@ -2961,6 +3005,16 @@ function showEnig(kind){
       '.alu-item-quiz .quiz-blobs .q2{width:110px;height:100px;right:-24px;top:-20px;background:#5bd0ff;animation:pnDrift2 23s ease-in-out infinite}'+
       '.alu-item-quiz .quiz-blobs .q3{width:130px;height:120px;right:18%;bottom:-46px;background:#ff5ccd;animation:pnDrift3 21s ease-in-out infinite}'+
       '.alu-item-quiz .quiz-blobs .q4{width:100px;height:96px;left:22%;bottom:-40px;background:#ff9a3c;animation:pnDrift1 25s ease-in-out infinite}'+
+      '/* @RECO · Recomendado para ti (17-sep-2026, Iago) · color del apartado */'+
+      '.alu-item.reco{position:relative;overflow:hidden;border-left:3px solid var(--rc)}'+
+      '.alu-item.reco::after{content:"";position:absolute;right:0;top:0;width:150px;height:150px;background:radial-gradient(circle at 100% 0%,var(--rc) 0%,transparent 70%);opacity:.16;pointer-events:none}'+
+      '.reco-chip{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:900;letter-spacing:.09em;text-transform:uppercase;color:var(--rc);border:1px solid var(--rc);border-radius:999px;padding:2px 9px;background:var(--rc10);vertical-align:middle}'+
+      '.reco-area{font-size:12.5px;font-weight:800;color:var(--rc);margin-left:7px;vertical-align:middle}'+
+      '.reco-apps{display:flex;flex-wrap:wrap;gap:8px;margin-top:11px}'+
+      '.reco-app{display:inline-flex;align-items:center;gap:6px;text-decoration:none;font-size:13px;font-weight:800;padding:8px 13px;border-radius:9px;color:var(--rc);border:1.5px solid var(--rc);background:var(--rc10);transition:background .15s,transform .15s}'+
+      '.reco-app:hover{background:var(--rc22);transform:translateY(-1px)}'+
+      '.reco-ok{margin-top:11px;display:inline-block;background:transparent;border:1px solid var(--line);color:var(--muted);border-radius:9px;padding:7px 15px;font-size:12.5px;font-weight:800;cursor:pointer}'+
+      '.reco-ok:hover{color:var(--ink);border-color:var(--rc)}'+
       '.alu-item-quiz .alu-dot,.alu-item-quiz .alu-item-main{position:relative;z-index:1}'+
       '.alu-item-quiz .alu-item-tit{color:#f6f3ff}'+
       '.alu-item-quiz .alu-item-cuerpo{color:#cfc7f5}'+
