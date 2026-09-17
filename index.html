@@ -1420,7 +1420,16 @@ function mostrarBienvenidaValidada(nombre, auto){
       // Encadena el MINI-TOUR de siempre (foco + oscurecido, FASE 9.4):
       // campana -> mensajes -> resultados -> apps. Su cerrar() ya marca el
       // "visto" para que no se relance en próximas visitas.
-      try{ if(window.AluTour && window.AluTour.abrir) window.AluTour.abrir(); }catch(e){}
+      // @FORMATO · antes del tour, que elija digital o papel (solo si no lo ha hecho)
+      (async function(){
+        try{
+          if(window.__LM_FMT__){
+            var e=await window.__LM_FMT__.cargar(true);
+            if(e && !e.elegido && !e.sin_cuenta) await window.__LM_FMT__.decidir();
+          }
+        }catch(e){}
+        try{ if(window.AluTour && window.AluTour.abrir) window.AluTour.abrir(); }catch(e){}
+      })();
     },450);
   });
 }
@@ -2380,6 +2389,8 @@ function showEnig(kind){
       var rl=await rpc('suite_alumno_notif_listar',{p_cuenta_id:id});
       try{ if(window.__LM_HAM__){ var _h=window.__LM_HAM__.tarea(); if(_h && !_h.leido && rl && rl.ok && Array.isArray(rl.notificaciones)) rl.notificaciones=[_h].concat(rl.notificaciones); } }catch(e){}
       if(rl && rl.ok && Array.isArray(rl.notificaciones)){
+        // @FORMATO · el contador tiene que contar lo mismo que se ve
+        try{ if(window.__LM_FMT__){ await window.__LM_FMT__.cargar(); rl.notificaciones=window.__LM_FMT__.filtrar(rl.notificaciones); } }catch(e){}
         anotarPlazos(rl.notificaciones); _plazosPedidos=true;
         try{ await cargarEntregadas(id); }catch(e2){}
         try{ await cargarQuizHechos(id); }catch(e2){}
@@ -2487,6 +2498,8 @@ function showEnig(kind){
     }
     var listTodas=list;
     list=list.filter(function(o){ return !esNotifValidacion(o); });
+    // @FORMATO · al de PAPEL no le llegan fichas digitales y solo ve el ciclo en curso
+    try{ if(window.__LM_FMT__){ await window.__LM_FMT__.cargar(); list=window.__LM_FMT__.filtrar(list); } }catch(e){}
     if(!list.length){ body.innerHTML='<div class="alu-vacio">Todavía no tienes notificaciones.</div>'; return; }
     // FASE 6.7/6.9 · refresca entregadas y progresos antes de pintar (para
     // decidir Hacer/Continuar/✓ Entregada y la fracción X/Y).
@@ -3760,7 +3773,9 @@ function showEnig(kind){
     { sel:'#medallero:not([hidden])', tit:'🏅 Tus portales interactivos', txt:'Cada tema del curso tiene su portal interactivo. Aquí los tienes todos: al principio están en sombra y se van encendiendo a medida que avanzamos. Cuando se abra uno, te aviso.' },
     { sel:'#alu-campana-btn', tit:'🔔 Tus tareas', txt:'Cada viernes a las 19:00 te llegan aquí las Tareas de la semana: las lecciones de ritmo (con abrirlas ya quedan estudiadas) y la ficha de teoría — hazla desde su aviso y pulsa «enviar al profesor»: ¡tienes una semana de plazo y otra de gracia!' },
     { sel:'#btn-mis-resultados', tit:'📊 Mis resultados', txt:'Aquí puedes consultar tus resultados, progreso y estadísticas. Sin sorpresas: siempre sabrás cómo vas.' },
-    { sel:'.apps', tit:'🎵 Las apps', txt:'Y aquí abajo, las aplicaciones para practicar por libre todo lo que quieras: Ritmo, Teoría, Intervalia, Entonación, Dictado… Cuanto más las uses, más fácil será todo.' }
+    { sel:'.apps', tit:'🎵 Las apps', txt:'Y aquí abajo, las aplicaciones para practicar por libre todo lo que quieras: Ritmo, Teoría, Intervalia, Entonación, Dictado… Cuanto más las uses, más fácil será todo.' },
+    // @FORMATO · último paso: dónde se cambia digital/papel
+    { sel:'#lm-fmt-pill', tit:'🔁 Digital o papel', txt:'Aquí puedes cambiar cuando quieras cómo haces las fichas y las tareas obligatorias. Para cambiarlo te pediré tu número de expediente.' }
   ];
   var _paso=0, _ov=null, _foco=null, _card=null;
   function css(){
@@ -6182,5 +6197,224 @@ window.DictadoClase = (function(){
   }catch(e){}
 })();
 </script>
+<!-- ============================================================
+     @FORMATO · Digital o papel (Iago · 17-sep-2026)
+     ------------------------------------------------------------
+     El alumno elige si hace las fichas y las tareas obligatorias EN EL PORTAL
+     (digital) o EN PAPEL. Quien elige papel:
+       · no recibe fichas de teoria digitales ni sus avisos,
+       · solo ve el ciclo de tareas EN CURSO (quiz + tareas de ritmo), para que
+         no se le acumulen semanas si entra poco,
+       · no acumula periodos de gracia ni ceros automaticos (eso lo garantiza
+         la base de datos: suite_fichas_barrer_vencidas salta a los de papel).
+     Al darse de alta elige sin mas; para CAMBIARLO despues se le pide el nº de
+     expediente, y a Iago le llega aviso.
+     Se puede quitar borrando este bloque y los cuatro enganches marcados @FORMATO.
+     ============================================================ -->
+<style>
+  #lm-fmt-pill{display:none;align-items:center;gap:7px;border:1px solid var(--accent);
+    background:color-mix(in srgb, var(--accent) 14%, transparent);color:var(--ink);
+    border-radius:999px;padding:7px 14px;font:700 13.5px "Helvetica Neue",Arial,sans-serif;cursor:pointer}
+  #lm-fmt-pill.on{display:inline-flex}
+  #lm-fmt-pill .pt{width:7px;height:7px;border-radius:50%;background:var(--accent);display:block}
+  #lm-fmt-pill:hover{filter:brightness(1.12)}
+  .lmf-velo{position:fixed;inset:0;z-index:100020;background:rgba(5,8,20,.62);backdrop-filter:blur(3px);
+    display:flex;align-items:center;justify-content:center;padding:28px 16px;opacity:0;transition:opacity .35s}
+  .lmf-velo.on{opacity:1}
+  .lmf-card{width:100%;max-width:620px;background:linear-gradient(180deg,var(--panel2),var(--panel));
+    border:1px solid var(--line);border-radius:18px;box-shadow:0 26px 80px rgba(0,0,0,.55);padding:26px 26px 22px;
+    transform:translateY(12px);transition:transform .35s cubic-bezier(.22,.9,.3,1);
+    font-family:"Helvetica Neue",Arial,sans-serif;color:var(--ink);max-height:88vh;overflow:auto}
+  .lmf-velo.on .lmf-card{transform:none}
+  .lmf-card.mini{max-width:420px}
+  .lmf-eyebrow{font:800 11px/1.4 inherit;letter-spacing:.16em;text-transform:uppercase;color:var(--muted2);margin:0 0 6px}
+  .lmf-card h3{font:800 23px/1.3 inherit;margin:0 0 6px;color:var(--ink)}
+  .lmf-card .lmf-sub{font:400 14.5px/1.5 inherit;color:var(--muted);margin:0 0 20px}
+  .lmf-ops{display:flex;gap:14px;align-items:stretch}
+  .lmf-op{flex:1 1 0;min-width:0;border-radius:14px;padding:16px 15px 15px;border:1px solid var(--line);
+    background:rgba(255,255,255,.035);display:flex;flex-direction:column}
+  .lmf-op.reco{border-color:var(--accent);background:color-mix(in srgb, var(--accent) 10%, transparent);
+    box-shadow:0 0 0 1px var(--accent) inset}
+  .lmf-chip{align-self:flex-start;font:800 10.5px/1.4 inherit;letter-spacing:.11em;text-transform:uppercase;
+    background:var(--accent);color:#12161f;border-radius:999px;padding:3px 9px;margin-bottom:9px}
+  .lmf-op h4{font:800 16px/1.3 inherit;margin:0 0 7px;color:var(--ink)}
+  .lmf-op p{font:400 13.5px/1.5 inherit;color:var(--muted);margin:0 0 15px;flex:1}
+  .lmf-btn{display:block;width:100%;text-align:center;border:none;border-radius:11px;padding:11px 12px;
+    font:800 14.5px inherit;cursor:pointer;font-family:inherit}
+  .lmf-btn.pri{background:var(--accent);color:#12161f}
+  .lmf-btn.sec{background:transparent;border:1px solid var(--line);color:var(--ink)}
+  .lmf-btn[disabled]{opacity:.55;cursor:default}
+  .lmf-pie{font:400 13px/1.5 inherit;color:var(--muted);margin:18px 0 0;padding-top:14px;border-top:1px solid var(--line)}
+  .lmf-exp{margin-top:12px;padding:13px 14px;border:1px dashed var(--line);border-radius:12px}
+  .lmf-exp p{margin:0 0 9px;font:400 13px/1.5 inherit;color:var(--muted)}
+  .lmf-exp input{width:100%;box-sizing:border-box;padding:10px 12px;border-radius:10px;border:1px solid var(--line);
+    background:rgba(0,0,0,.28);color:var(--ink);font:400 15px inherit;font-family:inherit}
+  .lmf-fila{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:14px}
+  .lmf-link{background:none;border:none;color:var(--muted);font:700 13px inherit;cursor:pointer;font-family:inherit}
+  .lmf-err{color:#ff6b81;font:700 13px inherit;margin:10px 0 0;min-height:1em}
+  @media(max-width:620px){ .lmf-ops{flex-direction:column} }
+</style>
+<script>
+(function(){
+  'use strict';
+  var SBU='https://woiptkyrxkbpnvioypit.supabase.co';
+  var SBK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndvaXB0a3lyeGticG52aW95cGl0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0NzI2ODYsImV4cCI6MjA5MjA0ODY4Nn0.B2nKgj5rD0rkdLeMIrd9KgD8lUPWsBT4Y7aCtmnvbjA';
+  function ses(){
+    try{
+      var s=JSON.parse(localStorage.getItem('lmpro_session')||localStorage.getItem('lmeav_session')||'null');
+      return s||window.__LM_SES||null;
+    }catch(e){ return window.__LM_SES||null; }
+  }
+  function cuenta(){ var s=ses(); return (s && s.id && s.estado==='validado') ? s.id : null; }
+  function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
+  async function rpc(fn,args){
+    var r=await fetch(SBU+'/rest/v1/rpc/'+fn,{method:'POST',
+      headers:{'Content-Type':'application/json','apikey':SBK,'Authorization':'Bearer '+SBK},
+      body:JSON.stringify(args||{})});
+    if(!r.ok) throw new Error('http '+r.status);
+    return await r.json();
+  }
+
+  var _estado=null;
+  async function cargar(forzar){
+    if(_estado && !forzar) return _estado;
+    var id=cuenta(); if(!id){ _estado={formato:'papel',elegido:false,sin_cuenta:true}; return _estado; }
+    try{ var d=await rpc('suite_formato_leer',{p_cuenta_id:id});
+         _estado={formato:(d&&d.formato)||'papel', elegido:!!(d&&d.elegido)};
+    }catch(e){ _estado={formato:'digital',elegido:true,error:true}; }
+    return _estado;
+  }
+  function esPapel(){ return !!(_estado && _estado.formato==='papel'); }
+
+  // El filtro de los de PAPEL: fuera las fichas digitales, y del resto solo el
+  // ciclo en curso (desde la ultima «Tareas de la semana» en adelante).
+  function filtrar(list){
+    if(!esPapel() || !Array.isArray(list)) return list;
+    var l=list.filter(function(o){ var pj=(o&&o.payload_json)||{}; return !pj.ficha_id; });
+    var corte=0;
+    l.forEach(function(o){
+      var pj=(o&&o.payload_json)||{};
+      if(pj.tareas_semana){ var t=Date.parse(o.creado_en)||0; if(t>corte) corte=t; }
+    });
+    if(!corte) return l;
+    return l.filter(function(o){ return (Date.parse(o.creado_en)||0) >= corte-60000; });
+  }
+
+  function velo(html, mini){
+    var v=document.createElement('div'); v.className='lmf-velo';
+    v.innerHTML='<div class="lmf-card'+(mini?' mini':'')+'">'+html+'</div>';
+    document.body.appendChild(v);
+    requestAnimationFrame(function(){ v.classList.add('on'); });
+    return v;
+  }
+  function cerrar(v){ v.classList.remove('on'); setTimeout(function(){ try{ v.remove(); }catch(e){} },380); }
+
+  var TXT_DIGITAL='Las fichas te llegan aqu&iacute;, son interactivas y ves tus resultados al momento. Adem&aacute;s, lo que m&aacute;s te cueste vuelve en la ficha siguiente con un ejercicio hecho solo para ti.';
+  var TXT_PAPEL='Tu profesor te da el material en clase, como siempre.';
+
+  function decidir(){
+    return new Promise(function(res){
+      var v=velo(
+        '<p class="lmf-eyebrow">&Uacute;ltimo paso para entrar</p>'+
+        '<h3>Antes de empezar, una decisi&oacute;n</h3>'+
+        '<p class="lmf-sub">Las fichas y las tareas obligatorias se pueden hacer de dos maneras. Elige la que prefieras.</p>'+
+        '<div class="lmf-ops">'+
+          '<div class="lmf-op reco"><span class="lmf-chip">Recomendado</span>'+
+            '<h4>Formato digital</h4><p>'+TXT_DIGITAL+'</p>'+
+            '<button type="button" class="lmf-btn pri" data-f="digital">Elegir digital</button></div>'+
+          '<div class="lmf-op"><h4>Formato papel</h4><p>'+TXT_PAPEL+'</p>'+
+            '<button type="button" class="lmf-btn sec" data-f="papel">Elegir papel</button></div>'+
+        '</div>'+
+        '<p class="lmf-pie">Puedes cambiar de formato cuando quieras.</p>'+
+        '<p class="lmf-err" id="lmf-err1"></p>');
+      v.querySelectorAll('.lmf-btn').forEach(function(b){
+        b.onclick=async function(){
+          var f=b.dataset.f, err=v.querySelector('#lmf-err1');
+          v.querySelectorAll('.lmf-btn').forEach(function(x){ x.disabled=true; });
+          b.textContent='Guardando…';
+          try{
+            var d=await rpc('suite_formato_elegir',{p_cuenta_id:cuenta(), p_formato:f});
+            if(!d || !d.ok) throw new Error((d&&d.error)||'error');
+            _estado={formato:f, elegido:true};
+            pintarPastilla();
+            cerrar(v); res(f);
+          }catch(e){
+            err.textContent='No se pudo guardar. Revisa tu conexión e inténtalo otra vez.';
+            v.querySelectorAll('.lmf-btn').forEach(function(x){ x.disabled=false; });
+            b.textContent = f==='digital' ? 'Elegir digital' : 'Elegir papel';
+          }
+        };
+      });
+    });
+  }
+
+  function cambiar(){
+    var actual=(_estado&&_estado.formato)||'papel';
+    var otro = actual==='digital' ? 'papel' : 'digital';
+    var explica = actual==='digital'
+      ? 'Las fichas te llegan como notificaci&oacute;n y las haces aqu&iacute; mismo, con tus resultados al momento.'
+      : 'Tu profesor te da las fichas en papel en clase. Aqu&iacute; solo ves las tareas de la semana en curso.';
+    var v=velo(
+      '<h3>Tienes el formato '+actual+'</h3>'+
+      '<p class="lmf-sub">'+explica+'</p>'+
+      '<div class="lmf-exp">'+
+        '<p>Para cambiar a <b>'+otro+'</b>, escribe tu n&uacute;mero de expediente. Tu profesor se entera del cambio.</p>'+
+        '<input id="lmf-exp" type="text" placeholder="N&uacute;mero de expediente" autocomplete="off" autocapitalize="off" spellcheck="false">'+
+      '</div>'+
+      '<p class="lmf-err" id="lmf-err2"></p>'+
+      '<div class="lmf-fila">'+
+        '<button type="button" class="lmf-link" id="lmf-no">Dejarlo como est&aacute;</button>'+
+        '<button type="button" class="lmf-btn pri" id="lmf-si" style="width:auto;padding:10px 18px">Cambiar a '+otro+'</button>'+
+      '</div>', true);
+    v.querySelector('#lmf-no').onclick=function(){ cerrar(v); };
+    v.querySelector('#lmf-si').onclick=async function(){
+      var exp=(v.querySelector('#lmf-exp').value||'').trim();
+      var err=v.querySelector('#lmf-err2'); err.textContent='';
+      if(exp.length<3){ err.textContent='Escribe tu nº de expediente completo.'; return; }
+      var b=v.querySelector('#lmf-si'); b.disabled=true; b.textContent='Cambiando…';
+      try{
+        var d=await rpc('suite_formato_elegir',{p_cuenta_id:cuenta(), p_formato:otro, p_expediente:exp});
+        if(!d || !d.ok){
+          err.textContent = (d&&d.error==='expediente_no_coincide')
+            ? 'Ese nº de expediente no es el tuyo. Míralo en CentrosNET o en tu carnet.'
+            : 'No se pudo cambiar. Inténtalo otra vez.';
+          b.disabled=false; b.textContent='Cambiar a '+otro; return;
+        }
+        _estado={formato:otro, elegido:true};
+        pintarPastilla();
+        cerrar(v);
+        setTimeout(function(){ location.reload(); }, 420);
+      }catch(e){
+        err.textContent='No se pudo cambiar. Revisa tu conexión.';
+        b.disabled=false; b.textContent='Cambiar a '+otro;
+      }
+    };
+  }
+
+  function pintarPastilla(){
+    var b=document.getElementById('lm-fmt-pill');
+    if(!b){
+      var campana=document.getElementById('alu-campana-btn'); if(!campana) return;
+      b=document.createElement('button');
+      b.type='button'; b.id='lm-fmt-pill';
+      b.onclick=function(){ cambiar(); };
+      campana.insertAdjacentElement('afterend', b);
+    }
+    if(!cuenta() || !(_estado && _estado.elegido)){ b.classList.remove('on'); return; }
+    b.innerHTML='<span class="pt"></span> Formato '+esc(_estado.formato);
+    b.title='Pulsa para cambiar de formato';
+    b.classList.add('on');
+  }
+
+  async function arranque(){ await cargar(); pintarPastilla(); }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',function(){ setTimeout(arranque,700); });
+  else setTimeout(arranque,700);
+
+  window.__LM_FMT__={ cargar:cargar, esPapel:esPapel, filtrar:filtrar,
+                      decidir:decidir, cambiar:cambiar, pintarPastilla:pintarPastilla,
+                      estado:function(){ return _estado; } };
+})();
+</script>
+<!-- /@FORMATO -->
 </body>
 </html>
