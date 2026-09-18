@@ -6078,14 +6078,19 @@ window.DictadoClase = (function(){
     if(t.spotify_track_id) return '<iframe src="https://open.spotify.com/embed/track/'+esc(t.spotify_track_id)+'?utm_source=generator&theme=0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy" title="Spotify"></iframe>';
     return '<iframe src="https://widget.deezer.com/widget/dark/track/'+esc(t.track_id)+'?tracklist=false" allow="encrypted-media; clipboard-write" loading="lazy" title="Deezer"></iframe>';
   }
-  // (17-sep-2026) Los enlaces de audio de Deezer van FIRMADOS y caducan a los pocos dias:
-  // el lote se hace el viernes y para el miercoles el guardado ya da 403. Deezer no deja
-  // pedirlos desde el navegador (sin CORS), asi que se piden a nuestra funcion temazo-preview,
-  // que los renueva desde el servidor. Si eso fallara, se prueba con el guardado.
+  // (17-sep-2026) Los enlaces de audio de Deezer van FIRMADOS y caducan enseguida:
+  // el lote se hace el viernes y el guardado ya da 403. Deezer no deja pedirlos
+  // desde el navegador (sin CORS), asi que se piden a nuestra funcion
+  // temazo-preview, que los renueva desde el servidor. Si eso fallara, se prueba
+  // con el guardado.
+  // (18-sep-2026, Iago) La firma dura 15 MINUTOS: este enlace NO se puede cachear.
+  // Antes la funcion respondia con media hora de cache y servia enlaces ya
+  // caducados; la cancion sonaba cuatro segundos y se paraba. Ahora se pide
+  // siempre fresco (no-store + parametro anticache).
   async function urlFresca(t){
     if(t.track_id){
       try{
-        var r=await fetch(SBU+'/functions/v1/temazo-preview?track='+encodeURIComponent(t.track_id));
+        var r=await fetch(SBU+'/functions/v1/temazo-preview?track='+encodeURIComponent(t.track_id)+'&_='+Date.now(),{cache:'no-store'});
         var j=await r.json();
         if(j && j.ok && j.preview) return j.preview;
       }catch(e){}
@@ -6106,14 +6111,34 @@ window.DictadoClase = (function(){
     if(!src){ pp.style.opacity='.35'; pp.title='Este no se puede escuchar aqui: abrelo en Spotify'; return; }
     pp.disabled=false; pp.style.opacity='';
     AUDIO=new Audio(src); AUDIO.preload='metadata';
-    AUDIO.addEventListener('error',function(){ pp.style.opacity='.35'; pp.title='No se pudo cargar el audio'; });
+    // (18-sep-2026, Iago) Red de seguridad: si el enlace firmado cae a mitad de
+    // cancion (caduca a los 15 min), se pide otro fresco y se sigue por donde iba.
+    var rescates=0;
+    async function rescatar(){
+      if(rescates>=2 || !AUDIO) return; rescates++;
+      var seg=AUDIO.currentTime||0, sonaba=!AUDIO.paused;
+      var nueva=await urlFresca(mio);
+      if(!nueva || !AUDIO || (actual && actual.t!==mio)) return;
+      AUDIO.src=nueva; AUDIO.load();
+      AUDIO.addEventListener('loadedmetadata',function un(){
+        AUDIO.removeEventListener('loadedmetadata',un);
+        try{ if(seg>0.3) AUDIO.currentTime=seg; }catch(e){}
+        if(sonaba) AUDIO.play().catch(function(){});
+      });
+    }
+    AUDIO.addEventListener('error',function(){ if(rescates>=2){ pp.style.opacity='.35'; pp.title='No se pudo cargar el audio'; } rescatar(); });
+    AUDIO.addEventListener('stalled',function(){ rescatar(); });
     function pinta(){
       var d=AUDIO.duration||30, p=Math.min(100,(AUDIO.currentTime/d)*100);
       if(pr) pr.style.width=p+'%'; if(ti) ti.textContent=mmss(AUDIO.currentTime)+' / '+mmss(d);
     }
     function son(v){ pp.innerHTML=v?ICO_PAUSA:ICO_PLAY; pp.classList.toggle('son',v); if(eq) eq.classList.toggle('son',v); }
     AUDIO.addEventListener('timeupdate',pinta);
-    AUDIO.addEventListener('ended',function(){ son(false); if(pr) pr.style.width='0%'; if(ti) ti.textContent='0:00 / '+mmss(AUDIO.duration||30); });
+    AUDIO.addEventListener('ended',function(){
+      // un «final» muy antes de tiempo no es el final: es el enlace que ha caido
+      if(AUDIO.duration && AUDIO.currentTime < AUDIO.duration-1.5){ rescatar(); return; }
+      son(false); if(pr) pr.style.width='0%'; if(ti) ti.textContent='0:00 / '+mmss(AUDIO.duration||30);
+    });
     AUDIO.addEventListener('play',function(){ son(true); });
     AUDIO.addEventListener('pause',function(){ son(false); });
     pp.onclick=function(){ if(AUDIO.paused) AUDIO.play().catch(function(){}); else AUDIO.pause(); };
