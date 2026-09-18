@@ -544,6 +544,12 @@ body.intro.cards-in .medallero{animation:cardIn .5s ease forwards}
 .da-mini .da-btn:hover:not(:disabled){background:rgba(245,140,60,.34);border-color:#F5924A;color:#fff}
 .da-mini .da-btn:disabled{opacity:.5;cursor:default}
 .da-mini .da-play{font-size:9px;opacity:.85}
+/* (Iago 18-sep-2026) INTRO activa de la semana: mismo formato que el dictado,
+   pero en verde (ritmo). Y en las cuentas tester el «by ...» deja el hueco. */
+.ri-mini .da-btn{border-color:rgba(74,222,128,.55);
+  background:linear-gradient(135deg,rgba(74,222,128,.20),rgba(22,163,74,.10));color:#A7F3C6}
+.ri-mini .da-btn:hover:not(:disabled){background:rgba(74,222,128,.32);border-color:#4ade80;color:#fff}
+body.tester-sin-by .topbar-right .by{display:none}
 
 /* ── la tarea de Hamilton, dentro de la campana ── */
 .alu-item.alu-item-ham{
@@ -6509,5 +6515,114 @@ window.DictadoClase = (function(){
 })();
 </script>
 <!-- /@FORMATO -->
+
+<script>
+/* ================================================================
+   INTRO ACTIVA DE LA SEMANA (Iago 18-sep-2026)
+   Igual que el dictado activo, pero con la INTRO del ritmo: si esta
+   semana hay una carta preparada en el Diario, sale un boton pequeno
+   junto a la campana — ▶ INTRO 1.1 — que abre la explicacion
+   interactiva en RITMO at home. Solo en las cuentas tester.
+   Para ganar ese hueco, en las cuentas tester se quita el
+   «by Iago Gonzalez Alonso» de la barra: al resto del alumnado y a
+   los invitados les sigue apareciendo tal cual.
+   ================================================================ */
+(function(){
+  'use strict';
+  var CURSOS=['1Gp','2Gp','3Gp','4Gp','5Gp','6Gp','1Ge','2Ge','3Ge','4Ge'];
+  var TESTERS=['iago gonzalez tester','iago gonzalez pro tester'];
+  var KEY='lmeav_session';
+  var SBU='https://woiptkyrxkbpnvioypit.supabase.co';
+  var SBK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndvaXB0a3lyeGticG52aW95cGl0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0NzI2ODYsImV4cCI6MjA5MjA0ODY4Nn0.B2nKgj5rD0rkdLeMIrd9KgD8lUPWsBT4Y7aCtmnvbjA';
+  var RITMO='https://iagonaron.github.io/ritmoathome/';
+
+  function norm(s){ return String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+                      .replace(/\s+/g,' ').trim().toLowerCase(); }
+  function ses(){ try{ return JSON.parse(localStorage.getItem(KEY)||'null'); }catch(e){ return null; } }
+  function esTester(){ var s=ses();
+    return !!(s && s.estado==='validado' && /tester/.test(norm(s.nombre))); }
+
+  function isoWeek(d){
+    var date=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()));
+    var day=date.getUTCDay()||7; date.setUTCDate(date.getUTCDate()+4-day);
+    var ys=new Date(Date.UTC(date.getUTCFullYear(),0,1));
+    return { anio:date.getUTCFullYear(), semana:Math.ceil((((date-ys)/86400000)+1)/7) };
+  }
+  /* misma semana docente que el dictado: caduca el viernes a las 19:00 */
+  function semanaDocenteRef(){
+    var now=new Date();
+    var mon=new Date(now); mon.setHours(0,0,0,0);
+    mon.setDate(mon.getDate()-((mon.getDay()+6)%7));
+    var fri19=new Date(mon); fri19.setDate(mon.getDate()+4); fri19.setHours(19,0,0,0);
+    return (now>fri19)? new Date(mon.getTime()+7*864e5) : now;
+  }
+  function esCarta(x){ return /^\d+\.\d+$/.test(String(x||'').trim()); }
+
+  async function consulta(){
+    var iw=isoWeek(semanaDocenteRef());
+    var url=SBU+'/rest/v1/semanas?select=curso,bloques_data'+
+      '&anio=eq.'+iw.anio+'&semana_iso=eq.'+iw.semana+
+      '&curso=in.('+CURSOS.join(',')+')&order=curso.asc';
+    var r=await fetch(url,{headers:{'apikey':SBK,'Authorization':'Bearer '+SBK,'Cache-Control':'no-cache'}});
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    var rows=await r.json();
+    var out=[];
+    (rows||[]).forEach(function(f){
+      var bd=f.bloques_data||{};
+      var ir=bd.__introRitmo;                                       /* grado elemental */
+      var carta=(ir && ir.carta) ? ir.carta : bd.__carta_ritmo;     /* profesional */
+      var nombre=(ir && ir.nombre) ? ir.nombre : (bd.__carta_ritmo_txt||'');
+      if(esCarta(carta)) out.push({curso:f.curso, carta:String(carta).trim(), nombre:nombre});
+    });
+    return { iw:iw, rows:out };
+  }
+
+  function pintar(res){
+    var host=document.querySelector('.topbar-right'); if(!host) return;
+    var old=document.getElementById('ri-mini'); if(old) old.remove();
+    if(!res || !res.rows.length) return;
+    var caja=document.createElement('div');
+    caja.id='ri-mini'; caja.className='da-mini ri-mini';
+    caja.innerHTML=res.rows.map(function(f){
+      var tit=f.curso+' \u00b7 explicacion interactiva de la carta '+f.carta+
+              (f.nombre?(' \u2014 '+f.nombre):'')+' \u00b7 solo profesor';
+      return '<button type="button" class="da-btn" data-carta="'+f.carta+'" title="'+
+        tit.replace(/"/g,'&quot;')+'">'+
+        '<span class="da-play">\u25B6</span>INTRO '+f.carta+
+        (res.rows.length>1?(' \u00b7 '+f.curso):'')+'</button>';
+    }).join('');
+    var by=host.querySelector('.by');
+    if(by) host.insertBefore(caja, by); else host.appendChild(caja);
+    caja.querySelectorAll('.da-btn').forEach(function(b){
+      b.addEventListener('click', function(){
+        window.location.href = RITMO+'?introCarta='+encodeURIComponent(b.dataset.carta);
+      });
+    });
+  }
+
+  var _busy=false;
+  async function revisar(){
+    if(_busy) return; _busy=true;
+    try{
+      var tester=esTester();
+      /* el hueco del «by ...»: solo se quita en las cuentas tester */
+      document.body.classList.toggle('tester-sin-by', tester);
+      if(!tester){ var o=document.getElementById('ri-mini'); if(o) o.remove(); return; }
+      pintar(await consulta());
+    }catch(e){ console.warn('[intro-activa]', e); }
+    finally{ _busy=false; }
+  }
+
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', revisar);
+  else revisar();
+  document.addEventListener('visibilitychange', function(){
+    if(document.visibilityState==='visible') revisar();
+  });
+  var _ss=window.setSession;
+  if(typeof _ss==='function'){
+    window.setSession=function(s){ var r=_ss(s); setTimeout(revisar,300); return r; };
+  }
+})();
+</script>
 </body>
 </html>
