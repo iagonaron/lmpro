@@ -6098,7 +6098,12 @@ window.DictadoClase = (function(){
     return t.preview_url||'';
   }
   async function montarPlayer(t){
-    try{ if(AUDIO){ AUDIO.pause(); AUDIO=null; } }catch(e){}
+    /* (18-sep-2026, Iago · PORTALES-4) Al pedir otro género se ponía la global
+       AUDIO a null y después se esperaba al enlace nuevo; mientras tanto el
+       audio VIEJO seguía lanzando «timeupdate» y el pintor le preguntaba la
+       duración a null → TypeError. Ahora se le sueltan los oyentes al viejo
+       antes de soltarlo. */
+    try{ if(AUDIO){ AUDIO.pause(); if(AUDIO.__off) AUDIO.__off(); AUDIO=null; } }catch(e){}
     var pp=document.getElementById('tz-pp'); if(!pp) return;
     var eq=document.getElementById('tz-eq'), pr=document.getElementById('tz-prog'),
         ba=document.getElementById('tz-barra'), ti=document.getElementById('tz-tiempo');
@@ -6110,41 +6115,62 @@ window.DictadoClase = (function(){
     if(actual && actual.t !== mio) return;       // cambio de cancion mientras llegaba
     if(!src){ pp.style.opacity='.35'; pp.title='Este no se puede escuchar aqui: abrelo en Spotify'; return; }
     pp.disabled=false; pp.style.opacity='';
-    AUDIO=new Audio(src); AUDIO.preload='metadata';
+    /* Cada montaje trabaja con SU elemento de audio (la variable local «a») en
+       vez de con la global: si entretanto llega otro montaje, éste se apaga solo
+       (vivo()) en lugar de reventar. */
+    var a=new Audio(src); a.preload='metadata';
+    AUDIO=a;
+    function vivo(){ return AUDIO===a; }
     // (18-sep-2026, Iago) Red de seguridad: si el enlace firmado cae a mitad de
     // cancion (caduca a los 15 min), se pide otro fresco y se sigue por donde iba.
     var rescates=0;
     async function rescatar(){
-      if(rescates>=2 || !AUDIO) return; rescates++;
-      var seg=AUDIO.currentTime||0, sonaba=!AUDIO.paused;
+      if(rescates>=2 || !vivo()) return; rescates++;
+      var seg=a.currentTime||0, sonaba=!a.paused;
       var nueva=await urlFresca(mio);
-      if(!nueva || !AUDIO || (actual && actual.t!==mio)) return;
-      AUDIO.src=nueva; AUDIO.load();
-      AUDIO.addEventListener('loadedmetadata',function un(){
-        AUDIO.removeEventListener('loadedmetadata',un);
-        try{ if(seg>0.3) AUDIO.currentTime=seg; }catch(e){}
-        if(sonaba) AUDIO.play().catch(function(){});
+      if(!nueva || !vivo() || (actual && actual.t!==mio)) return;
+      a.src=nueva; a.load();
+      a.addEventListener('loadedmetadata',function un(){
+        a.removeEventListener('loadedmetadata',un);
+        if(!vivo()) return;
+        try{ if(seg>0.3) a.currentTime=seg; }catch(e){}
+        if(sonaba) a.play().catch(function(){});
       });
     }
-    AUDIO.addEventListener('error',function(){ if(rescates>=2){ pp.style.opacity='.35'; pp.title='No se pudo cargar el audio'; } rescatar(); });
-    AUDIO.addEventListener('stalled',function(){ rescatar(); });
+    function onError(){ if(!vivo()) return; if(rescates>=2){ pp.style.opacity='.35'; pp.title='No se pudo cargar el audio'; } rescatar(); }
+    function onStalled(){ rescatar(); }
     function pinta(){
-      var d=AUDIO.duration||30, p=Math.min(100,(AUDIO.currentTime/d)*100);
-      if(pr) pr.style.width=p+'%'; if(ti) ti.textContent=mmss(AUDIO.currentTime)+' / '+mmss(d);
+      if(!vivo()) return;
+      var d=a.duration||30, p=Math.min(100,(a.currentTime/d)*100);
+      if(pr) pr.style.width=p+'%'; if(ti) ti.textContent=mmss(a.currentTime)+' / '+mmss(d);
     }
-    function son(v){ pp.innerHTML=v?ICO_PAUSA:ICO_PLAY; pp.classList.toggle('son',v); if(eq) eq.classList.toggle('son',v); }
-    AUDIO.addEventListener('timeupdate',pinta);
-    AUDIO.addEventListener('ended',function(){
+    function son(v){ if(!vivo()) return; pp.innerHTML=v?ICO_PAUSA:ICO_PLAY; pp.classList.toggle('son',v); if(eq) eq.classList.toggle('son',v); }
+    function onEnded(){
+      if(!vivo()) return;
       // un «final» muy antes de tiempo no es el final: es el enlace que ha caido
-      if(AUDIO.duration && AUDIO.currentTime < AUDIO.duration-1.5){ rescatar(); return; }
-      son(false); if(pr) pr.style.width='0%'; if(ti) ti.textContent='0:00 / '+mmss(AUDIO.duration||30);
-    });
-    AUDIO.addEventListener('play',function(){ son(true); });
-    AUDIO.addEventListener('pause',function(){ son(false); });
-    pp.onclick=function(){ if(AUDIO.paused) AUDIO.play().catch(function(){}); else AUDIO.pause(); };
+      if(a.duration && a.currentTime < a.duration-1.5){ rescatar(); return; }
+      son(false); if(pr) pr.style.width='0%'; if(ti) ti.textContent='0:00 / '+mmss(a.duration||30);
+    }
+    function onPlay(){ son(true); }
+    function onPause(){ son(false); }
+    a.addEventListener('error',onError);
+    a.addEventListener('stalled',onStalled);
+    a.addEventListener('timeupdate',pinta);
+    a.addEventListener('ended',onEnded);
+    a.addEventListener('play',onPlay);
+    a.addEventListener('pause',onPause);
+    a.__off=function(){
+      try{
+        a.removeEventListener('error',onError); a.removeEventListener('stalled',onStalled);
+        a.removeEventListener('timeupdate',pinta); a.removeEventListener('ended',onEnded);
+        a.removeEventListener('play',onPlay); a.removeEventListener('pause',onPause);
+      }catch(e){}
+    };
+    pp.onclick=function(){ if(!vivo()) return; if(a.paused) a.play().catch(function(){}); else a.pause(); };
     if(ba) ba.onclick=function(ev){
-      var r=ba.getBoundingClientRect(); var d=AUDIO.duration||30;
-      AUDIO.currentTime=Math.max(0,Math.min(d,((ev.clientX-r.left)/r.width)*d)); pinta();
+      if(!vivo()) return;
+      var r=ba.getBoundingClientRect(); var d=a.duration||30;
+      a.currentTime=Math.max(0,Math.min(d,((ev.clientX-r.left)/r.width)*d)); pinta();
     };
   }
   var MODOS={
