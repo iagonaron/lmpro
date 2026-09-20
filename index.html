@@ -6610,8 +6610,8 @@ window.DictadoClase = (function(){
    ================================================================ */
 (function(){
   'use strict';
-  var CURSOS=['1Gp','2Gp','3Gp','4Gp','5Gp','6Gp','1Ge','2Ge','3Ge','4Ge'];
-  var TESTERS=['iago gonzalez tester','iago gonzalez pro tester'];
+  var CURSOS=['1Gp','2Gp','3Gp','4Gp','5Gp','6Gp'];   /* 20-sep-2026: solo GP. Antes podia colar la INTRO de elemental aqui. */
+  var TESTERS=['iago gonzalez tester','iago gonzalez protester','iago gonzalez pro tester'];   /* 20-sep-2026: faltaba «protester» en una palabra, por eso en GP seguia el «by ...» */
   var KEY='lmeav_session';
   var SBU='https://woiptkyrxkbpnvioypit.supabase.co';
   var SBK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndvaXB0a3lyeGticG52aW95cGl0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0NzI2ODYsImV4cCI6MjA5MjA0ODY4Nn0.B2nKgj5rD0rkdLeMIrd9KgD8lUPWsBT4Y7aCtmnvbjA';
@@ -6729,6 +6729,18 @@ window.DictadoClase = (function(){
 .rs-mini .rs-btn.violeta:hover:not(:disabled){background:rgba(167,139,250,.32);border-color:#a78bfa;color:#fff}
 .rs-mini .rs-btn:disabled{opacity:.5;cursor:default}
 .rs-aviso{font:700 11px/1 "Helvetica Neue",Arial,sans-serif;color:#F5A97F;white-space:nowrap}
+/* (20-sep-2026, Iago) Retoques SOLO en las cuentas tester:
+   · fuera el «Optimizado para ordenador y tablet» y el «by ...», que estorban
+   · la campana, lo primero por la izquierda
+   · la barra puede envolver: con tantos botones se salia por el borde
+   · el aviso de «no hay grupo activo» flota por encima, sin mover los botones */
+body.tester-sin-by .opt-mini{display:none !important}
+body.tester-sin-by .topbar-right{flex-wrap:wrap;justify-content:flex-end;row-gap:6px}
+body.tester-sin-by .topbar-right .alu-campana-btn{order:-1}
+#rs-mini{position:relative}
+#rs-mini .rs-aviso{position:absolute;bottom:calc(100% + 8px);right:0;z-index:60;
+  background:rgba(17,24,39,.96);border:1px solid rgba(245,169,127,.45);border-radius:9px;
+  padding:7px 11px;box-shadow:0 10px 26px rgba(0,0,0,.45);pointer-events:none}
 </style>
 <script>
 (function () {
@@ -6820,6 +6832,9 @@ window.DictadoClase = (function(){
     if (caja) return;
     caja = document.createElement('div');
     caja.id = 'rs-mini'; caja.className = 'rs-mini';
+    /* (20-sep-2026) la clase que esconde el «by ...» y el «Optimizado para
+       ordenador y tablet»; solo se añade, nunca se quita. */
+    try { document.body.classList.add('tester-sin-by'); } catch (e) {}
     BOTONES.forEach(function (b) {
       var el = document.createElement('button');
       el.type = 'button';
