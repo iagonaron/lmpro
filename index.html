@@ -3196,6 +3196,36 @@ function showEnig(kind){
     return out;
   }
   function media(list){ if(!list||!list.length) return null; var s=0; for(var i=0;i<list.length;i++) s+=list[i].nota; return s/list.length; }
+  /* (20-sep-2026, Iago) LA NOTA DE CLASE SE PONDERA, NO ES UNA MEDIA PLANA.
+     El Diario cambió esto el 17-sep-2026 («La nota de CLASE se pondera igual
+     que la de EXAMEN, no con una media plana»), pero el portal seguía
+     haciendo la media simple de todas las sesiones: el alumno veía un número
+     distinto del que ve el profesor. Se pondera por apartado con los mismos
+     pesos que el examen de Lenguaje Musical. En grado profesional no hay
+     atonal en clase, así que su 10 % lo aglutina la Entonación (Ritmo
+     entonado), exactamente como hace el Diario. */
+  function mediaClase(list){
+    if(!list||!list.length) return null;
+    var curso=cursoCodDe((_st.alumno&&_st.alumno.grupo)||'');
+    var esGP=/Gp$/.test(curso||'');
+    var pEx=esGP?PESOS_EXAMEN_GP:PESOS_EXAMEN_GE;
+    var pesos={ ritmo:pEx.ritmo, audicion:pEx.audicion, teoria:pEx.teoria,
+                entonacion: pEx.entonacion + (esGP?(pEx.entonacion_atonal||0):0) };
+    var suma={}, cuenta={};
+    for(var i=0;i<list.length;i++){
+      var ap=list[i].ap;
+      if(!pesos[ap]) continue;
+      suma[ap]=(suma[ap]||0)+list[i].nota;
+      cuenta[ap]=(cuenta[ap]||0)+1;
+    }
+    var sn=0, sw=0;
+    for(var k in pesos){
+      if(!cuenta[k]) continue;
+      sn += (suma[k]/cuenta[k])*pesos[k];
+      sw += pesos[k];
+    }
+    return sw ? sn/sw : null;
+  }
   function mediasPorAp(ss, trim){
     var out={};
     ORDEN_AP.forEach(function(ap){
@@ -3354,7 +3384,7 @@ function showEnig(kind){
     }).join('')+'</div>';
   }
   function bloqueTendencia(ss){
-    function mTrim(t){ var l=ss.filter(function(x){ return x.trim===t; }); return media(l); }
+    function mTrim(t){ var l=ss.filter(function(x){ return x.trim===t; }); return mediaClase(l); }
     var n1=mTrim('1T'),n2=mTrim('2T'),n3=mTrim('3T');
     var N=function(v){ return (v!=null&&isFinite(v))?+v.toFixed(2):null; };
     n1=N(n1); n2=N(n2); n3=N(n3);
@@ -3497,7 +3527,7 @@ function showEnig(kind){
   }
   /* Nota de clase actual: media de TODAS tus notas de clase hasta hoy (como el Diario). */
   function abrirNotaClase(){
-    var n=media(sesiones());
+    var n=mediaClase(sesiones());
     var f=new Date().toLocaleDateString('es-ES',{day:'numeric',month:'long',year:'numeric'});
     abrirModalMR('<div class="mr-nc-lbl2">Nota de clase actual</div>'
       +'<div class="mr-nc-big" style="color:'+colorNota(n)+'">'+fmt(n)+'</div>'
@@ -3512,13 +3542,13 @@ function showEnig(kind){
     function fila(l,v){ return '<div class="mr-pw-row"><span>'+l+'</span><b>'+Math.round(v*100)+'%</b></div>'; }
     var nom=CURSO_NOMBRE[curso]||(curso||'tu curso');
     var h='<div class="mr-pw-tit">⚙️ Porcentajes de evaluación</div>'
-      +'<div class="mr-pw-sub">'+esc(nom)+' · así se calcula la nota final del trimestre: por un lado el examen (ponderado por apartados), por otro la media de tus notas de clase.</div>'
+      +'<div class="mr-pw-sub">'+esc(nom)+' · así se calcula la nota final del trimestre: por un lado el examen y por otro tus notas de clase, las dos ponderadas por apartado con los mismos pesos.</div>'
       +'<div class="mr-pw-card mr-pw-full"><h5>Nota final</h5>'+fila('Peso del examen',pesos.examen)+fila('Peso notas de clase',pesos.clase)+'</div>'
       +'<div class="mr-pw-cards">'
-        +'<div class="mr-pw-card"><h5>LM</h5><div class="mr-pw-note">Ponderación de los apartados del examen</div>'+fila('Ritmo',pEx.ritmo)+fila('Entonación',pEx.entonacion)+(esGP?fila('Entonación atonal',pEx.entonacion_atonal):'')+fila('Audición',pEx.audicion)+fila('Teoría',pEx.teoria)+fila('Actitud',pEx.actitud)+'</div>'
-        +(!esGP?'<div class="mr-pw-card"><h5>EAV</h5><div class="mr-pw-note">Ponderación de los apartados del examen</div>'+fila('Entonación',.45)+fila('Audición',.50)+fila('Actitud',.05)+'</div>':'')
+        +'<div class="mr-pw-card"><h5>LM</h5><div class="mr-pw-note">Ponderación de los apartados</div>'+fila('Ritmo',pEx.ritmo)+fila('Entonación',pEx.entonacion)+(esGP?fila('Entonación atonal',pEx.entonacion_atonal):'')+fila('Audición',pEx.audicion)+fila('Teoría',pEx.teoria)+fila('Actitud',pEx.actitud)+'</div>'
+        +(!esGP?'<div class="mr-pw-card"><h5>EAV</h5><div class="mr-pw-note">Ponderación de los apartados</div>'+fila('Entonación',.45)+fila('Audición',.50)+fila('Actitud',.05)+'</div>':'')
       +'</div>'
-      +'<div class="mr-pw-foot">La actitud se aplica solo en la parte de examen. '+(!esGP?'EAV usa pesos propios (45/50/5).':'En GP la entonación se reparte 10% tonal + 10% atonal.')+'</div>';
+      +'<div class="mr-pw-foot">La actitud no entra ni en el examen ni en las notas de clase: es el 5 % de la nota final del trimestre. '+(!esGP?'EAV usa pesos propios (45/50/5).':'En GP la entonación se reparte 10% tonal + 10% atonal.')+'</div>';
     abrirModalMR(h, true);
   }
 
@@ -3543,7 +3573,7 @@ function showEnig(kind){
     var nombre=((al.nombre||'')+' '+(al.apellidos||'')).trim()||'Alumno/a';
     var trims=trimsConDatos(ss);
     if(!_st.trim || trims.indexOf(_st.trim)===-1) _st.trim=trims.length?trims[trims.length-1]:'1T';
-    var notaClase=media(ss);   // fuente única: media simple de TODAS las sesiones
+    var notaClase=mediaClase(ss);   // ponderada por apartado, igual que el Diario
     var fechaTxt=new Date().toLocaleDateString('es-ES',{day:'numeric',month:'long',year:'numeric'});
     var chips=(trims.length?trims:['1T']).map(function(t){
       return '<button type="button" class="mr-chip-trim'+(t===_st.trim?' on':'')+'" data-trim="'+t+'">'+t+'</button>';
