@@ -6705,5 +6705,140 @@ window.DictadoClase = (function(){
   }
 })();
 </script>
+<style>
+/* ===== BOTONES «RESULTADOS» (Iago 20-sep-2026) =========================
+   Solo cuenta tester. Abren la PANTALLA IPAD de la app de corrección que
+   toque, en los dominios lmathome.es (los netlify.app los bloquea la wifi
+   del centro). El grupo NO se manda en la URL: la propia pantalla lo elige
+   por la franja horaria (horario_clases). Aquí solo se comprueba que haya
+   clase ahora; si no la hay, se avisa y no se abre nada.
+   Colores: ritmo VERDE · entonación AZUL · ritmo entonado GP VIOLETA.
+   ====================================================================== */
+.rs-mini{display:flex;align-items:center;gap:6px}
+.rs-mini .rs-btn{display:inline-flex;align-items:center;gap:5px;border:1px solid;border-radius:999px;
+  font:800 11px/1 "Helvetica Neue",Arial,sans-serif;letter-spacing:.02em;padding:7px 12px;cursor:pointer;
+  white-space:nowrap;background:transparent;transition:background .18s,border-color .18s,color .18s}
+.rs-mini .rs-btn.verde{border-color:rgba(74,222,128,.55);
+  background:linear-gradient(135deg,rgba(74,222,128,.20),rgba(22,163,74,.10));color:#A7F3C6}
+.rs-mini .rs-btn.verde:hover:not(:disabled){background:rgba(74,222,128,.32);border-color:#4ade80;color:#fff}
+.rs-mini .rs-btn.azul{border-color:rgba(96,165,250,.55);
+  background:linear-gradient(135deg,rgba(96,165,250,.20),rgba(37,99,235,.10));color:#C3DAFF}
+.rs-mini .rs-btn.azul:hover:not(:disabled){background:rgba(96,165,250,.32);border-color:#60a5fa;color:#fff}
+.rs-mini .rs-btn.violeta{border-color:rgba(167,139,250,.55);
+  background:linear-gradient(135deg,rgba(167,139,250,.20),rgba(109,40,217,.10));color:#DDD1FF}
+.rs-mini .rs-btn.violeta:hover:not(:disabled){background:rgba(167,139,250,.32);border-color:#a78bfa;color:#fff}
+.rs-mini .rs-btn:disabled{opacity:.5;cursor:default}
+.rs-aviso{font:700 11px/1 "Helvetica Neue",Arial,sans-serif;color:#F5A97F;white-space:nowrap}
+</style>
+<script>
+(function () {
+  'use strict';
+  var TIPO = 'GP', KEY = 'lmpro_session', TESTER = 'iago gonzalez protester';
+  var BOTONES = [{txt:'Ver resultados', color:'violeta', tit:'Ritmo entonado \u00b7 pantalla iPad de la app de correcci\u00f3n', url:'https://correccionritmoentonado.lmathome.es/pantalla.html'}];
+
+  function norm(s) {
+    return String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '')
+      .replace(/\s+/g, ' ').trim().toLowerCase();
+  }
+  function ses() { try { return JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) { return null; } }
+  function esTester() { var s = ses(); return !!(s && s.estado === 'validado' && norm(s.nombre) === TESTER); }
+
+  function cfg() { return window.DIARIO_CONFIG || {}; }
+  function rest(ruta) {
+    var c = cfg();
+    if (!c.SUPABASE_URL || !c.SUPABASE_ANON) return Promise.reject(new Error('sin config'));
+    return fetch(c.SUPABASE_URL + '/rest/v1/' + ruta, {
+      headers: { apikey: c.SUPABASE_ANON, Authorization: 'Bearer ' + c.SUPABASE_ANON, 'Cache-Control': 'no-cache' }
+    }).then(function (r) { if (!r.ok) throw new Error('http ' + r.status); return r.json(); });
+  }
+
+  /* grupos de ESTE grado en el curso escolar mas reciente */
+  var _cods = null;
+  function codigos() {
+    if (_cods) return Promise.resolve(_cods);
+    return rest('grupos_canon?select=codigo,curso_escolar,tipo&tipo=eq.' + TIPO).then(function (f) {
+      if (!f || !f.length) { _cods = []; return _cods; }
+      var ce = f.map(function (x) { return x.curso_escolar; }).sort().pop();
+      _cods = f.filter(function (x) { return x.curso_escolar === ce; }).map(function (x) { return String(x.codigo); });
+      return _cods;
+    });
+  }
+  function minutos(t) {
+    if (!t) return null;
+    var p = String(t).split(':'), h = parseInt(p[0], 10), m = parseInt(p[1] || '0', 10);
+    return (isNaN(h) || isNaN(m)) ? null : h * 60 + m;
+  }
+  /* mismo criterio que la pantalla iPad: manda la clase en marcha; si no hay,
+     la que empieza en los proximos 15 minutos */
+  function grupoAhora() {
+    return codigos().then(function (cods) {
+      return rest('horario_clases?select=grupo,dia_iso,hora_ini,hora_fin').then(function (filas) {
+        var d = new Date(), iso = (d.getDay() === 0 ? 7 : d.getDay());
+        var ahora = d.getHours() * 60 + d.getMinutes();
+        var dentro = '', apunto = '';
+        (filas || []).forEach(function (f) {
+          if (Number(f.dia_iso) !== iso) return;
+          if (cods.length && cods.indexOf(String(f.grupo)) < 0) return;
+          var a = minutos(f.hora_ini), b = minutos(f.hora_fin);
+          if (a === null || b === null) return;
+          if (ahora >= a && ahora < b) { if (!dentro) dentro = f.grupo; }
+          else if (ahora >= a - 15 && ahora < a) { if (!apunto) apunto = f.grupo; }
+        });
+        return dentro || apunto || null;
+      });
+    });
+  }
+
+  function aviso(msg) {
+    var caja = document.getElementById('rs-mini'); if (!caja) return;
+    var v = caja.querySelector('.rs-aviso'); if (v) v.remove();
+    var s = document.createElement('span');
+    s.className = 'rs-aviso'; s.textContent = msg;
+    caja.appendChild(s);
+    setTimeout(function () { try { s.remove(); } catch (e) {} }, 5000);
+  }
+
+  function pulsar(el, b) {
+    var txt = el.textContent;
+    el.disabled = true; el.textContent = '…';
+    grupoAhora().then(function (g) {
+      el.disabled = false; el.textContent = txt;
+      if (!g) { aviso('Ahora mismo no hay ningún grupo activo'); return; }
+      window.open(b.url, '_blank', 'noopener');
+    }).catch(function (e) {
+      /* si la consulta falla, abrir igual: la pantalla sabe elegir sola */
+      console.warn('[resultados]', e);
+      el.disabled = false; el.textContent = txt;
+      window.open(b.url, '_blank', 'noopener');
+    });
+  }
+
+  function pintar() {
+    var host = document.querySelector('.topbar-right'); if (!host) return;
+    var caja = document.getElementById('rs-mini');
+    if (!esTester()) { if (caja) caja.remove(); return; }
+    if (caja) return;
+    caja = document.createElement('div');
+    caja.id = 'rs-mini'; caja.className = 'rs-mini';
+    BOTONES.forEach(function (b) {
+      var el = document.createElement('button');
+      el.type = 'button';
+      el.className = 'rs-btn ' + b.color;
+      el.textContent = b.txt;
+      el.title = b.tit;
+      el.addEventListener('click', function () { pulsar(el, b); });
+      caja.appendChild(el);
+    });
+    var by = host.querySelector('.by');
+    if (by) host.insertBefore(caja, by); else host.appendChild(caja);
+  }
+
+  function arrancar() { try { pintar(); } catch (e) { console.warn('[resultados]', e); } }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', arrancar);
+  else arrancar();
+  setInterval(arrancar, 3000);
+})();
+</script>
+
 </body>
 </html>
