@@ -3103,412 +3103,48 @@ function showEnig(kind){
 </script>
 <script>
 /* ============================================================================
-   FASE 6.8 · "MIS RESULTADOS" — réplica de la ficha del alumno del Diario,
-   con estética Suite (nebulosa dorada) y colores canon por apartado
-   (idénticos al portal elemental):
-   Ritmo #22c55e · Entonación #4a9eff · Audición #f97316 · Teoría #ec4899.
+   "MIS RESULTADOS" · versión 22-sep-2026 (maqueta aprobada por Iago el 21/22-sep)
+   Tres tarjetas arriba (Notas de clase · Resultados de los exámenes · Nota
+   boletín) + la evolución del curso debajo. Se muestra SIEMPRE, también con
+   todo a cero (guiones), en vez del mensaje «Todavía no hay notas…».
 
-   Datos: RPC suite_mis_resultados(p_cuenta_id) — SECURITY DEFINER, resuelve
-   cuenta→alumno_canon y devuelve SUS evaluaciones (SQL: suite_mis_resultados.sql).
-   La "nota de clase actual" usa la MISMA fórmula fuente-única que el Diario
-   PC/iPhone: media simple de sesiones (eval_tipo='sesion', nota!=null,
-   !sin_evaluar). Las medias por apartado/trimestre son orientativas.
-   Gráficas en SVG vanilla (sin librerías): evolución por apartado + radar.
+   Datos (sin cambios de fuente):
+     · RPC suite_mis_resultados(p_cuenta_id): evaluaciones del alumno + notas
+       de examen / entonación atonal / actitud que el profesor escribe en el
+       Diario (eval_overrides, filas sin fecha con apartado_override).
+     · RPC suite_mis_notas_finales(p_cuenta_id): nota del boletín por trimestre
+       (m_lm / m_eav en elemental, m_total en profesional), leída del Diario.
+   La nota de clase se pondera por apartado con los pesos del examen (como el
+   Diario desde el 17-sep-2026). Nada se calcula que no calcule ya el Diario.
+   Colores: aprobado verde, suspenso rojo, sin ámbar (21-sep-2026, Iago).
    ============================================================================ */
 (function(){
   'use strict';
+  var MODO='GP';                                    /* 'GE' | 'GP' */
+  var SES_KEY = (MODO==='GP') ? 'lmpro_session' : 'lmeav_session';
   var SB_URL='https://woiptkyrxkbpnvioypit.supabase.co';
   var SB_ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndvaXB0a3lyeGticG52aW95cGl0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0NzI2ODYsImV4cCI6MjA5MjA0ODY4Nn0.B2nKgj5rD0rkdLeMIrd9KgD8lUPWsBT4Y7aCtmnvbjA';
   var _cli=null;
   function cli(){ if(!_cli && window.supabase){ _cli=window.supabase.createClient(SB_URL,SB_ANON); } return _cli; }
-  function ses(){ try{ return (JSON.parse(localStorage.getItem('lmpro_session')||'null')||window.__LM_SES||null); }catch(e){ return window.__LM_SES||null; } }
+  function ses(){ try{ return (JSON.parse(localStorage.getItem(SES_KEY)||'null')||window.__LM_SES||null); }catch(e){ return window.__LM_SES||null; } }
   function cuentaId(){ var s=ses(); return (s && s.id && s.estado==='validado') ? s.id : null; }
   function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
 
-  /* ---- colores CANON de los apartados (idénticos al portal ELEMENTAL) ----
-     Ritmo verde · Entonación azul claro · Audición naranja · Teoría rosa.
-     Solo afecta al panel "Mis resultados"; el resto del PRO sigue dorado. */
+  /* ---- apartados: colores CANON (idénticos al Diario) ---- */
   var APARTADOS={
-    ritmo:      { label:'Ritmo',      color:'#22c55e' },
-    entonacion: { label:'Entonación', color:'#4a9eff' },
-    audicion:   { label:'Audición',   color:'#f97316' },
-    teoria:     { label:'Teoría',     color:'#ec4899' }
+    ritmo:             { label:'Ritmo',       color:'#22c55e' },
+    entonacion:        { label:'Entonación',  color:'#4a9eff' },
+    entonacion_atonal: { label:'Ent. atonal', color:'#1e56d6' },   /* (22-sep) azul oscuro */
+    audicion:          { label:'Audición',    color:'#f97316' },
+    teoria:            { label:'Teoría',      color:'#ec4899' }
   };
-  var ORDEN_AP=['ritmo','entonacion','audicion','teoria'];
-  /* app_origen → apartado (mismo mapeo que evaluaciones-reader del Diario) */
+  var ORDEN_CL=['ritmo','entonacion','audicion','teoria'];                       /* notas de clase */
+  var ORDEN_EX=(MODO==='GP')?['ritmo','entonacion','entonacion_atonal','audicion','teoria']:ORDEN_CL;   /* examen */
   var MAP_APP={
     dictados_elemental:'audicion', dictados_profesional:'audicion',
     entonacion:'entonacion', fichas:'teoria', ritmo_elemental:'ritmo',
-    ritmo_entonado_gp:'ritmo'   // GP — MISMO mapeo que el Diario (evaluaciones-reader)
+    ritmo_entonado_gp:'ritmo'
   };
-
-  var _st={ rows:null, alumno:null, trim:null, cargado:false };
-
-  /* ================= derivaciones de datos ================= */
-  function apartadoDe(e){
-    // La ACTITUD del examen se guarda con el mismo app_origen que ritmo
-    // (payload_json.tipo='actitud_examen'); NO es un apartado de examen y no
-    // debe contarse como ritmo. La excluimos aquí, que es el filtro común de
-    // sesiones/exámenes/radar.
-    if(e && e.payload_json && e.payload_json.tipo==='actitud_examen') return null;
-    var ap=(e && e.apartado_override) || MAP_APP[e && e.app_origen] || null;
-    return APARTADOS[ap] ? ap : null;
-  }
-  // Sesiones normalizadas {ap, fecha, trim, leccion, nota}, orden cronológico.
-  // Incluye nota_secundaria si su etiqueta mapea a un apartado GE.
-  function sesiones(){
-    var out=[];
-    (_st.rows||[]).forEach(function(e){
-      if(e.eval_tipo==='inicial'||e.trimestre==='inicial') return; /* 6-sep-2026: la Ev. Inicial nunca se muestra al alumno */
-      if(((e.eval_tipo)||'sesion')!=='sesion') return;
-      if(e.sin_evaluar) return;
-      var ap=apartadoDe(e);
-      if(ap && e.nota_final!=null && isFinite(Number(e.nota_final))){
-        out.push({ ap:ap, fecha:e.fecha||null, trim:e.trimestre||null, leccion:e.leccion, nota:Number(e.nota_final) });
-      }
-      if(e.nota_secundaria!=null && e.etiqueta_nota_secundaria && APARTADOS[e.etiqueta_nota_secundaria]
-         && isFinite(Number(e.nota_secundaria))){
-        out.push({ ap:e.etiqueta_nota_secundaria, fecha:e.fecha||null, trim:e.trimestre||null, leccion:e.leccion, nota:Number(e.nota_secundaria) });
-      }
-    });
-    out.sort(function(a,b){ return String(a.fecha||'').localeCompare(String(b.fecha||'')); });
-    return out;
-  }
-  function examenes(){
-    // Como el Diario: por trimestre+apartado nos quedamos con la nota de examen
-    // de fecha MÁS ANTIGUA (los re-guardados posteriores son duplicados y no
-    // deben pisar la nota real). Se descartan los exámenes 'sin_evaluar'.
-    var best={ '1T':{}, '2T':{}, '3T':{}, extraordinaria:{} };
-    function poner(t, ap, nota, fecha){
-      if(!ap || nota==null || !isFinite(Number(nota))) return;
-      var cur=best[t][ap], f=String(fecha||'');
-      if(!cur || f <= String(cur.f)) best[t][ap]={ n:Number(nota), f:fecha };
-    }
-    (_st.rows||[]).forEach(function(e){
-      var t=null;
-      if(e.eval_tipo==='inicial'||e.trimestre==='inicial') return; /* 6-sep-2026 */
-      if(e.eval_tipo==='examen_1T') t='1T';
-      else if(e.eval_tipo==='examen_2T') t='2T';
-      else if(e.eval_tipo==='examen_3T') t='3T';
-      else if(e.eval_tipo==='extraordinaria') t='extraordinaria';
-      if(!t || e.sin_evaluar) return;
-      poner(t, apartadoDe(e), e.nota_final, e.fecha);
-      if(e.nota_secundaria!=null && e.etiqueta_nota_secundaria && APARTADOS[e.etiqueta_nota_secundaria])
-        poner(t, e.etiqueta_nota_secundaria, e.nota_secundaria, e.fecha);
-    });
-    var out={ '1T':{}, '2T':{}, '3T':{}, extraordinaria:{} };
-    ['1T','2T','3T','extraordinaria'].forEach(function(t){ for(var ap in best[t]) out[t][ap]=best[t][ap].n; });
-    return out;
-  }
-  function media(list){ if(!list||!list.length) return null; var s=0; for(var i=0;i<list.length;i++) s+=list[i].nota; return s/list.length; }
-  /* (20-sep-2026, Iago) LA NOTA DE CLASE SE PONDERA, NO ES UNA MEDIA PLANA.
-     El Diario cambió esto el 17-sep-2026 («La nota de CLASE se pondera igual
-     que la de EXAMEN, no con una media plana»), pero el portal seguía
-     haciendo la media simple de todas las sesiones: el alumno veía un número
-     distinto del que ve el profesor. Se pondera por apartado con los mismos
-     pesos que el examen de Lenguaje Musical. En grado profesional no hay
-     atonal en clase, así que su 10 % lo aglutina la Entonación (Ritmo
-     entonado), exactamente como hace el Diario. */
-  function mediaClase(list){
-    if(!list||!list.length) return null;
-    var curso=cursoCodDe((_st.alumno&&_st.alumno.grupo)||'');
-    var esGP=/Gp$/.test(curso||'');
-    var pEx=esGP?PESOS_EXAMEN_GP:PESOS_EXAMEN_GE;
-    var pesos={ ritmo:pEx.ritmo, audicion:pEx.audicion, teoria:pEx.teoria,
-                entonacion: pEx.entonacion + (esGP?(pEx.entonacion_atonal||0):0) };
-    var suma={}, cuenta={};
-    for(var i=0;i<list.length;i++){
-      var ap=list[i].ap;
-      if(!pesos[ap]) continue;
-      suma[ap]=(suma[ap]||0)+list[i].nota;
-      cuenta[ap]=(cuenta[ap]||0)+1;
-    }
-    var sn=0, sw=0;
-    for(var k in pesos){
-      if(!cuenta[k]) continue;
-      sn += (suma[k]/cuenta[k])*pesos[k];
-      sw += pesos[k];
-    }
-    return sw ? sn/sw : null;
-  }
-  function mediasPorAp(ss, trim){
-    var out={};
-    ORDEN_AP.forEach(function(ap){
-      var l=ss.filter(function(x){ return x.ap===ap && (!trim || x.trim===trim); });
-      out[ap]={ media:media(l), n:l.length };
-    });
-    return out;
-  }
-  function trimsConDatos(ss){
-    var t=[]; ['1T','2T','3T'].forEach(function(x){ if(ss.some(function(s){ return s.trim===x; })) t.push(x); });
-    return t;
-  }
-  function colorNota(n){ return n==null?'#98895e':(n<5?'#caa14a':(n<7?'#ffd166':'#e8d9a8')); }
-  /* --- Nota del boletín (idéntica al Diario): entero redondeado + color por banda ---
-     redondea PRIMERO a 2 decimales y LUEGO al entero (misma regla que el Diario). */
-  function redondearEnteroBoletin(n){ if(n==null||isNaN(n)) return null; return Math.round(+(Number(n).toFixed(2))); }
-  function colorBoletin(real){ if(real==null||isNaN(real)) return '#98895e'; var ent=redondearEnteroBoletin(real); if(ent<5) return '#f87171'; return real>=7?'#5eead4':'#fbbf24'; }
-  function notasFin(){ return Array.isArray(_st.notasFinales)?_st.notasFinales:[]; }
-  /* curso académico automático: rueda solo cada curso. Salta en AGOSTO (mes>=7),
-     así si creas el curso nuevo el 15-ago ya aparece el curso siguiente. */
-  function cursoAcad(){ var d=new Date(), y=d.getFullYear(), s=(d.getMonth()>=7)?y:y-1; return s+'/'+String(s+1).slice(-2); }
-  /* media de clase del Diario (c_media) para un trimestre; null si no hay dato */
-  function cMediaTrim(t){ var nf=notasFin(); for(var i=0;i<nf.length;i++){ if(nf[i]&&nf[i].trimestre===t&&nf[i].c_media!=null) return Number(nf[i].c_media); } return null; }
-  function mediaClaseChip(){ var c=cMediaTrim(_st.trim); if(c==null) return ''; return '<span class="mr-media-clase">Media de clase <b style="color:'+colorNota(c)+'">'+fmt(c)+'</b></span>'; }
-  /* Media de clase: CALCO del Diario. Copiamos el c_media que el Diario tiene
-     guardado. Si el Diario no lo tiene (por lo que sea), NO se pone: la suite
-     no calcula ni inventa nada — solo refleja lo que hay en el Diario. */
-  function mediaClaseBody(){
-    var c=cMediaTrim(_st.trim);
-    if(c==null) return '<span class="mr-cmedia-none">Sin media de clase en el Diario para este trimestre.</span>';
-    return '<span class="mr-cmedia-num" style="color:'+colorNota(c)+'">'+fmt(c)+'</span>'
-      +'<span class="mr-cmedia-lbl">media de clase · '+esc(_st.trim)+' · del Diario</span>';
-  }
-  function fmt(n){ return n==null?'—':n.toFixed(2); }
-  function fFecha(iso){ if(!iso) return ''; var d=new Date(iso+(String(iso).length===10?'T00:00:00':'')); if(isNaN(d)) return String(iso).slice(0,10); return ('0'+d.getDate()).slice(-2)+'/'+('0'+(d.getMonth()+1)).slice(-2); }
-  function iniciales(nom,ape){ var a=(nom||' ')[0]||'', b=(ape||' ')[0]||''; return (a+b).toUpperCase()||'??'; }
-
-  /* ================= SVG · evolución por apartado ================= */
-  function svgEvolucion(ss){
-    var pts=ss.filter(function(x){ return x.fecha && isFinite(Date.parse(x.fecha)); });
-    if(!pts.length) return '<div class="mr-vacio">Aún no hay sesiones para dibujar tu evolución.</div>';
-    var W=760,H=280,L=36,R=14,T=16,B=30;
-    var ts=pts.map(function(x){ return Date.parse(x.fecha); });
-    // Eje X FIJO: curso académico sep→jun (a partir de la primera sesión).
-    // Al arrancar el curso solo se cubre el principio; según avanza, se rellena.
-    var first=new Date(Math.min.apply(null,ts));
-    var sy=first.getMonth()>=8?first.getFullYear():first.getFullYear()-1;
-    var mn=new Date(sy,8,1).getTime(), mx=new Date(sy+1,5,30).getTime();
-    function X(t){ return L+Math.max(0,Math.min(1,(t-mn)/(mx-mn)))*(W-L-R); }
-    function Y(n){ return T+(1-Math.max(0,Math.min(10,n))/10)*(H-T-B); }
-    var s='<svg class="mr-svg" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Evolución de tus notas de clase">';
-    [0,2.5,5,7.5,10].forEach(function(v){
-      var y=Y(v);
-      s+='<line x1="'+L+'" y1="'+y+'" x2="'+(W-R)+'" y2="'+y+'" stroke="#ffffff17" stroke-width="1"'+(v===5?' stroke-dasharray="4 4" stroke="#ffffff33"':'')+'/>';
-      s+='<text x="'+(L-7)+'" y="'+(y+4)+'" text-anchor="end" font-size="10.5" fill="#98895e">'+v+'</text>';
-    });
-    // marcas de meses FIJAS: sep → jun
-    var MESES=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
-    for(var d=new Date(sy,8,1); d.getTime()<=mx; d.setMonth(d.getMonth()+1)){
-      s+='<text x="'+X(d.getTime()).toFixed(1)+'" y="'+(H-9)+'" text-anchor="middle" font-size="10" fill="#98895e">'+MESES[d.getMonth()]+'</text>';
-    }
-    ORDEN_AP.forEach(function(ap){
-      var l=pts.filter(function(x){ return x.ap===ap; });
-      if(!l.length) return;
-      var col=APARTADOS[ap].color;
-      var path=l.map(function(x,i){ return (i?'L':'M')+X(Date.parse(x.fecha)).toFixed(1)+' '+Y(x.nota).toFixed(1); }).join(' ');
-      if(l.length>1) s+='<path d="'+path+'" fill="none" stroke="'+col+'" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round" opacity=".92"/>';
-      l.forEach(function(x){
-        s+='<circle cx="'+X(Date.parse(x.fecha)).toFixed(1)+'" cy="'+Y(x.nota).toFixed(1)+'" r="4" fill="'+col+'" stroke="#140e05" stroke-width="1.6">'
-          +'<title>'+esc(APARTADOS[ap].label)+' · '+esc(x.leccion!=null?String(x.leccion):'')+' · '+fFecha(x.fecha)+' · '+fmt(x.nota)+'</title></circle>';
-      });
-    });
-    s+='</svg>';
-    return s;
-  }
-
-  /* ================= SVG · radar (4 ejes canon) ================= */
-  function svgRadar(mediasCurso){
-    var S=300, c=S/2, Rr=104;
-    var ejes=[ {ap:'ritmo',dx:0,dy:-1,anch:'middle',ax:0,ay:-14},
-               {ap:'entonacion',dx:1,dy:0,anch:'start',ax:12,ay:4},
-               {ap:'audicion',dx:0,dy:1,anch:'middle',ax:0,ay:20},
-               {ap:'teoria',dx:-1,dy:0,anch:'end',ax:-12,ay:4} ];
-    function P(dx,dy,val){ var r=Rr*Math.max(0,Math.min(10,val))/10; return (c+dx*r).toFixed(1)+','+(c+dy*r).toFixed(1); }
-    var PADX=48;   // aire lateral para que "Entonación"/"Teoría" no se corten
-    var s='<svg class="mr-svg mr-radar" viewBox="'+(-PADX)+' 0 '+(S+2*PADX)+' '+S+'" role="img" aria-label="Radar de medias por apartado">';
-    // defs: un degradado radial por apartado, centrado hacia SU región (se apaga hacia el centro)
-    var defs='<defs>';
-    ejes.forEach(function(e){
-      var col=APARTADOS[e.ap].color, o=P(e.dx,e.dy,10).split(',');
-      defs+='<radialGradient id="mrG_'+e.ap+'" gradientUnits="userSpaceOnUse" cx="'+o[0]+'" cy="'+o[1]+'" r="'+(Rr*1.45).toFixed(1)+'">'
-          +'<stop offset="0%" stop-color="'+col+'" stop-opacity=".85"/>'
-          +'<stop offset="50%" stop-color="'+col+'" stop-opacity=".32"/>'
-          +'<stop offset="100%" stop-color="'+col+'" stop-opacity="0"/></radialGradient>';
-    });
-    defs+='</defs>'; s+=defs;
-    [2.5,5,7.5,10].forEach(function(v){
-      s+='<polygon points="'+ejes.map(function(e){ return P(e.dx,e.dy,v); }).join(' ')+'" fill="none" stroke="#ffffff1d" stroke-width="1"'+(v===5?' stroke-dasharray="4 4"':'')+'/>';
-    });
-    ejes.forEach(function(e){ s+='<line x1="'+c+'" y1="'+c+'" x2="'+P(e.dx,e.dy,10).split(',')[0]+'" y2="'+P(e.dx,e.dy,10).split(',')[1]+'" stroke="#ffffff14"/>'; });
-    var tiene=ejes.some(function(e){ return mediasCurso[e.ap] && mediasCurso[e.ap].media!=null; });
-    if(tiene){
-      var pts=ejes.map(function(e){ var m=mediasCurso[e.ap]; return P(e.dx,e.dy,(m&&m.media!=null)?m.media:0); });
-      // relleno multicolor recortado al polígono de datos
-      s+='<clipPath id="mrRadarClip"><polygon points="'+pts.join(' ')+'"/></clipPath>';
-      s+='<g clip-path="url(#mrRadarClip)">';
-      ejes.forEach(function(e){ var m=mediasCurso[e.ap]; if(!m||m.media==null) return;
-        s+='<rect x="'+(-PADX)+'" y="0" width="'+(S+2*PADX)+'" height="'+S+'" fill="url(#mrG_'+e.ap+')"/>'; });
-      s+='</g>';
-      // contorno: cada arista degrada entre los colores de sus dos apartados
-      var xy=pts.map(function(p){ return p.split(','); });
-      for(var i=0;i<ejes.length;i++){
-        var j=(i+1)%ejes.length, pa=xy[i], pb=xy[j];
-        s+='<linearGradient id="mrE_'+i+'" gradientUnits="userSpaceOnUse" x1="'+pa[0]+'" y1="'+pa[1]+'" x2="'+pb[0]+'" y2="'+pb[1]+'">'
-          +'<stop offset="0%" stop-color="'+APARTADOS[ejes[i].ap].color+'"/><stop offset="100%" stop-color="'+APARTADOS[ejes[j].ap].color+'"/></linearGradient>';
-        s+='<line x1="'+pa[0]+'" y1="'+pa[1]+'" x2="'+pb[0]+'" y2="'+pb[1]+'" stroke="url(#mrE_'+i+')" stroke-width="2.2" stroke-linecap="round"/>';
-      }
-      ejes.forEach(function(e){
-        var m=mediasCurso[e.ap]; if(!m||m.media==null) return;
-        var p=P(e.dx,e.dy,m.media).split(',');
-        s+='<circle cx="'+p[0]+'" cy="'+p[1]+'" r="4.5" fill="'+APARTADOS[e.ap].color+'" stroke="#140e05" stroke-width="1.6"><title>'+esc(APARTADOS[e.ap].label)+' · '+fmt(m.media)+'</title></circle>';
-      });
-    }
-    ejes.forEach(function(e){
-      var end=P(e.dx,e.dy,10).split(',');
-      s+='<text x="'+(parseFloat(end[0])+e.ax)+'" y="'+(parseFloat(end[1])+e.ay)+'" text-anchor="'+e.anch+'" font-size="12" font-weight="800" fill="'+APARTADOS[e.ap].color+'">'+esc(APARTADOS[e.ap].label)+'</text>';
-    });
-    s+='</svg>';
-    return s;
-  }
-
-  /* ================= render ================= */
-  function overlayEl(){
-    var ov=document.getElementById('mr-overlay'); if(ov) return ov;
-    ov=document.createElement('div'); ov.id='mr-overlay'; ov.className='mr-overlay';
-    ov.innerHTML='<div class="neb-bg" aria-hidden="true"><span class="mrneb b1"></span><span class="mrneb b2"></span><span class="mrneb b3"></span></div>'
-      +'<div class="mr-top"><button type="button" class="mr-volver" id="mr-volver">← Volver al portal</button>'
-      +'<div class="mr-titulo">📊 Mis resultados</div><div class="mr-top-hueco"></div></div>'
-      +'<div class="mr-scroll" id="mr-body"></div>';
-    document.body.appendChild(ov);
-    ov.querySelector('#mr-volver').addEventListener('click',cerrar);
-    document.addEventListener('keydown',function(e){ if(e.key==='Escape' && ov.classList.contains('open')) cerrar(); });
-    return ov;
-  }
-  function cerrar(){ var ov=document.getElementById('mr-overlay'); if(ov) ov.classList.remove('open'); document.documentElement.classList.remove('mr-bloqueo'); }
-
-  function tarjetasApartados(ss){
-    var m=mediasPorAp(ss,_st.trim);
-    return '<div class="mr-aps">'+ORDEN_AP.map(function(ap){
-      var d=m[ap], col=APARTADOS[ap].color;
-      return '<div class="mr-ap" style="--apc:'+col+'">'
-        +'<div class="mr-ap-nombre">'+esc(APARTADOS[ap].label)+'</div>'
-        +'<div class="mr-ap-nota" style="color:'+colorNota(d.media)+'">'+fmt(d.media)+'</div>'
-        +'<div class="mr-ap-n">'+(d.n?(d.n+' sesión'+(d.n===1?'':'es')):'sin sesiones')+'</div>'
-      +'</div>';
-    }).join('')+'</div>';
-  }
-  function bloqueTendencia(ss){
-    function mTrim(t){ var l=ss.filter(function(x){ return x.trim===t; }); return mediaClase(l); }
-    var n1=mTrim('1T'),n2=mTrim('2T'),n3=mTrim('3T');
-    var N=function(v){ return (v!=null&&isFinite(v))?+v.toFixed(2):null; };
-    n1=N(n1); n2=N(n2); n3=N(n3);
-    var dif=null, ref=null;
-    if(n3!=null&&n2!=null){ dif=+(n3-n2).toFixed(2); ref='2T'; }
-    else if(n2!=null&&n1!=null){ dif=+(n2-n1).toFixed(2); ref='1T'; }
-    if(dif==null) return '';
-    var txt,cls;
-    if(dif>=0.7){ txt='⬆ Mejora notable'; cls='ok'; }
-    else if(dif>=0.2){ txt='↗ Vas mejorando'; cls='ok'; }
-    else if(dif<=-0.7){ txt='⬇ Bajada'; cls='mal'; }
-    else if(dif<=-0.2){ txt='↘ Vas bajando'; cls='mal'; }
-    else { txt='→ Estable'; cls='flat'; }
-    return '<div class="mr-card mr-tend"><div class="mr-card-tit">Tendencia de tu trabajo de clase</div>'
-      +'<div class="mr-tend-txt '+cls+'">'+txt+' <span class="mr-dim">vs '+ref+' · '+(dif>0?'+':'')+dif.toFixed(2)+' puntos</span></div></div>';
-  }
-  function bloqueExamenes(){
-    var ex=examenes();
-    var trims=['1T','2T','3T'].filter(function(t){ return Object.keys(ex[t]).length; });
-    var hayExtra=Object.keys(ex.extraordinaria).length>0;
-    if(!trims.length && !hayExtra) return '';
-    var filas=trims.concat(hayExtra?['extraordinaria']:[]);
-    var h='<div class="mr-card"><div class="mr-card-tit">Exámenes</div><div class="mr-ex-tabla"><table><thead><tr><th></th>'
-      +ORDEN_AP.map(function(ap){ return '<th style="color:'+APARTADOS[ap].color+'">'+esc(APARTADOS[ap].label)+'</th>'; }).join('')
-      +'</tr></thead><tbody>';
-    filas.forEach(function(t){
-      h+='<tr><td class="mr-ex-trim">'+(t==='extraordinaria'?'Extraord.':t)+'</td>'
-        +ORDEN_AP.map(function(ap){ var n=ex[t][ap]; return '<td style="color:'+colorNota(n!=null?n:null)+'">'+(n!=null?fmt(n):'—')+'</td>'; }).join('')
-        +'</tr>';
-    });
-    h+='</tbody></table></div></div>';
-    return h;
-  }
-  function bloqueUltimas(ss){
-    if(!ss.length) return '';
-    var ult=ss.slice(-10).reverse();
-    return '<div class="mr-card"><div class="mr-card-tit">Tus últimas notas de clase</div><div class="mr-ult">'
-      +ult.map(function(x){
-        return '<div class="mr-ult-fila"><span class="mr-chip" style="--apc:'+APARTADOS[x.ap].color+'">'+esc(APARTADOS[x.ap].label)+'</span>'
-          +'<span class="mr-ult-lec">'+esc(x.leccion!=null&&String(x.leccion).trim()?String(x.leccion):'Sesión')+'</span>'
-          +'<span class="mr-ult-fecha">'+fFecha(x.fecha)+'</span>'
-          +'<span class="mr-ult-nota" style="color:'+colorNota(x.nota)+'">'+fmt(x.nota)+'</span></div>';
-      }).join('')+'</div></div>';
-  }
-
-  /* ===== Notas del trimestre (leídas del Diario, NO calculadas) — GP: NOTA TOTAL ===== */
-  function bloqueNotasTrimestre(){
-    var nf=notasFin(); if(!nf.length) return '';
-    var byT={}; nf.forEach(function(r){ if(r&&r.trimestre) byT[r.trimestre]=r; });
-    var hay=['1T','2T','3T'].some(function(t){ return byT[t] && byT[t].m_total!=null; });
-    if(!hay) return '';
-    var cards=['1T','2T','3T'].map(function(t){
-      var v=byT[t]?byT[t].m_total:null;
-      var real=(v==null||isNaN(v))?null:Number(v);
-      var ent=redondearEnteroBoletin(real), col=colorBoletin(real);
-      return '<div class="mr-bol"><div class="mr-bol-top"><span class="mr-bol-lbl">NOTA TOTAL</span>'
-        +(real!=null?'<span class="mr-bol-real"'+(real<5?' style="color:#f87171"':'')+'>'+real.toFixed(2)+'</span>':'')+'</div>'
-        +'<div class="mr-bol-trim">'+t+'</div>'
-        +'<div class="mr-bol-num" style="color:'+col+'">'+(ent!=null?ent:'—')+'</div></div>';
-    }).join('');
-    return '<div class="mr-card mr-bol-card"><div class="mr-card-tit">🎓 Notas del trimestre</div>'
-      +'<div class="mr-bol-sub">Combinación media de clase × examen ponderada por los pesos del curso · del Diario del profesor</div>'
-      +'<div class="mr-bol-grid">'+cards+'</div></div>';
-  }
-  /* Medias por apartado IGUAL que el Diario. GP = 5 vértices: separa
-     entonación TONAL (apartado_override 'entonacion' / 'entonacion_lec') de
-     entonación ATONAL ('entonacion_int', exclusiva de examen en GP).
-     Lee clase + examen sobre las filas crudas para no perder lec/int. */
-  function mediasRadar(){
-    var acc={ ritmo:[], entonacion:[], entonacion_atonal:[], audicion:[], teoria:[] };
-    function ovDe(e){ return e.apartado_override || (e.payload_json && e.payload_json.apartado_override) || null; }
-    function apDe(ov, appOrigen){
-      if(ov==='entonacion_int') return 'entonacion_atonal';
-      if(ov==='entonacion_lec') return 'entonacion';
-      var ap = ov || MAP_APP[appOrigen];
-      return (acc[ap]!==undefined) ? ap : null;
-    }
-    // Exámenes deduplicados (más antiguo por trimestre+apartado, como el Diario),
-    // para no promediar filas re-guardadas por duplicado.
-    var exBest={};
-    function exPoner(trim, ap, nota, fecha){
-      if(!ap || nota==null || !isFinite(Number(nota))) return;
-      var k=trim+'|'+ap, cur=exBest[k], f=String(fecha||'');
-      if(!cur || f <= String(cur.f)) exBest[k]={ n:Number(nota), f:fecha };
-    }
-    (_st.rows||[]).forEach(function(e){
-      var t=(e.eval_tipo)||'sesion';
-      var isEx=(t.indexOf('examen')===0 || t==='extraordinaria');
-      if(t!=='sesion' && !isEx) return;
-      if(e.sin_evaluar) return;
-      if(e.payload_json && e.payload_json.tipo==='actitud_examen') return; // actitud ≠ ritmo
-      var ap=apDe(ovDe(e), e.app_origen);
-      var et=e.etiqueta_nota_secundaria;
-      var ap2=(et==='entonacion_int')?'entonacion_atonal':((et==='entonacion_lec')?'entonacion':((acc[et]!==undefined)?et:null));
-      if(isEx){
-        var tk=(t==='extraordinaria')?'3T':t.replace('examen_','');
-        exPoner(tk, ap, e.nota_final, e.fecha);
-        if(e.nota_secundaria!=null) exPoner(tk, ap2, e.nota_secundaria, e.fecha);
-      } else {
-        if(ap && e.nota_final!=null && isFinite(e.nota_final)) acc[ap].push(Number(e.nota_final));
-        if(ap2 && e.nota_secundaria!=null && isFinite(e.nota_secundaria)) acc[ap2].push(Number(e.nota_secundaria));
-      }
-    });
-    for(var k in exBest){ var apx=k.split('|')[1]; if(acc[apx]!==undefined) acc[apx].push(exBest[k].n); }
-    var out={};
-    ['ritmo','entonacion','entonacion_atonal','audicion','teoria'].forEach(function(ap){
-      var l=acc[ap]; out[ap]= l.length ? l.reduce(function(a,b){return a+b;},0)/l.length : null;
-    });
-    return out;   // incluye la clave entonacion_atonal -> RadarMedias dibuja 5 vértices
-  }
-  /* Radar renderizado con el MISMO módulo del Diario (RadarMedias). */
-  function radarSVG(){
-    if(window.RadarMedias && window.RadarMedias.render){
-      return window.RadarMedias.render({ medias:mediasRadar(), size:380, tema:'dark', valoracion:true });
-    }
-    return svgRadar(mediasPorAp(sesiones(),null)); // fallback
-  }
-
-  /* ===== Pesos de evaluación por curso (copiados del Diario) ===== */
   var PESOS_EVAL_DEFAULT={ '1Ge':{examen:.30,clase:.70}, '2Ge':{examen:.40,clase:.60}, '3Ge':{examen:.50,clase:.50}, '4Ge':{examen:.60,clase:.40}, '1Gp':{examen:.60,clase:.40}, '2Gp':{examen:.60,clase:.40} };
   var PESOS_EXAMEN_GE={ ritmo:.25, entonacion:.25, audicion:.25, teoria:.20, actitud:.05 };
   var PESOS_EXAMEN_GP={ ritmo:.25, entonacion:.10, entonacion_atonal:.10, audicion:.25, teoria:.25, actitud:.05 };
@@ -3519,95 +3155,252 @@ function showEnig(kind){
     var mGe=g.match(/^(\d)\s*[A-Za-z]/); if(mGe) return mGe[1]+'Ge';
     return null;
   }
-  /* modal genérico (reutiliza el estilo del radar) */
-  function abrirModalMR(inner, wide){
-    var m=document.getElementById('mr-modal-gen');
-    if(!m){ m=document.createElement('div'); m.id='mr-modal-gen'; m.className='mr-radar-modal';
+  function cursoCod(){ return cursoCodDe((_st.alumno&&_st.alumno.grupo)||'') || (MODO==='GP'?'1Gp':'1Ge'); }
+  function esGP(){ return /Gp$/.test(cursoCod()); }
+  function pesosCurso(){ return PESOS_EVAL_DEFAULT[cursoCod()]||{examen:.5,clase:.5}; }
+
+  var _st={ rows:null, alumno:null, notasFinales:null, cargado:false };
+
+  /* ================= derivaciones de datos ================= */
+  function apartadoDe(e){
+    if(!e) return null;
+    if(e.tipo_payload==='actitud_examen') return null;      /* la actitud del examen no es ritmo */
+    var ov=e.apartado_override||null;
+    if(ov==='entonacion_int') ov='entonacion_atonal';
+    if(ov==='entonacion_lec') ov='entonacion';
+    var ap=ov||MAP_APP[e.app_origen]||null;
+    if(ap==='actitud') return 'actitud';
+    return APARTADOS[ap]?ap:null;
+  }
+  function apSecundario(e){
+    var et=e&&e.etiqueta_nota_secundaria; if(!et) return null;
+    if(et==='entonacion_int') return 'entonacion_atonal';
+    if(et==='entonacion_lec') return 'entonacion';
+    return APARTADOS[et]?et:null;
+  }
+  function num(v){ return (v==null||v==='')?null:(isFinite(Number(v))?Number(v):null); }
+  /* Sesiones de clase normalizadas {ap, fecha, trim, leccion, nota}, orden cronológico */
+  function sesiones(){
+    var out=[];
+    (_st.rows||[]).forEach(function(e){
+      if(e.eval_tipo==='inicial'||e.trimestre==='inicial') return;   /* la Ev. Inicial nunca se muestra al alumno */
+      if(((e.eval_tipo)||'sesion')!=='sesion') return;
+      if(e.sin_evaluar) return;
+      var ap=apartadoDe(e), n=num(e.nota_final);
+      if(ap && ORDEN_CL.indexOf(ap)>=0 && n!=null) out.push({ ap:ap, fecha:e.fecha||null, trim:e.trimestre||null, leccion:e.leccion, nota:n });
+      var ap2=apSecundario(e), n2=num(e.nota_secundaria);
+      if(ap2 && ORDEN_CL.indexOf(ap2)>=0 && n2!=null) out.push({ ap:ap2, fecha:e.fecha||null, trim:e.trimestre||null, leccion:e.leccion, nota:n2 });
+    });
+    out.sort(function(a,b){ return String(a.fecha||'').localeCompare(String(b.fecha||'')); });
+    return out;
+  }
+  /* Exámenes por trimestre+apartado (+ 'actitud'). Como el Diario: gana la fila
+     de fecha MÁS ANTIGUA; las del Diario (eval_overrides) no llevan fecha y por
+     eso mandan siempre. */
+  function examenes(){
+    var best={ '1T':{}, '2T':{}, '3T':{} };
+    function poner(t, ap, nota, fecha){
+      if(!best[t] || !ap || nota==null) return;
+      var cur=best[t][ap], f=String(fecha||'');
+      if(!cur || f <= String(cur.f)) best[t][ap]={ n:nota, f:fecha };
+    }
+    (_st.rows||[]).forEach(function(e){
+      if(e.eval_tipo==='inicial'||e.trimestre==='inicial') return;
+      var t=null;
+      if(e.eval_tipo==='examen_1T') t='1T'; else if(e.eval_tipo==='examen_2T') t='2T'; else if(e.eval_tipo==='examen_3T') t='3T';
+      if(!t || e.sin_evaluar) return;
+      poner(t, apartadoDe(e), num(e.nota_final), e.fecha);
+      poner(t, apSecundario(e), num(e.nota_secundaria), e.fecha);
+    });
+    var out={ '1T':{}, '2T':{}, '3T':{} };
+    ['1T','2T','3T'].forEach(function(t){ for(var ap in best[t]) out[t][ap]=best[t][ap].n; });
+    return out;
+  }
+  function hayExamen(ex,t){ return ORDEN_EX.some(function(ap){ return ex[t][ap]!=null; }); }
+  /* Actitud del trimestre: si no está escrita, se arrastra la del trimestre anterior (regla del Diario) */
+  function actitudDe(ex,t){
+    var orden=['1T','2T','3T'], i=orden.indexOf(t);
+    for(var k=i;k>=0;k--){ var v=ex[orden[k]].actitud; if(v!=null) return v; }
+    return null;
+  }
+  function media(list){ if(!list||!list.length) return null; var s=0; for(var i=0;i<list.length;i++) s+=list[i].nota; return s/list.length; }
+  /* Nota de clase PONDERADA por apartado con los pesos del examen (como el Diario).
+     En GP no hay atonal en clase: su 10 % lo absorbe la entonación. */
+  function mediaClase(list){
+    if(!list||!list.length) return null;
+    var gp=esGP(), pEx=gp?PESOS_EXAMEN_GP:PESOS_EXAMEN_GE;
+    var pesos={ ritmo:pEx.ritmo, audicion:pEx.audicion, teoria:pEx.teoria, entonacion: pEx.entonacion + (gp?(pEx.entonacion_atonal||0):0) };
+    var suma={}, cuenta={};
+    for(var i=0;i<list.length;i++){ var ap=list[i].ap; if(!pesos[ap]) continue; suma[ap]=(suma[ap]||0)+list[i].nota; cuenta[ap]=(cuenta[ap]||0)+1; }
+    var sn=0, sw=0;
+    for(var k in pesos){ if(!cuenta[k]) continue; sn+=(suma[k]/cuenta[k])*pesos[k]; sw+=pesos[k]; }
+    return sw ? sn/sw : null;
+  }
+  function notasFinPorT(){ var by={}; (Array.isArray(_st.notasFinales)?_st.notasFinales:[]).forEach(function(r){ if(r&&r.trimestre) by[r.trimestre]=r; }); return by; }
+  /* curso académico: rueda en agosto */
+  function anioInicio(){ var d=new Date(), y=d.getFullYear(); return (d.getMonth()>=7)?y:y-1; }
+  function cursoAcad(){ var s=anioInicio(); return s+'/'+String(s+1).slice(-2); }
+
+  /* ================= formato ================= */
+  function f2(n){ return (n==null||isNaN(n))?'—':Number(n).toFixed(2).replace('.',','); }
+  function pc(w){ return Math.round(w*100)+' %'; }
+  function colorNota(n){ return (n==null||isNaN(n))?'var(--mr-dim2)':(n<5?'var(--mr-mal)':'var(--mr-ok)'); }
+  function entero(n){ return (n==null||isNaN(n))?null:Math.round(+(Number(n).toFixed(2))); }
+  function fFecha(iso){ if(!iso) return ''; var d=new Date(String(iso).slice(0,10)+'T00:00:00'); if(isNaN(d)) return String(iso).slice(0,10);
+    return ('0'+d.getDate()).slice(-2)+'/'+('0'+(d.getMonth()+1)).slice(-2)+'/'+String(d.getFullYear()).slice(-2); }
+  var ACTITUD=[ {min:9,txt:'excelente',aprox:'9 – 10'}, {min:7.5,txt:'muy bien',aprox:'≈ 8'}, {min:6,txt:'bien',aprox:'≈ 6 – 7'}, {min:5,txt:'mejorable',aprox:'≈ 5'}, {min:0,txt:'insuficiente',aprox:'por debajo de 5'} ];
+  function actitudTxt(n){ if(n==null||isNaN(n)) return '—'; for(var i=0;i<ACTITUD.length;i++){ if(n>=ACTITUD[i].min) return ACTITUD[i].txt; } return '—'; }
+
+  /* ================= bloques ================= */
+  function bloqueClase(ss){
+    var m=mediaClase(ss), p=pesosCurso();
+    var hoy=new Date().toLocaleDateString('es-ES',{day:'numeric',month:'long',year:'numeric'});
+    var lista=ss.length
+      ? ss.slice().reverse().map(function(s){ var a=APARTADOS[s.ap];
+          return '<div class="mr-fila" style="--apc:'+a.color+'"><span class="mr-barrita"></span>'
+            +'<span class="mr-fmeta"><span class="mr-flec">'+esc(s.leccion!=null&&String(s.leccion).trim()?s.leccion:'Sesión')+'</span>'
+            +'<span class="mr-fsub">'+esc(a.label)+' · '+fFecha(s.fecha)+'</span></span>'
+            +'<span class="mr-fnota" style="color:'+colorNota(s.nota)+'">'+f2(s.nota)+'</span></div>'; }).join('')
+      : '<div class="mr-vacio-l">Aquí irán apareciendo tus notas de clase (ritmo, entonación, dictados y fichas).</div>';
+    return '<section class="mr-card"><div class="mr-ctit"><span>Notas de clase (media)</span><span class="mr-pct">'+pc(p.clase)+'</span></div>'
+      +'<div class="mr-media-num" style="color:'+colorNota(m)+'">'+f2(m)+'</div>'
+      +'<div class="mr-media-pie">'+(m==null?'todavía no tienes notas de clase':'nota actualizada a día '+esc(hoy))+'</div>'
+      +'<div class="mr-sep"></div><div class="mr-sub-tit">Últimas notas de clase</div>'
+      +'<div class="mr-lista">'+lista+'</div></section>';
+  }
+  function bloqueExamenes(ex){
+    var p=pesosCurso();
+    var filas=['1T','2T','3T'].map(function(t){
+      if(!hayExamen(ex,t)) return '<div class="mr-ex vacio"><span class="mr-extrim">'+t+'</span><span class="mr-ex-pend">Todavía no hay examen de este trimestre.</span></div>';
+      var cel=ORDEN_EX.map(function(ap){ var v=ex[t][ap], a=APARTADOS[ap];
+        return '<div class="mr-ap" style="--apc:'+a.color+'"><div class="mr-ap-l">'+esc(a.label)+'</div><div class="mr-ap-n" style="color:'+colorNota(v)+'">'+f2(v)+'</div></div>'; }).join('');
+      return '<div class="mr-ex"><span class="mr-extrim">'+t+'</span><div class="mr-aps">'+cel+'</div></div>';
+    }).join('');
+    return '<section class="mr-card"><div class="mr-ctit"><span>Resultados de los exámenes</span><span class="mr-pct">'+pc(p.examen)+'</span></div>'
+      +'<div class="mr-exs">'+filas+'</div></section>';
+  }
+  function bloqueBoletin(ex){
+    var by=notasFinPorT();
+    var filas=['1T','2T','3T'].map(function(t){
+      var r=by[t]||{};
+      var uni=esGP() ? [['',num(r.m_total)]] : [['LM',num(r.m_lm)],['EAV',num(r.m_eav)]];
+      var hay=uni.some(function(u){ return u[1]!=null; });
+      if(!hay) return '<div class="mr-bol vacia"><span class="mr-bol-t">'+t+'</span><div class="mr-bol-cuerpo"><div class="mr-bol-nums"><div class="mr-bol-u"><div class="mr-bol-u-l">&nbsp;</div><span class="mr-marca nula">—</span></div></div></div></div>';
+      var nums=uni.map(function(u){ var lbl=u[0], v=u[1];
+        if(v==null) return '<div class="mr-bol-u"><div class="mr-bol-u-l">'+(lbl||'&nbsp;')+'</div><span class="mr-marca nula">—</span></div>';
+        var ent=entero(v), susp=ent<5, realRoja=(!susp && v<5);
+        return '<div class="mr-bol-u"><div class="mr-bol-u-l">'+(lbl||'&nbsp;')+'</div>'
+          +'<span class="mr-marca'+(susp?' susp':'')+'">'+ent+'<span class="mr-real'+(realRoja?' rojo':'')+'">'+f2(v)+'</span></span></div>'; }).join('');
+      var act=actitudDe(ex,t);
+      return '<div class="mr-bol"><span class="mr-bol-t">'+t+'</span><div class="mr-bol-cuerpo"><div class="mr-bol-nums">'+nums+'</div>'
+        +'<div class="mr-bol-act">Actitud: <b style="color:'+colorNota(act)+'">'+actitudTxt(act)+'</b></div></div></div>';
+    }).join('');
+    return '<section class="mr-card"><div class="mr-ctit"><span>Nota boletín</span><button class="mr-info-btn" type="button" id="mr-btn-info">¿cómo sale?</button></div>'
+      +'<div class="mr-bols">'+filas+'</div></section>';
+  }
+  /* gráfica: 14 sep → 15 jun del curso, sin scroll; exámenes como estrellas al final de su trimestre */
+  function bloqueGrafica(ss, ex){
+    var s0=anioInicio();
+    var W=1200,H=240,L=34,R=14,T=12,B=24;
+    var mn=Date.parse(s0+'-09-14'), mx=Date.parse((s0+1)+'-06-15');
+    var X=function(t){ return L+Math.max(0,Math.min(1,(t-mn)/(mx-mn)))*(W-L-R); };
+    var Y=function(n){ return T+(1-Math.max(0,Math.min(10,n))/10)*(H-T-B); };
+    var s='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Evolución de tus notas de clase de septiembre a junio">';
+    [0,2.5,5,7.5,10].forEach(function(v){ var y=Y(v);
+      s+='<line x1="'+L+'" y1="'+y+'" x2="'+(W-R)+'" y2="'+y+'" stroke="'+(v===5?'#ffffff3d':'#ffffff17')+'" stroke-width="1"'+(v===5?' stroke-dasharray="4 4"':'')+'/>';
+      s+='<text x="'+(L-7)+'" y="'+(y+4)+'" text-anchor="end" font-size="10.5" fill="var(--mr-dim2)">'+v+'</text>'; });
+    var M=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+    for(var d=new Date(s0,8,1); d.getTime()<=mx; d.setMonth(d.getMonth()+1)){
+      s+='<text x="'+X(Math.max(mn,d.getTime())).toFixed(1)+'" y="'+(H-8)+'" text-anchor="middle" font-size="10.5" fill="var(--mr-dim2)">'+M[d.getMonth()]+'</text>';
+    }
+    ORDEN_CL.forEach(function(ap){
+      var l=ss.filter(function(x){ return x.ap===ap && x.fecha && isFinite(Date.parse(x.fecha)); }); if(!l.length) return;
+      var col=APARTADOS[ap].color;
+      s+='<path d="'+l.map(function(x,i){ return (i?'L':'M')+X(Date.parse(x.fecha)).toFixed(1)+' '+Y(x.nota).toFixed(1); }).join(' ')+'" fill="none" stroke="'+col+'" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" opacity=".9"/>';
+      l.forEach(function(x){ s+='<circle cx="'+X(Date.parse(x.fecha)).toFixed(1)+'" cy="'+Y(x.nota).toFixed(1)+'" r="3.4" fill="'+col+'" stroke="#000" stroke-width="1.2" stroke-opacity=".45"><title>'+esc(APARTADOS[ap].label)+' · '+esc(x.leccion||'Sesión')+' · '+fFecha(x.fecha)+' · '+f2(x.nota)+'</title></circle>'; });
+    });
+    var FIN_T={ '1T':s0+'-12-18', '2T':(s0+1)+'-03-26', '3T':(s0+1)+'-06-15' };
+    var estrella=function(cx,cy,r){ var d=''; for(var i=0;i<10;i++){ var a=-Math.PI/2+i*Math.PI/5, rr=i%2?r*0.45:r; d+=(i?'L':'M')+(cx+rr*Math.cos(a)).toFixed(1)+' '+(cy+rr*Math.sin(a)).toFixed(1); } return d+'Z'; };
+    ['1T','2T','3T'].forEach(function(t){
+      if(!hayExamen(ex,t)) return;
+      var x=X(Date.parse(FIN_T[t]));
+      ORDEN_EX.forEach(function(ap){ var v=ex[t][ap]; if(v==null) return;
+        s+='<path d="'+estrella(x,Y(v),8)+'" fill="'+APARTADOS[ap].color+'" stroke="#000" stroke-width="1" stroke-opacity=".45"><title>Examen '+t+' · '+esc(APARTADOS[ap].label)+' · '+f2(v)+'</title></path>'; });
+    });
+    s+='</svg>';
+    var ley=ORDEN_CL.map(function(ap){ return '<span class="mr-chip" style="--apc:'+APARTADOS[ap].color+'">'+esc(APARTADOS[ap].label)+'</span>'; }).join('')
+      +'<span class="mr-chip" style="--apc:var(--mr-dim)">★ examen</span>';
+    return '<section class="mr-card mr-graf"><div class="mr-ctit"><span>Tu evolución durante el curso</span><span class="mr-ctit-r">14 sep → 15 jun</span></div>'
+      +'<div class="mr-graf-svg">'+s+'</div><div class="mr-ley">'+ley+'</div></section>';
+  }
+
+  /* ================= ventana «¿cómo sale?» ================= */
+  function abrirInfo(){
+    var curso=cursoCod(), nom=CURSO_NOMBRE[curso]||curso, p=pesosCurso();
+    var fila=function(l,v){ return '<div class="mr-row"><span>'+l+'</span><b>'+v+'</b></div>'; };
+    var hr='<hr class="mr-hr">', pesos;
+    if(esGP()){
+      pesos='<div class="mr-blq"><h5>Cómo pesa cada cosa · '+esc(nom)+'</h5>'
+        +fila('Examen del trimestre',pc(p.examen))+fila('Notas de clase',pc(p.clase))+hr
+        +fila('Ritmo','25 %')+fila('Entonación (tonal)','10 %')+fila('Entonación atonal','10 %')+fila('Audición','25 %')+fila('Teoría','25 %')+fila('Actitud','5 %')
+        +'<div class="mr-avi">En clase no hay entonación atonal: su 10 % lo absorbe la entonación del Ritmo entonado, así que en tus notas de clase la entonación pesa 20 %. Igual que en el Diario.</div></div>';
+    } else {
+      pesos='<div class="mr-blq"><h5>Cómo pesa cada cosa · '+esc(nom)+'</h5>'
+        +fila('Examen del trimestre',pc(p.examen))+fila('Notas de clase',pc(p.clase))+hr
+        +'<div class="mr-row"><span><b class="mr-ink">LM</b> · Lenguaje Musical</span><b></b></div>'
+        +fila('Ritmo','25 %')+fila('Entonación','25 %')+fila('Audición','25 %')+fila('Teoría','20 %')+fila('Actitud','5 %')+hr
+        +'<div class="mr-row"><span><b class="mr-ink">EAV</b> · Educación Auditiva y Vocal</span><b></b></div>'
+        +fila('Entonación','45 %')+fila('Audición','50 %')+fila('Actitud','5 %')
+        +'<div class="mr-avi"><b class="mr-ink">LM y EAV no son la misma nota.</b> Son dos asignaturas con dos boletines distintos: usan tus mismas notas, pero pesadas de otra forma. En EAV no entran ni el ritmo ni la teoría.</div></div>';
+    }
+    var escala=ACTITUD.slice().reverse().map(function(a){ return '<div class="mr-esc-f'+(a.min===0?' mal':'')+'"><span>'+a.txt.charAt(0).toUpperCase()+a.txt.slice(1)+'</span><b>'+a.aprox+'</b></div>'; }).join('');
+    var inner='<h4>De dónde sale tu nota del boletín</h4>'
+      +'<div class="mr-msub">La nota del boletín es un número entero. Dentro de él, en pequeñito, tienes la nota real con la que sale.</div>'
+      +pesos
+      +'<div class="mr-blq"><h5>La actitud</h5>'
+      +'<div class="mr-avi" style="margin-top:0">La actitud <b class="mr-ink">no está dentro del examen ni dentro de las notas de clase</b>. Se aplica al final, sobre la nota ya calculada: la nota académica vale un 95 % y la actitud un 5 %. Por eso la ves en cada trimestre, debajo de tu nota.</div>'
+      +'<div class="mr-avi" style="margin-top:10px">Lo que vale más o menos cada palabra:</div><div class="mr-esc">'+escala+'</div></div>';
+    var m=document.getElementById('mr-modal');
+    if(!m){ m=document.createElement('div'); m.id='mr-modal'; m.className='mr-modal';
       m.addEventListener('click',function(e){ if(e.target===m) m.classList.remove('open'); });
       document.addEventListener('keydown',function(e){ if(e.key==='Escape' && m.classList.contains('open')){ e.stopImmediatePropagation(); m.classList.remove('open'); } }, true);
       document.body.appendChild(m); }
-    m.innerHTML='<div class="mr-radar-box'+(wide?' mr-box-wide':'')+'"><button type="button" class="mr-radar-x" aria-label="Cerrar">✕</button>'+inner+'</div>';
-    m.querySelector('.mr-radar-x').addEventListener('click',function(){ m.classList.remove('open'); });
+    m.innerHTML='<div class="mr-box"><button type="button" class="mr-x" aria-label="Cerrar">✕</button>'+inner+'</div>';
+    m.querySelector('.mr-x').addEventListener('click',function(){ m.classList.remove('open'); });
     m.classList.add('open');
   }
-  /* Nota de clase actual: media de TODAS tus notas de clase hasta hoy (como el Diario). */
-  function abrirNotaClase(){
-    var n=mediaClase(sesiones());
-    var f=new Date().toLocaleDateString('es-ES',{day:'numeric',month:'long',year:'numeric'});
-    abrirModalMR('<div class="mr-nc-lbl2">Nota de clase actual</div>'
-      +'<div class="mr-nc-big" style="color:'+colorNota(n)+'">'+fmt(n)+'</div>'
-      +'<div class="mr-nc-fecha2">'+(n==null?'Aún no tienes notas de clase.':('a día '+esc(f)))+'</div>');
-  }
-  /* Porcentajes de evaluación del curso del alumno (copiados del Diario). */
-  function abrirPesos(){
-    var curso=cursoCodDe((_st.alumno&&_st.alumno.grupo)||'');
-    var pesos=PESOS_EVAL_DEFAULT[curso]||{examen:.5,clase:.5};
-    var esGP=/Gp$/.test(curso||'');
-    var pEx=esGP?PESOS_EXAMEN_GP:PESOS_EXAMEN_GE;
-    function fila(l,v){ return '<div class="mr-pw-row"><span>'+l+'</span><b>'+Math.round(v*100)+'%</b></div>'; }
-    var nom=CURSO_NOMBRE[curso]||(curso||'tu curso');
-    var h='<div class="mr-pw-tit">⚙️ Porcentajes de evaluación</div>'
-      +'<div class="mr-pw-sub">'+esc(nom)+' · así se calcula la nota final del trimestre: por un lado el examen y por otro tus notas de clase, las dos ponderadas por apartado con los mismos pesos.</div>'
-      +'<div class="mr-pw-card mr-pw-full"><h5>Nota final</h5>'+fila('Peso del examen',pesos.examen)+fila('Peso notas de clase',pesos.clase)+'</div>'
-      +'<div class="mr-pw-cards">'
-        +'<div class="mr-pw-card"><h5>LM</h5><div class="mr-pw-note">Ponderación de los apartados</div>'+fila('Ritmo',pEx.ritmo)+fila('Entonación',pEx.entonacion)+(esGP?fila('Entonación atonal',pEx.entonacion_atonal):'')+fila('Audición',pEx.audicion)+fila('Teoría',pEx.teoria)+fila('Actitud',pEx.actitud)+'</div>'
-        +(!esGP?'<div class="mr-pw-card"><h5>EAV</h5><div class="mr-pw-note">Ponderación de los apartados</div>'+fila('Entonación',.45)+fila('Audición',.50)+fila('Actitud',.05)+'</div>':'')
-      +'</div>'
-      +'<div class="mr-pw-foot">La actitud no entra ni en el examen ni en las notas de clase: es el 5 % de la nota final del trimestre. '+(!esGP?'EAV usa pesos propios (45/50/5).':'En GP la entonación se reparte 10% tonal + 10% atonal.')+'</div>';
-    abrirModalMR(h, true);
-  }
 
-  /* ===== Radar en ventana emergente ===== */
-  function abrirRadar(){
-    var m=document.getElementById('mr-radar-modal');
-    if(!m){ m=document.createElement('div'); m.id='mr-radar-modal'; m.className='mr-radar-modal';
-      m.addEventListener('click',function(e){ if(e.target===m) cerrarRadar(); });
-      document.addEventListener('keydown',function(e){ if(e.key==='Escape' && m.classList.contains('open')){ e.stopImmediatePropagation(); cerrarRadar(); } }, true);
-      document.body.appendChild(m); }
-    m.innerHTML='<div class="mr-radar-box"><button type="button" class="mr-radar-x" aria-label="Cerrar">✕</button>'
-      +'<div class="mr-card-tit" style="text-align:center">Tu radar del curso</div>'+radarSVG()+'</div>';
-    m.querySelector('.mr-radar-x').addEventListener('click',cerrarRadar);
-    m.classList.add('open');
+  /* ================= overlay / render ================= */
+  function overlayEl(){
+    var ov=document.getElementById('mr-overlay'); if(ov) return ov;
+    ov=document.createElement('div'); ov.id='mr-overlay'; ov.className='mr-overlay';
+    ov.innerHTML='<div class="mr-neb" aria-hidden="true"><span class="b1"></span><span class="b2"></span><span class="b3"></span></div>'
+      +'<div class="mr-top"><button type="button" class="mr-volver" id="mr-volver">← Volver al portal</button>'
+      +'<div class="mr-titulo">📊 Mis resultados</div><div class="mr-quien" id="mr-quien"></div></div>'
+      +'<div class="mr-wrap" id="mr-body"></div>';
+    document.body.appendChild(ov);
+    ov.querySelector('#mr-volver').addEventListener('click',cerrar);
+    document.addEventListener('keydown',function(e){ if(e.key==='Escape' && ov.classList.contains('open')) cerrar(); });
+    return ov;
   }
-  function cerrarRadar(){ var m=document.getElementById('mr-radar-modal'); if(m) m.classList.remove('open'); }
-
+  function cerrar(){ var ov=document.getElementById('mr-overlay'); if(ov) ov.classList.remove('open'); document.documentElement.classList.remove('mr-bloqueo'); }
+  function pintarQuien(){
+    var q=document.getElementById('mr-quien'); if(!q) return;
+    var al=_st.alumno||{}; var nombre=((al.nombre||'')+' '+(al.apellidos||'')).trim();
+    var curso=cursoCodDe(al.grupo||'');
+    q.innerHTML='<b>'+esc(nombre||'Alumno/a')+'</b>'+esc((al.grupo?al.grupo+' · ':'')+(CURSO_NOMBRE[curso]||('curso '+cursoAcad())));
+  }
   function render(){
     var body=document.getElementById('mr-body'); if(!body) return;
-    var ss=sesiones();
-    var al=_st.alumno||{};
-    var nombre=((al.nombre||'')+' '+(al.apellidos||'')).trim()||'Alumno/a';
-    var trims=trimsConDatos(ss);
-    if(!_st.trim || trims.indexOf(_st.trim)===-1) _st.trim=trims.length?trims[trims.length-1]:'1T';
-    var notaClase=mediaClase(ss);   // ponderada por apartado, igual que el Diario
-    var fechaTxt=new Date().toLocaleDateString('es-ES',{day:'numeric',month:'long',year:'numeric'});
-    var chips=(trims.length?trims:['1T']).map(function(t){
-      return '<button type="button" class="mr-chip-trim'+(t===_st.trim?' on':'')+'" data-trim="'+t+'">'+t+'</button>';
-    }).join('');
-
-    body.innerHTML=
-      '<div class="mr-hero mr-card">'
-        +'<div class="mr-avatar">'+esc(iniciales(al.nombre,al.apellidos))+'</div>'
-        +'<div class="mr-hero-info"><div class="mr-hero-nombre">'+esc(nombre)+'</div>'
-        +'<div class="mr-hero-sub">'+esc(al.grupo||'')+(al.grupo?' · ':'')+'Lenguaje Musical · curso '+cursoAcad()+'</div></div>'
-      +'</div>'
-      +bloqueNotasTrimestre()
-      +(ss.length
-        ? '<div class="mr-card mr-acciones"><button type="button" class="mr-btn-nota">📊 Consultar nota de clase actual</button><button type="button" class="mr-ver-radar">🎯 Ver radar</button><button type="button" class="mr-btn-pesos">⚙️ Porcentajes de evaluación</button></div>'
-          +bloqueExamenes()
-          +'<div class="mr-card"><div class="mr-card-tit">Tu evolución durante el curso</div>'+svgEvolucion(ss)
-            +'<div class="mr-leyenda">'+ORDEN_AP.map(function(ap){ return '<span class="mr-chip" style="--apc:'+APARTADOS[ap].color+'">'+esc(APARTADOS[ap].label)+'</span>'; }).join('')+'</div></div>'
-          +bloqueUltimas(ss)
-        : '<div class="mr-card"><div class="mr-vacio">Todavía no hay notas registradas en tu cuenta. En cuanto empieces a tener notas de clase, de tareas y de exámenes, verás aquí tus resultados. ✨</div></div>')
-      +'<div class="mr-nota-pie">Todo proviene del Diario del profesor: la media de clase, las notas de examen y las Notas del trimestre (boletín). El radar y la evolución muestran tus notas reales.</div>';
-
-    Array.prototype.forEach.call(body.querySelectorAll('.mr-chip-trim'),function(b){
-      b.addEventListener('click',function(){ _st.trim=b.getAttribute('data-trim'); render(); });
-    });
-    var vr=body.querySelector('.mr-ver-radar'); if(vr) vr.addEventListener('click',abrirRadar);
-    var bn=body.querySelector('.mr-btn-nota'); if(bn) bn.addEventListener('click',abrirNotaClase);
-    var bp=body.querySelector('.mr-btn-pesos'); if(bp) bp.addEventListener('click',abrirPesos);
+    var ss=sesiones(), ex=examenes();
+    pintarQuien();
+    body.innerHTML='<div class="mr-grid">'+bloqueClase(ss)+bloqueExamenes(ex)+bloqueBoletin(ex)+'</div>'
+      +bloqueGrafica(ss,ex)
+      +'<div class="mr-pie">Todo sale del Diario del profesor: tus notas de clase, tus notas de examen, tu actitud y la nota del boletín.</div>';
+    var bi=body.querySelector('#mr-btn-info'); if(bi) bi.addEventListener('click',abrirInfo);
     body.scrollTop=0;
   }
+  function aviso(txt){ var body=document.getElementById('mr-body'); if(body) body.innerHTML='<div class="mr-card mr-aviso">'+txt+'</div>'; }
 
   async function abrir(){
     var id=cuentaId();
@@ -3615,13 +3408,12 @@ function showEnig(kind){
     ov.classList.add('open');
     document.documentElement.classList.add('mr-bloqueo');
     var body=document.getElementById('mr-body');
-    if(!id){ body.innerHTML='<div class="mr-card"><div class="mr-vacio">Inicia sesión con tu cuenta validada para ver tus resultados.</div></div>'; return; }
-    // Con caché: pinta al instante y refresca en silencio. Sin caché: spinner.
+    if(!id){ aviso('Inicia sesión con tu cuenta validada para ver tus resultados.'); return; }
     var teniaCache=(_st.cargado && _st.rows);
     if(teniaCache){ render(); }
     else { body.innerHTML='<div class="mr-cargando"><div class="mr-spin"></div>Cargando tus resultados…</div>'; }
     var c=cli();
-    if(!c){ if(!teniaCache) body.innerHTML='<div class="mr-card"><div class="mr-vacio">No pude conectar. Revisa tu conexión e inténtalo de nuevo.</div></div>'; return; }
+    if(!c){ if(!teniaCache) aviso('No pude conectar. Revisa tu conexión e inténtalo de nuevo.'); return; }
     try{
       var r=await c.rpc('suite_mis_resultados',{ p_cuenta_id:id });
       if(r.error) throw new Error(r.error.message);
@@ -3630,142 +3422,125 @@ function showEnig(kind){
         var cod=(d&&d.error)||'error';
         var mapa={ no_validado:'Tu cuenta aún no está validada por Iago; en cuanto lo esté, verás aquí tus resultados.',
                    cuenta_no_encontrada:'No encuentro tu cuenta. Cierra sesión y vuelve a entrar.' };
-        if(!teniaCache) body.innerHTML='<div class="mr-card"><div class="mr-vacio">'+esc(mapa[cod]||('No se pudieron cargar los resultados ('+cod+').'))+'</div></div>';
+        if(!teniaCache) aviso(esc(mapa[cod]||('No se pudieron cargar los resultados ('+cod+').')));
         return;
       }
       _st.rows=Array.isArray(d.evaluaciones)?d.evaluaciones:[];
       _st.alumno=d.alumno||{};
       _st.cargado=true;
       render();
-      // Notas del boletín leídas del Diario (aditivo, tolerante a fallo):
-      // si aún no está el SQL suite_mis_notas_finales, el bloque no aparece.
       try{
         var rf=await c.rpc('suite_mis_notas_finales',{ p_cuenta_id:id });
-        if(rf && !rf.error && Array.isArray(rf.data) && rf.data.length){ _st.notasFinales=rf.data; render(); }
-      }catch(_e){ /* silencioso: el bloque simplemente no se muestra */ }
+        if(rf && !rf.error && Array.isArray(rf.data)){ _st.notasFinales=rf.data; render(); }
+      }catch(_e){ /* silencioso: el boletín queda a guiones */ }
     }catch(e){
       console.warn('[mis-resultados]',e);
-      if(!teniaCache) body.innerHTML='<div class="mr-card"><div class="mr-vacio">No se pudieron cargar los resultados ('+esc((e&&e.message)||e)+'). Si acaba de crearse, puede que falte ejecutar el SQL suite_mis_resultados.</div></div>';
+      if(!teniaCache) aviso('No se pudieron cargar los resultados ('+esc((e&&e.message)||e)+'). Inténtalo de nuevo en un momento.');
     }
   }
 
-  /* ---- CSS del overlay (inyectado, estética Suite) ---- */
+  /* ---- CSS (inyectado) ---- */
   function css(){
     if(document.getElementById('mr-css')) return;
     var s=document.createElement('style'); s.id='mr-css';
+    var tema = (MODO==='GP')
+      ? '--mr-fondo:linear-gradient(160deg,#2b2008 0%,#1d1506 38%,#140e05 72%,#0b0703 100%);--mr-ink:#f7f1e2;--mr-dim:#d9c99a;--mr-dim2:#a8966c;--mr-card:rgba(255,232,170,.05);--mr-card2:rgba(255,232,170,.035);--mr-bd:rgba(212,175,55,.26);--mr-bd2:rgba(212,175,55,.18);--mr-acc:#e8c15a;--mr-acc2:#d4af37;--mr-tinta:#1a1204;--mr-n1:#d4af37;--mr-n2:#e8c15a;--mr-n3:#b8860b;--mr-box:linear-gradient(160deg,#2b2008,#140e05);--mr-cols:254px 1fr 230px;--mr-marcaw:82px;--mr-marcaf:46px;'
+      : '--mr-fondo:linear-gradient(160deg,#241a52 0%,#180f3c 38%,#0e0a2c 72%,#080518 100%);--mr-ink:#f6f3ff;--mr-dim:#c7bff0;--mr-dim2:#9a90c8;--mr-card:rgba(255,255,255,.055);--mr-card2:rgba(255,255,255,.035);--mr-bd:#ffffff22;--mr-bd2:#ffffff18;--mr-acc:#a974ff;--mr-acc2:#5bd0ff;--mr-tinta:#12082e;--mr-n1:#5bd0ff;--mr-n2:#a974ff;--mr-n3:#ff5ccd;--mr-box:linear-gradient(160deg,#1c1442,#0e0a2c);--mr-cols:254px 1fr 286px;--mr-marcaw:74px;--mr-marcaf:44px;';
     s.textContent=
-      'html.mr-bloqueo,html.mr-bloqueo body{overflow:hidden}'
-      +'.mr-overlay{position:fixed;inset:0;z-index:99998;display:none;flex-direction:column;background:linear-gradient(160deg,#2b2008 0%,#1d1506 38%,#140e05 72%,#0b0703 100%);color:#f7f1e2;font-family:inherit}'
+      '.mr-overlay,.mr-modal{'+tema+'--mr-ok:#5ce8a8;--mr-mal:#ff7a8a;--mr-ok-bg:#34d399;--mr-ok-tinta:#07301f;--mr-mal-bg:#f87171;--mr-mal-tinta:#3d0808;--mr-real-mal:#9b1111}'
+      +'html.mr-bloqueo,html.mr-bloqueo body{overflow:hidden}'
+      +'.mr-overlay{position:fixed;inset:0;z-index:99998;display:none;flex-direction:column;background:var(--mr-fondo);color:var(--mr-ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;box-sizing:border-box}'
+      +'.mr-overlay *{box-sizing:border-box}'
       +'.mr-overlay.open{display:flex}'
-      +'.mr-overlay .neb-bg{position:absolute;inset:0;overflow:hidden;pointer-events:none;filter:blur(60px);opacity:.5}'
-      +'.mrneb{position:absolute;border-radius:50%;display:block}'
-      +'.mrneb.b1{width:44vw;height:44vw;left:-10vw;top:-12vw;background:#d4af37;opacity:.35;animation:mrDrift1 24s ease-in-out infinite}'
-      +'.mrneb.b2{width:40vw;height:40vw;right:-12vw;top:8vh;background:#e8c15a;opacity:.4;animation:mrDrift2 28s ease-in-out infinite}'
-      +'.mrneb.b3{width:46vw;height:42vw;left:22vw;bottom:-18vw;background:#b8860b;opacity:.3;animation:mrDrift3 26s ease-in-out infinite}'
-      +'@keyframes mrDrift1{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(4vw,3vh) scale(1.1)}}'
-      +'@keyframes mrDrift2{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-3vw,4vh) scale(1.08)}}'
-      +'@keyframes mrDrift3{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-3vw,-3vh) scale(1.12)}}'
-      +'.mr-top{position:relative;z-index:2;display:flex;align-items:center;gap:14px;padding:14px 22px}'
-      +'.mr-volver{background:rgba(255,255,255,.06);border:1px solid #ffffff33;color:#fff;border-radius:10px;padding:8px 14px;cursor:pointer;font-weight:700;font-size:13.5px;backdrop-filter:blur(4px);font-family:inherit}'
+      +'.mr-neb{position:absolute;inset:0;overflow:hidden;pointer-events:none;filter:blur(60px);opacity:.42;z-index:0}'
+      +'.mr-neb span{position:absolute;border-radius:50%;display:block}'
+      +'.mr-neb .b1{width:44vw;height:44vw;left:-10vw;top:-12vw;background:var(--mr-n1);opacity:.32}'
+      +'.mr-neb .b2{width:40vw;height:40vw;right:-12vw;top:8vh;background:var(--mr-n2);opacity:.4}'
+      +'.mr-neb .b3{width:46vw;height:42vw;left:22vw;bottom:-22vw;background:var(--mr-n3);opacity:.26}'
+      +'.mr-top{position:relative;z-index:2;display:flex;align-items:center;gap:14px;padding:14px 22px;flex:0 0 auto}'
+      +'.mr-volver{background:rgba(255,255,255,.06);border:1px solid var(--mr-bd);color:var(--mr-ink);border-radius:10px;padding:8px 14px;cursor:pointer;font-weight:700;font-size:13.5px;font-family:inherit}'
       +'.mr-volver:hover{background:rgba(255,255,255,.12)}'
       +'.mr-titulo{flex:1;text-align:center;font-size:16px;font-weight:900;letter-spacing:.02em}'
-      +'.mr-top-hueco{width:132px}'
-      +'.mr-scroll{position:relative;z-index:2;flex:1;overflow:auto;padding:8px 20px 34px;display:flex;flex-direction:column;gap:14px;max-width:860px;width:100%;margin:0 auto;box-sizing:border-box}'
-      +'.mr-card{background:rgba(255,255,255,.055);border:1px solid #ffffff22;border-radius:18px;padding:18px 20px;backdrop-filter:blur(6px)}'
-      +'.mr-card-tit{font-size:13px;font-weight:900;text-transform:uppercase;letter-spacing:.06em;color:#d9c99a;margin-bottom:12px}'
-      +'.mr-card-tit-row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}'
-      +'.mr-hero{display:flex;align-items:center;gap:16px;flex-wrap:wrap}'
-      +'.mr-avatar{width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:900;color:#1a1204;background:linear-gradient(135deg,#e8c15a,#d4af37 55%,#b8860b);box-shadow:0 10px 26px rgba(212,175,55,.4);flex:0 0 auto}'
-      +'.mr-hero-info{flex:1 1 auto;min-width:180px}'
-      +'.mr-hero-nombre{font-size:20px;font-weight:900}'
-      +'.mr-hero-sub{font-size:12.5px;color:#d9c99a;margin-top:3px}'
-      +'.mr-notaclase{text-align:center;padding:6px 18px;border-left:1px dashed #ffffff2b}'
-      +'.mr-nc-lbl{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:#d9c99a}'
-      +'.mr-nc-num{font-size:38px;font-weight:900;line-height:1.15;font-variant-numeric:tabular-nums}'
-      +'.mr-nc-fecha{font-size:11px;color:#a8996b}'
-      +'.mr-trims{display:flex;gap:6px}'
-      +'.mr-chip-trim{font:inherit;font-size:12px;font-weight:800;color:#d9c99a;background:rgba(255,255,255,.06);border:1px solid #ffffff2b;border-radius:99px;padding:5px 13px;cursor:pointer}'
-      +'.mr-chip-trim.on{color:#1a1204;background:linear-gradient(90deg,#e8c15a,#d4af37);border-color:transparent}'
-      +'.mr-aps{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:12px}'
-      +'.mr-ap{position:relative;background:rgba(255,255,255,.04);border:1px solid #ffffff1c;border-left:4px solid var(--apc);border-radius:14px;padding:12px 14px}'
-      +'.mr-ap-nombre{font-size:12px;font-weight:900;color:var(--apc);text-transform:uppercase;letter-spacing:.04em}'
-      +'.mr-ap-nota{font-size:27px;font-weight:900;margin-top:4px;font-variant-numeric:tabular-nums}'
-      +'.mr-ap-n{font-size:11px;color:#a8996b;margin-top:2px}'
-      +'.mr-tend-txt{font-size:16px;font-weight:900}'
-      +'.mr-tend-txt.ok{color:#e8d9a8}.mr-tend-txt.mal{color:#caa14a}.mr-tend-txt.flat{color:#d9c99a}'
-      +'.mr-dim{font-size:12px;font-weight:700;color:#a8996b}'
-      +'.mr-ex-tabla{overflow-x:auto}'
-      +'.mr-ex-tabla table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}'
-      +'.mr-ex-tabla th{font-size:11.5px;text-transform:uppercase;letter-spacing:.04em;padding:6px 10px;text-align:center}'
-      +'.mr-ex-tabla td{padding:8px 10px;text-align:center;font-weight:800;border-top:1px solid #ffffff14;font-size:15px}'
-      +'.mr-ex-trim{color:#d9c99a!important;font-size:12.5px!important;text-align:left!important;text-transform:uppercase;letter-spacing:.04em}'
-      +'.mr-dos{display:grid;grid-template-columns:1fr;gap:14px}'
-      +'@media(min-width:760px){.mr-dos{grid-template-columns:1.5fr 1fr}}'
-      +'.mr-svg{width:100%;height:auto;display:block}'
-      +'.mr-card-radar{display:flex;flex-direction:column}'
-      +'.mr-card-radar .mr-radar{max-width:320px;margin:auto}'
-      +'.mr-leyenda{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;justify-content:center}'
-      +'.mr-chip{display:inline-flex;align-items:center;font-size:11px;font-weight:900;color:var(--apc);background:color-mix(in srgb,var(--apc) 16%,transparent);border:1px solid color-mix(in srgb,var(--apc) 45%,transparent);border-radius:99px;padding:3px 10px;text-transform:uppercase;letter-spacing:.03em}'
-      +'.mr-ult{display:flex;flex-direction:column;gap:7px}'
-      +'.mr-ult-fila{display:grid;grid-template-columns:auto 1fr auto auto;align-items:center;gap:12px;background:rgba(255,255,255,.035);border:1px solid #ffffff14;border-radius:12px;padding:8px 13px}'
-      +'.mr-ult-lec{font-size:13px;font-weight:700;color:#e9e4ff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}'
-      +'.mr-ult-fecha{font-size:12px;color:#a8996b;font-variant-numeric:tabular-nums}'
-      +'.mr-ult-nota{font-size:15.5px;font-weight:900;font-variant-numeric:tabular-nums}'
-      +'.mr-vacio{color:#d9c99a;font-size:14px;line-height:1.6;padding:6px 2px}'
-      +'.mr-nota-pie{font-size:11.5px;color:#a8996b;text-align:center;padding:0 12px}'
-      +'.mr-cargando{display:flex;flex-direction:column;align-items:center;gap:14px;padding:60px 0;color:#d9c99a;font-weight:700}'
-      +'.mr-spin{width:44px;height:44px;border-radius:50%;border:4px solid #ffffff26;border-top-color:#e8c15a;animation:mrSpin .9s linear infinite}'
+      +'.mr-quien{font-size:12px;color:var(--mr-dim);text-align:right;line-height:1.35;min-width:132px}'
+      +'.mr-quien b{display:block;font-size:13px;color:var(--mr-ink)}'
+      +'.mr-wrap{position:relative;z-index:2;flex:1;min-height:0;overflow:auto;padding:4px 20px 26px;display:flex;flex-direction:column;gap:14px;max-width:1360px;width:100%;margin:0 auto}'
+      +'.mr-grid{display:grid;grid-template-columns:var(--mr-cols);gap:14px;align-items:stretch;height:clamp(370px,46vh,510px);flex:0 0 auto}'
+      +'.mr-card{background:var(--mr-card);border:1px solid var(--mr-bd);border-radius:18px;padding:14px 16px;backdrop-filter:blur(6px);display:flex;flex-direction:column;min-width:0;min-height:0}'
+      +'.mr-grid>.mr-card{height:100%;overflow:hidden}'
+      +'.mr-ctit{font-size:11.5px;font-weight:900;text-transform:uppercase;letter-spacing:.06em;color:var(--mr-dim);display:flex;align-items:center;justify-content:space-between;gap:8px}'
+      +'.mr-ctit-r{font-weight:700;text-transform:none;letter-spacing:0}'
+      +'.mr-pct{white-space:nowrap;font-size:11px;font-weight:900;color:var(--mr-tinta);background:linear-gradient(90deg,var(--mr-acc),var(--mr-acc2));border-radius:99px;padding:2px 9px}'
+      +'.mr-media-num{font-variant-numeric:tabular-nums;font-weight:900;font-size:30px;line-height:1.05;margin-top:6px}'
+      +'.mr-media-pie{font-size:10px;color:var(--mr-dim2);margin:4px 0 0;font-weight:600;line-height:1.35}'
+      +'.mr-sep{height:1px;background:var(--mr-bd2);margin:11px 0 9px}'
+      +'.mr-sub-tit{font-size:10.5px;font-weight:900;text-transform:uppercase;letter-spacing:.07em;color:var(--mr-dim2);margin-bottom:8px}'
+      +'.mr-lista{flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;gap:6px;padding-right:4px;scrollbar-width:thin;scrollbar-color:var(--mr-bd) transparent}'
+      +'.mr-lista::-webkit-scrollbar{width:7px}.mr-lista::-webkit-scrollbar-thumb{background:var(--mr-bd);border-radius:99px}'
+      +'.mr-vacio-l{font-size:12px;color:var(--mr-dim2);line-height:1.5}'
+      +'.mr-fila{display:grid;grid-template-columns:8px 1fr auto;align-items:center;gap:9px;background:var(--mr-card2);border:1px solid var(--mr-bd2);border-radius:11px;padding:7px 10px}'
+      +'.mr-barrita{width:8px;height:26px;border-radius:99px;background:var(--apc)}'
+      +'.mr-fmeta{min-width:0}.mr-flec,.mr-fsub{display:block}'
+      +'.mr-flec{font-size:12.5px;font-weight:700;color:var(--mr-ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}'
+      +'.mr-fsub{font-size:10.5px;color:var(--mr-dim2);font-variant-numeric:tabular-nums}'
+      +'.mr-fnota{font-size:15px;font-weight:900;font-variant-numeric:tabular-nums}'
+      +'.mr-exs{flex:1;display:grid;grid-template-rows:repeat(3,1fr);gap:10px;min-height:0;margin-top:10px}'
+      +'.mr-ex{background:var(--mr-card2);border:1px solid var(--mr-bd2);border-radius:14px;padding:10px 13px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}'
+      +'.mr-ex.vacio{opacity:.45}'
+      +'.mr-extrim{font-size:16px;font-weight:900;color:var(--mr-acc);width:34px;flex:0 0 auto;font-variant-numeric:tabular-nums}'
+      +'.mr-aps{display:flex;gap:8px;flex:1;flex-wrap:wrap;min-width:0}'
+      +'.mr-ap{flex:1 1 84px;min-width:78px;border:1px solid color-mix(in srgb,var(--apc) 42%,transparent);background:color-mix(in srgb,var(--apc) 13%,transparent);border-radius:11px;padding:6px 8px;text-align:center}'
+      +'.mr-ap-l{font-size:9.5px;font-weight:900;text-transform:uppercase;letter-spacing:.04em;color:var(--apc);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}'
+      +'.mr-ap-n{font-size:19px;font-weight:900;font-variant-numeric:tabular-nums;line-height:1.15}'
+      +'.mr-ex-pend{font-size:12.5px;color:var(--mr-dim2);font-weight:700}'
+      +'.mr-info-btn{font:inherit;font-size:10.5px;font-weight:800;letter-spacing:.02em;text-transform:none;color:var(--mr-dim);background:none;border:none;border-bottom:1px dotted var(--mr-dim2);padding:0 0 1px;cursor:pointer;white-space:nowrap}'
+      +'.mr-info-btn:hover{color:var(--mr-ink);border-bottom-color:var(--mr-ink)}'
+      +'.mr-bols{flex:1;display:grid;grid-template-rows:repeat(3,1fr);gap:10px;min-height:0;margin-top:10px}'
+      +'.mr-bol{background:rgba(0,0,0,.30);border:1px solid var(--mr-bd2);border-radius:14px;padding:8px 11px;display:flex;align-items:center;gap:10px}'
+      +'.mr-bol.vacia{opacity:.45}'
+      +'.mr-bol-t{font-size:11.5px;font-weight:900;color:var(--mr-dim);writing-mode:vertical-rl;transform:rotate(180deg);letter-spacing:.06em;flex:0 0 auto}'
+      +'.mr-bol-cuerpo{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:6px}'
+      +'.mr-bol-nums{display:flex;gap:9px;justify-content:center}'
+      +'.mr-bol-u{text-align:center}'
+      +'.mr-bol-u-l{font-size:9.5px;font-weight:900;color:var(--mr-dim2);letter-spacing:.06em;text-transform:uppercase;margin-bottom:2px}'
+      +'.mr-marca{position:relative;display:inline-block;min-width:var(--mr-marcaw);padding:6px 14px 9px;border-radius:9px;font-size:var(--mr-marcaf);font-weight:900;line-height:1;font-variant-numeric:tabular-nums;background:var(--mr-ok-bg);color:var(--mr-ok-tinta)}'
+      +'.mr-marca.susp{background:var(--mr-mal-bg);color:var(--mr-mal-tinta)}'
+      +'.mr-marca.nula{background:rgba(255,255,255,.07);color:var(--mr-dim2);box-shadow:inset 0 0 0 1.5px var(--mr-bd2);min-width:0}'
+      +'.mr-real{position:absolute;right:5px;bottom:3px;font-size:10.5px;font-weight:800;line-height:1;font-variant-numeric:tabular-nums;opacity:.72}'
+      +'.mr-real.rojo{color:var(--mr-real-mal);opacity:1}'
+      +'.mr-bol-act{font-size:10.5px;font-weight:800;color:var(--mr-dim);text-align:center;line-height:1.3}.mr-bol-act b{font-weight:900}'
+      +'.mr-graf{flex:0 0 auto}.mr-graf-svg{margin-top:10px}.mr-graf svg{width:100%;height:auto;display:block}'
+      +'.mr-ley{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:8px}'
+      +'.mr-chip{display:inline-flex;align-items:center;font-size:10.5px;font-weight:900;color:var(--apc);background:color-mix(in srgb,var(--apc) 16%,transparent);border:1px solid color-mix(in srgb,var(--apc) 45%,transparent);border-radius:99px;padding:3px 10px;text-transform:uppercase;letter-spacing:.03em}'
+      +'.mr-pie{font-size:11px;color:var(--mr-dim2);text-align:center}'
+      +'.mr-aviso{color:var(--mr-dim);font-size:14px;line-height:1.6}'
+      +'.mr-cargando{display:flex;flex-direction:column;align-items:center;gap:14px;padding:60px 0;color:var(--mr-dim);font-weight:700}'
+      +'.mr-spin{width:44px;height:44px;border-radius:50%;border:4px solid #ffffff26;border-top-color:var(--mr-acc);animation:mrSpin .9s linear infinite}'
       +'@keyframes mrSpin{to{transform:rotate(360deg)}}'
-      +'@media(prefers-reduced-motion:reduce){.mrneb,.mr-spin{animation:none!important}}'
-      +'@media(max-width:600px){.mr-notaclase{border-left:none;border-top:1px dashed #ffffff2b;padding-top:10px;width:100%}.mr-top-hueco{display:none}}'
-      +'.mr-medias-acc{display:flex;align-items:center;gap:10px;flex-wrap:wrap}'
-      +'.mr-media-clase{font-size:12px;font-weight:700;color:#a8996b;white-space:nowrap}'
-      +'.mr-cmedia{display:flex;align-items:baseline;gap:10px;padding:8px 2px 2px;flex-wrap:wrap}'
-      +'.mr-cmedia-num{font-size:34px;font-weight:900;font-variant-numeric:tabular-nums;line-height:1}'
-      +'.mr-cmedia-lbl{font-size:12px;color:#a8996b;font-weight:700}'
-      +'.mr-cmedia-none{font-size:13px;color:#a8996b}'
-      +'.mr-media-clase b{font-size:14px;font-weight:900;margin-left:4px;font-variant-numeric:tabular-nums}'
-      +'.mr-ver-radar{font:inherit;font-size:12px;font-weight:800;color:#1a1204;background:linear-gradient(90deg,#e8c15a,#d4af37);border:none;border-radius:99px;padding:6px 14px;cursor:pointer}'
-      +'.mr-ver-radar:hover{filter:brightness(1.07)}'
-      +'.mr-bol-card .mr-bol-sub{font-size:12px;color:#a8996b;margin:2px 0 12px;line-height:1.4}'
-      +'.mr-bol-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}'
-      +'@media(max-width:520px){.mr-bol-grid{grid-template-columns:1fr}}'
-      +'.mr-bol{position:relative;background:rgba(255,255,255,.04);border:1px solid #ffffff1c;border-radius:16px;padding:13px 16px 16px;display:flex;flex-direction:column;min-height:132px}'
-      +'.mr-bol-top{display:flex;justify-content:space-between;align-items:center;gap:8px}'
-      +'.mr-bol-lbl{font-size:11px;font-weight:900;color:#a8996b;letter-spacing:.05em;text-transform:uppercase}'
-      +'.mr-bol-real{font-size:12.5px;font-weight:800;color:#e8c15a;background:rgba(0,0,0,.35);border-radius:8px;padding:3px 8px;font-variant-numeric:tabular-nums}'
-      +'.mr-bol-trim{font-size:15px;font-weight:900;color:#e8c15a;margin-top:2px}'
-      +'.mr-bol-num{font-size:52px;font-weight:900;line-height:1.02;margin-top:auto;font-variant-numeric:tabular-nums;text-align:center}'
-      +'.mr-radar-modal{position:fixed;inset:0;z-index:99999;display:none;align-items:center;justify-content:center;background:rgba(6,4,1,.72);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);padding:20px}'
-      +'.mr-radar-modal.open{display:flex}'
-      +'.mr-radar-box{position:relative;background:linear-gradient(160deg,#241b08,#140e05);border:1px solid #ffffff22;border-radius:20px;padding:20px 22px 16px;max-width:430px;width:100%;box-shadow:0 30px 80px rgba(0,0,0,.6)}'
-      +'.mr-radar-box .mr-radar{max-width:360px;margin:6px auto 0;display:block}'
-      +'.mr-radar-x{position:absolute;top:10px;right:12px;background:none;border:none;color:#d9c99a;font-size:18px;cursor:pointer;line-height:1}'
-      +'.mr-box-wide{max-width:540px}'
-      +'.mr-acciones{display:flex;gap:10px;flex-wrap:wrap;align-items:center}'
-      +'.mr-btn-nota{font:inherit;font-size:13px;font-weight:800;color:#12210a;background:linear-gradient(90deg,#5eead4,#22c55e);border:none;border-radius:99px;padding:9px 18px;cursor:pointer}'
-      +'.mr-btn-nota:hover,.mr-btn-pesos:hover{filter:brightness(1.07)}'
-      +'.mr-btn-pesos{font:inherit;font-size:12px;font-weight:800;color:#e8d9a8;background:rgba(255,255,255,.06);border:1px solid #ffffff2b;border-radius:99px;padding:8px 14px;cursor:pointer}'
-      +'.mr-nc-lbl2{font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#a8996b;text-align:center}'
-      +'.mr-nc-big{font-size:64px;font-weight:900;text-align:center;line-height:1.05;margin:6px 0;font-variant-numeric:tabular-nums}'
-      +'.mr-nc-fecha2{font-size:12.5px;color:#a8996b;text-align:center}'
-      +'.mr-pw-tit{font-weight:800;font-size:15px;color:#f0e6c8;margin-bottom:6px}'
-      +'.mr-pw-sub{font-size:12px;color:#a8996b;line-height:1.4;margin-bottom:12px}'
-      +'.mr-pw-card{background:rgba(255,255,255,.04);border:1px solid #ffffff1c;border-radius:12px;padding:12px 14px;margin-bottom:10px}'
-      +'.mr-pw-card h5{margin:0 0 8px;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:#a8996b}'
-      +'.mr-pw-cards{display:grid;grid-template-columns:1fr 1fr;gap:10px}'
-      +'@media(max-width:520px){.mr-pw-cards{grid-template-columns:1fr}}'
-      +'.mr-pw-row{display:flex;justify-content:space-between;padding:4px 0;font-size:13.5px}'
-      +'.mr-pw-row b{color:#e8c15a;font-variant-numeric:tabular-nums}'
-      +'.mr-pw-note{font-size:11px;color:#a8996b;margin:-2px 0 8px;line-height:1.3}'
-      +'.mr-pw-foot{font-size:12px;color:#a8996b;margin-top:10px;line-height:1.4}';
+      +'@media(prefers-reduced-motion:reduce){.mr-spin{animation:none!important}}'
+      +'.mr-modal{position:fixed;inset:0;z-index:99999;display:none;align-items:center;justify-content:center;background:rgba(4,3,10,.74);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);padding:20px;font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}'
+      +'.mr-modal.open{display:flex}'
+      +'.mr-box{position:relative;background:var(--mr-box,#1c1442);border:1px solid var(--mr-bd,#ffffff22);border-radius:20px;padding:20px 22px 18px;max-width:560px;width:100%;max-height:86vh;overflow:auto;box-shadow:0 30px 80px rgba(0,0,0,.6);color:var(--mr-ink,#f6f3ff)}'
+      +'.mr-box h4{margin:0 0 4px;font-size:15px;font-weight:900}'
+      +'.mr-msub{font-size:12px;color:var(--mr-dim2);line-height:1.45;margin-bottom:14px}'
+      +'.mr-x{position:absolute;top:10px;right:12px;background:none;border:none;color:var(--mr-dim2);font-size:18px;cursor:pointer}'
+      +'.mr-blq{background:rgba(255,255,255,.04);border:1px solid var(--mr-bd2);border-radius:12px;padding:11px 13px;margin-bottom:10px}'
+      +'.mr-blq h5{margin:0 0 7px;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--mr-dim2)}'
+      +'.mr-row{display:flex;justify-content:space-between;gap:10px;padding:3px 0;font-size:13px}.mr-row b{color:var(--mr-acc);font-variant-numeric:tabular-nums}'
+      +'.mr-ink{color:var(--mr-ink)!important}'
+      +'.mr-hr{border:none;border-top:1px solid var(--mr-bd2);margin:8px 0}'
+      +'.mr-avi{font-size:11.5px;color:var(--mr-dim2);line-height:1.5;margin-top:8px}'
+      +'.mr-esc{display:flex;flex-direction:column;gap:4px;margin-top:8px}'
+      +'.mr-esc-f{display:flex;justify-content:space-between;gap:10px;font-size:12.5px;padding:5px 9px;border-radius:8px;background:rgba(255,255,255,.04)}'
+      +'.mr-esc-f b{font-variant-numeric:tabular-nums;color:var(--mr-dim)}'
+      +'.mr-esc-f.mal{background:color-mix(in srgb,var(--mr-mal) 16%,transparent)}.mr-esc-f.mal span:first-child{color:var(--mr-mal)}'
+      +'@media (max-width:1080px){.mr-grid{grid-template-columns:1fr;height:auto}.mr-grid>.mr-card{height:auto}.mr-lista{max-height:260px}.mr-bol-t{writing-mode:horizontal-tb;transform:none}}'
+      +'@media (max-width:600px){.mr-top{padding:12px 14px;gap:10px}.mr-quien{display:none}.mr-wrap{padding:4px 14px 22px}}';
     document.head.appendChild(s);
   }
   if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded',css); } else { css(); }
 
   window.MisResultados={ abrir:abrir, cerrar:cerrar };
 })();
-
 </script>
 <script>
 /* FASE 9 · Mensajes del alumno con el profesor (sobre junto a la campana) */
