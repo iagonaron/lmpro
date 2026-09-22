@@ -2559,6 +2559,11 @@ function showEnig(kind){
     var fichaOculta=function(o){
       var pj=o.payload_json||{}, f=pj.ficha_id||'';
       if(!f || _entregadas[f] || !pj.fin_normal) return false;
+      /* (22-sep-2026, Iago) Las cuentas TESTER ven la ficha desde que se envía,
+         igual que ya ven el paquete semanal en vista previa: «se supone que a
+         mis tester les llega en cuanto preparo las clases». Antes se escondía
+         hasta entrega − 7 días también para ellas. */
+      try{ var sT=JSON.parse(localStorage.getItem('lmpro_session')||'null'); if(sT && /tester/i.test(String(sT.nombre||'').normalize('NFD').replace(/[\u0300-\u036f]/g,''))) return false; }catch(e){}
       var act=semanaAntes(pj.fin_normal);   // activa = entrega − 7 días
       return act > Date.now();
     };
@@ -6738,6 +6743,13 @@ body.tester-sin-by .opt-mini{display:none !important}
 body.tester-sin-by .topbar-right{flex-wrap:wrap;justify-content:flex-end;row-gap:6px}
 body.tester-sin-by .topbar-right #alu-campana-btn,
 body.tester-sin-by .topbar-right .portal-bell{order:-1}   /* la campana es un id, no una clase */
+/* (22-sep-2026, Iago) «coloca INTRO 1.2 a la izquierda de Resultados ritmo». Los
+   tres atajos se pintan cada uno cuando termina su consulta, así que el orden
+   dependía de cuál llegaba antes. Se fija con order: campana · INTRO · dictado ·
+   Resultados, siempre igual. */
+body.tester-sin-by .topbar-right #ri-mini{order:0}
+body.tester-sin-by .topbar-right #da-mini{order:1}
+body.tester-sin-by .topbar-right #rs-mini{order:2}
 #rs-mini{position:relative}
 #rs-mini .rs-aviso{position:absolute;top:calc(100% + 8px);right:0;z-index:60;   /* debajo: encima se salia por el borde de la pantalla */
   background:rgba(17,24,39,.96);border:1px solid rgba(245,169,127,.45);border-radius:9px;
@@ -6816,7 +6828,9 @@ body.tester-sin-by .topbar-right .portal-bell{order:-1}   /* la campana es un id
     el.disabled = true; el.textContent = '…';
     grupoAhora().then(function (g) {
       el.disabled = false; el.textContent = txt;
-      if (!g) { aviso('Ahora mismo no hay ningún grupo activo'); return; }
+      /* (22-sep-2026, Iago) «el horario nunca debe impedirme acceder a Resultados»:
+         se abre siempre; si hay grupo en clase la pantalla entra en él, y si no,
+         enseña los grupos arriba para elegir a mano. */
       window.open(b.url, '_blank', 'noopener');
     }).catch(function (e) {
       /* si la consulta falla, abrir igual: la pantalla sabe elegir sola */
