@@ -3329,6 +3329,7 @@ function showEnig(kind){
     });
     s+='</svg>';
     var ley=ORDEN_CL.map(function(ap){ return '<span class="mr-chip" style="--apc:'+APARTADOS[ap].color+'">'+esc(APARTADOS[ap].label)+'</span>'; }).join('')
+      +(ORDEN_EX.indexOf('entonacion_atonal')>=0 ? '<span class="mr-chip" style="--apc:'+APARTADOS.entonacion_atonal.color+'">'+esc(APARTADOS.entonacion_atonal.label)+' (solo examen)</span>' : '')
       +'<span class="mr-chip" style="--apc:var(--mr-dim)">★ examen</span>';
     return '<section class="mr-card mr-graf"><div class="mr-ctit"><span>Tu evolución durante el curso</span><span class="mr-ctit-r">14 sep → 15 jun</span></div>'
       +'<div class="mr-graf-svg">'+s+'</div><div class="mr-ley">'+ley+'</div></section>';
@@ -3834,6 +3835,26 @@ function showEnig(kind){
   color:#0b1220;background:linear-gradient(120deg,#a7f3d0,#34d399);cursor:pointer;
   box-shadow:0 8px 24px rgba(52,211,153,.35)}
 .dc-revelar.visible{display:inline-block;animation:dcCartelIn .5s ease}
+/* (23-sep-2026, Iago) ventana de REPETICIONES por voz (solo GP), con dos ruedas */
+.dc-reps{position:absolute;inset:0;z-index:60;display:none;align-items:center;justify-content:center;background:rgba(4,8,16,.72);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
+.dc-reps.on{display:flex}
+.dc-reps-box{background:#0f172a;border:1px solid rgba(255,255,255,.14);border-radius:18px;padding:22px 26px 20px;width:min(520px,92vw);box-shadow:0 30px 80px rgba(0,0,0,.6);text-align:center}
+.dc-reps-tit{font-size:22px;font-weight:900;color:#fbbf24;letter-spacing:.02em}
+.dc-reps-sub{font-size:13px;color:#94a3b8;margin:4px 0 16px}
+.dc-reps-cols{display:flex;gap:18px;justify-content:center}
+.dc-reps-col{flex:1 1 0;max-width:200px}
+.dc-reps-lbl{font-size:14px;font-weight:800;color:#e2e8f0;margin-bottom:8px}
+.dc-rueda{position:relative;height:132px;overflow-y:auto;scroll-snap-type:y mandatory;border-radius:12px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.dc-rueda::-webkit-scrollbar{display:none}
+.dc-rueda-pad{height:44px;scroll-snap-align:none}
+.dc-rueda-it{height:44px;line-height:44px;font-size:26px;font-weight:900;color:#64748b;scroll-snap-align:center;cursor:pointer;transition:color .15s,transform .15s}
+.dc-rueda-it.on{color:#fbbf24;transform:scale(1.15)}
+.dc-reps-ok{margin-top:18px;border:0;border-radius:12px;padding:13px 30px;font-size:17px;font-weight:800;color:#0b1220;background:linear-gradient(120deg,#fbbf24,#f97316);cursor:pointer;box-shadow:0 8px 24px rgba(249,115,22,.35)}
+.dc-cuenta{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) scale(.7);pointer-events:none;
+  font:900 150px/1 'Helvetica Neue',Arial,sans-serif;color:#f97316;opacity:0;letter-spacing:-.02em;
+  text-shadow:0 0 30px rgba(249,115,22,.55),0 6px 18px rgba(0,0,0,.22);z-index:5}
+.dc-cuenta.on{animation:dcCuentaPop .55s cubic-bezier(.2,1.2,.3,1) forwards}
+@keyframes dcCuentaPop{0%{opacity:0;transform:translate(-50%,-50%) scale(.6)}18%{opacity:1;transform:translate(-50%,-50%) scale(1.08)}70%{opacity:1;transform:translate(-50%,-50%) scale(1)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.05)}}
 
 /* ===== DICTADO ACTIVO · ajustes portal (Iago 15-jul-2026) ===== */
 #dcOverlay{z-index:99990}
@@ -3879,7 +3900,7 @@ function showEnig(kind){
 window.DictadoClase = (function(){
   'use strict';
 
-  var ov=null, ctx=null, piano=null;
+  var ov=null, ctx=null, piano=null, pianoBus=null, pianoLim=null;
   var anim=null, D=null;
   var bpm=60, bpmBase=60, gapMult=1.0;
   var conArmadura=false, conCompas=false;
@@ -3891,6 +3912,9 @@ window.DictadoClase = (function(){
   var geo=[];          // geometría de compases [{x,y,h,line}]
   var geoW=0;          // anchura interna del SVG al renderizar (para escalar)
   var totalPases=15, paseActual=0;
+  // (23-sep-2026, Iago) GP: repeticiones por voz y frase elegibles antes de empezar
+  // (ventana con dos ruedas: clave de sol / clave de fa). 3 y 3 por defecto.
+  var repsSol=3, repsFa=3, repsElegidas=false;
   // ===== FASE C-PRO (Iago 4-jul): dictados GP a DOS VOCES =====
   var regaloOn=false;           // cabezas de la primera nota reveladas (el 🎁)
   function esGP(){ return !!(D && D.gp && D.measuresFa && D.measuresFa.length); }
@@ -3956,14 +3980,22 @@ window.DictadoClase = (function(){
     o.connect(g).connect(ctx.destination);
     o.start(t); o.stop(t+0.09);
   }
+  /* (18-sep-2026, Iago) «Demasiado volumen el sonido de alerta antes de cada
+     repeticion del dictado, o mas bien que el piano suena poco.» Era un seno
+     puro a 1318 y 1975 Hz, que a igual ganancia se percibe mucho mas presente
+     que una muestra de piano, y ademas con casi un segundo de cola. Se baja a
+     menos de la mitad y se acorta; sigue avisando, pero no tapa. */
   function dingAviso(t){
-    [ [1318.5,0.10], [1975.5,0.05] ].forEach(function(par){
+    /* (19-sep-2026) Al subir el piano x7 por el bus, el aviso de anoche se
+       quedaba inaudible. Sube lo justo para seguir oyendose sin tapar: antes
+       era el 14% del piano, ahora es el 4%. */
+    [ [1318.5,0.16], [1975.5,0.07] ].forEach(function(par){
       var o=ctx.createOscillator(), g=ctx.createGain();
       o.type='sine'; o.frequency.value=par[0];
       g.gain.setValueAtTime(par[1], t);
-      g.gain.exponentialRampToValueAtTime(0.0001, t+0.9);
+      g.gain.exponentialRampToValueAtTime(0.0001, t+0.5);
       o.connect(g).connect(ctx.destination);
-      o.start(t); o.stop(t+1.0);
+      o.start(t); o.stop(t+0.6);
     });
   }
   function nota(t, midi, gain, holdSec){
@@ -3998,10 +4030,12 @@ window.DictadoClase = (function(){
   // consume el compás entero. 'voz' = protagonista ('sol'|'fa'|null).
   function segNotasGP(m0, m1, voz){
     var out=[];
+    // (Iago 15-sep-2026) acento del primer tiempo más claro: antes 0.92 vs 0.68 (×1,35);
+    // ahora ×1,8 en todas las voces.
     function gDe(v, acc){
-      if(!voz) return v==='sol' ? (acc?0.92:0.68) : (acc?0.78:0.56);   // equilibrado
-      if(v===voz) return acc?1.0:0.75;                                  // protagonista
-      return acc?0.30:0.22;                                             // atenuada
+      if(!voz) return v==='sol' ? (acc?1.0:0.55) : (acc?0.85:0.47);    // equilibrado
+      if(v===voz) return acc?1.0:0.56;                                  // protagonista
+      return acc?0.32:0.18;                                             // atenuada
     }
     var lastAbs={sol:null, fa:null};   // LIGADURAS: cabeza viva de cada voz
     for(var mi=m0; mi<m1; mi++){
@@ -4063,7 +4097,13 @@ window.DictadoClase = (function(){
 
   function construir(){
     var E=[]; paseActualDef=0;
-    var A=69, T=tonicMidi(), acordes=acordesTonales();
+    // (Iago ago-2026 · clave de FA) En dictados en clave de fa la referencia es
+    // La3 (57) y la tónica suena en su registro real (Sol2–Do4): tonicMidi()
+    // normaliza a 60-71, así que se baja una octava. Los ACORDES TONALES no
+    // cambian: acordesTonales() usa la tónica normalizada y ya suenan en la
+    // tesitura de clave de sol, adaptados a la tonalidad del dictado.
+    var esFa=(D && D.clef==='bass');
+    var A=esFa?57:69, T=tonicMidi()-(esFa?12:0), acordes=acordesTonales();
     E.push({tipo:'silencio', dur:measureBeats/2});
 
     for(var r=1;r<=2;r++){
@@ -4104,8 +4144,8 @@ window.DictadoClase = (function(){
 
     // FASE C-PRO: en GP cada frase se repite 6 veces (3 destacando la clave
     // de sol + 3 la de fa), con velo sobre la voz acompañante. En GE, 4.
-    var repsF = esGP() ? 6 : 4;
-    function vozDe(i){ return esGP() ? (i<=3?'sol':'fa') : null; }
+    var repsF = esGP() ? (repsSol+repsFa) : 4;
+    function vozDe(i){ return esGP() ? (i<=repsSol?'sol':'fa') : null; }
     function sub2De(v){
       if(!v) return '';
       return v==='sol' ? '★ VOZ SUPERIOR (clave de sol)' : '★ VOZ INFERIOR (clave de fa)';
@@ -4143,7 +4183,10 @@ window.DictadoClase = (function(){
   function spbBase(){ return (60/bpmBase)/pulseBeats; }   // las PAUSAS no dependen del tempo en vivo
   function durSeg(ev){
     if(ev.tipo==='gapM')     return ev.m*measureBeats*spbBase();
-    if(ev.tipo==='gapS')     return ev.seg/gapMult;   // ×2 = pausas al doble de VELOCIDAD (más cortas)
+    // (23-sep-2026, Iago) «el dictado de profesional se hace demasiado largo: lo que ahora es
+    // 1,5× que sea el nuevo 1×». En GP las pausas de escritura van siempre 1,5 veces más
+    // rápidas; el control ×0.5–×2 sigue multiplicando sobre eso.
+    if(ev.tipo==='gapS')     return ev.seg/(gapMult*(esGP()?1.5:1));   // ×2 = pausas al doble de VELOCIDAD (más cortas)
     if(ev.tipo==='esperaSeg')return ev.seg;
     return (ev.dur||0)*spb();
   }
@@ -4234,6 +4277,8 @@ window.DictadoClase = (function(){
     var p=el('dcPlay'); if(!p) return;
     if(n>0){ p.textContent=String(n); latido(); }
     else p.textContent = pausado ? '▶' : '⏸';
+    // (15-sep) y en grande, encima del pentagrama
+    var c=el('dcCuenta'); if(c){ if(n>0){ c.textContent=String(n); c.classList.remove('on'); void c.offsetWidth; c.classList.add('on'); } else { c.classList.remove('on'); c.textContent=''; } }
   }
   function latido(){
     var p=el('dcPlay'); if(!p) return;
@@ -4341,6 +4386,8 @@ window.DictadoClase = (function(){
         }
         stSol.setContext(vctx).draw();
         stFa.setContext(vctx).draw();
+        // (23-sep-2026, Iago) barra de compás que CRUZA los dos pentagramas (como en partitura de piano)
+        if(mi!==nMeasures-1){ try{ new VF.StaveConnector(stSol, stFa).setType(VF.StaveConnector.type.SINGLE_RIGHT).setContext(vctx).draw(); }catch(e){} }
         geo[mi]={ x:stSol.getX(),
                   y:stSol.getYForLine(0),
                   h:stFa.getYForLine(4)-stSol.getYForLine(0) };
@@ -4536,6 +4583,7 @@ window.DictadoClase = (function(){
         if(mi===nMeasures-1){ try{ stSol.setEndBarType(VF.Barline.type.END); stFa.setEndBarType(VF.Barline.type.END); }catch(e){} }
         stSol.setContext(vctx).draw();
         stFa.setContext(vctx).draw();
+        if(mi!==nMeasures-1){ try{ new VF.StaveConnector(stSol, stFa).setType(VF.StaveConnector.type.SINGLE_RIGHT).setContext(vctx).draw(); }catch(e){} }   // (23-sep-2026) barra que cruza
         // igualar el inicio de notas de ambos pentagramas: la clave de sol y la de fa
         // tienen anchos distintos, así que sin esto las notas empezarían en X distintas.
         try{
@@ -4682,6 +4730,7 @@ window.DictadoClase = (function(){
   function play(){
     if(terminado){ reinicia(); return; }
     if(!ctx) return;
+    if(!corriendo && !pausado && esGP() && !repsElegidas){ abrirReps(); return; }   // (23-sep-2026) GP: elegir repeticiones
     if(!corriendo && !pausado){                 // primer arranque
       corriendo=true;
       nextTime=ctx.currentTime+0.25;
@@ -4803,7 +4852,7 @@ window.DictadoClase = (function(){
 
   /* ---- reproductor LIGERO del visor (Iago 5-jul): toca el dictado con
      soundfont sin abrir el reproductor animado completo. -------------------- */
-  var _verCtx=null, _verPiano=null, _verSonando=false, _verTimers=[], _verNodos=[];
+  var _verCtx=null, _verPiano=null, _verBus=null, _verLim=null, _verSonando=false, _verTimers=[], _verNodos=[];
   async function _verTogglePlay(){
     if(_verSonando){ _verStop(); return; }
     var ico=document.getElementById('dcVerPlayIco');
@@ -4812,7 +4861,17 @@ window.DictadoClase = (function(){
       if(_verCtx.state==='suspended') await _verCtx.resume();
       if(!_verPiano){
         if(ico) ico.textContent='…';
-        _verPiano=await Soundfont.instrument(_verCtx, 'acoustic_grand_piano', { gain: 2.2 });
+        /* (19-sep-2026, Iago) «Sube tambien ese piano.» Mismo bus que el del
+           reproductor grande: aqui cada nota va a gain 1.0, asi que el bus se
+           queda en 5.0 para dar la misma altura que el PreDict PRO. */
+        _verBus = _verCtx.createGain(); _verBus.gain.value = 5.0;
+        _verLim = _verCtx.createDynamicsCompressor();
+        try{
+          _verLim.threshold.value = -8; _verLim.knee.value = 14; _verLim.ratio.value = 6;
+          _verLim.attack.value = 0.003; _verLim.release.value = 0.16;
+        }catch(e){}
+        _verBus.connect(_verLim); _verLim.connect(_verCtx.destination);
+        _verPiano=await Soundfont.instrument(_verCtx, 'acoustic_grand_piano', { gain: 2.2, destination: _verBus });
       }
     }catch(e){ console.warn('[ver] audio', e); return; }
     // construir la secuencia de notas del dictado (todas las voces principales)
@@ -4991,7 +5050,7 @@ window.DictadoClase = (function(){
     corriendo=false; pausado=false; terminado=false;
     if(schedTimer){ clearInterval(schedTimer); schedTimer=null; }
     if(rafId){ cancelAnimationFrame(rafId); rafId=null; }
-    try{ if(ctx){ ctx.close(); ctx=null; piano=null; pianoListo=false; } }catch(e){}
+    try{ if(ctx){ ctx.close(); ctx=null; piano=null; pianoBus=null; pianoLim=null; pianoListo=false; } }catch(e){}
     if(ov) ov.classList.remove('abierto');
     var fsEl=document.fullscreenElement||document.webkitFullscreenElement;
     if(fsEl){
@@ -5001,6 +5060,66 @@ window.DictadoClase = (function(){
   }
 
   /* ================= apertura ================= */
+  /* (23-sep-2026, Iago) VENTANA DE REPETICIONES (solo GP). Al pulsar ▶ por primera vez:
+     dos ruedas (clave de sol · clave de fa) con las repeticiones de cada voz por frase,
+     3 y 3 por defecto. Se aplica a la secuencia (construir) antes de arrancar. */
+  function ruedaReps(id, valor){
+    var h='<div class="dc-rueda" id="'+id+'" data-val="'+valor+'"><div class="dc-rueda-pad"></div>';
+    for(var v=1; v<=6; v++) h+='<div class="dc-rueda-it'+(v===valor?' on':'')+'" data-v="'+v+'">'+v+'</div>';
+    return h+'<div class="dc-rueda-pad"></div></div>';
+  }
+  function ruedaLeer(id){
+    var r=el(id); if(!r) return 3;
+    var its=r.querySelectorAll('.dc-rueda-it'); if(!its.length) return 3;
+    var ih=its[0].offsetHeight||44;
+    var idx=Math.round(r.scrollTop/ih);
+    idx=Math.max(0, Math.min(its.length-1, idx));
+    its.forEach(function(it,i){ it.classList.toggle('on', i===idx); });
+    var v=parseInt(its[idx].getAttribute('data-v'),10)||3;
+    r.setAttribute('data-val', String(v));
+    return v;
+  }
+  function ruedaColoca(id, valor){
+    var r=el(id); if(!r) return;
+    var its=r.querySelectorAll('.dc-rueda-it'); if(!its.length) return;
+    var ih=its[0].offsetHeight||44;
+    r.scrollTop=(valor-1)*ih;
+    ruedaLeer(id);
+  }
+  function abrirReps(){
+    var w=el('dcReps');
+    if(!w){
+      w=document.createElement('div'); w.id='dcReps'; w.className='dc-reps';
+      w.innerHTML='<div class="dc-reps-box">'+
+        '<div class="dc-reps-tit">Repeticiones por frase</div>'+
+        '<div class="dc-reps-sub">Cuántas veces se destaca cada voz en cada frase</div>'+
+        '<div class="dc-reps-cols">'+
+          '<div class="dc-reps-col"><div class="dc-reps-lbl">𝄞 Clave de sol</div>'+ruedaReps('dcRuedaSol', repsSol)+'</div>'+
+          '<div class="dc-reps-col"><div class="dc-reps-lbl">𝄢 Clave de fa</div>'+ruedaReps('dcRuedaFa', repsFa)+'</div>'+
+        '</div>'+
+        '<button class="dc-reps-ok" onclick="DictadoClase.repsOk()">▶ Empezar</button>'+
+      '</div>';
+      (ov||document.body).appendChild(w);
+      ['dcRuedaSol','dcRuedaFa'].forEach(function(id){
+        var r=el(id); if(!r) return;
+        r.addEventListener('scroll', function(){ ruedaLeer(id); }, {passive:true});
+        r.addEventListener('click', function(e){
+          var it=e.target.closest('.dc-rueda-it'); if(!it) return;
+          ruedaColoca(id, parseInt(it.getAttribute('data-v'),10)||3);
+        });
+      });
+    }
+    w.classList.add('on');
+    requestAnimationFrame(function(){ ruedaColoca('dcRuedaSol', repsSol); ruedaColoca('dcRuedaFa', repsFa); });
+  }
+  function repsOk(){
+    repsSol=ruedaLeer('dcRuedaSol'); repsFa=ruedaLeer('dcRuedaFa');
+    repsElegidas=true;
+    var w=el('dcReps'); if(w) w.classList.remove('on');
+    eventos=construir();                     // la secuencia se rehace con las repeticiones elegidas
+    play();
+  }
+
   function montaOverlay(){
     if(document.getElementById('dcOverlay')) return;
     var d=document.createElement('div');
@@ -5024,6 +5143,7 @@ window.DictadoClase = (function(){
       '<div class="dc-score-wrap"><div class="dc-score-panel">'+
         '<div id="dcStaves"></div>'+
         '<div class="dc-barhl" id="dcBarHL"></div>'+
+        '<div class="dc-cuenta" id="dcCuenta"></div>'+
         '<div id="dcReveal"></div>'+
       '</div></div>'+
       '<div class="dc-bottom">'+
@@ -5058,6 +5178,7 @@ window.DictadoClase = (function(){
     gapMult=1.0;
     conArmadura=false; conCompas=false; _lastBig='';
     regaloOn=false;
+    repsElegidas=false; (function(){ var w=document.getElementById('dcReps'); if(w) w.classList.remove('on'); })();
     evIdx=0; uiQueue=[]; corriendo=false; pausado=false; terminado=false; paseActual=0;
 
     montaOverlay();
@@ -5084,7 +5205,27 @@ window.DictadoClase = (function(){
     eventos=construir();
     pianoListo=false;
     try{
-      piano=await Soundfont.instrument(ctx, 'acoustic_grand_piano', { gain: 2.2 });
+      /* (19-sep-2026, Iago) «Tenia que poner el altavoz a tope; el PreDict
+         carrusel PRO si suena bien.» Al comparar los dos se ve por que:
+           · Aqui cada nota se toca con su propia ganancia (0.72 normal, 1.0
+             acentuada) y ESA gana a la del instrumento — por eso subir el
+             2.2 a 3.4 de anoche no hizo practicamente nada.
+           · El PreDict PRO manda el piano por un BUS propio: 2.4 por nota
+             x 2.51 del bus x 0.85 de la salida = 5.1 de verdad.
+         Solucion: el mismo truco. Las dinamicas de cada nota se quedan como
+         estaban (lo acentuado sigue sonando mas) y es el BUS el que sube todo
+         junto, hasta ponerse a la altura del PreDict. Detras va un limitador
+         suave, que aqui hay acordes de cuatro notas y sin el distorsionaria.
+         Si algun dia hay que retocarlo, es este numero y solo este. */
+      // (23-sep-2026, Iago) «Necesito más volumen de piano en los dictados» (GP): 5.0 -> 6.5
+      pianoBus = ctx.createGain(); pianoBus.gain.value = esGP() ? 6.5 : 5.0;
+      pianoLim = ctx.createDynamicsCompressor();
+      try{
+        pianoLim.threshold.value = -8; pianoLim.knee.value = 14; pianoLim.ratio.value = 6;
+        pianoLim.attack.value = 0.003; pianoLim.release.value = 0.16;
+      }catch(e){}
+      pianoBus.connect(pianoLim); pianoLim.connect(ctx.destination);
+      piano=await Soundfont.instrument(ctx, 'acoustic_grand_piano', { gain: 3.4, destination: pianoBus });
       pianoListo=true;
     }catch(e){
       console.warn('[dictclase] piano', e);
@@ -5097,7 +5238,7 @@ window.DictadoClase = (function(){
     if(ov && ov.classList.contains('abierto')) dibujaVacio();
   });
 
-  return { open:open, play:play, tempo:cambiaTempo, gap:cambiaGap,
+  return { open:open, play:play, repsOk:repsOk, tempo:cambiaTempo, gap:cambiaGap,
            revelar:revelar, ver:ver, revTon:revelaTonalidad, revComp:revelaCompas,
            fs:pantallaCompleta, close:cierra, _verStop:_verStop, _verPlay:_verTogglePlay };
 })();
