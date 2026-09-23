@@ -2897,7 +2897,8 @@ function showEnig(kind){
         var carta=b.getAttribute('data-carta')||'';
         var item=b.closest('.alu-item'), nid=item&&item.getAttribute('data-id');
         if(nid) marcar(nid,item);
-        window.location.href='https://iagonaron.github.io/ritmoathome/?quizCarta='+encodeURIComponent(carta)
+        /* (23-sep-2026) GP no manda quiz, pero si algún día lo hace tiene que abrir RITMO PRO, no el de elemental */
+        window.location.href='https://iagonaron.github.io/ritmopro/?quizCarta='+encodeURIComponent(carta)
           +'&envio='+encodeURIComponent(envio)+'&cuenta='+encodeURIComponent(cuentaId()||'');
       });
     });
@@ -3248,6 +3249,17 @@ function showEnig(kind){
   function entero(n){ return (n==null||isNaN(n))?null:Math.round(+(Number(n).toFixed(2))); }
   function fFecha(iso){ if(!iso) return ''; var d=new Date(String(iso).slice(0,10)+'T00:00:00'); if(isNaN(d)) return String(iso).slice(0,10);
     return ('0'+d.getDate()).slice(-2)+'/'+('0'+(d.getMonth()+1)).slice(-2)+'/'+String(d.getFullYear()).slice(-2); }
+  /* (23-sep-2026, Iago) «además del número quiero que ponga Lección, o Dictado»: la app de
+     corrección guarda solo el número («10»); aquí se antepone la palabra según el apartado.
+     Si ya viene con palabra («Lección 13», «Dictado 2», «Ficha 1») se deja tal cual. */
+  var PALABRA_AP={ ritmo:'Lección', entonacion:'Lección', audicion:'Dictado', teoria:'Ficha' };
+  function etiquetaLeccion(s){
+    var raw=(s.leccion==null)?'':String(s.leccion).trim();
+    if(!raw) return (PALABRA_AP[s.ap]||'Sesión');
+    if(/^[0-9]+([.,][0-9]+)?$/.test(raw)) return (PALABRA_AP[s.ap]||'Lección')+' '+raw;
+    if(/^[0-9]+(\s*[,y·–-]\s*[0-9]+)+$/.test(raw)) return 'Lecciones '+raw;
+    return raw;
+  }
   var ACTITUD=[ {min:9,txt:'excelente',aprox:'9 – 10'}, {min:7.5,txt:'muy bien',aprox:'≈ 8'}, {min:6,txt:'bien',aprox:'≈ 6 – 7'}, {min:5,txt:'mejorable',aprox:'≈ 5'}, {min:0,txt:'insuficiente',aprox:'por debajo de 5'} ];
   function actitudTxt(n){ if(n==null||isNaN(n)) return '—'; for(var i=0;i<ACTITUD.length;i++){ if(n>=ACTITUD[i].min) return ACTITUD[i].txt; } return '—'; }
 
@@ -3258,7 +3270,7 @@ function showEnig(kind){
     var lista=ss.length
       ? ss.slice().reverse().map(function(s){ var a=APARTADOS[s.ap];
           return '<div class="mr-fila" style="--apc:'+a.color+'"><span class="mr-barrita"></span>'
-            +'<span class="mr-fmeta"><span class="mr-flec">'+esc(s.leccion!=null&&String(s.leccion).trim()?s.leccion:'Sesión')+'</span>'
+            +'<span class="mr-fmeta"><span class="mr-flec">'+esc(etiquetaLeccion(s))+'</span>'
             +'<span class="mr-fsub">'+esc(a.label)+' · '+fFecha(s.fecha)+'</span></span>'
             +'<span class="mr-fnota" style="color:'+colorNota(s.nota)+'">'+f2(s.nota)+'</span></div>'; }).join('')
       : '<div class="mr-vacio-l">Aquí irán apareciendo tus notas de clase (ritmo, entonación, dictados y fichas).</div>';
@@ -3317,7 +3329,7 @@ function showEnig(kind){
       var l=ss.filter(function(x){ return x.ap===ap && x.fecha && isFinite(Date.parse(x.fecha)); }); if(!l.length) return;
       var col=APARTADOS[ap].color;
       s+='<path d="'+l.map(function(x,i){ return (i?'L':'M')+X(Date.parse(x.fecha)).toFixed(1)+' '+Y(x.nota).toFixed(1); }).join(' ')+'" fill="none" stroke="'+col+'" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" opacity=".9"/>';
-      l.forEach(function(x){ s+='<circle cx="'+X(Date.parse(x.fecha)).toFixed(1)+'" cy="'+Y(x.nota).toFixed(1)+'" r="3.4" fill="'+col+'" stroke="#000" stroke-width="1.2" stroke-opacity=".45"><title>'+esc(APARTADOS[ap].label)+' · '+esc(x.leccion||'Sesión')+' · '+fFecha(x.fecha)+' · '+f2(x.nota)+'</title></circle>'; });
+      l.forEach(function(x){ s+='<circle cx="'+X(Date.parse(x.fecha)).toFixed(1)+'" cy="'+Y(x.nota).toFixed(1)+'" r="3.4" fill="'+col+'" stroke="#000" stroke-width="1.2" stroke-opacity=".45"><title>'+esc(APARTADOS[ap].label)+' · '+esc(etiquetaLeccion(x))+' · '+fFecha(x.fecha)+' · '+f2(x.nota)+'</title></circle>'; });
     });
     var FIN_T={ '1T':s0+'-12-18', '2T':(s0+1)+'-03-26', '3T':(s0+1)+'-06-15' };
     var estrella=function(cx,cy,r){ var d=''; for(var i=0;i<10;i++){ var a=-Math.PI/2+i*Math.PI/5, rr=i%2?r*0.45:r; d+=(i?'L':'M')+(cx+rr*Math.cos(a)).toFixed(1)+' '+(cy+rr*Math.sin(a)).toFixed(1); } return d+'Z'; };
@@ -4606,7 +4618,12 @@ window.DictadoClase = (function(){
         });
         if(voces.length){
           var fmt=new VF.Formatter();
-          fmt.joinVoices(voces);   // TODAS juntas: comparten tick contexts -> alineación por tiempo
+          /* (23-sep-2026, Iago) «en el 4º compás de la clave de fa faltaba un silencio de negra».
+             Causa: al unir (joinVoices) las voces de los DOS pentagramas en un mismo grupo,
+             VexFlow considera que son voces del mismo pentagrama y, cuando sol y fa tienen un
+             silencio en el mismo tiempo, esconde uno (el de fa). Cada pentagrama se une por
+             separado y el formateo conjunto sigue alineando las dos voces por tiempo. */
+          voces.forEach(function(v){ fmt.joinVoices([v]); });
           // formatear al pentagrama de sol (ambos tienen el mismo startX y ancho tras igualar)
           fmt.formatToStave(voces, stSol);
           // VexFlow desplaza una cabeza (~14px) cuando dos voces comparten pulso y llevan la
@@ -6536,7 +6553,9 @@ window.DictadoClase = (function(){
   var KEY='lmpro_session';   /* 20-sep-2026: estaba 'lmeav_session', la sesion de ELEMENTAL, copiada tal cual. Por eso en GP no se quitaba el «by ...» ni aparecia nunca la INTRO. */
   var SBU='https://woiptkyrxkbpnvioypit.supabase.co';
   var SBK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndvaXB0a3lyeGticG52aW95cGl0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0NzI2ODYsImV4cCI6MjA5MjA0ODY4Nn0.B2nKgj5rD0rkdLeMIrd9KgD8lUPWsBT4Y7aCtmnvbjA';
-  var RITMO='https://iagonaron.github.io/ritmoathome/';
+  /* (23-sep-2026, Iago) estaba 'ritmoathome' (ELEMENTAL): el botón INTRO del Protester abría la carta de GE.
+     La INTRO de una carta de profesional vive en RITMO PRO, como el enlace «¿Necesitas ver la explicación?». */
+  var RITMO='https://iagonaron.github.io/ritmopro/';
 
   function norm(s){ return String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'')
                       .replace(/\s+/g,' ').trim().toLowerCase(); }
