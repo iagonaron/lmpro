@@ -6366,14 +6366,24 @@ window.DictadoClase = (function(){
 
   var _estado=null;
   async function cargar(forzar){
-    if(_estado && !forzar) return _estado;
-    var id=cuenta(); if(!id){ _estado={formato:'papel',elegido:false,sin_cuenta:true}; return _estado; }
+    /* (23-sep-2026, Iago) BUG «la ficha 2 le llegó como papel al Tester digital»:
+       arranque() se ejecuta 0,7 s tras cargar la página, ANTES de que el alumno
+       entre; sin cuenta se guardaba {formato:'papel', sin_cuenta:true} y esa
+       respuesta quedaba cacheada para toda la sesión, así que al entrar después
+       (navegador nuevo, sesión caducada) el filtro trataba al alumno como de
+       papel aunque en la base de datos fuera digital. Ahora: lo de «sin cuenta»
+       no se cachea (se vuelve a leer en cuanto hay cuenta) y, sin cuenta, no se
+       filtra nada. El formato solo cambia cuando cambia en la base de datos. */
+    var id=cuenta();
+    if(_estado && !forzar && !(_estado.sin_cuenta && id) && !(_estado.error && id)) return _estado;
+    if(!id){ _estado={formato:'papel',elegido:false,sin_cuenta:true}; return _estado; }
     try{ var d=await rpc('suite_formato_leer',{p_cuenta_id:id});
          _estado={formato:(d&&d.formato)||'papel', elegido:!!(d&&d.elegido)};
     }catch(e){ _estado={formato:'digital',elegido:true,error:true}; }
+    try{ pintarPastilla(); }catch(e){}
     return _estado;
   }
-  function esPapel(){ return !!(_estado && _estado.formato==='papel'); }
+  function esPapel(){ return !!(_estado && !_estado.sin_cuenta && !_estado.error && _estado.formato==='papel'); }
 
   // El filtro de los de PAPEL: fuera las fichas digitales, y del resto solo el
   // ciclo en curso (desde la ultima «Tareas de la semana» en adelante).
