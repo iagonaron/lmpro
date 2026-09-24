@@ -3326,7 +3326,7 @@ function showEnig(kind){
     var filas=['1T','2T','3T'].map(function(t){
       if(!hayExamen(ex,t)) return '<div class="mr-ex vacio"><span class="mr-extrim">'+t+'</span><span class="mr-ex-pend">Todavía no hay examen de este trimestre.</span></div>';
       var cel=ORDEN_EX.map(function(ap){ var v=ex[t][ap], a=APARTADOS[ap];
-        return '<div class="mr-ap" style="--apc:'+a.color+'"><div class="mr-ap-l">'+esc(a.label)+'</div><div class="mr-ap-n" style="color:'+colorNota(v)+'">'+f2(v)+'</div></div>'; }).join('');
+        return '<div class="mr-ap'+((v!=null&&v<5)?' mr-ap-susp':'')+'" style="--apc:'+a.color+'"><div class="mr-ap-l">'+esc(a.label)+'</div><div class="mr-ap-n" style="color:'+colorNota(v)+'">'+f2(v)+'</div></div>'; }).join('');
       return '<div class="mr-ex"><span class="mr-extrim">'+t+'</span><div class="mr-aps">'+cel+'</div></div>';
     }).join('');
     return '<section class="mr-card"><div class="mr-ctit"><span>Resultados de los exámenes</span><span class="mr-pct">'+pc(p.examen)+'</span></div>'
@@ -3370,7 +3370,7 @@ function showEnig(kind){
       var l=ss.filter(function(x){ return x.ap===ap && x.fecha && isFinite(Date.parse(x.fecha)); }); if(!l.length) return;
       var col=APARTADOS[ap].color;
       s+='<path d="'+l.map(function(x,i){ return (i?'L':'M')+X(Date.parse(x.fecha)).toFixed(1)+' '+Y(x.nota).toFixed(1); }).join(' ')+'" fill="none" stroke="'+col+'" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" opacity=".9"/>';
-      l.forEach(function(x){ s+='<circle cx="'+X(Date.parse(x.fecha)).toFixed(1)+'" cy="'+Y(x.nota).toFixed(1)+'" r="3.4" fill="'+col+'" stroke="#000" stroke-width="1.2" stroke-opacity=".45"><title>'+esc(APARTADOS[ap].label)+' · '+esc(etiquetaLeccion(x))+' · '+fFecha(x.fecha)+' · '+f2(x.nota)+'</title></circle>'; });
+      l.forEach(function(x){ s+='<circle cx="'+X(Date.parse(x.fecha)).toFixed(1)+'" cy="'+Y(x.nota).toFixed(1)+'" r="4.2" style="fill:var(--mr-pc)" stroke="'+col+'" stroke-width="2.2"><title>'+esc(APARTADOS[ap].label)+' · '+esc(etiquetaLeccion(x))+' · '+fFecha(x.fecha)+' · '+f2(x.nota)+'</title></circle>'; });
     });
     var FIN_T={ '1T':s0+'-12-18', '2T':(s0+1)+'-03-26', '3T':(s0+1)+'-06-15' };
     var estrella=function(cx,cy,r){ var d=''; for(var i=0;i<10;i++){ var a=-Math.PI/2+i*Math.PI/5, rr=i%2?r*0.45:r; d+=(i?'L':'M')+(cx+rr*Math.cos(a)).toFixed(1)+' '+(cy+rr*Math.sin(a)).toFixed(1); } return d+'Z'; };
@@ -3378,12 +3378,12 @@ function showEnig(kind){
       if(!hayExamen(ex,t)) return;
       var x=X(Date.parse(FIN_T[t]));
       ORDEN_EX.forEach(function(ap){ var v=ex[t][ap]; if(v==null) return;
-        s+='<path d="'+estrella(x,Y(v),8)+'" fill="'+APARTADOS[ap].color+'" stroke="#000" stroke-width="1" stroke-opacity=".45"><title>Examen '+t+' · '+esc(APARTADOS[ap].label)+' · '+f2(v)+'</title></path>'; });
+        s+='<circle cx="'+x.toFixed(1)+'" cy="'+Y(v).toFixed(1)+'" r="8.5" fill="'+APARTADOS[ap].color+'" stroke="#000" stroke-width="1.2" stroke-opacity=".5"><title>Examen '+t+' · '+esc(APARTADOS[ap].label)+' · '+f2(v)+'</title></circle>'; });
     });
     s+='</svg>';
     var ley=ORDEN_CL.map(function(ap){ return '<span class="mr-chip" style="--apc:'+APARTADOS[ap].color+'">'+esc(APARTADOS[ap].label)+'</span>'; }).join('')
       +(ORDEN_EX.indexOf('entonacion_atonal')>=0 ? '<span class="mr-chip" style="--apc:'+APARTADOS.entonacion_atonal.color+'">'+esc(APARTADOS.entonacion_atonal.label)+' (solo examen)</span>' : '')
-      +'<span class="mr-chip" style="--apc:var(--mr-dim)">★ examen</span>';
+      +'<span class="mr-chip mr-chip-forma" style="--apc:var(--mr-dim)"><i class="mr-f-clase"></i>clase</span><span class="mr-chip mr-chip-forma" style="--apc:var(--mr-dim)"><i class="mr-f-ex"></i>examen</span>';
     return '<section class="mr-card mr-graf"><div class="mr-ctit"><span>Tu evolución durante el curso</span><span class="mr-ctit-r">14 sep → 15 jun</span></div>'
       +'<div class="mr-graf-svg">'+s+'</div><div class="mr-ley">'+ley+'</div></section>';
   }
@@ -3587,6 +3587,28 @@ function showEnig(kind){
       +'.mr-esc-f{display:flex;justify-content:space-between;gap:10px;font-size:12.5px;padding:5px 9px;border-radius:8px;background:rgba(255,255,255,.04)}'
       +'.mr-esc-f b{font-variant-numeric:tabular-nums;color:var(--mr-dim)}'
       +'.mr-esc-f.mal{background:color-mix(in srgb,var(--mr-mal) 16%,transparent)}.mr-esc-f.mal span:first-child{color:var(--mr-mal)}'
+      /* (24-sep-2026, noche) ESTÉTICA DEL DIARIO Y DE LOS INFORMES: nada translúcido ni degradado;
+         tarjetas opacas de esquinas suaves; exámenes = celda rellena del color de su apartado (como en el
+         Diario); notas de clase = contorno del color de su apartado. Solo aspecto. */
+      +(MODO==='GP' ? '.mr-overlay,.mr-modal{--mr-pf:#120d05;--mr-pc:#211a0c;--mr-pc2:#171108}' : '.mr-overlay,.mr-modal{--mr-pf:#0c0926;--mr-pc:#191340;--mr-pc2:#110d2e}')
+      +'.mr-overlay{background:var(--mr-pf) !important}'
+      +'.mr-card{background:var(--mr-pc) !important;backdrop-filter:none !important;-webkit-backdrop-filter:none !important;border-radius:14px !important;box-shadow:none !important}'
+      +'.mr-modal .mr-box,.mr-modal>div{background:var(--mr-pc) !important;background-image:none !important;backdrop-filter:none !important}'
+      +'.mr-pct{background:var(--mr-acc) !important;background-image:none !important}'
+      +'.mr-fila{grid-template-columns:1fr auto !important;background:var(--mr-pc2) !important;border:1.5px solid var(--apc) !important;border-radius:10px !important}'
+      +'.mr-barrita{display:none !important}'
+      +'.mr-ex{background:var(--mr-pc2) !important;border-radius:12px !important}'
+      +'.mr-ap{background:var(--apc) !important;border:0 !important;border-radius:10px !important}'
+      +'.mr-ap-l{color:#fff !important;opacity:.92}'
+      +'.mr-ap-n{color:#fff !important}'
+      +'.mr-ap-susp{box-shadow:inset 0 0 0 3px #ff4d5e !important}'
+      +'.mr-bol{background:var(--mr-pc2) !important;border-radius:12px !important}'
+      +'.mr-marca.nula{background:var(--mr-pc2) !important}'
+      +'.mr-esc-f{background:var(--mr-pc2) !important}'
+      +'.mr-chip{background:transparent !important}'
+      +'.mr-chip-forma{gap:6px}'
+      +'.mr-f-clase{display:inline-block;width:10px;height:10px;border-radius:50%;border:2px solid currentColor;box-sizing:border-box}'
+      +'.mr-f-ex{display:inline-block;width:12px;height:12px;border-radius:50%;background:currentColor}'
       +'@media (max-width:1080px){.mr-grid{grid-template-columns:1fr;height:auto}.mr-grid>.mr-card{height:auto}.mr-lista{max-height:260px}.mr-bol-t{writing-mode:horizontal-tb;transform:none}}'
       +'@media (max-width:600px){.mr-top{padding:12px 14px;gap:10px}.mr-quien{display:none}.mr-wrap{padding:4px 14px 22px}}';
     document.head.appendChild(s);
