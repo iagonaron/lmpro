@@ -3894,6 +3894,9 @@ function showEnig(kind){
 .dc-reps-box{background:#0f172a;border:1px solid rgba(255,255,255,.14);border-radius:18px;padding:22px 26px 20px;width:min(520px,92vw);box-shadow:0 30px 80px rgba(0,0,0,.6);text-align:center}
 .dc-reps-tit{font-size:22px;font-weight:900;color:#fbbf24;letter-spacing:.02em}
 .dc-reps-sub{font-size:13px;color:#94a3b8;margin:4px 0 16px}
+.dc-reps-dur{font-size:15px;color:#e2e8f0;margin:-8px 0 14px}
+.dc-reps-dur b{font-size:20px;color:#fff}
+.dc-dur-aviso{color:#fbbf24;font-weight:800}
 .dc-reps-cols{display:flex;gap:18px;justify-content:center}
 .dc-reps-col{flex:1 1 0;max-width:200px}
 .dc-reps-lbl{font-size:14px;font-weight:800;color:#e2e8f0;margin-bottom:8px}
@@ -5144,6 +5147,29 @@ window.DictadoClase = (function(){
     r.scrollTop=(valor-1)*ih;
     ruedaLeer(id);
   }
+  /* (24-sep-2026, Iago) DURACIÓN ESTIMADA en la ventana de repeticiones (igual que en
+     el Diario iPad): «que según vaya subiendo o bajando las repeticiones de cada clave
+     vea cuánto va a durar». Mismo cálculo que la reproducción (tempo y pausas). */
+  function duracionSeg(evs){
+    var t=0; (evs||[]).forEach(function(ev){
+      if(ev.tipo==='uiBeat'||ev.tipo==='uiCompas'||ev.tipo==='ui'||ev.tipo==='aviso'||ev.tipo==='fin'||ev.tipo==='notaAbs') return;
+      t+=durSeg(ev);
+    });
+    return t;
+  }
+  function fmtMin(seg){ seg=Math.round(seg); var m=Math.floor(seg/60), s=seg%60; return m+':'+(s<10?'0':'')+s; }
+  function duracionConReps(rs, rf){
+    var a=repsSol, b=repsFa; repsSol=rs; repsFa=rf;
+    var d=0; try{ d=duracionSeg(construir()); }catch(e){}
+    repsSol=a; repsFa=b; if(repsElegidas){ try{ construir(); }catch(e){} }
+    return d;
+  }
+  function pintaRepsDur(){
+    var e=el('dcRepsDur'); if(!e) return;
+    var rs=ruedaLeer('dcRuedaSol'), rf=ruedaLeer('dcRuedaFa');
+    var seg=duracionConReps(rs, rf);
+    e.innerHTML='Duración total: <b>'+fmtMin(seg)+'</b> min'+(seg>15*60+45?' <span class="dc-dur-aviso">· más de 15 min</span>':'');
+  }
   function abrirReps(){
     var w=el('dcReps');
     if(!w){
@@ -5151,6 +5177,7 @@ window.DictadoClase = (function(){
       w.innerHTML='<div class="dc-reps-box">'+
         '<div class="dc-reps-tit">Repeticiones por frase</div>'+
         '<div class="dc-reps-sub">Cuántas veces se destaca cada voz en cada frase</div>'+
+        '<div class="dc-reps-dur" id="dcRepsDur"></div>'+
         '<div class="dc-reps-cols">'+
           '<div class="dc-reps-col"><div class="dc-reps-lbl">𝄞 Clave de sol</div>'+ruedaReps('dcRuedaSol', repsSol)+'</div>'+
           '<div class="dc-reps-col"><div class="dc-reps-lbl">𝄢 Clave de fa</div>'+ruedaReps('dcRuedaFa', repsFa)+'</div>'+
@@ -5160,7 +5187,7 @@ window.DictadoClase = (function(){
       (ov||document.body).appendChild(w);
       ['dcRuedaSol','dcRuedaFa'].forEach(function(id){
         var r=el(id); if(!r) return;
-        r.addEventListener('scroll', function(){ ruedaLeer(id); }, {passive:true});
+        r.addEventListener('scroll', function(){ ruedaLeer(id); pintaRepsDur(); }, {passive:true});
         r.addEventListener('click', function(e){
           var it=e.target.closest('.dc-rueda-it'); if(!it) return;
           ruedaColoca(id, parseInt(it.getAttribute('data-v'),10)||3);
@@ -5168,7 +5195,8 @@ window.DictadoClase = (function(){
       });
     }
     w.classList.add('on');
-    requestAnimationFrame(function(){ ruedaColoca('dcRuedaSol', repsSol); ruedaColoca('dcRuedaFa', repsFa); });
+    requestAnimationFrame(function(){ ruedaColoca('dcRuedaSol', repsSol); ruedaColoca('dcRuedaFa', repsFa); pintaRepsDur(); });
+    setTimeout(function(){ try{ pintaRepsDur(); }catch(e){} }, 180);   // (24-sep) se ve nada más abrir
   }
   function repsOk(){
     repsSol=ruedaLeer('dcRuedaSol'); repsFa=ruedaLeer('dcRuedaFa');
