@@ -2376,6 +2376,18 @@ function showEnig(kind){
   function guardar(n){ try{ localStorage.setItem(LS_ULT,String(n)); }catch(e){} }
   function btn(){ return document.getElementById('alu-campana-btn'); }
   function badge(){ return document.getElementById('alu-campana-badge'); }
+  /* (24-sep-2026, Iago) «Bienvenido/a,» sin nombre: en el modo profesor (#visor=) la sesión va
+     sin nombre, y alguna sesión antigua también. Si falta, se pide al servidor (lectura). */
+  var _nomPedido=false;
+  function nombreDesdeServidor(id,el){
+    if(_nomPedido||!id||!el) return; _nomPedido=true;
+    rpc('suite_mis_resultados',{p_cuenta_id:id}).then(function(d){
+      var a=d&&d.alumno; if(!(a&&a.nombre)) { _nomPedido=false; return; }
+      var t=String(a.nombre)+(a.apellidos?' '+a.apellidos:'');
+      el.textContent=t;
+      try{ if(window.__VISOR&&window.__VISOR.session) window.__VISOR.session.nombre=t; }catch(e){}
+    }).catch(function(){ _nomPedido=false; });
+  }
   function pintarBienvenida(){
     var s=ses(), w=document.getElementById('portal-welcome');
     if(!w) return;
@@ -2385,7 +2397,7 @@ function showEnig(kind){
     document.body.classList.toggle('alu-validado', val);
     if(val){
       var nom=document.getElementById('portal-welcome-nombre');
-      if(nom) nom.textContent=s.nombre||'';
+      if(nom){ nom.textContent=s.nombre||''; if(!s.nombre) nombreDesdeServidor(s.id,nom); }
       w.style.display='';
     } else { w.style.display='none'; }
   }
