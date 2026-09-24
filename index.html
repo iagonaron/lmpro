@@ -335,6 +335,17 @@ if(window.Sentry && !/^(localhost|127\.0\.0\.1)$/.test(location.hostname)){
   .portal-bell .pb-bell{width:22px;height:22px;fill:none;stroke:#d4af37;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;transform-origin:50% 4px}
   .portal-bell-badge{position:absolute;top:-6px;right:-6px;min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:#e5484d;color:#fff;font-size:11px;font-weight:800;line-height:18px;text-align:center;box-shadow:0 0 0 2px var(--bg)}
   .portal-bell-badge.hidden{display:none}
+  /* (24-sep-2026) respuesta del profe a una reclamación, en la campana */
+  .alu-item.alu-recl{border-left:3px solid #f5b942}
+  .alu-item-cuerpo.alu-prewrap{white-space:pre-wrap}
+  .alu-recl-chip{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.02em;padding:2px 8px;border-radius:99px;background:rgba(245,185,66,.18);color:#ffd98a;margin-right:4px;vertical-align:middle}
+  .alu-recl-chip.ok{background:rgba(52,211,153,.18);color:#7ee7b6}
+  .alu-recl-chip.no{background:rgba(229,72,77,.18);color:#ff9a9e}
+  .alu-recl-ej{font-size:12px;color:#c9d2e6;margin-top:3px;font-weight:600}
+  .alu-recl-msg{white-space:pre-wrap;margin-top:6px;padding:8px 10px;border-radius:10px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);color:#e6ecf7}
+  .alu-recl-nota{font-size:13px;margin-top:6px;color:#c9d2e6}.alu-recl-nota b{color:#7ee7b6;font-size:14px}.alu-recl-nota s{opacity:.6}
+  .alu-recl-ver{display:inline-block;margin-top:8px;font-size:13px;font-weight:700;color:#5b9dff;text-decoration:none;border:1px solid rgba(91,157,255,.5);border-radius:8px;padding:6px 10px}
+  .alu-recl-ver:hover{background:rgba(91,157,255,.14)}
   .portal-welcome{position:absolute;left:0;top:50%;transform:translateY(-50%);display:inline-flex;flex-direction:column;align-items:flex-start;gap:6px;font-size:13px;color:var(--muted);white-space:nowrap}
   .portal-welcome .pw-linea{display:inline-flex;align-items:center;gap:6px}
   .portal-welcome .pw-nombre{color:var(--ink);font-weight:800}
@@ -1914,7 +1925,7 @@ function showEnig(kind){
     return !!(st && st.fase==='fin');
   }
   function esValidacionTxt(o){
-    if(!o || (o.payload_json && (o.payload_json.ficha_id || o.payload_json.envio_id || o.payload_json.dictado_revision))) return false;
+    if(!o || (o.payload_json && (o.payload_json.ficha_id || o.payload_json.envio_id || o.payload_json.dictado_revision || o.payload_json.bienvenida || o.payload_json.mensaje_prof || o.payload_json.reclamacion))) return false;
     return /valida|verificad/i.test(String(o.titulo||'')+' '+String(o.cuerpo||''));
   }
   // (6-ago Iago, v2) la campana cuenta COSAS PENDIENTES, no notificaciones sin
@@ -2502,7 +2513,7 @@ function showEnig(kind){
     // redundante — la bienvenida animada + el mini-tour ya cubren ese
     // momento. La ocultamos y la auto-marcamos leída (más abajo).
     function esNotifValidacion(o){
-      if(!o || (o.payload_json && (o.payload_json.ficha_id || o.payload_json.envio_id || o.payload_json.dictado_revision))) return false;
+      if(!o || (o.payload_json && (o.payload_json.ficha_id || o.payload_json.envio_id || o.payload_json.dictado_revision || o.payload_json.bienvenida || o.payload_json.mensaje_prof || o.payload_json.reclamacion))) return false;
       return /valida|verificad/i.test(String(o.titulo||'')+' '+String(o.cuerpo||''));
     }
     var listTodas=list;
@@ -2789,6 +2800,24 @@ function showEnig(kind){
           +'<button type="button" class="reco-ok" data-reco-ok="'+esc(o.id)+'">☐ Entendido</button>'
           +'</div></div>';
       }
+      /* (24-sep-2026, Iago) RESPUESTA DEL PROFE A UNA RECLAMACIÓN (o un comentario suyo sobre
+         tu ficha): llega por la campana, no por ningún sobre. Se pinta aparte: el veredicto,
+         su mensaje tal cual (con saltos de línea), tu nota nueva y el enlace a la ficha corregida. */
+      if(o.payload_json && o.payload_json.reclamacion){
+        var pr=o.payload_json, est=pr.estado||'';
+        var chipR=est==='aceptada'?'<span class="alu-recl-chip ok">✅ Aceptada</span>':est==='denegada'?'<span class="alu-recl-chip no">❌ Denegada</span>':'<span class="alu-recl-chip">📝 Comentario</span>';
+        var notaR=(pr.nota_despues!=null&&isFinite(Number(pr.nota_despues)))?('<div class="alu-recl-nota">Tu nota de la ficha: '+(pr.nota_antes!=null&&isFinite(Number(pr.nota_antes))&&Number(pr.nota_antes)!==Number(pr.nota_despues)?('<s>'+Number(pr.nota_antes).toFixed(2).replace('.',',')+'</s> → '):'')+'<b>'+Number(pr.nota_despues).toFixed(2).replace('.',',')+'</b></div>'):'';
+        var ejR=(pr.ejercicios&&pr.ejercicios.length)?('<div class="alu-recl-ej">Ejercicio'+(pr.ejercicios.length>1?'s':'')+' '+pr.ejercicios.join(', ')+(est==='aceptada'?' · anulado'+(pr.ejercicios.length>1?'s':'')+' para ti, no te resta'+(pr.ejercicios.length>1?'n':''):'')+'</div>'):'';
+        return '<div class="alu-item alu-recl'+(o.leido?'':' no-leido')+'" data-id="'+esc(o.id)+'">'
+          +'<span class="alu-dot"></span>'
+          +'<div class="alu-item-main"><div class="alu-item-tit">'+chipR+' '+esc(String(o.titulo||'Sobre tu reclamación').replace(/^(✅|❌|📝)\s*/,''))+'</div>'
+          +ejR
+          +(o.cuerpo?'<div class="alu-item-cuerpo alu-recl-msg">'+esc(o.cuerpo)+'</div>':'')
+          +notaR
+          +(pr.url?'<a class="alu-recl-ver" href="'+esc(pr.url)+'" target="_blank" rel="noopener">🔍 Ver mi ficha corregida →</a>':'')
+          +'<div class="alu-item-fecha">'+fecha(o.creado_en)+'</div>'
+          +'</div></div>';
+      }
       var fid=(o.payload_json && o.payload_json.ficha_id) ? o.payload_json.ficha_id : '';
       var pj=o.payload_json||{};
       var hecha=esHecha(o);
@@ -2816,7 +2845,7 @@ function showEnig(kind){
         +(fid?'<div class="neb-mini" aria-hidden="true"><i class="n1"></i><i class="n2"></i><i class="n3"></i></div>':'')
         +'<span class="alu-dot"></span>'
         +'<div class="alu-item-main"><div class="alu-item-tit">'+(extra?'<span class="alu-extra-chip">⏰ TIEMPO EXTRA</span> ':'')+esc(o.titulo||'Aviso')+(hecha?' <span class="alu-hecha-check" aria-label="Entregada">✓</span>':'')+'</div>'
-        +(cuerpoTxt?'<div class="alu-item-cuerpo">'+esc(cuerpoTxt)+'</div>':'')
+        +(cuerpoTxt?'<div class="alu-item-cuerpo'+((pj.bienvenida||pj.mensaje_prof)?' alu-prewrap':'')+'">'+esc(cuerpoTxt)+'</div>':'')
         +((fid&&pj.fin_normal&&!hecha)?'<div class="alu-item-plazo" data-fin="'+esc(pj.fin_normal)+'" data-gracia="'+esc(pj.fin_gracia||'')+'" style="font-size:12px;font-weight:700;margin-top:4px;font-variant-numeric:tabular-nums"></div>':'')
         +progHTML
         +'<div class="alu-item-fecha">'+fecha(o.creado_en)+'</div>'
