@@ -6908,5 +6908,237 @@ body.tester-sin-by .topbar-right #rs-mini{order:2}
 })();
 </script>
 
+<script>window.__LIBROS_MODO='GP';</script>
+<script>
+/* ================================================================
+   LIBROS DEL AULA · solo cuentas tester (Iago 25-sep-2026)
+   «Me gustaría poder acceder desde el portal a Intervalia, a FaActos,
+    a los apuntes de teoría (por capítulos)… que al pulsar se abran
+    los distintos capítulos/unidades/lecciones, y un visor que ocupe
+    la pantalla de mi aula. Lo ideal: que al pulsar me lleve directo a
+    lo que esté activo, pero pudiendo volver a la lista. En el kit
+    salvavidas, directamente a la lista.»
+   · Botón «Libros» junto a la campana (solo tester, como el dictado).
+   · Cada libro abre directo en lo que toca ESTA semana docente (la del
+     Diario, que cambia el viernes a las 19:00) y «Lista» enseña todo.
+   · Los PDF son los del Diario (tabla «libros»); el reparto de páginas
+     por lección/acto/unidad está medido sobre esos PDF (25-sep-2026).
+   · Visor a pantalla completa con pdf.js (cdnjs), ‹ › y teclado.
+   ================================================================ */
+(function(){
+  'use strict';
+  var MODO=window.__LIBROS_MODO||'GE';
+  var KEY=(MODO==='GP')?'lmpro_session':'lmeav_session';
+  var TESTERS=['iago gonzalez tester','iago gonzalez protester','iago gonzalez pro tester'];
+  var SBU='https://woiptkyrxkbpnvioypit.supabase.co';
+  var SBK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndvaXB0a3lyeGticG52aW95cGl0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0NzI2ODYsImV4cCI6MjA5MjA0ODY4Nn0.B2nKgj5rD0rkdLeMIrd9KgD8lUPWsBT4Y7aCtmnvbjA';
+  var PDFJS='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+  var PDFJS_W='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+  function norm(s){ return String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/\s+/g,' ').trim().toLowerCase(); }
+  function ses(){ try{ return JSON.parse(localStorage.getItem(KEY)||'null'); }catch(e){ return null; } }
+  function esTester(){ var s=ses(); return !!(s && s.estado==='validado' && TESTERS.indexOf(norm(s.nombre))>=0); }
+  function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+  function isoWeek(d){ var date=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())); var day=date.getUTCDay()||7; date.setUTCDate(date.getUTCDate()+4-day);
+    var ys=new Date(Date.UTC(date.getUTCFullYear(),0,1)); return { anio:date.getUTCFullYear(), semana:Math.ceil((((date-ys)/86400000)+1)/7) }; }
+  function semanaDocenteRef(){ var now=new Date(); var mon=new Date(now); mon.setHours(0,0,0,0); mon.setDate(mon.getDate()-((mon.getDay()+6)%7));
+    var fri19=new Date(mon); fri19.setDate(mon.getDate()+4); fri19.setHours(19,0,0,0); return (now>fri19)? new Date(mon.getTime()+7*864e5) : now; }
+  async function rest(q){ var r=await fetch(SBU+'/rest/v1/'+q,{headers:{apikey:SBK,Authorization:'Bearer '+SBK,'Cache-Control':'no-cache'}}); if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); }
+
+  /* ---------- catálogo (páginas medidas sobre los PDF del Diario) ---------- */
+  function pares(n, pal){ var a=[]; for(var i=1;i<=n;i++) a.push({ id:String(i), t:pal+' '+i, p:[2*i-1,2*i] }); return a; }
+  function unos(n, pal){ var a=[]; for(var i=1;i<=n;i++) a.push({ id:String(i), t:pal+' '+i, p:[i,i] }); return a; }
+  var KIT_GE=[ ['Índice',2,2],['Intervalos',3,3],['Inversión de intervalos',4,4],['Intervalos compuestos',5,5],['Compases',6,6],['Relativos',7,7],
+    ['Indica la tonalidad',8,8],['Indica la armadura',9,9],['Tonalidades vecinas',10,10],['Escalas menores',11,11],['Escalas mayores',12,12],['Otras escalas',13,14],
+    ['Grados',15,15],['Semitono cromático y diatónico',16,16],['Acordes',17,17],['Inversión de acordes',18,18],['Enarmonías',19,19],['Claves',20,20],
+    ['Términos',21,22],['Adornos',23,26],['Abreviaciones',27,28],['Cadencias',29,29],['PreDict carrusel',30,45],['Mundo ritmo',46,63],['Cartas de ritmo',64,66] ]
+    .map(function(x,i){ return { id:'k'+i, t:x[0], p:[x[1],x[2]] }; });
+  var UNIDADES_GP=[ ['U0','Unidad 0 · Contexto y clickbait',4,6],['U1','Unidad 1 · Fonógrafo y compases poco habituales',7,9],['U2','Unidad 2 · Cualidades del sonido y serie armónica',10,13],
+    ['U3','Unidad 3 · Atonalidad y series dodecafónicas',14,17],['U4','Unidad 4 · Magnetófono y nuevas grafías',18,21],['U5','Unidad 5 · El blues y el cifrado americano',22,30],
+    ['U6','Unidad 6 · Géneros de música moderna',31,35],['U7','Unidad 7 · Música afrolatina',36,36],['U8','Unidad 8 · Modulación',37,40],['U9','Unidad 9 · Transporte',41,45],
+    ['U10','Unidad 10 · Música en cine, TV, videojuegos o RRSS',46,72],['R1','Repaso 1er trimestre',73,73],['R2','Repaso 2º trimestre',74,74],['R3','Repaso 3er trimestre',75,75],
+    ['RES','Resumen de contenidos rítmicos',76,79],['IDX','Índice',2,2] ].map(function(x){ return { id:x[0], t:x[1], p:[x[2],x[3]] }; });
+  var CATALOGO = (MODO==='GP') ? [
+      { tipo:'intervalia_pro', t:'Intervalia PRO', items:pares(15,'Capítulo'), color:'#4a9eff' },
+      { tipo:'teoria', t:'Apuntes de teoría', items:UNIDADES_GP, color:'#ec4899' }
+    ] : [
+      { tipo:'intervalia', t:'Intervalia', items:pares(15,'Lección'), color:'#4a9eff' },
+      { tipo:'faactos', t:'FaActos', items:unos(15,'Acto'), color:'#22c55e' },
+      { tipo:'teoria', t:'Kit salvavidas', items:KIT_GE, color:'#ec4899', lista:true }
+    ];
+
+  /* ---------- estado ---------- */
+  var st={ curso:null, paths:{}, activo:{}, doc:null, docPath:null, libro:null, item:null, pag:1, cargado:false };
+
+  async function cargarDatos(){
+    var cursos=[]; try{ cursos=await rest('cursos?select=codigo,activo'); }catch(e){}
+    var suf=(MODO==='GP')?'Gp':'Ge';
+    var act=(cursos||[]).filter(function(c){ return c.activo && new RegExp(suf+'$').test(c.codigo); }).map(function(c){ return c.codigo; }).sort().reverse();
+    st.curso=act[0]||((MODO==='GP')?'2Gp':'4Ge');
+    try{ var lb=await rest('libros?select=tipo,storage_path&curso=eq.'+encodeURIComponent(st.curso)); st.paths={}; (lb||[]).forEach(function(r){ st.paths[r.tipo]=r.storage_path; }); }catch(e){}
+    st.activo={};
+    try{
+      var iw=isoWeek(semanaDocenteRef());
+      var sm=await rest('semanas?select=id,intervalia_leccion,faactos_leccion,intervalia_pro_leccion,bloques_data&curso=eq.'+encodeURIComponent(st.curso)+'&anio=eq.'+iw.anio+'&semana_iso=eq.'+iw.semana);
+      var row=sm&&sm[0];
+      if(row){
+        if(row.intervalia_leccion) st.activo.intervalia={ id:String(row.intervalia_leccion) };
+        if(row.faactos_leccion) st.activo.faactos={ id:String(row.faactos_leccion) };
+        var bd=row.bloques_data||{}, lp=row.intervalia_pro_leccion || (bd.c1&&bd.c1.intervalia_pro&&bd.c1.intervalia_pro.leccion) || (bd.c2&&bd.c2.intervalia_pro&&bd.c2.intervalia_pro.leccion);
+        if(lp) st.activo.intervalia_pro={ id:String(lp) };
+        /* sesión de la semana (s1 = primera página del par, s2 = segunda) */
+        try{ var uso=await rest('intervalia_uso?select=tipo,leccion,fraccion&curso=eq.'+encodeURIComponent(st.curso)+'&semana_id=eq.'+row.id);
+          (uso||[]).forEach(function(u){ var a=st.activo[u.tipo]; if(a && String(u.leccion)===a.id){ a.ses=Math.min(a.ses||9,+u.fraccion||1); } }); }catch(e){}
+      }
+      if(MODO==='GP'){ var ue=await rest('unidades_2gp_estado?select=unidad_actual&id=eq.1'); if(ue&&ue[0]&&ue[0].unidad_actual) st.activo.teoria={ id:String(ue[0].unidad_actual).toUpperCase() }; }
+    }catch(e){ console.warn('[libros]',e); }
+    st.cargado=true;
+  }
+
+  /* ---------- pdf.js bajo demanda ---------- */
+  var _pj=null;
+  function pdfjs(){ if(window.pdfjsLib) return Promise.resolve(window.pdfjsLib);
+    if(_pj) return _pj;
+    _pj=new Promise(function(res,rej){ var s=document.createElement('script'); s.src=PDFJS; s.onload=function(){ try{ window.pdfjsLib.GlobalWorkerOptions.workerSrc=PDFJS_W; }catch(e){} res(window.pdfjsLib); }; s.onerror=function(){ _pj=null; rej(new Error('pdf.js')); }; document.head.appendChild(s); });
+    return _pj; }
+  async function abrirDoc(path){
+    if(st.doc && st.docPath===path) return st.doc;
+    var L=await pdfjs();
+    st.doc=await L.getDocument(SBU+'/storage/v1/object/public/diario/'+path.split('/').map(encodeURIComponent).join('/')).promise;
+    st.docPath=path; return st.doc;
+  }
+
+  /* ---------- interfaz ---------- */
+  function css(){
+    if(document.getElementById('lb-css')) return;
+    var s=document.createElement('style'); s.id='lb-css';
+    s.textContent=
+      '.lb-mini .da-btn{border-color:rgba(236,72,153,.6);background:rgba(236,72,153,.16);color:#fbcfe8}'
+      +'.lb-mini .da-btn:hover:not(:disabled){background:rgba(236,72,153,.32);border-color:#ec4899;color:#fff}'
+      +'.lb-ov{position:fixed;inset:0;z-index:2147483000;background:#0b1220;color:#e8eef5;display:none;flex-direction:column;font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}'
+      +'.lb-ov.open{display:flex}.lb-ov *{box-sizing:border-box}'
+      +'.lb-top{display:flex;align-items:center;gap:10px;padding:10px 14px;background:#111a2b;border-bottom:1px solid #26324a;flex:0 0 auto}'
+      +'.lb-b{height:40px;min-width:40px;padding:0 14px;border-radius:10px;border:1.5px solid #3a4658;background:#111a2b;color:#e8eef5;font:800 14px inherit;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px}'
+      +'.lb-b:hover{border-color:#e8eef5}.lb-b:disabled{opacity:.35;cursor:default}'
+      +'.lb-b.on{background:#ec4899;border-color:#ec4899;color:#fff}'
+      +'.lb-tit{flex:1;min-width:0;font-size:16px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}'
+      +'.lb-tit small{display:block;font-size:12px;font-weight:700;color:#8a95a5}'
+      +'.lb-tabs{display:flex;gap:6px}'
+      +'.lb-body{flex:1;min-height:0;position:relative;overflow:auto}'
+      +'.lb-lista{padding:16px;display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px;max-width:1400px;margin:0 auto}'
+      +'.lb-it{text-align:left;border:2px solid var(--c);border-radius:12px;background:#111a2b;color:#e8eef5;padding:12px 14px;font:800 15px inherit;cursor:pointer;min-height:58px}'
+      +'.lb-it small{display:block;font-size:11.5px;color:#8a95a5;font-weight:700;margin-top:3px}'
+      +'.lb-it.act{background:var(--c);color:#fff}.lb-it.act small{color:#fff;opacity:.85}'
+      +'.lb-vis{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:#e9ecf1}'
+      +'.lb-vis canvas{max-width:100%;max-height:100%;box-shadow:0 0 0 1px #c9ced8;background:#fff}'
+      +'.lb-msg{padding:40px;text-align:center;color:#8a95a5;font-weight:700}'
+      +'.lb-pag{font-size:12.5px;color:#8a95a5;font-weight:800;min-width:74px;text-align:center}';
+    document.head.appendChild(s);
+  }
+  function ov(){
+    var o=document.getElementById('lb-ov'); if(o) return o;
+    css();
+    o=document.createElement('div'); o.id='lb-ov'; o.className='lb-ov';
+    o.innerHTML='<div class="lb-top"><div class="lb-tabs" id="lb-tabs"></div><div class="lb-tit" id="lb-tit">Libros</div>'
+      +'<button class="lb-b" id="lb-prev" title="Página anterior">‹</button><span class="lb-pag" id="lb-pag"></span><button class="lb-b" id="lb-next" title="Página siguiente">›</button>'
+      +'<button class="lb-b" id="lb-lista">Lista</button><button class="lb-b" id="lb-x" title="Cerrar">✕</button></div><div class="lb-body" id="lb-body"></div>';
+    document.body.appendChild(o);
+    o.querySelector('#lb-x').addEventListener('click',cerrar);
+    o.querySelector('#lb-lista').addEventListener('click',function(){ pintarLista(); });
+    o.querySelector('#lb-prev').addEventListener('click',function(){ irPag(st.pag-1); });
+    o.querySelector('#lb-next').addEventListener('click',function(){ irPag(st.pag+1); });
+    document.addEventListener('keydown',function(e){ if(!o.classList.contains('open')) return;
+      if(e.key==='Escape') cerrar(); else if(e.key==='ArrowRight'||e.key==='PageDown') irPag(st.pag+1); else if(e.key==='ArrowLeft'||e.key==='PageUp') irPag(st.pag-1); });
+    var x0=null; o.addEventListener('touchstart',function(e){ x0=e.touches[0].clientX; },{passive:true});
+    o.addEventListener('touchend',function(e){ if(x0==null||!st.item) return; var dx=e.changedTouches[0].clientX-x0; x0=null; if(Math.abs(dx)>60) irPag(st.pag+(dx<0?1:-1)); },{passive:true});
+    window.addEventListener('resize',function(){ if(o.classList.contains('open') && st.item) render(); });
+    return o;
+  }
+  function cerrar(){ var o=document.getElementById('lb-ov'); if(o) o.classList.remove('open'); document.documentElement.style.overflow=''; }
+  function tabs(){
+    var t=document.getElementById('lb-tabs'); if(!t) return;
+    t.innerHTML=CATALOGO.map(function(b){ return '<button class="lb-b'+(st.libro===b?' on':'')+'" data-t="'+b.tipo+'">'+esc(b.t)+'</button>'; }).join('');
+    t.querySelectorAll('[data-t]').forEach(function(x){ x.addEventListener('click',function(){ abrirLibro(x.dataset.t); }); });
+  }
+  function barra(){
+    var tit=document.getElementById('lb-tit'), pag=document.getElementById('lb-pag');
+    var enVis=!!st.item;
+    ['lb-prev','lb-next'].forEach(function(id){ var b=document.getElementById(id); if(b) b.style.visibility=enVis?'visible':'hidden'; });
+    pag.textContent=enVis&&st.doc ? (st.pag+' / '+st.doc.numPages) : '';
+    var a=st.libro&&st.activo[st.libro.tipo];
+    tit.innerHTML=st.libro ? esc(st.libro.t)+(st.item?' · '+esc(st.item.t):'')+'<small>'+(st.item?(a&&a.id===st.item.id?'Esta semana':'&nbsp;'):'Todas las '+(st.libro.tipo==='teoria'&&MODO==='GP'?'unidades':(st.libro.tipo==='faactos'?'actos':(st.libro.tipo==='teoria'?'secciones':'lecciones'))))+'</small>' : 'Libros';
+    var bl=document.getElementById('lb-lista'); if(bl) bl.classList.toggle('on',!st.item);
+    tabs();
+  }
+  function pintarLista(){
+    st.item=null; var body=document.getElementById('lb-body'); var b=st.libro; if(!b) return;
+    var a=st.activo[b.tipo];
+    body.innerHTML='<div class="lb-lista">'+b.items.map(function(it){ var act=a&&a.id===it.id;
+      return '<button class="lb-it'+(act?' act':'')+'" style="--c:'+b.color+'" data-id="'+it.id+'">'+esc(it.t)+'<small>'+(act?'Esta semana · ':'')+'pág. '+it.p[0]+(it.p[1]!==it.p[0]?'–'+it.p[1]:'')+'</small></button>'; }).join('')+'</div>';
+    body.querySelectorAll('[data-id]').forEach(function(x){ x.addEventListener('click',function(){ abrirItem(b.items.filter(function(i){ return i.id===x.dataset.id; })[0]); }); });
+    barra();
+  }
+  async function abrirItem(it, ses){
+    if(!it) return; st.item=it;
+    var body=document.getElementById('lb-body');
+    body.innerHTML='<div class="lb-vis" id="lb-vis"><div class="lb-msg">Cargando…</div></div>';
+    barra();
+    try{
+      var path=st.paths[st.libro.tipo]; if(!path) throw new Error('Este libro no está subido en el Diario ('+st.curso+').');
+      await abrirDoc(path);
+      st.pag=Math.min(st.doc.numPages, it.p[0] + ((ses===2 && it.p[1]>it.p[0]) ? 1 : 0));
+      await render();
+    }catch(e){ body.innerHTML='<div class="lb-msg">'+esc(e.message||e)+'</div>'; }
+  }
+  var _rt=0;
+  async function render(){
+    var tk=++_rt; var vis=document.getElementById('lb-vis'); if(!vis||!st.doc) return;
+    var page=await st.doc.getPage(st.pag); if(tk!==_rt) return;
+    var W=vis.clientWidth-16, H=vis.clientHeight-16;
+    var v1=page.getViewport({scale:1}); var sc=Math.min(W/v1.width, H/v1.height);
+    var dpr=Math.min(2.5, window.devicePixelRatio||1);
+    var vp=page.getViewport({scale:sc*dpr});
+    var c=document.createElement('canvas'); c.width=Math.floor(vp.width); c.height=Math.floor(vp.height);
+    c.style.width=Math.floor(vp.width/dpr)+'px'; c.style.height=Math.floor(vp.height/dpr)+'px';
+    await page.render({ canvasContext:c.getContext('2d'), viewport:vp }).promise;
+    if(tk!==_rt) return;
+    vis.innerHTML=''; vis.appendChild(c); barra();
+  }
+  function irPag(n){ if(!st.doc||!st.item) return; n=Math.max(1,Math.min(st.doc.numPages,n)); if(n===st.pag) return; st.pag=n;
+    /* si se sale del capítulo, el título sigue al capítulo en que cae la página */
+    var b=st.libro; var dentro=b.items.filter(function(i){ return n>=i.p[0] && n<=i.p[1] && i.id!=='IDX' && i.id!=='k0'; })[0]; if(dentro) st.item=dentro;
+    render(); }
+  function abrirLibro(tipo){
+    var b=CATALOGO.filter(function(x){ return x.tipo===tipo; })[0]; if(!b) return;
+    st.libro=b; var a=st.activo[b.tipo];
+    if(b.lista || !a){ pintarLista(); return; }
+    var it=b.items.filter(function(i){ return i.id===a.id; })[0];
+    if(it) abrirItem(it, a.ses); else pintarLista();
+  }
+  async function abrirPanel(btn){
+    var o=ov(); o.classList.add('open'); document.documentElement.style.overflow='hidden';
+    var body=document.getElementById('lb-body');
+    if(!st.cargado){ body.innerHTML='<div class="lb-msg">Cargando…</div>'; try{ await cargarDatos(); }catch(e){} }
+    abrirLibro((st.libro||CATALOGO[0]).tipo);
+  }
+
+  function pintarBoton(){
+    var host=document.querySelector('.topbar-right'); if(!host) return;
+    var old=document.getElementById('lb-mini');
+    if(!esTester()){ if(old) old.remove(); return; }
+    if(old) return;
+    css();
+    var caja=document.createElement('div'); caja.id='lb-mini'; caja.className='da-mini lb-mini';
+    caja.innerHTML='<button type="button" class="da-btn" title="Libros del aula · solo profesor">Libros</button>';
+    var by=host.querySelector('.by'); if(by) host.insertBefore(caja,by); else host.appendChild(caja);
+    caja.querySelector('button').addEventListener('click',function(){ abrirPanel(this); });
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', pintarBoton); else pintarBoton();
+  document.addEventListener('visibilitychange', function(){ if(document.visibilityState==='visible'){ st.cargado=false; pintarBoton(); } });
+  var _ss=window.setSession;
+  if(typeof _ss==='function'){ window.setSession=function(s){ var r=_ss(s); setTimeout(pintarBoton,300); return r; }; }
+  window.LibrosAula={ abrir:abrirPanel };
+})();
+</script>
 </body>
 </html>
