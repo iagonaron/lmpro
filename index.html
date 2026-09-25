@@ -3286,7 +3286,7 @@ function showEnig(kind){
   /* ================= formato ================= */
   function f2(n){ return (n==null||isNaN(n))?'—':Number(n).toFixed(2).replace('.',','); }
   function pc(w){ return Math.round(w*100)+' %'; }
-  function colorNota(n){ return (n==null||isNaN(n))?'var(--mr-dim2)':(n<5?'var(--mr-mal)':'var(--mr-ok)'); }
+  function colorNota(n){ return (n==null||isNaN(n))?'var(--mr-dim2)':(n<5?'var(--mr-mal)':'#ffffff'); }   /* (25-sep-2026, Iago) notas en BLANCO o ROJO; solo el boletín lleva verde/amarillo/rojo */
   function entero(n){ return (n==null||isNaN(n))?null:Math.round(+(Number(n).toFixed(2))); }
   function fFecha(iso){ if(!iso) return ''; var d=new Date(String(iso).slice(0,10)+'T00:00:00'); if(isNaN(d)) return String(iso).slice(0,10);
     return ('0'+d.getDate()).slice(-2)+'/'+('0'+(d.getMonth()+1)).slice(-2)+'/'+String(d.getFullYear()).slice(-2); }
@@ -3343,7 +3343,7 @@ function showEnig(kind){
         if(v==null) return '<div class="mr-bol-u"><div class="mr-bol-u-l">'+(lbl||'&nbsp;')+'</div><span class="mr-marca nula">—</span></div>';
         var ent=entero(v), susp=ent<5, realRoja=(!susp && v<5);
         return '<div class="mr-bol-u"><div class="mr-bol-u-l">'+(lbl||'&nbsp;')+'</div>'
-          +'<span class="mr-marca'+(susp?' susp':'')+'">'+ent+'<span class="mr-real'+(realRoja?' rojo':'')+'">'+f2(v)+'</span></span></div>'; }).join('');
+          +'<span class="mr-marca'+(susp?' susp':(ent===5?' cinco':''))+'">'+ent+'<span class="mr-real'+(realRoja?' rojo':'')+'">'+f2(v)+'</span></span></div>'; }).join('');
       var act=actitudDe(ex,t);
       return '<div class="mr-bol"><span class="mr-bol-t">'+t+'</span><div class="mr-bol-cuerpo"><div class="mr-bol-nums">'+nums+'</div>'
         +'<div class="mr-bol-act">Actitud: <b style="color:'+colorNota(act)+'">'+actitudTxt(act)+'</b></div></div></div>';
@@ -3601,7 +3601,9 @@ function showEnig(kind){
       +'.mr-ap{background:var(--apc) !important;border:0 !important;border-radius:10px !important}'
       +'.mr-ap-l{color:#fff !important;opacity:.92}'
       +'.mr-ap-n{color:#fff !important}'
-      +'.mr-ap-susp{box-shadow:inset 0 0 0 3px #ff4d5e !important}'
+      +'.mr-ap-susp{background:var(--mr-pc2) !important;box-shadow:inset 0 0 0 2px var(--apc) !important}'
+      +'.mr-ap-susp .mr-ap-n{color:#ff4d5e !important}.mr-ap-susp .mr-ap-l{color:var(--apc) !important}'
+      +'.mr-marca.cinco{background:#facc15 !important;color:#1a1400 !important}'
       +'.mr-bol{background:var(--mr-pc2) !important;border-radius:12px !important}'
       +'.mr-marca.nula{background:var(--mr-pc2) !important}'
       +'.mr-esc-f{background:var(--mr-pc2) !important}'
