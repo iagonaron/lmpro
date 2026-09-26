@@ -1768,7 +1768,11 @@ function submitGate(){
 function goPredictPro(){ window.location.href='https://iagonaron.github.io/predictpro/'; }
 function goDictadoPro(){ window.location.href='https://iagonaron.github.io/dictadospro/'; }
 function goIntervaliaPro(){ window.location.href='https://iagonaron.github.io/intervaliapro/'; }
-function goTeoriaPro(){ window.location.href='https://iagonaron.github.io/teoriapro/'; }
+/* (26-sep-2026, Iago) VER APUNTES en TEORÍA PRO: se le pasa tu cuenta (solo el identificador, en el «#»,
+   que no viaja a ningún servidor) para que sepa si eres alumno con cuenta validada; si no, «#c=-». */
+function goTeoriaPro(){ var s=null; try{ s=JSON.parse(localStorage.getItem('lmpro_session')||'null'); }catch(e){}
+  var c=(s && s.id && s.estado==='validado') ? s.id : '-';
+  window.location.href='https://iagonaron.github.io/teoriapro/#c='+c; }
 function goRitmoPro(){ window.location.href='https://iagonaron.github.io/ritmopro/'; }
 function proSoon(){ toast('Próximamente'); }
 
