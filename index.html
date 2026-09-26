@@ -2025,14 +2025,38 @@ function showEnig(kind){
      · se guarda en ESTE dispositivo (localStorage) por alumno + lección + página. */
   function tsAnotar(ov, clave, cid){
     var PREF='ts_anot_'+(cid||'anon')+'_'+clave+'_';
+    /* (26-sep-2026, Iago) El editor salía MARRÓN/DORADO (estética de GP) también en el portal
+       de Grado Elemental: los colores estaban escritos a pelo, copiados del portal GP. Ahora
+       van por PORTAL, fijado en cada fichero (nunca por datos compartidos ni por la sesión):
+       GE azul con resaltado rosa, GP dorado exactamente como estaba. */
+    var ANOT_MODO='GP';                                    /* 'GE' | 'GP' */
+    var AP=(ANOT_MODO==='GP')
+      ? {bar:'linear-gradient(180deg,rgba(38,26,10,.97),rgba(24,16,6,.95))', borde:'rgba(212,175,55,.4)', tit:'#d9c9a0', txt:'#e8dcc0', on:'#ffd678', onBg:'rgba(255,214,120,.18)', onTxt:'#ffe9b8', onSh:'rgba(255,214,120,.35)', mask:'rgba(32,22,8,.97)', lbl:'#26190a', tbtnB:'rgba(212,175,55,.45)', cenBg:'rgba(255,214,120,.10)'}
+      : {bar:'linear-gradient(180deg,rgba(16,30,66,.985),rgba(9,17,40,.975))', borde:'rgba(91,157,255,.45)', tit:'#a9c3f2', txt:'#dbe7ff', on:'#ff6eb4', onBg:'rgba(255,110,180,.18)', onTxt:'#ffd9ec', onSh:'rgba(255,110,180,.35)', mask:'rgba(12,22,50,.97)', lbl:'#101d40', tbtnB:'rgba(91,157,255,.42)', cenBg:'rgba(255,110,180,.12)'};
     if(!document.getElementById('ts-anot-css')){
       var st=document.createElement('style'); st.id='ts-anot-css';
       st.textContent=
-        '.anot-bar{position:sticky;top:0;z-index:5;display:flex;gap:6px;align-items:center;flex-wrap:wrap;background:linear-gradient(180deg,rgba(38,26,10,.97),rgba(24,16,6,.95));border:1px solid rgba(212,175,55,.4);border-radius:12px;padding:7px 9px;margin:0 0 12px;box-shadow:0 8px 26px rgba(0,0,0,.4)}'+
-        '.anot-tit{font:800 10.5px/1 Arial;letter-spacing:.12em;color:#d9c9a0;text-transform:uppercase;margin-right:2px}'+
-        '.anot-b{border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.06);color:#e8dcc0;border-radius:9px;padding:7px 10px;font:700 12.5px Arial;cursor:pointer;line-height:1;touch-action:manipulation}'+
-        '.anot-b.on{border-color:#ffd678;background:rgba(255,214,120,.18);color:#ffe9b8;box-shadow:0 0 0 1px rgba(255,214,120,.35)}'+
+        '.anot-bar{position:sticky;top:0;z-index:5;display:flex;gap:6px;align-items:center;flex-wrap:wrap;background:'+AP.bar+';border:1px solid '+AP.borde+';border-radius:12px;padding:7px 9px;margin:0 0 12px;box-shadow:0 8px 26px rgba(0,0,0,.4)}'+
+        '.anot-tit{font:800 10.5px/1 Arial;letter-spacing:.12em;color:'+AP.tit+';text-transform:uppercase;margin-right:2px}'+
+        '.anot-b{border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.06);color:'+AP.txt+';border-radius:9px;padding:7px 10px;font:700 12.5px Arial;cursor:pointer;line-height:1;touch-action:manipulation}'+
+        '.anot-b.on{border-color:'+AP.on+';background:'+AP.onBg+';color:'+AP.onTxt+';box-shadow:0 0 0 1px '+AP.onSh+'}'+
         '.anot-sw{width:18px;height:18px;border-radius:5px;display:inline-block;vertical-align:-4px}'+'.anot-b.anot-color{padding:6px 8px;line-height:0}'+
+        /* (26-sep-2026, Iago) punta fina negra: un punto negro (con aro claro para que se vea sobre la barra oscura) */
+        '.anot-sw.anot-sw-k{position:relative}'+'.anot-sw-k i{position:absolute;left:50%;top:50%;width:10px;height:10px;margin:-5px 0 0 -5px;border-radius:50%;background:#000;box-shadow:0 0 0 1.5px rgba(255,255,255,.85)}'+
+        /* (26-sep-2026, Iago) rueda de TONALIDAD arriba a la izquierda (como en TEORÍA at home): notas · ♯/♭ · M/m */
+        '.anot-ton{position:relative;display:flex;gap:5px;align-items:center;border:1px solid '+AP.borde+';border-radius:10px;padding:5px;background:rgba(0,0,0,.22);margin:3px 4px 0 0}'+
+        '.anot-ton-lbl{position:absolute;left:8px;top:-6px;font:800 8px/1 Arial;letter-spacing:.14em;color:'+AP.tit+';background:'+AP.lbl+';padding:1px 4px;border-radius:3px;text-transform:uppercase;pointer-events:none}'+
+        '.anot-rueda{position:relative;width:60px;height:66px;overflow:hidden;touch-action:none;overscroll-behavior:contain;cursor:ns-resize;background:rgba(255,255,255,.05);border-radius:7px;user-select:none;-webkit-user-select:none}'+
+        '.anot-rueda .strip{position:absolute;left:0;right:0;top:0;transition:transform .16s cubic-bezier(.22,.61,.36,1)}'+
+        '.anot-rueda .item{height:22px;display:flex;align-items:center;justify-content:center;font:800 13px/1 Arial;color:rgba(255,255,255,.45);white-space:nowrap}'+
+        '.anot-rueda .item.sel{color:#fff;font-size:15px;font-weight:900}'+
+        '.anot-rueda .mask{position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,'+AP.mask+',rgba(0,0,0,0) 36%,rgba(0,0,0,0) 64%,'+AP.mask+')}'+
+        '.anot-rueda .center{position:absolute;left:3px;right:3px;top:22px;height:22px;border-top:1.5px solid '+AP.on+';border-bottom:1.5px solid '+AP.on+';pointer-events:none;background:'+AP.cenBg+'}'+
+        '.anot-tcol{display:flex;flex-direction:column;gap:4px}'+
+        '.anot-tbtn{width:31px;height:31px;display:flex;align-items:center;justify-content:center;padding:0;font:800 15px/1 Arial;border:1px solid '+AP.tbtnB+';background:rgba(0,0,0,.3);color:'+AP.txt+';border-radius:8px;cursor:pointer;touch-action:manipulation}'+
+        '.anot-tbtn.on{background:'+AP.onBg+';border-color:'+AP.on+';color:#fff;box-shadow:0 0 0 1px '+AP.onSh+'}'+
+        '.anot-tools{flex:1 1 0;min-width:0;display:flex;gap:6px;align-items:center;flex-wrap:wrap}'+
+        '@media (max-width:600px){.anot-tools{display:contents}}'+
         '.anot-wrap{position:relative}'+
         '.anot-canvas{position:absolute;inset:0;width:100%;height:100%;border-radius:12px;pointer-events:none}'+
         '.anot-wrap.dibujo .anot-canvas{pointer-events:auto;touch-action:none;cursor:crosshair}'+
@@ -2046,16 +2070,26 @@ function showEnig(kind){
     if(!imgs.length) return;
     var host=ov.firstChild;
     var bar=document.createElement('div'); bar.className='anot-bar';
-    bar.innerHTML='<span class="anot-tit">✏️ Anotar</span>'
+    bar.innerHTML=
+      /* (26-sep-2026, Iago) rueda de tonalidad, arriba a la izquierda; sin «corregir»: solo sirve para indicarla */
+      '<div class="anot-ton" role="group" aria-label="Tonalidad"><span class="anot-ton-lbl">Tonalidad</span>'
+      +'<div class="anot-rueda" aria-label="Nota de la tonalidad"></div>'
+      +'<div class="anot-tcol"><button type="button" class="anot-tbtn" data-alt="#" aria-label="Sostenido" aria-pressed="false">♯</button><button type="button" class="anot-tbtn" data-alt="b" aria-label="Bemol" aria-pressed="false">♭</button></div>'
+      +'<div class="anot-tcol"><button type="button" class="anot-tbtn" data-modo="M" aria-label="Mayor" aria-pressed="false">M</button><button type="button" class="anot-tbtn" data-modo="m" aria-label="menor" aria-pressed="false">m</button></div>'
+      +'</div>'
+      +'<div class="anot-tools">'   /* (26-sep-2026, Iago) las herramientas de siempre, en su caja a la derecha de la rueda */
+      +'<span class="anot-tit">✏️ Anotar</span>'
       +'<button class="anot-b anot-color" data-t="c0" aria-label="Subrayar amarillo"><span class="anot-sw" style="background:#ffde3c"></span></button>'
       +'<button class="anot-b anot-color" data-t="c1" aria-label="Subrayar verde"><span class="anot-sw" style="background:#50e68c"></span></button>'
       +'<button class="anot-b anot-color" data-t="c2" aria-label="Subrayar rosa"><span class="anot-sw" style="background:#ff6eb4"></span></button>'
       +'<button class="anot-b anot-color" data-t="c3" aria-label="Subrayar azul"><span class="anot-sw" style="background:#5ab4ff"></span></button>'
+      +'<button class="anot-b anot-color" data-t="k" aria-label="Punta fina negra" title="Punta fina negra"><span class="anot-sw anot-sw-k"><i></i></span></button>'   /* (26-sep-2026, Iago) punta fina negra */
       +'<button class="anot-b" data-t="nota">📝 Nota</button>'
       +'<button class="anot-b" data-t="goma">🧽 Goma</button>'
       +'<span style="flex:1 1 auto"></span>'
       +'<button class="anot-b" data-t="undo">↶ Deshacer</button>'
-      +'<button class="anot-b" data-t="clear">🗑 Borrar todo</button>';
+      +'<button class="anot-b" data-t="clear">🗑 Borrar todo</button>'
+      +'</div>';
     host.insertBefore(bar, host.children[1]||null);
     var COLORS=['rgba(255,222,60,.5)','rgba(80,230,140,.45)','rgba(255,110,180,.45)','rgba(90,180,255,.45)'];
     var tool='mano', pages=[], hist=[], clearArm=null;
@@ -2068,7 +2102,7 @@ function showEnig(kind){
       ctx.lineCap='round'; ctx.lineJoin='round';
       var W=cv.width, H=cv.height;
       pg.data.strokes.forEach(function(sk){
-        ctx.strokeStyle=sk.c; ctx.lineWidth=Math.max(3,sk.w*W);
+        ctx.strokeStyle=sk.c; ctx.lineWidth=sk.f?Math.max(2,sk.w*W):Math.max(3,sk.w*W);   /* (26-sep-2026, Iago) sk.f = punta fina */
         ctx.beginPath();
         sk.p.forEach(function(pt,i){ var x=pt[0]*W,y=pt[1]*H; if(i===0)ctx.moveTo(x,y); else ctx.lineTo(x,y); });
         if(sk.p.length===1){ ctx.lineTo(sk.p[0][0]*W+0.1, sk.p[0][1]*H); }
@@ -2141,7 +2175,8 @@ function showEnig(kind){
           return;
         }
         if(tool==='goma'){ pg.borrando=true; borraEn(pg,nx,ny); try{ cv.setPointerCapture(ev.pointerId); }catch(e){} return; }
-        pg.cur={c:COLORS[parseInt(tool.slice(1),10)]||COLORS[0],w:0.008,p:[[nx,ny]]};
+        /* (26-sep-2026, Iago) 'k' = punta FINA NEGRA totalmente opaca; los rotuladores de color, igual que antes */
+        pg.cur=(tool==='k')?{c:'#000',w:0.0022,f:1,p:[[nx,ny]]}:{c:COLORS[parseInt(tool.slice(1),10)]||COLORS[0],w:0.008,p:[[nx,ny]]};
         pg.data.strokes.push(pg.cur);
         try{ cv.setPointerCapture(ev.pointerId); }catch(e){}
         redraw(pg);
@@ -2152,8 +2187,8 @@ function showEnig(kind){
         if(pg.borrando){ borraEn(pg,nx,ny); return; }
         if(!pg.cur) return;
         ev.preventDefault();
-        var p=pg.cur.p, u=p[p.length-1];
-        if(Math.abs(nx-u[0])>0.003||Math.abs(ny-u[1])>0.003){ p.push([nx,ny]); redraw(pg); }
+        var p=pg.cur.p, u=p[p.length-1], th=pg.cur.f?0.0012:0.003;   /* (26-sep-2026, Iago) la punta fina toma más puntos: letra pequeña más limpia */
+        if(Math.abs(nx-u[0])>th||Math.abs(ny-u[1])>th){ p.push([nx,ny]); redraw(pg); }
       });
       var fin=function(){
         if(pg.cur){ hist.push({pg:pg,t:'trazo'}); save(pg); pg.cur=null; }
@@ -2183,6 +2218,7 @@ function showEnig(kind){
         clearTimeout(clearArm); clearArm=null; b.innerHTML='🗑 Borrar todo';
         pages.forEach(function(pg){ pg.data={strokes:[],notes:[]}; save(pg); redraw(pg); placeNotes(pg); });
         hist.length=0;
+        try{ tonReset(); }catch(e){}   /* (26-sep-2026, Iago) «Borrar todo» también quita la tonalidad */
         return;
       }
       // tocar la herramienta activa la SUELTA (sin herramienta = mover/scroll)
@@ -2191,10 +2227,88 @@ function showEnig(kind){
     });
     var onRz=function(){ if(!ov.isConnected){ window.removeEventListener('resize',onRz); return; } pages.forEach(fit); };
     window.addEventListener('resize',onRz);
+    /* (26-sep-2026, Iago) RUEDA DE TONALIDAD, como la de TEORÍA at home: rueda de notas
+       (Do…Si, «—» = sin indicar) · ♯/♭ (se encienden y apagan; ninguno = natural) · M/m.
+       No hay «corregir»: solo sirve para que el alumno diga la tonalidad de la pieza.
+       Se guarda en ESTE dispositivo con el resto de anotaciones de la lección (PREF+'ton'). */
+    var NOTAS_R=['Si','La','Sol','Fa','Mi','Re','Do','—'];   /* mismo orden que la de teoría: «—» abajo */
+    var TON_K=PREF+'ton', ton={n:null,a:'',m:''};
+    try{ var tj=JSON.parse(localStorage.getItem(TON_K)||'null');
+      if(tj && typeof tj==='object'){ ton.n=(NOTAS_R.indexOf(tj.n)>=0 && tj.n!=='—')?tj.n:null; ton.a=(tj.a==='#'||tj.a==='b')?tj.a:''; ton.m=(tj.m==='M'||tj.m==='m')?tj.m:''; } }catch(e){}
+    function tonSave(){ try{ localStorage.setItem(TON_K, JSON.stringify(ton)); }catch(e){} }
+    function tonTxt(){ return ton.n ? (ton.n+(ton.a==='#'?'♯':ton.a==='b'?'♭':'')+ton.m) : ''; }
+    function tick(){
+      var t=performance.now(); if(window.__anotTickT && t-window.__anotTickT<55) return; window.__anotTickT=t;
+      try{ var A=window.__anotTickA=window.__anotTickA||new (window.AudioContext||window.webkitAudioContext)();
+        var o=A.createOscillator(), g=A.createGain(); o.frequency.value=520; g.gain.value=0.026; o.connect(g); g.connect(A.destination);
+        o.start(); g.gain.exponentialRampToValueAtTime(0.0001,A.currentTime+0.05); o.stop(A.currentTime+0.06); }catch(e){}
+    }
+    /* rueda tipo iOS (la de teoría, compacta: 3 casillas de 22 px) — arrastre continuo con inercia,
+       toque arriba/abajo = un paso, rueda del ratón = un paso por muesca */
+    function anotRueda(host, items, startIdx, onChange){
+      var H=22, labels=items.slice(), idx=Math.max(0,Math.min(labels.length-1,startIdx||0)), off=0;
+      host.innerHTML='<div class="strip"></div><div class="center"></div><div class="mask"></div>';
+      var strip=host.firstChild;
+      function clamp(v){ return Math.max(0,Math.min(labels.length-1,v)); }
+      function pos(){ strip.style.transform='translateY('+(H-idx*H+off)+'px)'; }
+      function marca(k){ Array.prototype.forEach.call(strip.children,function(el,i){ el.classList.toggle('sel',i===k); }); }
+      function fija(i,silencio){ i=clamp(i); var cambia=(i!==idx); idx=i; off=0; strip.style.transition=''; marca(idx); pos();
+        if(cambia && !silencio){ onChange(idx); } }
+      var drag=false, mov=false, y0=0, yl=0, tl=0, vel=0, near=idx, raf=null;
+      function sigue(){ var k=clamp(Math.round(idx-off/H)); if(k!==near){ near=k; marca(k); tick(); } }
+      function limita(){ var up=idx*H, dn=(labels.length-1-idx)*H; if(off>up){ off=up; return true; } if(off<-dn){ off=-dn; return true; } return false; }
+      host.addEventListener('pointerdown',function(ev){ ev.preventDefault(); ev.stopPropagation(); if(raf){ cancelAnimationFrame(raf); raf=null; fija(Math.round(idx-off/H)); }
+        drag=true; mov=false; y0=yl=ev.clientY; tl=performance.now(); vel=0; near=idx; strip.style.transition='none';
+        try{ host.setPointerCapture(ev.pointerId); }catch(e){} });
+      host.addEventListener('pointermove',function(ev){ if(!drag) return;
+        var t=performance.now(), dt=Math.max(1,t-tl); vel=0.7*vel+0.3*((ev.clientY-yl)/dt); yl=ev.clientY; tl=t;
+        off=ev.clientY-y0; if(Math.abs(off)>4) mov=true; limita(); pos(); sigue(); });
+      function suelta(ev){ if(!drag) return; drag=false;
+        if(!mov){ strip.style.transition=''; off=0; pos();
+          if(ev){ var r=host.getBoundingClientRect(), yc=ev.clientY-r.top, mid=r.height/2;
+            if(yc<mid-8){ if(idx>0) tick(); fija(idx-1); } else if(yc>mid+8){ if(idx<labels.length-1) tick(); fija(idx+1); } }
+          return; }
+        var v=vel*16;
+        if(Math.abs(v)<3){ fija(Math.round(idx-off/H)); return; }
+        var paso=function(){ v*=0.94; off+=v; if(limita()) v=0; pos(); sigue();
+          if(Math.abs(v)>0.6) raf=requestAnimationFrame(paso); else { raf=null; fija(Math.round(idx-off/H)); } };
+        raf=requestAnimationFrame(paso);
+      }
+      host.addEventListener('pointerup',function(ev){ suelta(ev); });
+      host.addEventListener('pointercancel',function(){ mov=true; vel=0; suelta(null); });
+      var acc=0;
+      host.addEventListener('wheel',function(ev){ ev.preventDefault(); ev.stopPropagation(); acc+=ev.deltaY;
+        while(acc>=40){ if(idx<labels.length-1) tick(); fija(idx+1); acc-=40; }
+        while(acc<=-40){ if(idx>0) tick(); fija(idx-1); acc+=40; } },{passive:false});
+      strip.innerHTML=labels.map(function(t){ return '<div class="item"></div>'; }).join('');
+      Array.prototype.forEach.call(strip.children,function(el,i){ el.textContent=labels[i]; });
+      marca(idx); pos();
+      return { setLabels:function(l){ labels=l.slice(); Array.prototype.forEach.call(strip.children,function(el,i){ el.textContent=labels[i]; }); },
+               fija:fija, getIndex:function(){ return idx; } };
+    }
+    var tonBox=bar.querySelector('.anot-ton');
+    var rueda=anotRueda(tonBox.querySelector('.anot-rueda'), NOTAS_R, ton.n?NOTAS_R.indexOf(ton.n):NOTAS_R.length-1, function(i){
+      ton.n=(i<NOTAS_R.length-1)?NOTAS_R[i]:null; tonSave(); tonPinta(); });
+    function tonPinta(){
+      rueda.setLabels(NOTAS_R.map(function(n){ return (ton.n && n===ton.n)?tonTxt():n; }));
+      Array.prototype.forEach.call(tonBox.querySelectorAll('.anot-tbtn'),function(b){
+        var a=b.getAttribute('data-alt'), m=b.getAttribute('data-modo'), on=a?(ton.a===a):(ton.m===m);
+        b.classList.toggle('on',on); b.setAttribute('aria-pressed',on?'true':'false'); });
+      tonBox.title='Tonalidad: '+(tonTxt()||'sin indicar');
+    }
+    function tonReset(){ ton={n:null,a:'',m:''}; rueda.fija(NOTAS_R.length-1,true); tonSave(); tonPinta(); }
+    tonBox.addEventListener('click',function(ev){
+      var b=ev.target.closest('.anot-tbtn'); if(!b) return;
+      ev.stopPropagation(); try{ b.blur(); }catch(e){}
+      var a=b.getAttribute('data-alt'), m=b.getAttribute('data-modo');
+      if(a) ton.a=(ton.a===a)?'':a; else if(m) ton.m=(ton.m===m)?'':m;
+      tonSave(); tonPinta();
+    });
+    tonPinta();
   }
   function abrirVisorLecciones(envio, imgs, parte, titulo){
     parte=parte||'lecciones'; titulo=titulo||'Lecciones de la semana';
-    var old=document.getElementById('ts-visor'); if(old) old.remove();
+    var old=document.getElementById('ts-visor'); if(old){ try{ if(old.__cerrar) old.__cerrar(true); }catch(e){} old.remove(); }
     var ov=document.createElement('div'); ov.id='ts-visor';
     ov.style.cssText='position:fixed;inset:0;z-index:100002;background:rgba(8,5,22,.96);overflow:auto;-webkit-overflow-scrolling:touch;padding:16px 10px 30px';
     // Iago 4-jul (2): un punto mas de tamano sin comprometer nitidez. Tope 1280px
@@ -2216,6 +2330,23 @@ function showEnig(kind){
       +'</div></div>';
     ov.innerHTML=inner;
     document.body.appendChild(ov);
+    /* (26-sep-2026, Iago) «TELETRANSPORTE» AL OTRO PORTAL. El visor/editor de la lección es
+       una capa encima del portal y no dejaba rastro en el historial: «atrás» (botón del
+       navegador, o deslizar desde el borde en el iPad, que además se hace sin querer al
+       dibujar) SALÍA del portal y cargaba lo que hubiera antes en la pestaña; en las pruebas
+       con Tester y Protester eso era el portal del OTRO grado. Además, al bajar por la
+       lección el «✕ Cerrar» se queda arriba fuera de la vista. Ahora abrir el visor deja una
+       entrada propia en el historial: «atrás» solo cierra el visor y sigues en TU portal. */
+    var _visTok='v'+Date.now()+Math.random().toString(36).slice(2,7);
+    try{ history.pushState({tsVisor:_visTok}, ''); }catch(e){}
+    function alAtrasVisor(ev){ if(ev && ev.state && ev.state.tsVisor===_visTok) return; cerrarVisor(true); }
+    function cerrarVisor(porAtras){
+      window.removeEventListener('popstate', alAtrasVisor);
+      if(ov.isConnected) ov.remove();
+      if(!porAtras){ try{ if(history.state && history.state.tsVisor===_visTok) history.back(); }catch(e){} }
+    }
+    window.addEventListener('popstate', alAtrasVisor);
+    ov.__cerrar=cerrarVisor;
     try{ tsAnotar(ov, String(envio||'x')+'_'+String(parte||'lecciones'), cuentaId()); }catch(e){ console.warn('[anot]',e); }
     // Iago 3-jul: si la captura ya no existe (barrido de 14 dias, o se quito
     // del Diario despues de enviarla), el <img> roto pintaba un recuadro
@@ -2248,9 +2379,9 @@ function showEnig(kind){
       if(im.complete && im.naturalWidth===0) caida();
       else if(im.complete && im.naturalWidth>0){ try{ marcarAlVer(); }catch(e){} }
     });
-    document.getElementById('tsVisorCerrar').onclick=function(){ ov.remove(); };
+    document.getElementById('tsVisorCerrar').onclick=function(){ cerrarVisor(false); };   /* (26-sep-2026, Iago) cierra y consume su entrada del historial */
     var c2=document.getElementById('tsVisorCerrar2');
-    if(c2) c2.onclick=function(){ ov.remove(); };
+    if(c2) c2.onclick=function(){ cerrarVisor(false); };
   }
   // (Iago 15-sep-2026) Antes se daba por hecha la parte ANTES de hablar con
   // Supabase y se devolvía true pasara lo que pasara: si el guardado fallaba,
@@ -6443,7 +6574,10 @@ window.DictadoClase = (function(){
   var SBK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndvaXB0a3lyeGticG52aW95cGl0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0NzI2ODYsImV4cCI6MjA5MjA0ODY4Nn0.B2nKgj5rD0rkdLeMIrd9KgD8lUPWsBT4Y7aCtmnvbjA';
   function ses(){
     try{
-      var s=JSON.parse(localStorage.getItem('lmpro_session')||localStorage.getItem('lmeav_session')||'null');
+      /* (26-sep-2026, Iago) Solo la sesión de ESTE portal (GP). Antes se miraba primero
+         'lmpro_session' también en elemental: si en el mismo origen quedaba la sesión del otro
+         grado, el formato (papel/digital) se leía de la cuenta equivocada. */
+      var s=JSON.parse(localStorage.getItem('lmpro_session')||'null');
       return s||window.__LM_SES||null;
     }catch(e){ return window.__LM_SES||null; }
   }
