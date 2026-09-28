@@ -7202,7 +7202,7 @@ body.tester-sin-by .topbar-right #rs-mini{order:2}
     ];
 
   /* ---------- estado ---------- */
-  var st={ curso:null, paths:{}, activo:{}, doc:null, docPath:null, libro:null, item:null, pag:1, cargado:false };
+  var st={ curso:null, paths:{}, activo:{}, doc:null, docPath:null, libro:null, item:null, pag:1, cargado:false, col:false };
 
   async function cargarDatos(){
     var cursos=[]; try{ cursos=await rest('cursos?select=codigo,activo'); }catch(e){}
@@ -7259,12 +7259,28 @@ body.tester-sin-by .topbar-right #rs-mini{order:2}
       +'.lb-tit small{display:block;font-size:12px;font-weight:700;color:#8a95a5}'
       +'.lb-tabs{display:flex;gap:6px}'
       +'.lb-body{flex:1;min-height:0;position:relative;overflow:auto}'
+      /* (28-sep-2026, Iago) «Lista»: una columna vertical a la derecha, con scroll, en vez de tapar la página */
+      +'.lb-main{flex:1 1 auto;min-height:0;display:flex;position:relative}'
+      +'.lb-main .lb-body{flex:1 1 auto;min-width:0}'
+      +'.lb-col{flex:0 0 300px;display:none;flex-direction:column;min-height:0;background:#111a2b;border-left:1px solid #26324a}'
+      +'.lb-ov.lb-con-col .lb-col{display:flex}'
+      +'.lb-col-h{flex:0 0 auto;padding:12px 14px 6px;font-size:11.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#8a95a5}'
+      +'.lb-col-l{flex:1 1 auto;min-height:0;overflow-y:auto;padding:4px 10px 18px;display:flex;flex-direction:column;gap:6px;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}'
+      +'.lb-col .lb-it{flex:0 0 auto;min-height:0;padding:10px 12px;font-size:14px}'
+      +'.lb-it.cur{box-shadow:inset 0 0 0 2px #fff}'
+      +'@media (max-width:700px){.lb-col{position:absolute;right:0;top:0;bottom:0;width:min(320px,86vw);z-index:2;box-shadow:-12px 0 30px rgba(0,0,0,.45)}'
+      /* (28-sep-2026) móvil: la barra en dos filas (arriba título, páginas, Lista y ✕; debajo los libros) para que la ✕ no se salga */
+      +'.lb-top{flex-wrap:wrap;row-gap:8px;padding:8px 10px}.lb-tabs{order:9;flex:1 1 100%;overflow-x:auto}.lb-tabs .lb-b{flex:0 0 auto}'
+      +'.lb-b{height:36px;min-width:36px;padding:0 10px}.lb-pag{min-width:52px}}'
       +'.lb-lista{padding:16px;display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px;max-width:1400px;margin:0 auto}'
       +'.lb-it{text-align:left;border:2px solid var(--c);border-radius:12px;background:#111a2b;color:#e8eef5;padding:12px 14px;font:800 15px inherit;cursor:pointer;min-height:58px}'
       +'.lb-it small{display:block;font-size:11.5px;color:#8a95a5;font-weight:700;margin-top:3px}'
       +'.lb-it.act{background:var(--c);color:#fff}.lb-it.act small{color:#fff;opacity:.85}'
-      +'.lb-vis{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:#e9ecf1}'
-      +'.lb-vis canvas{max-width:100%;max-height:100%;box-shadow:0 0 0 1px #c9ced8;background:#fff}'
+      /* (28-sep-2026, Iago) «aprovechando el ancho»: las páginas verticales se amplían al ancho y se bajan con scroll;
+         las horizontales se ven enteras */
+      +'.lb-vis{position:absolute;inset:0;display:block;overflow-x:hidden;overflow-y:auto;padding:8px 8px 24px;background:#e9ecf1;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;scrollbar-gutter:stable}'
+      +'.lb-vis canvas{display:block;margin:0 auto;max-width:none;max-height:none;box-shadow:0 0 0 1px #c9ced8;background:#fff}'
+      +'.lb-vis .lb-msg{margin-top:10vh}'
       +'.lb-msg{padding:40px;text-align:center;color:#8a95a5;font-weight:700}'
       +'.lb-pag{font-size:12.5px;color:#8a95a5;font-weight:800;min-width:74px;text-align:center}';
     document.head.appendChild(s);
@@ -7275,20 +7291,25 @@ body.tester-sin-by .topbar-right #rs-mini{order:2}
     o=document.createElement('div'); o.id='lb-ov'; o.className='lb-ov';
     o.innerHTML='<div class="lb-top"><div class="lb-tabs" id="lb-tabs"></div><div class="lb-tit" id="lb-tit">Libros</div>'
       +'<button class="lb-b" id="lb-prev" title="Página anterior">‹</button><span class="lb-pag" id="lb-pag"></span><button class="lb-b" id="lb-next" title="Página siguiente">›</button>'
-      +'<button class="lb-b" id="lb-lista">Lista</button><button class="lb-b" id="lb-x" title="Cerrar">✕</button></div><div class="lb-body" id="lb-body"></div>';
+      +'<button class="lb-b" id="lb-lista" title="Lista (columna a la derecha)">Lista</button><button class="lb-b" id="lb-x" title="Cerrar">✕</button></div>'
+      +'<div class="lb-main"><div class="lb-body" id="lb-body"></div><aside class="lb-col" id="lb-col" aria-label="Lista"><div class="lb-col-h" id="lb-col-h"></div><div class="lb-col-l" id="lb-col-l"></div></aside></div>';
     document.body.appendChild(o);
     o.querySelector('#lb-x').addEventListener('click',cerrar);
-    o.querySelector('#lb-lista').addEventListener('click',function(){ pintarLista(); });
+    o.querySelector('#lb-lista').addEventListener('click',function(){ columna(!st.col); });   /* (28-sep-2026, Iago) abre/cierra la columna */
     o.querySelector('#lb-prev').addEventListener('click',function(){ irPag(st.pag-1); });
     o.querySelector('#lb-next').addEventListener('click',function(){ irPag(st.pag+1); });
     document.addEventListener('keydown',function(e){ if(!o.classList.contains('open')) return;
       if(e.key==='Escape') cerrar(); else if(e.key==='ArrowRight'||e.key==='PageDown') irPag(st.pag+1); else if(e.key==='ArrowLeft'||e.key==='PageUp') irPag(st.pag-1); });
-    var x0=null; o.addEventListener('touchstart',function(e){ x0=e.touches[0].clientX; },{passive:true});
-    o.addEventListener('touchend',function(e){ if(x0==null||!st.item) return; var dx=e.changedTouches[0].clientX-x0; x0=null; if(Math.abs(dx)>60) irPag(st.pag+(dx<0?1:-1)); },{passive:true});
+    var x0=null, y0=null;   /* (28-sep-2026) solo un gesto de lado cambia de página: bajar por la página o por la lista, no */
+    o.addEventListener('touchstart',function(e){ if(e.target && e.target.closest && e.target.closest('#lb-col')){ x0=null; return; } x0=e.touches[0].clientX; y0=e.touches[0].clientY; },{passive:true});
+    o.addEventListener('touchend',function(e){ if(x0==null||!st.item) return; var dx=e.changedTouches[0].clientX-x0, dy=e.changedTouches[0].clientY-y0; x0=null;
+      if(Math.abs(dx)>60 && Math.abs(dx)>1.5*Math.abs(dy)) irPag(st.pag+(dx<0?1:-1)); },{passive:true});
     window.addEventListener('resize',function(){ if(o.classList.contains('open') && st.item) render(); });
     return o;
   }
-  function cerrar(){ var o=document.getElementById('lb-ov'); if(o) o.classList.remove('open'); document.documentElement.style.overflow=''; }
+  function cerrar(){ var o=document.getElementById('lb-ov'); if(o) o.classList.remove('open'); document.documentElement.style.overflow='';
+    /* (28-sep-2026, Iago) si la pantalla completa la pidió el libro, se quita al cerrarlo */
+    try{ var fe=document.fullscreenElement||document.webkitFullscreenElement; if(o && fe===o) (document.exitFullscreen||document.webkitExitFullscreen).call(document); }catch(e){} }
   function tabs(){
     var t=document.getElementById('lb-tabs'); if(!t) return;
     t.innerHTML=CATALOGO.map(function(b){ return '<button class="lb-b'+(st.libro===b?' on':'')+'" data-t="'+b.tipo+'">'+esc(b.t)+'</button>'; }).join('');
@@ -7301,19 +7322,34 @@ body.tester-sin-by .topbar-right #rs-mini{order:2}
     pag.textContent=enVis&&st.doc ? (st.pag+' / '+st.doc.numPages) : '';
     var a=st.libro&&st.activo[st.libro.tipo];
     tit.innerHTML=st.libro ? esc(st.libro.t)+(st.item?' · '+esc(st.item.t):'')+'<small>'+(st.item?(a&&a.id===st.item.id?'Esta semana':'&nbsp;'):'Todas las '+(st.libro.tipo==='teoria'&&MODO==='GP'?'unidades':(st.libro.tipo==='faactos'?'actos':(st.libro.tipo==='teoria'?'secciones':'lecciones'))))+'</small>' : 'Libros';
-    var bl=document.getElementById('lb-lista'); if(bl) bl.classList.toggle('on',!st.item);
+    var bl=document.getElementById('lb-lista'); if(bl){ bl.classList.toggle('on',!!st.col); bl.setAttribute('aria-pressed',st.col?'true':'false'); }
     tabs();
   }
-  function pintarLista(){
-    st.item=null; var body=document.getElementById('lb-body'); var b=st.libro; if(!b) return;
-    var a=st.activo[b.tipo];
-    body.innerHTML='<div class="lb-lista">'+b.items.map(function(it){ var act=a&&a.id===it.id;
-      return '<button class="lb-it'+(act?' act':'')+'" style="--c:'+b.color+'" data-id="'+it.id+'">'+esc(it.t)+'<small>'+(act?'Esta semana · ':'')+'pág. '+it.p[0]+(it.p[1]!==it.p[0]?'–'+it.p[1]:'')+'</small></button>'; }).join('')+'</div>';
-    body.querySelectorAll('[data-id]').forEach(function(x){ x.addEventListener('click',function(){ abrirItem(b.items.filter(function(i){ return i.id===x.dataset.id; })[0]); }); });
+  function pintarLista(){ columna(true); }   /* (28-sep-2026, Iago) la lista ya no tapa la página: va en la columna de la derecha */
+  /* (28-sep-2026, Iago) «Lista»: columna vertical a la derecha, con scroll, con todos los atajos para pulsar; la página
+     sigue a la vista y se vuelve a ajustar al ancho que queda. En pantallas estrechas la columna va por encima. */
+  function columna(on){
+    st.col=!!on; var o=document.getElementById('lb-ov'); if(!o) return;
+    var antes=o.classList.contains('lb-con-col');
+    o.classList.toggle('lb-con-col', st.col);
+    if(st.col) pintarCol();
     barra();
+    if(antes!==st.col && st.item && document.querySelector('#lb-vis canvas')) (window.requestAnimationFrame||setTimeout)(function(){ render(); });   /* solo si hay una página a la vista */
+  }
+  function pintarCol(){
+    var l=document.getElementById('lb-col-l'), h=document.getElementById('lb-col-h'), b=st.libro; if(!l||!h||!b) return;
+    var a=st.activo[b.tipo];
+    h.textContent=b.t;
+    l.innerHTML=b.items.map(function(it){ var act=a&&a.id===it.id, cur=st.item&&st.item.id===it.id;
+      return '<button class="lb-it'+(act?' act':'')+(cur?' cur':'')+'" style="--c:'+b.color+'" data-id="'+it.id+'"'+(cur?' aria-current="true"':'')+'>'+esc(it.t)+'<small>'+(act?'Esta semana · ':'')+'pág. '+it.p[0]+(it.p[1]!==it.p[0]?'–'+it.p[1]:'')+'</small></button>'; }).join('');
+    l.querySelectorAll('[data-id]').forEach(function(x){ x.addEventListener('click',function(){
+      abrirItem(b.items.filter(function(i){ return i.id===x.dataset.id; })[0]);
+      if(window.innerWidth<=700) columna(false);   /* estrecha: la columna tapa la página, así que se recoge */
+    }); });
+    var c=l.querySelector('.cur'); if(c){ try{ c.scrollIntoView({ block:'nearest' }); }catch(e){} }
   }
   async function abrirItem(it, ses){
-    if(!it) return; st.item=it;
+    if(!it) return; st.item=it; if(st.col) pintarCol();
     var body=document.getElementById('lb-body');
     body.innerHTML='<div class="lb-vis" id="lb-vis"><div class="lb-msg">Cargando…</div></div>';
     barra();
@@ -7324,33 +7360,43 @@ body.tester-sin-by .topbar-right #rs-mini{order:2}
       await render();
     }catch(e){ body.innerHTML='<div class="lb-msg">'+esc(e.message||e)+'</div>'; }
   }
-  var _rt=0;
+  var _rt=0, _pagPintada=0;
   async function render(){
     var tk=++_rt; var vis=document.getElementById('lb-vis'); if(!vis||!st.doc) return;
     var page=await st.doc.getPage(st.pag); if(tk!==_rt) return;
-    var W=vis.clientWidth-16, H=vis.clientHeight-16;
-    var v1=page.getViewport({scale:1}); var sc=Math.min(W/v1.width, H/v1.height);
-    var dpr=Math.min(2.5, window.devicePixelRatio||1);
+    var W=vis.clientWidth-16, H=vis.clientHeight-32;
+    var v1=page.getViewport({scale:1});
+    /* (28-sep-2026, Iago) «aprovechando el ancho»: la página vertical, al ancho (se baja con scroll); la horizontal, entera */
+    var sc=(v1.height>v1.width) ? W/v1.width : Math.min(W/v1.width, H/v1.height);
+    var dpr=Math.min(2.5, window.devicePixelRatio||1), cw=v1.width*sc, ch=v1.height*sc;
+    if(cw*ch*dpr*dpr>16e6) dpr=Math.max(1, Math.sqrt(16e6/(cw*ch)));   /* tope de los iPad: 16 Mpx por lienzo */
     var vp=page.getViewport({scale:sc*dpr});
     var c=document.createElement('canvas'); c.width=Math.floor(vp.width); c.height=Math.floor(vp.height);
-    c.style.width=Math.floor(vp.width/dpr)+'px'; c.style.height=Math.floor(vp.height/dpr)+'px';
+    var hc=Math.floor(vp.height/dpr);
+    c.style.width=Math.floor(vp.width/dpr)+'px'; c.style.height=hc+'px';
+    c.style.marginTop=(hc<H) ? Math.floor((H-hc)/2)+'px' : '0';   /* la que cabe entera, centrada */
     await page.render({ canvasContext:c.getContext('2d'), viewport:vp }).promise;
     if(tk!==_rt) return;
-    vis.innerHTML=''; vis.appendChild(c); barra();
+    var otra=(_pagPintada!==st.pag); _pagPintada=st.pag;
+    vis.innerHTML=''; vis.appendChild(c); if(otra) vis.scrollTop=0; barra();
   }
   function irPag(n){ if(!st.doc||!st.item) return; n=Math.max(1,Math.min(st.doc.numPages,n)); if(n===st.pag) return; st.pag=n;
     /* si se sale del capítulo, el título sigue al capítulo en que cae la página */
-    var b=st.libro; var dentro=b.items.filter(function(i){ return n>=i.p[0] && n<=i.p[1] && i.id!=='IDX' && i.id!=='k0'; })[0]; if(dentro) st.item=dentro;
+    var b=st.libro; var dentro=b.items.filter(function(i){ return n>=i.p[0] && n<=i.p[1] && i.id!=='IDX' && i.id!=='k0'; })[0]; if(dentro){ st.item=dentro; if(st.col) pintarCol(); }
     render(); }
   function abrirLibro(tipo){
     var b=CATALOGO.filter(function(x){ return x.tipo===tipo; })[0]; if(!b) return;
     st.libro=b; var a=st.activo[b.tipo];
-    if(b.lista || !a){ pintarLista(); return; }
-    var it=b.items.filter(function(i){ return i.id===a.id; })[0];
-    if(it) abrirItem(it, a.ses); else pintarLista();
+    var it=a ? b.items.filter(function(i){ return i.id===a.id; })[0] : null;
+    /* (28-sep-2026, Iago) siempre se abre una página: la de esta semana; si no hay (o es el kit), la primera (en el kit,
+       el índice) con la lista abierta a la derecha */
+    if(b.lista || !it){ columna(true); abrirItem(b.items[0]); return; }
+    columna(st.col); abrirItem(it, a.ses);
   }
   async function abrirPanel(btn){
     var o=ov(); o.classList.add('open'); document.documentElement.style.overflow='hidden';
+    /* (28-sep-2026, Iago) «que todo lo que abra sea pantalla completa»: si la página no lo está ya, la pide el libro */
+    try{ if(!(document.fullscreenElement||document.webkitFullscreenElement)){ var rq=o.requestFullscreen||o.webkitRequestFullscreen; if(rq){ var pr=rq.call(o); if(pr&&pr.catch) pr.catch(function(){}); } } }catch(e){}
     var body=document.getElementById('lb-body');
     if(!st.cargado){ body.innerHTML='<div class="lb-msg">Cargando…</div>'; try{ await cargarDatos(); }catch(e){} }
     abrirLibro((st.libro||CATALOGO[0]).tipo);
@@ -7444,7 +7490,7 @@ body.tester-sin-by .topbar-right #rs-mini{order:2}
     var y0=Math.round((H*dpr-(4*4+3*HUECO)*sd)/2);      /* los cuatro pentagramas, centrados en vertical */
     var tops=[]; for(var k=0;k<4;k++) tops.push(Math.round(y0+k*(4+HUECO)*sd));
     var x0=Math.round(2.6*sd);                          /* sitio para la llave a la izquierda (también en «Sol»: así nada se mueve) */
-    var x1=Math.round(W*dpr-Math.max(sd,12*dpr));
+    var x1=Math.round(W*dpr)-x0;                        /* (28-sep-2026, Iago) el mismo margen a la derecha que a la izquierda */
     var med=(td%2) ? 0.5 : 0;                           /* centro de una línea de grosor impar */
     return { W:W, H:H, dpr:dpr, sd:sd, td:td, s:sd/dpr, t:td/dpr, tops:tops, x0:x0, x1:x1, med:med, ox:x0/dpr, oy:(tops[0]+med)/dpr };
   }
@@ -7466,6 +7512,8 @@ body.tester-sin-by .topbar-right #rs-mini{order:2}
     c.fillStyle='#ffffff'; c.fillRect(0,0,fondo.width,fondo.height);
     c.fillStyle=GRIS;
     for(k=0;k<4;k++) for(i=0;i<5;i++) c.fillRect(L.x0, yLinea(k,i), L.x1-L.x0, L.td);   /* en píxeles enteros: nítidas */
+    /* (28-sep-2026, Iago) línea divisoria al final de cada pentagrama (en «Sol y fa», la del sistema entero, más abajo) */
+    if(!piano) for(k=0;k<4;k++){ var yT=yLinea(k,0); c.fillRect(L.x1-L.td, yT, L.td, yLinea(k,4)+L.td-yT); }
     if(P_SOL && P_FA){
       var esc=L.sd/360, xc=L.x0+Math.round(0.6*L.sd);
       for(k=0;k<4;k++){
@@ -7479,6 +7527,7 @@ body.tester-sin-by .topbar-right #rs-mini{order:2}
       for(k=0;k<4;k+=2){
         var yA=yLinea(k,0), yB=yLinea(k+1,4)+L.td;
         c.fillRect(L.x0, yA, L.td, yB-yA);                     /* barra inicial que une el sistema */
+        c.fillRect(L.x1-L.td, yA, L.td, yB-yA);                /* (28-sep-2026, Iago) y la barra final del sistema */
         llave(c, L.x0-Math.round(0.3*L.sd), yA, yB);
       }
     }
