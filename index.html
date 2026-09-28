@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<script>/* LM piel (27-sep-2026): estetica nueva SOLO para Iago Tester/Protester; el resto de cuentas no carga nada. Para quitarla, borra esta linea. */(function(){try{var K='lmpro_session',A='portal-gp',U='https://ge.lmathome.es/piel/lm-piel.js',T={'4a3a8cf5-1ed6-4e86-99d1-5b090d5eacfb':1,'23a2b7fb-3373-4877-b245-3a37d1f53de6':1};function S(){try{return JSON.parse(localStorage.getItem(K)||'null')}catch(e){return null}}var s=S();if((s&&T[s.id])||(' '+document.cookie).indexOf(' lm_piel=1')>-1||location.search.indexOf('piel=')>-1){document.write('<script src="'+U+'" data-app="'+A+'"></scr'+'ipt>');return}if(s&&s.id)return;var n=0,t=setInterval(function(){var x=S();if(x&&x.id){clearInterval(t);if(T[x.id]){var e=document.createElement('script');e.src=U;e.setAttribute('data-app',A);document.head.appendChild(e)}}else if(++n>600)clearInterval(t)},2000)}catch(e){}})();</script>
+<script>/* LM piel (28-sep-2026, noche): la estetica nueva, PARA TODOS (Iago: «hazlo con cariño»). Quien decide es piel/lm-piel.js (y ?piel=0 la apaga en un navegador). Para volver a «solo Tester/Protester» basta con subir la version anterior de lm-piel.js; para quitarla del todo, borra esta linea. */try{document.write('<script src="https://ge.lmathome.es/piel/lm-piel.js" data-app="portal-gp"></scr'+'ipt>')}catch(e){}</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <!-- Sentry (10-sep-2026): errores JS en producción. Sin datos personales: solo el id anónimo de la cuenta como etiqueta. -->
 <script src="https://browser.sentry-cdn.com/10.70.0/bundle.min.js" crossorigin="anonymous"></script>
