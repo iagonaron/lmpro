@@ -4009,23 +4009,23 @@ function showEnig(kind){
      ============================================================ -->
 <style id="dictclase-css">
 /* ============ DICTADO ANIMADO · FASE C · Reproductor de clase ============ */
+/* (Iago 14-sep-2026, noche) La banda era naranja fosforito, opaca, con brillo
+   y halo latiendo, y encima no llegaba a los bordes de la tarjeta: cantaba
+   demasiado al lado del resto de slots. Ahora sigue la estetica de las tarjetas
+   de recordatorio (degradado suave + borde) y va de IZQUIERDA A DERECHA,
+   pegada al borde inferior del bloque del Dictado. */
 .dictclase-play-btn{
-  position:relative; overflow:hidden; display:flex; align-items:center; gap:12px;
-  width:100%; margin-top:8px; border:0; border-radius:14px; padding:18px 22px;
-  font-size:18px; font-weight:800; color:#fff; cursor:pointer;
-  background:linear-gradient(120deg,#fbbf24,#f97316 55%,#ea580c);
-  box-shadow:0 10px 26px rgba(249,115,22,.35);
-  animation:dcHalo 2.8s ease-in-out infinite;
+  position:relative; display:flex; align-items:center; gap:12px;
+  width:calc(100% + 36px); margin:12px -18px -14px; border-radius:0 0 13px 13px;
+  padding:15px 18px; font-size:17px; font-weight:800; color:#fcd34d; cursor:pointer;
+  background:linear-gradient(135deg, rgba(252,211,77,.15), rgba(252,211,77,.05));
+  border:0; border-top:1px solid rgba(252,211,77,.40);
+  text-align:left;
 }
-.dictclase-play-btn::after{content:"";position:absolute;top:0;left:-60%;width:40%;height:100%;
-  background:linear-gradient(90deg,transparent,rgba(255,255,255,.45),transparent);
-  transform:skewX(-20deg);animation:dcSheen 3.2s ease-in-out infinite}
-@keyframes dcSheen{0%{left:-60%}55%{left:120%}100%{left:120%}}
-@keyframes dcHalo{0%,100%{box-shadow:0 10px 26px rgba(249,115,22,.32),0 0 0 0 rgba(251,146,60,.35)}
-  50%{box-shadow:0 12px 32px rgba(249,115,22,.5),0 0 0 8px rgba(251,146,60,0)}}
-.dictclase-play-ico{font-size:22px}
-.dictclase-num{margin-left:auto;font-size:14px;font-weight:700;opacity:.95;cursor:pointer;
-  background:rgba(255,255,255,.22);border-radius:8px;padding:6px 12px}
+.dictclase-play-btn:active{background:linear-gradient(135deg, rgba(252,211,77,.22), rgba(252,211,77,.09))}
+.dictclase-play-ico{font-size:20px;opacity:.9}
+.dictclase-num{margin-left:auto;font-size:13.5px;font-weight:700;cursor:pointer;color:#fde68a;
+  background:rgba(252,211,77,.14);border:1px solid rgba(252,211,77,.45);border-radius:999px;padding:6px 13px}
 .dictclase-num:active{transform:scale(.96)}
 
 /* -------- overlay a pantalla completa -------- */
@@ -4066,6 +4066,12 @@ function showEnig(kind){
   box-shadow:0 0 14px 3px rgba(249,115,22,.65);opacity:0;transition:opacity .18s ease, left .12s ease, top .12s ease;
   pointer-events:none}
 .dc-barhl.on{opacity:1}
+/* (Iago 15-sep-2026) cuenta atrás GRANDE sobre el pentagrama (antes solo en el botón de play, abajo) */
+.dc-cuenta{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) scale(.7);pointer-events:none;
+  font:900 150px/1 'Helvetica Neue',Arial,sans-serif;color:#f97316;opacity:0;letter-spacing:-.02em;
+  text-shadow:0 0 30px rgba(249,115,22,.55),0 6px 18px rgba(0,0,0,.22);z-index:5}
+.dc-cuenta.on{animation:dcCuentaPop .55s cubic-bezier(.2,1.2,.3,1) forwards}
+@keyframes dcCuentaPop{0%{opacity:0;transform:translate(-50%,-50%) scale(.6)}18%{opacity:1;transform:translate(-50%,-50%) scale(1.08)}70%{opacity:1;transform:translate(-50%,-50%) scale(1)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.05)}}
 #dcReveal{position:absolute;inset:0;background:#fff;display:flex;align-items:center;justify-content:center;
   opacity:0;pointer-events:none;transition:opacity 1.6s ease}
 #dcReveal.on{opacity:1;pointer-events:auto}
@@ -4093,6 +4099,8 @@ function showEnig(kind){
 .dc-progress{flex:1 1 220px;height:8px;border-radius:6px;background:rgba(255,255,255,.12);overflow:hidden;min-width:160px}
 .dc-progress-fill{height:100%;width:0%;border-radius:6px;
   background:linear-gradient(90deg,#fbbf24,#f97316);transition:width .5s ease}
+.dc-ver-res{flex:none;border:2px solid #f97316;border-radius:12px;background:#f97316;color:#fff;padding:12px 20px;font-size:16px;font-weight:800;cursor:pointer}
+.dc-ver-res:active{transform:scale(.97)}
 .dc-revelar{display:none;border:0;border-radius:12px;padding:14px 26px;font-size:17px;font-weight:800;
   color:#0b1220;background:linear-gradient(120deg,#a7f3d0,#34d399);cursor:pointer;
   box-shadow:0 8px 24px rgba(52,211,153,.35)}
@@ -4106,6 +4114,8 @@ function showEnig(kind){
 .dc-reps-dur{font-size:15px;color:#e2e8f0;margin:-8px 0 14px}
 .dc-reps-dur b{font-size:20px;color:#fff}
 .dc-dur-aviso{color:#fbbf24;font-weight:800}
+.dc-dur.dc-dur-pasa{color:#fbbf24}
+.dc-final{margin-right:10px;white-space:nowrap}
 .dc-reps-cols{display:flex;gap:18px;justify-content:center}
 .dc-reps-col{flex:1 1 0;max-width:200px}
 .dc-reps-lbl{font-size:14px;font-weight:800;color:#e2e8f0;margin-bottom:8px}
@@ -4115,12 +4125,6 @@ function showEnig(kind){
 .dc-rueda-it{height:44px;line-height:44px;font-size:26px;font-weight:900;color:#64748b;scroll-snap-align:center;cursor:pointer;transition:color .15s,transform .15s}
 .dc-rueda-it.on{color:#fbbf24;transform:scale(1.15)}
 .dc-reps-ok{margin-top:18px;border:0;border-radius:12px;padding:13px 30px;font-size:17px;font-weight:800;color:#0b1220;background:linear-gradient(120deg,#fbbf24,#f97316);cursor:pointer;box-shadow:0 8px 24px rgba(249,115,22,.35)}
-.dc-cuenta{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) scale(.7);pointer-events:none;
-  font:900 150px/1 'Helvetica Neue',Arial,sans-serif;color:#f97316;opacity:0;letter-spacing:-.02em;
-  text-shadow:0 0 30px rgba(249,115,22,.55),0 6px 18px rgba(0,0,0,.22);z-index:5}
-.dc-cuenta.on{animation:dcCuentaPop .55s cubic-bezier(.2,1.2,.3,1) forwards}
-@keyframes dcCuentaPop{0%{opacity:0;transform:translate(-50%,-50%) scale(.6)}18%{opacity:1;transform:translate(-50%,-50%) scale(1.08)}70%{opacity:1;transform:translate(-50%,-50%) scale(1)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.05)}}
-
 /* ===== DICTADO ACTIVO · ajustes portal (Iago 15-jul-2026) ===== */
 #dcOverlay{z-index:99990}
 .da-card{cursor:default}
@@ -4135,6 +4139,19 @@ function showEnig(kind){
 .da-badge{display:inline-block;margin-left:10px;font-size:10.5px;font-weight:900;letter-spacing:.14em;
   text-transform:uppercase;color:#fbbf24;border:1px solid rgba(251,191,36,.5);border-radius:999px;
   padding:3px 10px;vertical-align:middle}
+/* (28-sep-2026, Iago) PORTAL · el reproductor es el de la vista iPad del Diario, igual en GE y GP. Al acabar no sale
+   «Revelar dictado»: se enciende «✔ Corregir» (GE: app de corrección de dictados · GP: la solución aquí). */
+#dcOverlay #dcRevelar{display:none!important}
+.dc-ver-res.fin{animation:dcCorregirFin 1.6s ease-in-out infinite}
+@keyframes dcCorregirFin{0%,100%{box-shadow:0 0 0 0 rgba(249,115,22,.55)}50%{box-shadow:0 0 0 10px rgba(249,115,22,0)}}
+@media (prefers-reduced-motion:reduce){.dc-ver-res.fin{animation:none}}
+/* (28-sep-2026) móvil: el título ocupa su línea y los botones de arriba bajan a la siguiente (antes el ✕ se salía de la pantalla) */
+@media (max-width:640px){
+  .dc-top{flex-wrap:wrap;gap:8px;padding:8px 12px}
+  .dc-titulo{font-size:14px;flex:1 1 100%}
+  .dc-top-derecha{margin-left:0;flex-wrap:wrap;gap:6px}
+  .dc-icobtn{padding:6px 10px;font-size:13px}
+}
 </style>
 <script>
 /* ============================================================
@@ -4162,6 +4179,9 @@ function showEnig(kind){
    en vivo (afecta a los gaps aún no programados), pantalla completa, y
    REVELAR DICTADO al final (fundido de la solución JPG del bucket).
    ============================================================ */
+/* (28-sep-2026, Iago) DICTADO ACTIVO del portal = el mismo reproductor que la vista iPad del Diario (duración total,
+   «⏭ Ir al final», pre-sonido, volumen del 25-sep) y el MISMO en GE y en GP. Única diferencia: «✔ Corregir» abre en GE
+   la app de corrección de dictados y en GP enseña la solución. */
 window.DictadoClase = (function(){
   'use strict';
 
@@ -4179,7 +4199,7 @@ window.DictadoClase = (function(){
   var totalPases=15, paseActual=0;
   // (23-sep-2026, Iago) GP: repeticiones por voz y frase elegibles antes de empezar
   // (ventana con dos ruedas: clave de sol / clave de fa). 3 y 3 por defecto.
-  var repsSol=3, repsFa=3, repsElegidas=false;
+  var repsSol=3, repsFa=2, repsElegidas=false;   // (23-sep-2026, Iago) por defecto 3 de sol y 2 de fa
   // ===== FASE C-PRO (Iago 4-jul): dictados GP a DOS VOCES =====
   var regaloOn=false;           // cabezas de la primera nota reveladas (el 🎁)
   function esGP(){ return !!(D && D.gp && D.measuresFa && D.measuresFa.length); }
@@ -4240,7 +4260,7 @@ window.DictadoClase = (function(){
     var o=ctx.createOscillator(), g=ctx.createGain();
     o.type='sine'; o.frequency.setValueAtTime(acc?950:760, t);
     o.frequency.exponentialRampToValueAtTime(acc?520:420, t+0.04);
-    g.gain.setValueAtTime(acc?0.20:0.11, t);
+    g.gain.setValueAtTime(acc?0.10:0.055, t);   // (25-sep-2026, Iago) claqueta a la mitad: que no moleste frente al piano
     g.gain.exponentialRampToValueAtTime(0.0001, t+0.07);
     o.connect(g).connect(ctx.destination);
     o.start(t); o.stop(t+0.09);
@@ -4254,11 +4274,13 @@ window.DictadoClase = (function(){
     /* (19-sep-2026) Al subir el piano x7 por el bus, el aviso de anoche se
        quedaba inaudible. Sube lo justo para seguir oyendose sin tapar: antes
        era el 14% del piano, ahora es el 4%. */
-    [ [1318.5,0.16], [1975.5,0.07] ].forEach(function(par){
+    /* (25-sep-2026, Iago) «bájale el volumen al sonido estridente»: una octava más
+       grave (menos chillón), menos de la mitad de volumen y cola más corta. */
+    [ [659.25,0.07], [987.75,0.025] ].forEach(function(par){
       var o=ctx.createOscillator(), g=ctx.createGain();
       o.type='sine'; o.frequency.value=par[0];
       g.gain.setValueAtTime(par[1], t);
-      g.gain.exponentialRampToValueAtTime(0.0001, t+0.5);
+      g.gain.exponentialRampToValueAtTime(0.0001, t+0.35);
       o.connect(g).connect(ctx.destination);
       o.start(t); o.stop(t+0.6);
     });
@@ -4440,6 +4462,35 @@ window.DictadoClase = (function(){
     return E;
   }
 
+  /* (23-sep-2026, Iago) DURACIÓN NETA del dictado (desde el play hasta el fin), con
+     el tempo y las pausas actuales. Objetivo: ~15 min. En GP cambia con las
+     repeticiones de cada voz; se enseña en la barra y dentro de la ventana de
+     repeticiones mientras se giran las ruedas. */
+  function duracionSeg(evs){
+    var t=0; (evs||eventos||[]).forEach(function(ev){
+      if(ev.tipo==='uiBeat'||ev.tipo==='uiCompas'||ev.tipo==='ui'||ev.tipo==='aviso'||ev.tipo==='fin'||ev.tipo==='notaAbs') return;
+      t+=durSeg(ev);
+    });
+    return t;
+  }
+  function fmtMin(seg){ seg=Math.round(seg); var m=Math.floor(seg/60), s=seg%60; return m+':'+(s<10?'0':'')+s; }
+  function duracionConReps(rs, rf){
+    if(!esGP()) return duracionSeg(construir());
+    var a=repsSol, b=repsFa; repsSol=rs; repsFa=rf;
+    var d=duracionSeg(construir());
+    repsSol=a; repsFa=b; if(repsElegidas) construir();
+    return d;
+  }
+  function pintaDuracion(){
+    var e=el('dcDurVal'); if(!e) return;
+    var seg=duracionSeg(eventos.length?eventos:construir());
+    e.textContent=fmtMin(seg);
+    e.classList.toggle('dc-dur-pasa', seg>15*60+45);
+    /* (25-sep-2026, Iago) «el dictado animado de elemental no me dice lo que dura
+       en total»: antes de empezar, la duración total va también en grande, debajo
+       de «Pulsa ▶ para empezar» (y se actualiza al tocar tempo o pausas). */
+    if(!corriendo && !terminado && evIdx===0){ var s2=el('dcSub2'); if(s2) s2.textContent='Duración total: '+fmtMin(seg)+' min'; }
+  }
   /* ================= scheduler ================= */
   // el bpm representa PULSOS por minuto. En compás compuesto (6/8, 9/8, 12/8) el
   // pulso es la negra con puntillo (pulseBeats=1.5), en simple es la negra (1).
@@ -4505,7 +4556,9 @@ window.DictadoClase = (function(){
     }
   }
   function uiLoop(){
-    var ahora=ctx?ctx.currentTime:0;
+    /* (23-sep-2026) la imagen se alinea con lo que SUENA: en una pantalla por HDMI
+       el audio sale con retraso (outputLatency); la UI espera lo mismo. */
+    var ahora=ctx?(ctx.currentTime-(ctx.outputLatency||0)):0;
     uiQueue.sort(function(a,b){return a.t-b.t;});
     while(uiQueue.length && uiQueue[0].t<=ahora+0.02){
       var u=uiQueue.shift();
@@ -4570,6 +4623,7 @@ window.DictadoClase = (function(){
     pintaCartel({big:'FIN DEL DICTADO', sub:'', sub2:'Repasa antes de la corrección'}, totalPases+1);
     resalta(-1);
     var r=el('dcRevelar'); if(r) r.classList.add('visible');
+    var vr=el('dcVerRes'); if(vr) vr.classList.add('fin');   /* (28-sep-2026) PORTAL: al acabar, «Corregir» se enciende */
     var p=el('dcPlay'); if(p) p.textContent='↺';
   }
 
@@ -5003,7 +5057,8 @@ window.DictadoClase = (function(){
     if(!corriendo && !pausado && esGP() && !repsElegidas){ abrirReps(); return; }   // (23-sep-2026) GP: elegir repeticiones
     if(!corriendo && !pausado){                 // primer arranque
       corriendo=true;
-      nextTime=ctx.currentTime+0.25;
+      preSonido(ctx.currentTime+0.05);
+      nextTime=ctx.currentTime+1.5;             // (23-sep-2026) margen tras el pre-sonido
       schedTimer=setInterval(schedLoop, 40);
       el('dcPlay').textContent='⏸';
       return;
@@ -5011,25 +5066,65 @@ window.DictadoClase = (function(){
     if(pausado){ pausado=false; ctx.resume(); el('dcPlay').textContent='⏸'; return; }
     pausado=true; ctx.suspend(); el('dcPlay').textContent='▶';
   }
+  function verResultados(){
+    try{ if(corriendo && !pausado && ctx){ pausado=true; ctx.suspend(); var p=el('dcPlay'); if(p) p.textContent='▶'; } }catch(e){}
+    /* (28-sep-2026, Iago) PORTAL · «el botón de corregir directamente», en cualquier momento: en GE abre la
+       pantalla de la app de corrección de dictados (la de «📊 Resultados», que antes solo salía al final);
+       en GP, que no tiene app de corrección de dictados, enseña aquí la solución. Se abre sin esperas
+       (Safari bloquea las ventanas que se abren después de esperar a algo). */
+    if(!esGP()){ window.open('https://correcciondictado.lmathome.es/pantalla.html','_blank','noopener'); return; }
+    revelar();
+  }
   function reinicia(){
     terminado=false; evIdx=0; uiQueue=[]; paseActual=0;
     el('dcRevelar').classList.remove('visible');
+    (function(){ var vr=el('dcVerRes'); if(vr) vr.classList.remove('fin'); })();
     el('dcReveal').classList.remove('on');
     el('dcProgFill').style.width='0%';
     pintaCartel({big:'', sub:'', sub2:''});
     resalta(-1);
     corriendo=true; pausado=false;
     if(ctx.state==='suspended') ctx.resume();
-    nextTime=ctx.currentTime+0.25;
+    preSonido(ctx.currentTime+0.05);
+    nextTime=ctx.currentTime+1.5;
     el('dcPlay').textContent='⏸';
   }
   function cambiaTempo(d){
     bpm=Math.max(36, Math.min(96, bpm+d));
     el('dcTempoVal').textContent=bpm;
+    try{ pintaDuracion(); }catch(e){}
   }
   function cambiaGap(d){
     gapMult=Math.max(0.5, Math.min(2, Math.round((gapMult+d)*100)/100));
     el('dcGapVal').textContent='×'+gapMult.toFixed(2).replace(/0$/,'').replace(/\.$/,'');
+    try{ pintaDuracion(); }catch(e){}
+  }
+  /* (23-sep-2026, Iago) «poder ir directamente a la parte final»: salta al FIN del
+     dictado (GE: fin; GP: fin + botón de revelar), sin comerse la reproducción. */
+  function final(){
+    if(!ctx || !eventos.length) return;
+    if(terminado) return;
+    try{ if(ctx.state==='suspended') ctx.resume(); }catch(e){}
+    uiQueue=[]; pausado=false; corriendo=true;
+    if(!schedTimer) schedTimer=setInterval(schedLoop, 40);
+    var iFin=eventos.length-1; for(var i=eventos.length-1;i>=0;i--){ if(eventos[i].tipo==='fin'){ iFin=i; break; } }
+    evIdx=iFin; nextTime=ctx.currentTime+0.05;
+    var p=el('dcPlay'); if(p) p.textContent='⏸';
+  }
+  /* (23-sep-2026, Iago) PRE-SONIDO: en la pantalla del aula el altavoz «se
+     despierta» tarde y se comía media nota (a veces la tónica). Antes de la
+     primera nota suena un tic muy suave y se dejan 1,4 s de margen para que la
+     cadena de audio ya esté abierta cuando llegue lo que importa. */
+  function preSonido(t){
+    try{
+      var o=ctx.createOscillator(), g=ctx.createGain();
+      o.type='sine'; o.frequency.value=880;
+      g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.03, t+0.01); g.gain.exponentialRampToValueAtTime(0.0001, t+0.12);
+      o.connect(g); g.connect(ctx.destination); o.start(t); o.stop(t+0.14);
+      // y un «aliento» inaudible que mantiene el canal abierto hasta la primera nota
+      var o2=ctx.createOscillator(), g2=ctx.createGain(); o2.frequency.value=60; g2.gain.value=0.002;
+      o2.connect(g2); g2.connect(ctx.destination); o2.start(t); o2.stop(t+1.4);
+    }catch(e){}
   }
   async function urlSolucion(){
     if(!anim || !anim.solucion_path) return null;
@@ -5356,29 +5451,6 @@ window.DictadoClase = (function(){
     r.scrollTop=(valor-1)*ih;
     ruedaLeer(id);
   }
-  /* (24-sep-2026, Iago) DURACIÓN ESTIMADA en la ventana de repeticiones (igual que en
-     el Diario iPad): «que según vaya subiendo o bajando las repeticiones de cada clave
-     vea cuánto va a durar». Mismo cálculo que la reproducción (tempo y pausas). */
-  function duracionSeg(evs){
-    var t=0; (evs||[]).forEach(function(ev){
-      if(ev.tipo==='uiBeat'||ev.tipo==='uiCompas'||ev.tipo==='ui'||ev.tipo==='aviso'||ev.tipo==='fin'||ev.tipo==='notaAbs') return;
-      t+=durSeg(ev);
-    });
-    return t;
-  }
-  function fmtMin(seg){ seg=Math.round(seg); var m=Math.floor(seg/60), s=seg%60; return m+':'+(s<10?'0':'')+s; }
-  function duracionConReps(rs, rf){
-    var a=repsSol, b=repsFa; repsSol=rs; repsFa=rf;
-    var d=0; try{ d=duracionSeg(construir()); }catch(e){}
-    repsSol=a; repsFa=b; if(repsElegidas){ try{ construir(); }catch(e){} }
-    return d;
-  }
-  function pintaRepsDur(){
-    var e=el('dcRepsDur'); if(!e) return;
-    var rs=ruedaLeer('dcRuedaSol'), rf=ruedaLeer('dcRuedaFa');
-    var seg=duracionConReps(rs, rf);
-    e.innerHTML='Duración total: <b>'+fmtMin(seg)+'</b> min'+(seg>15*60+45?' <span class="dc-dur-aviso">· más de 15 min</span>':'');
-  }
   function abrirReps(){
     var w=el('dcReps');
     if(!w){
@@ -5405,13 +5477,20 @@ window.DictadoClase = (function(){
     }
     w.classList.add('on');
     requestAnimationFrame(function(){ ruedaColoca('dcRuedaSol', repsSol); ruedaColoca('dcRuedaFa', repsFa); pintaRepsDur(); });
-    setTimeout(function(){ try{ pintaRepsDur(); }catch(e){} }, 180);   // (24-sep) se ve nada más abrir
+    setTimeout(function(){ try{ pintaRepsDur(); }catch(e){} }, 180);   // (24-sep) la duración se ve nada más abrir, sin tener que girar las ruedas
+  }
+  function pintaRepsDur(){
+    var e=el('dcRepsDur'); if(!e) return;
+    var rs=ruedaLeer('dcRuedaSol'), rf=ruedaLeer('dcRuedaFa');
+    var seg=duracionConReps(rs, rf);
+    e.innerHTML='Duración total: <b>'+fmtMin(seg)+'</b> min'+(seg>15*60+45?' <span class="dc-dur-aviso">· más de 15 min</span>':'');
   }
   function repsOk(){
     repsSol=ruedaLeer('dcRuedaSol'); repsFa=ruedaLeer('dcRuedaFa');
     repsElegidas=true;
     var w=el('dcReps'); if(w) w.classList.remove('on');
     eventos=construir();                     // la secuencia se rehace con las repeticiones elegidas
+    try{ pintaDuracion(); }catch(e){}
     play();
   }
 
@@ -5451,8 +5530,13 @@ window.DictadoClase = (function(){
           '<button class="dc-mini" onclick="DictadoClase.gap(-0.25)">−</button>'+
           '<span class="dc-val" id="dcGapVal">×1</span>'+
           '<button class="dc-mini" onclick="DictadoClase.gap(0.25)">+</button></div></div>'+
+        '<div class="dc-ctl" title="Duración neta desde el play hasta el fin, con el tempo y las pausas actuales"><div class="dc-ctl-lbl">Duración</div><div class="dc-ctl-row"><span class="dc-val dc-dur" id="dcDurVal">–</span></div></div>'+
         '<div class="dc-progress"><div class="dc-progress-fill" id="dcProgFill"></div></div>'+
+        '<button class="dc-icobtn dc-final" id="dcFinal" onclick="DictadoClase.final()" title="Saltar al final del dictado">⏭ Ir al final</button>'+
         '<button class="dc-revelar" id="dcRevelar" onclick="DictadoClase.revelar()">👁 Revelar dictado</button>'+
+        /* (25-sep-2026, Iago) botón FIJO abajo a la derecha: «Ver resultados» en cualquier
+           momento (aunque vaya por la mitad), sin tener que volver a reproducir todo. */
+        '<button class="dc-ver-res" id="dcVerRes" onclick="DictadoClase.verResultados()" title="'+(esGP()?'Ver la solución del dictado ya, sin esperar al final':'Abrir la corrección del dictado ya, sin esperar al final')+'">✔ Corregir</button>'+
       '</div>';
     document.body.appendChild(d);
     ov=d;
@@ -5479,15 +5563,17 @@ window.DictadoClase = (function(){
     montaOverlay();
     ov.classList.add('abierto');
     el('dcTituloInfo').textContent=(anim.numero!=null?('nº '+anim.numero+'  ·  '):'')+
-      (anim.curso||'')+'  ·  semana '+anim.semana_iso;
+      (anim.curso||(typeof curso!=='undefined'?curso:''))+'  ·  semana '+anim.semana_iso;
     el('dcTempoVal').textContent=bpm;
     el('dcGapVal').textContent='×1';
     el('dcProgFill').style.width='0%';
+    setTimeout(function(){ try{ pintaDuracion(); }catch(e){} }, 0);
     ['dcRevTon','dcRevComp'].forEach(function(id){
       var b=el(id); if(b){ b.disabled=false; b.style.opacity=1; }
     });
     var inf=el('dcInfoRevel'); if(inf) inf.textContent='';
     el('dcRevelar').classList.remove('visible');
+    (function(){ var vr=el('dcVerRes'); if(vr) vr.classList.remove('fin'); })();
     el('dcReveal').classList.remove('on');
     el('dcReveal').innerHTML=''; delete el('dcReveal').dataset.cargado;
     el('dcPlay').textContent='▶';
@@ -5533,8 +5619,8 @@ window.DictadoClase = (function(){
     if(ov && ov.classList.contains('abierto')) dibujaVacio();
   });
 
-  return { open:open, play:play, repsOk:repsOk, tempo:cambiaTempo, gap:cambiaGap,
-           revelar:revelar, ver:ver, revTon:revelaTonalidad, revComp:revelaCompas,
+  return { open:open, play:play, repsOk:repsOk, final:final, tempo:cambiaTempo, gap:cambiaGap,
+           revelar:revelar, verResultados:verResultados, ver:ver, revTon:revelaTonalidad, revComp:revelaCompas,
            fs:pantallaCompleta, close:cierra, _verStop:_verStop, _verPlay:_verTogglePlay };
 })();
 
