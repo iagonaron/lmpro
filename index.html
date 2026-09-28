@@ -7096,21 +7096,13 @@ body.tester-sin-by .topbar-right #rs-mini{order:2}
   }
 
   function pulsar(el, b) {
-    var txt = el.textContent;
-    el.disabled = true; el.textContent = '…';
-    grupoAhora().then(function (g) {
-      el.disabled = false; el.textContent = txt;
-      /* (22-sep-2026, Iago) «el horario nunca debe impedirme acceder a Resultados»:
-         se abre siempre; si hay grupo en clase la pantalla entra en él, y si no,
-         enseña los grupos arriba para elegir a mano. */
-      window.open(b.url, '_blank', 'noopener');
-    }).catch(function (e) {
-      /* si la consulta falla, abrir igual: la pantalla sabe elegir sola */
-      console.warn('[resultados]', e);
-      el.disabled = false; el.textContent = txt;
-      window.open(b.url, '_blank', 'noopener');
-    });
+    /* (28-sep-2026, Iago) «Pulso Entonación (la clave de sol) y no me abre nada»: en el iPad y el móvil,
+       Safari bloquea una pestaña que se abre DESPUÉS de esperar a una consulta. La consulta del grupo no
+       hacía falta (la pantalla lo elige sola por la franja horaria, y si no hay clase enseña los grupos),
+       así que ahora se abre al momento, siempre. Si esta semana no hay correcciones, la pantalla sale vacía. */
+    window.open(b.url, '_blank', 'noopener');
   }
+
 
   function pintar() {
     var host = document.querySelector('.topbar-right'); if (!host) return;
