@@ -2,6 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
+<script>/* LM piel (27-sep-2026): estetica nueva SOLO para Iago Tester/Protester; el resto de cuentas no carga nada. Para quitarla, borra esta linea. */(function(){try{var K='lmpro_session',A='portal-gp',U='https://ge.lmathome.es/piel/lm-piel.js',T={'4a3a8cf5-1ed6-4e86-99d1-5b090d5eacfb':1,'23a2b7fb-3373-4877-b245-3a37d1f53de6':1};function S(){try{return JSON.parse(localStorage.getItem(K)||'null')}catch(e){return null}}var s=S();if((s&&T[s.id])||(' '+document.cookie).indexOf(' lm_piel=1')>-1||location.search.indexOf('piel=')>-1){document.write('<script src="'+U+'" data-app="'+A+'"></scr'+'ipt>');return}if(s&&s.id)return;var n=0,t=setInterval(function(){var x=S();if(x&&x.id){clearInterval(t);if(T[x.id]){var e=document.createElement('script');e.src=U;e.setAttribute('data-app',A);document.head.appendChild(e)}}else if(++n>600)clearInterval(t)},2000)}catch(e){}})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <!-- Sentry (10-sep-2026): errores JS en producción. Sin datos personales: solo el id anónimo de la cuenta como etiqueta. -->
 <script src="https://browser.sentry-cdn.com/10.70.0/bundle.min.js" crossorigin="anonymous"></script>
@@ -609,16 +610,40 @@ body.tester-sin-by .topbar-right .by{display:none}
                 suite_registrar_alumno:1, suite_registrar_alumno_v3:1 };
     var WRE=/(_marcar|marcar_|_enviar|registrar|_reset|barrer|_guardar|_crear|_borrar|_upsert|_insert|_update|_delete)/;
     function esEscritura(fn){ return !!BLOCK[fn] || WRE.test(String(fn||'')); }
-    /* 1) Sesión del alumno EN MEMORIA (nunca se persiste) */
-    var _g=localStorage.getItem.bind(localStorage), _s=localStorage.setItem.bind(localStorage), _r=localStorage.removeItem.bind(localStorage);
-    localStorage.getItem=function(k){ if(SES[k]) return JSON.stringify(window.__VISOR.session); return _g(k); };
-    localStorage.setItem=function(k,v){ if(SES[k]){ try{ window.__VISOR.session=JSON.parse(v); }catch(e){} return; } if(/^(suite_|lmeav_|lmpro_)/.test(k)) return; return _s(k,v); };
-    localStorage.removeItem=function(k){ if(SES[k]) return; return _r(k); };
+    /* 1) Sesión del alumno EN MEMORIA (nunca se persiste)
+       (27-sep-2026, Iago) «En el iPad, el Ojeador me enseña mi cuenta Tester en vez del alumno».
+       Safari (y todos los navegadores del iPad, que son Safari por dentro) NO deja sustituir
+       localStorage.getItem asignándolo: lo guarda como una clave más llamada «getItem» y el portal
+       seguía leyendo la sesión propia del aparato. Chrome sí lo dejaba: por eso en el ordenador iba
+       bien. Ahora se sustituyen los métodos en Storage.prototype (vale en Safari y en Chrome), SOLO en
+       esta pestaña del Ojeador (todo este bloque sale arriba si no hay #visor=) y SOLO para
+       localStorage (sessionStorage no se toca). En modo profesor no se escribe ni se borra en el aparato
+       nada del portal (sesión, suite_*, lmeav_*, lmpro_*): la sesión propia del aparato queda intacta.
+       Para quitarlo: volver a las cuatro líneas de antes (_g/_s/_r y las tres asignaciones a
+       localStorage.getItem/setItem/removeItem) y borrar la limpieza de basura. */
+    var SP=Storage.prototype, _g0=SP.getItem, _s0=SP.setItem, _r0=SP.removeItem;
+    var PORTAL=/^(suite_|lmeav_|lmpro_)/;
+    function _esLS(o){ try{ return o===window.localStorage; }catch(e){ return false; } }
+    /* Limpieza de la basura que dejó el fallo en Safari: SOLO las claves «getItem», «setItem» y
+       «removeItem» cuyo valor es EXACTAMENTE el texto de las funciones antiguas (igual desde el
+       7-jul-2026). Cualquier otra clave, o esas mismas con otro valor, no se toca. */
+    var BASURA={
+      getItem:'function(k){ if(SES[k]) return JSON.stringify(window.__VISOR.session); return _g(k); }',
+      setItem:'function(k,v){ if(SES[k]){ try{ window.__VISOR.session=JSON.parse(v); }catch(e){} return; } if(/^(suite_|lmeav_|lmpro_)/.test(k)) return; return _s(k,v); }',
+      removeItem:'function(k){ if(SES[k]) return; return _r(k); }' };
+    try{ var LS=window.localStorage; Object.keys(BASURA).forEach(function(k){ var v=_g0.call(LS,k); if(v!=null && String(v).replace(/\s+/g,'')===BASURA[k].replace(/\s+/g,'')) _r0.call(LS,k); }); }catch(e){}
+    SP.getItem=function(k){ if(_esLS(this) && SES[k]) return JSON.stringify(window.__VISOR.session); return _g0.call(this,k); };
+    SP.setItem=function(k,v){ if(_esLS(this)){ if(SES[k]){ try{ window.__VISOR.session=JSON.parse(v); }catch(e){} return; } if(PORTAL.test(k)) return; } return _s0.call(this,k,v); };
+    SP.removeItem=function(k){ if(_esLS(this) && (SES[k] || PORTAL.test(k))) return; return _r0.call(this,k); };
     /* 2) Cliente Supabase de SOLO LECTURA: las escrituras -> no-op */
     function wrap(c){
       if(!c||c.__visor) return c;
       var rpc=c.rpc.bind(c);
-      c.rpc=function(fn,args){ if(esEscritura(fn)){ if(window.console&&console.log) console.log('[visor] escritura bloqueada:',fn); return Promise.resolve({ data:{ ok:true, __visor:true }, error:null }); } return rpc(fn,args); };
+      c.rpc=function(fn,args){
+        /* (27-sep-2026, Iago) En modo profesor NO se inicia sesión (la v2 del login se escapaba del
+           bloqueo): aunque saliera la pantalla de entrar, ya no se cuela la cuenta Tester. */
+        if(/^suite_login_alumno/.test(String(fn||''))) return Promise.resolve({ data:{ ok:false, error:'modo_profesor' }, error:null });
+        if(esEscritura(fn)){ if(window.console&&console.log) console.log('[visor] escritura bloqueada:',fn); return Promise.resolve({ data:{ ok:true, __visor:true }, error:null }); } return rpc(fn,args); };
       var from=c.from.bind(c);
       c.from=function(t){ var q=from(t); ['insert','update','upsert','delete'].forEach(function(mm){ if(q&&typeof q[mm]==='function') q[mm]=function(){ return Promise.resolve({ data:null, error:null }); }; }); return q; };
       c.__visor=1; return c;
@@ -635,6 +660,31 @@ body.tester-sin-by .topbar-right .by{display:none}
       (document.body||document.documentElement).appendChild(b);
     }
     if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',banner); else banner();
+    /* 4) (27-sep-2026, Iago) En modo profesor NO se abren la ficha ni el quiz del alumno, ni se cambia
+       su formato: esas apps no saben que es el Ojeador y guardarían en su nombre (progreso, ficha
+       entregada, quiz hecho). Se ve todo, pero esos botones enseñan un aviso y no hacen nada más.
+       Para quitarlo: borrar este punto 4. */
+    function avisoSoloLectura(){
+      if(document.getElementById('visor-aviso')) return;
+      var v=document.createElement('div'); v.id='visor-aviso';
+      v.setAttribute('role','dialog'); v.setAttribute('aria-modal','true');
+      v.style.cssText='position:fixed;inset:0;z-index:2147483646;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(5,8,20,.62)';
+      v.innerHTML='<div style="max-width:380px;width:100%;box-sizing:border-box;background:#111b3d;border:1px solid #7c3aed;border-radius:14px;padding:20px 20px 16px;color:#eef2fb;font:400 14.5px/1.5 system-ui,-apple-system,Arial,sans-serif;box-shadow:0 20px 60px rgba(0,0,0,.55);text-align:left">'
+        +'<div style="font-weight:800;font-size:16px;margin:0 0 8px">\u{1F441} Modo profesor \u00b7 solo lectura</div>'
+        +'<div style="color:#c9d2e6;margin:0 0 16px">Desde el Ojeador no se abren la ficha ni el quiz, ni se cambia el formato: as\u00ed no se guarda ni se entrega nada en nombre del alumno.</div>'
+        +'<div style="text-align:right"><button type="button" id="visor-aviso-ok" style="border:0;border-radius:10px;padding:9px 18px;font:800 14px system-ui,-apple-system,Arial,sans-serif;cursor:pointer;color:#fff;background:#7c3aed">Entendido</button></div></div>';
+      function tecla(e){ if(e.key==='Escape'||e.key==='Enter'){ e.preventDefault(); cerrar(); } }
+      function cerrar(){ try{ document.removeEventListener('keydown',tecla,true); v.remove(); }catch(e){} }
+      v.addEventListener('click',function(e){ if(e.target===v || (e.target && e.target.id==='visor-aviso-ok')) cerrar(); });
+      document.addEventListener('keydown',tecla,true);
+      (document.body||document.documentElement).appendChild(v);
+    }
+    document.addEventListener('click', function(ev){
+      var b=ev.target && ev.target.closest && ev.target.closest('.alu-hacer,.ts-ficha-go,.alu-quiz-go,#lm-fmt-pill');
+      if(!b) return;
+      ev.preventDefault(); ev.stopImmediatePropagation();
+      try{ avisoSoloLectura(); }catch(e){ try{ alert('Modo profesor: solo lectura. Desde el Ojeador no se abren la ficha ni el quiz.'); }catch(e2){} }
+    }, true);
   }catch(e){ if(window.console) console.warn('[visor] init',e); }
 })();
 </script>
@@ -6392,7 +6442,7 @@ window.DictadoClase = (function(){
     ['videojuegos','peliculas'].forEach(function(g){ h+='<span class="lbl">'+(g==='videojuegos'?'🎮 Videojuegos':'🎬 Películas')+'</span>'+fijos().filter(function(f){return f.grupo===g;}).map(function(f){ return '<button type="button" class="tz-btn'+(sel&&sel.t&&sel.t.track_id===f.track_id?' on':'')+'" data-g="'+esc(g)+'" data-t="'+esc(f.track_id)+'">'+esc(f.titulo)+'</button>'; }).join(''); });
     return h+'</div>';
   }
-  function pintar(sel, primera){
+  function pintar(sel, primera, sonar){
     var s=seccion(); if(!s||!sel) return;
     var M=MODOS[modo()];
     actual=sel; var t=sel.t;
@@ -6409,7 +6459,7 @@ window.DictadoClase = (function(){
     var d=document.getElementById('tz-dado');
     d.onclick=function(){ d.classList.add('gira'); SND.dado(); setTimeout(function(){ d.classList.remove('gira'); pintar(modo()==='default'?otroGenero():elegirFijo(null, actual&&actual.t&&actual.t.track_id),false); destellos(10); },420); };
     s.querySelectorAll('.tz-btn').forEach(function(b){ b.onclick=function(){ SND.dado(); var tid=b.dataset.t; var f=tid?fijos().filter(function(x){return x.track_id===tid;})[0]:null; pintar(f?{genero:f.grupo,t:f,fijo:true}:elegirFijo(b.dataset.g),false); destellos(8); }; });
-    if(primera){ requestAnimationFrame(function(){ s.classList.add('tz-on'); setTimeout(function(){ destellos(26); SND.revelacion(); },450); }); }
+    if(primera){ requestAnimationFrame(function(){ s.classList.add('tz-on'); setTimeout(function(){ destellos(26); if(sonar) SND.revelacion(); },450); }); }   /* (27-sep-2026) el sonido, solo si toca (ver evaluar) */
     else s.classList.add('tz-on');
   }
   function destellos(n){
@@ -6423,7 +6473,28 @@ window.DictadoClase = (function(){
   var AC=null; function ac(){ try{ if(!AC) AC=new (window.AudioContext||window.webkitAudioContext)(); if(AC.state==='suspended') AC.resume(); }catch(e){} return AC; }
   function tono(f,t0,dur,tipo,vol){ var c=ac(); if(!c) return; var o=c.createOscillator(), g=c.createGain(); o.type=tipo||'sine'; o.frequency.setValueAtTime(f,t0); g.gain.setValueAtTime(0.0001,t0); g.gain.exponentialRampToValueAtTime(vol||0.12,t0+0.015); g.gain.exponentialRampToValueAtTime(0.0001,t0+dur); o.connect(g).connect(c.destination); o.start(t0); o.stop(t0+dur+0.05); }
   var SND={
-    revelacion:function(){ var c=ac(); if(!c) return; var t=c.currentTime; [523,659,784,988,1319,1568,2093].forEach(function(f,i){ tono(f,t+i*0.07,0.5,'sine',0.11); tono(f*2,t+i*0.07+0.02,0.3,'triangle',0.04); }); tono(1046,t+0.55,1.4,'sine',0.08); },
+    /* (27-sep-2026, Iago) «Un ruido mucho más suave… y que solo lo haga una vez». Antes: 7 notas
+       rápidas hasta 2 kHz, con armónicos de triángulo hasta 4 kHz y ataque de 15 ms. Ahora: un solo
+       gesto de tres notas (Do-Mi-Sol) en seno puro, ataque lento, filtro paso bajo y volumen general
+       bajo. Para volver al de antes, esta era la línea: revelacion:function(){ var c=ac(); if(!c) return;
+       var t=c.currentTime; [523,659,784,988,1319,1568,2093].forEach(function(f,i){ tono(f,t+i*0.07,0.5,'sine',0.11);
+       tono(f*2,t+i*0.07+0.02,0.3,'triangle',0.04); }); tono(1046,t+0.55,1.4,'sine',0.08); }, */
+    revelacion:function(){
+      var c=ac(); if(!c) return;
+      try{
+        var t=c.currentTime+0.03, bus=c.createGain(), lp=c.createBiquadFilter();
+        bus.gain.value=0.3; lp.type='lowpass'; lp.frequency.value=1500; lp.Q.value=0.4;
+        bus.connect(lp); lp.connect(c.destination);
+        [523.25,659.25,783.99].forEach(function(f,i){
+          var t0=t+i*0.12, o=c.createOscillator(), g=c.createGain();
+          o.type='sine'; o.frequency.setValueAtTime(f,t0);
+          g.gain.setValueAtTime(0.0001,t0);
+          g.gain.exponentialRampToValueAtTime(0.06,t0+0.08);
+          g.gain.exponentialRampToValueAtTime(0.0001,t0+1.1);
+          o.connect(g); g.connect(bus); o.start(t0); o.stop(t0+1.15);
+        });
+      }catch(e){}
+    },
     dado:function(){ var c=ac(); if(!c) return; var t=c.currentTime; [0,0.06,0.12,0.2].forEach(function(d,i){ tono(700+i*160,t+d,0.08,'square',0.05); }); tono(1568,t+0.32,0.5,'sine',0.09); }
   };
   function clave(envio){ return 'lm_temazo_'+cuenta()+'_'+envio; }
@@ -6450,7 +6521,7 @@ window.DictadoClase = (function(){
   // Al tester solo se le perdona el sello de 24 h, para que pueda repetir la prueba
   // desmarcando y volviendo a marcar.
   function esTester(){ var s=ses(); return !!(s && s.estado==='validado' && /protester/i.test((s.nombre||'').normalize('NFD').replace(/[̀-ͯ]/g,''))); }
-  var _ultimo=null;
+  var _ultimo=null, _sonado={};
   async function evaluar(st){
     var s=seccion(); if(!s) return;
     var id=cuenta();
@@ -6472,10 +6543,22 @@ window.DictadoClase = (function(){
     // enseña la tira. Es distinto de «Me gusta de todo» (valor 'todo'), que sí la ve
     // y le sale un estilo al azar. Así el temazo solo llega a quien ya dijo qué le gusta.
     if(modo()==='default' && !datos.genero && !(datos.generos||[]).length) return;
-    var primera=false;
-    if(!ts){ ts=Date.now(); primera=true; if(!esTester()){ try{ localStorage.setItem(k,String(ts)); }catch(e){} } }
+    var primera=false, sonar=false;
+    if(!ts){ ts=Date.now(); primera=true;
+      if(!esTester()){ try{ localStorage.setItem(k,String(ts)); }catch(e){} sonar=true; }
+      else{
+        /* (27-sep-2026, Iago) El sonido del estreno suena UNA sola vez por envío en cada aparato. Al
+           alumno ya se lo daba la marca por envío de arriba; a la cuenta tester (que no la lee, para
+           poder repetir la prueba) se le deja ahora esa misma marca solo para el sonido: la tira y los
+           destellos le siguen saliendo como siempre. */
+        var _ya=null; try{ _ya=localStorage.getItem(k); }catch(e){}
+        sonar=!_ya; if(!_ya){ try{ localStorage.setItem(k,String(ts)); }catch(e){} }
+      }
+      if(_sonado[k]) sonar=false;   // y nunca dos veces en la misma página
+      if(sonar) _sonado[k]=1;
+    }
     _ultimo=st.envio_id;
-    pintar(modo()==='default'?elegir(datos.genero):elegirFijo(null), primera);
+    pintar(modo()==='default'?elegir(datos.genero):elegirFijo(null), primera, sonar);
   }
   document.addEventListener('lm-semana-estado', function(ev){ evaluar(ev.detail); });
   window.__LM_TEMAZO__={evaluar:evaluar};
@@ -6606,11 +6689,22 @@ window.DictadoClase = (function(){
        no se cachea (se vuelve a leer en cuanto hay cuenta) y, sin cuenta, no se
        filtra nada. El formato solo cambia cuando cambia en la base de datos. */
     var id=cuenta();
-    if(_estado && !forzar && !(_estado.sin_cuenta && id) && !(_estado.error && id)) return _estado;
+    if(_estado && !forzar && !(_estado.sin_cuenta && id) && !(_estado.error && id) && !(_estado.reserva && id)) return _estado;
     if(!id){ _estado={formato:'papel',elegido:false,sin_cuenta:true}; return _estado; }
     try{ var d=await rpc('suite_formato_leer',{p_cuenta_id:id});
          _estado={formato:(d&&d.formato)||'papel', elegido:!!(d&&d.elegido)};
-    }catch(e){ _estado={formato:'digital',elegido:true,error:true}; }
+         /* (27-sep-2026, Iago) Formato de reserva: este aparato SOLO recuerda que el alumno es de PAPEL
+            (a los de digital no se les guarda nada, y si vuelve a digital se quita la marca). */
+         try{ var kf='lmpro_fmt_'+id; if(_estado.formato==='papel' && _estado.elegido){ if(localStorage.getItem(kf)!=='papel') localStorage.setItem(kf,'papel'); } else if(localStorage.getItem(kf)!=null) localStorage.removeItem(kf); }catch(e2){}
+    }catch(e){
+      /* (27-sep-2026, Iago) Caso Sergio: si falla la lectura del formato, un alumno que en ESTE aparato
+         ya constaba de PAPEL sigue como papel (antes pasaba a digital: veía la ficha digital con su
+         cuenta atrás y el «0» del tiempo extra). Sin esa marca, igual que antes. Se vuelve a leer en
+         cuanto se pueda. Para quitarlo: dejar aquí solo «_estado={formato:'digital',elegido:true,error:true};»,
+         quitar la línea del formato de reserva de arriba y el «reserva» de la primera condición. */
+      var _ult=null; try{ _ult=localStorage.getItem('lmpro_fmt_'+id); }catch(e3){}
+      _estado = (_ult==='papel') ? {formato:'papel',elegido:true,reserva:true} : {formato:'digital',elegido:true,error:true};
+    }
     try{ pintarPastilla(); }catch(e){}
     return _estado;
   }
@@ -6682,6 +6776,7 @@ window.DictadoClase = (function(){
             var d=await rpc('suite_formato_elegir',{p_cuenta_id:cuenta(), p_formato:f});
             if(!d || !d.ok) throw new Error((d&&d.error)||'error');
             _estado={formato:f, elegido:true};
+            try{ var cid=cuenta(); if(cid){ if(f==='papel') localStorage.setItem('lmpro_fmt_'+cid,'papel'); else localStorage.removeItem('lmpro_fmt_'+cid); } }catch(e2){}   /* (28-sep-2026) R1: la marca de papel del formato de reserva sigue al formato elegido */
             pintarPastilla();
             cerrar(v); res(f);
           }catch(e){
@@ -6727,6 +6822,7 @@ window.DictadoClase = (function(){
           b.disabled=false; b.textContent='Cambiar a '+otro; return;
         }
         _estado={formato:otro, elegido:true};
+        try{ var cid=cuenta(); if(cid){ if(otro==='papel') localStorage.setItem('lmpro_fmt_'+cid,'papel'); else localStorage.removeItem('lmpro_fmt_'+cid); } }catch(e2){}   /* (28-sep-2026) R1: la marca de papel del formato de reserva sigue al formato elegido */
         pintarPastilla();
         cerrar(v);
         setTimeout(function(){ location.reload(); }, 420);
@@ -7278,5 +7374,425 @@ body.tester-sin-by .topbar-right #rs-mini{order:2}
   window.LibrosAula={ abrir:abrirPanel };
 })();
 </script>
+<!-- (28-sep-2026, Iago) PENTAGRAMA · pizarra solo Tester/Protester · Para quitarlo: borrar este bloque -->
+<script>
+/* ================================================================
+   PENTAGRAMA · pizarra de pentagramas para el aula (28-sep-2026, Iago)
+   Solo cuentas de prueba (Iago González Tester / Protester), igual que «Libros».
+   «Un botón arriba donde están los de Libros, Resultados… que ponga Pentagrama
+    y que, al pulsarlo, abra una ventana que tenga varios pentagramas, todos de
+    clave de sol, pero que arriba haya un selector: solo clave de sol por
+    defecto, pero que si se pulsa un botón los pentagramas sean de sol y de fa,
+    como sistemas de piano. Importante que se vean CUATRO pentagramas, al máximo
+    tamaño posible y con nitidez […] y que los pentagramas estén en el MISMO
+    SITIO […] colores tipo Paint […] todos opacos, y trazo fino. Que tenga la
+    MENOR LATENCIA posible […] Las líneas del pentagrama, de color gris.»
+   · Cuatro pentagramas que llenan la pantalla, con sitio para líneas
+     adicionales arriba y abajo. Las posiciones se calculan UNA vez por tamaño
+     de ventana y son las mismas en «Sol» y en «Sol y fa»: al cambiar de claves
+     no se mueve ninguna línea.
+   · Claves dibujadas como trazados vectoriales (nítidas a cualquier tamaño):
+     contornos gClef/fClef de la fuente Bravura tal como los trae VexFlow 4.2.3
+     (VexFlow: licencia MIT · Bravura: SIL Open Font License). La llave, como la
+     dibuja VexFlow. Nada de fuentes externas.
+   · Dos lienzos: el fondo (pentagramas) y la tinta. Cada tramo se pinta en el
+     mismo evento del puntero, sin esperar al siguiente fotograma.
+   · Lo dibujado vive solo en memoria mientras la página siga abierta: no se
+     guarda nada en el aparato ni en Supabase.
+   Para quitarlo: borrar este bloque entero (desde el comentario «PENTAGRAMA»
+   hasta el de «fin del PENTAGRAMA»). No queda nada más que limpiar.
+   ================================================================ */
+/* global SESSION_KEY */   /* (la constante de la sesión la define el propio portal en su script principal) */
+(function(){
+  'use strict';
+
+  /* ---------- quién lo ve: la misma comprobación que «Libros» (cuentas de prueba validadas) ---------- */
+  var KEY=(typeof SESSION_KEY==='string' && /^(lmeav|lmpro)_session$/.test(SESSION_KEY)) ? SESSION_KEY
+          : ((window.__LIBROS_MODO==='GP') ? 'lmpro_session' : 'lmeav_session');
+  var TESTERS=['iago gonzalez tester','iago gonzalez protester','iago gonzalez pro tester'];
+  function norm(s){ return String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,' ').trim().toLowerCase(); }
+  function ses(){ try{ return JSON.parse(localStorage.getItem(KEY)||'null'); }catch(e){ return null; } }
+  function esTester(){ var s=ses(); return !!(s && s.estado==='validado' && TESTERS.indexOf(norm(s.nombre))>=0); }
+
+  /* ---------- aspecto y medidas ---------- */
+  var GRIS='#9ca3af';                         /* líneas, claves y llave: gris, para que lo escrito destaque */
+  var COLORES=[['#000000','Negro'],['#dc2626','Rojo'],['#2563eb','Azul'],['#16a34a','Verde'],['#ea580c','Naranja'],['#7c3aed','Morado']];
+  var GROSOR=[1,2,4];                         /* × grosor de las líneas del pentagrama: el fino es el MISMO */
+  var NOMBRE_GROSOR=['Fino (como las líneas)','Medio','Grueso'];
+  var GOMA=[1,2,3.4];                         /* tamaño de la goma, en espacios entre líneas */
+  var HUECO=5.5, MARGEN=3;                    /* en espacios: entre pentagramas y arriba/abajo (líneas adicionales) */
+  var ESPACIOS=4*4+3*HUECO+2*MARGEN;          /* 38,5 espacios de alto en total */
+  /* Contornos de Bravura (vía VexFlow 4.2.3): 360 unidades = 1 espacio; origen en la línea de la clave. */
+  var D_SOL='M541-598C539-615 541-616 550-625C706-770 824-953 824-1174C824-1299 789-1423 730-1509C708-1541 671-1581 655-1581C635-1581 590-1544 562-1512C455-1394 420-1214 420-1064C420-981 431-887 441-828C444-811 445-808 428-793C220-622 0-416 0-125C0 125 171 363 524 363C557 363 595 360 624 354C639 351 642 350 645 367C662 464 684 589 684 657C684 870 540 896 455 896C377 896 340 873 340 854C340 844 353 840 386 829C431 816 482 778 482 694C482 615 432 547 344 547C248 547 190 624 190 713C190 806 246 948 464 948C560 948 747 904 747 660C747 577 721 441 706 351C703 334 704 336 724 327C870 269 966 147 966-16C966-200 831-363 619-363C582-363 582-363 577-389ZM677-1358C724-1358 763-1319 763-1240C763-1080 626-950 513-851C503-842 497-844 494-863C488-900 485-949 485-995C485-1220 589-1358 677-1358ZM520-377C524-350 524-351 498-343C372-300 289-186 289-63C289 66 357 158 455 192C467 196 484 200 494 200C505 200 511 193 511 184C511 174 500 170 490 166C429 140 386 78 386 12C386-71 442-132 530-157C553-163 556-161 559-145L631 284C634 300 632 300 611 304C588 308 559 311 530 311C278 311 115 171 115-29C115-114 130-228 249-363C336-459 402-513 469-567C484-579 487-577 490-562ZM619-148C616-166 618-170 635-168C752-158 848-60 848 66C848 157 793 230 713 271C696 279 693 279 690 262Z';
+  var D_FA='M363-377C112-377 0-194 0-56C0 59 60 158 177 158C268 158 330 95 330 6C330-86 262-144 192-144C153-144 138-134 120-134C101-134 96-145 96-160C96-217 183-323 330-323C482-323 549-173 549 53C549 455 350 680 14 871C1 878-7 886-7 897C-7 906-1 914 12 914C19 914 27 912 36 907C390 734 765 478 765 40C765-210 612-377 363-377ZM906-259C861-259 827-225 827-180C827-135 861-101 906-101C950-101 985-135 985-180C985-225 950-259 906-259ZM907 102C863 102 829 135 829 180C829 225 863 258 907 258C952 258 985 225 985 180C985 135 952 102 907 102Z';
+  var P_SOL=null, P_FA=null;
+  try{ P_SOL=new Path2D(D_SOL); P_FA=new Path2D(D_FA); }catch(e){}
+
+  /* ---------- estado (solo en memoria) ---------- */
+  var st={ abierto:false, modo:'sol', color:0, grosor:0, goma:false, trazos:[] };
+  /* cada trazo: { c:color, g:grosor, e:goma, p:[u,v, u,v…] } en ESPACIOS, medidos desde el principio de las
+     líneas y desde la 1.ª línea del 1.er pentagrama → se redibuja en su sitio aunque cambie el tamaño.
+     «Borrar todo» deja una marca {borrar:true}: así también se puede deshacer. */
+  var L=null, fondo=null, tinta=null, zona=null, fctx=null, ictx=null;
+  var activo=null, cur=null, rect=null, lx=0, ly=0, porRaw=false;
+
+  /* ---------- medidas: se calculan una vez por tamaño de ventana (y son iguales en los dos modos) ---------- */
+  function medidas(W,H,dpr){
+    var sd=Math.floor(Math.min(H/ESPACIOS, W/24)*dpr);   /* espacio entre líneas en píxeles del aparato: entero → líneas equidistantes y nítidas */
+    if(sd<5) sd=5;
+    var td=Math.max(1,Math.round(sd*0.1));              /* grosor de las líneas, en píxeles del aparato */
+    var y0=Math.round((H*dpr-(4*4+3*HUECO)*sd)/2);      /* los cuatro pentagramas, centrados en vertical */
+    var tops=[]; for(var k=0;k<4;k++) tops.push(Math.round(y0+k*(4+HUECO)*sd));
+    var x0=Math.round(2.6*sd);                          /* sitio para la llave a la izquierda (también en «Sol»: así nada se mueve) */
+    var x1=Math.round(W*dpr-Math.max(sd,12*dpr));
+    var med=(td%2) ? 0.5 : 0;                           /* centro de una línea de grosor impar */
+    return { W:W, H:H, dpr:dpr, sd:sd, td:td, s:sd/dpr, t:td/dpr, tops:tops, x0:x0, x1:x1, med:med, ox:x0/dpr, oy:(tops[0]+med)/dpr };
+  }
+  function yLinea(k,i){ return L.tops[k]+i*L.sd-Math.floor(L.td/2); }   /* borde de arriba de la línea i (0-4) del pentagrama k (0-3) */
+
+  /* ---------- fondo: líneas, claves y (en «Sol y fa») llave y barra inicial ---------- */
+  function llave(c, xp, yA, yB){   /* la llave de VexFlow (StaveConnector BRACE), a escala */
+    var h=yB-yA, w=0.105*h, x1=xp, y1=yA, x3=xp, y3=yB, x2=x1-w, y2=y1+h/2;
+    var cpx1=x2-0.9*w, cpy1=y1+0.2*h, cpx2=x1+1.1*w, cpy2=y2-0.135*h, cpx3=cpx2, cpy3=y2+0.135*h, cpx4=cpx1, cpy4=y3-0.2*h;
+    var cpx5=x2-w, cpy5=cpy4, cpx6=x1+0.4*w, cpy6=y2+0.135*h, cpx7=cpx6, cpy7=y2-0.135*h, cpx8=cpx5, cpy8=cpy1;
+    c.beginPath(); c.moveTo(x1,y1);
+    c.bezierCurveTo(cpx1,cpy1,cpx2,cpy2,x2,y2); c.bezierCurveTo(cpx3,cpy3,cpx4,cpy4,x3,y3);
+    c.bezierCurveTo(cpx5,cpy5,cpx6,cpy6,x2,y2); c.bezierCurveTo(cpx7,cpy7,cpx8,cpy8,x1,y1);
+    c.fill();
+  }
+  function pintarFondo(){
+    var c=fctx, k, i, piano=(st.modo==='piano');
+    c.setTransform(1,0,0,1,0,0); c.globalCompositeOperation='source-over';
+    c.fillStyle='#ffffff'; c.fillRect(0,0,fondo.width,fondo.height);
+    c.fillStyle=GRIS;
+    for(k=0;k<4;k++) for(i=0;i<5;i++) c.fillRect(L.x0, yLinea(k,i), L.x1-L.x0, L.td);   /* en píxeles enteros: nítidas */
+    if(P_SOL && P_FA){
+      var esc=L.sd/360, xc=L.x0+Math.round(0.6*L.sd);
+      for(k=0;k<4;k++){
+        var fa=piano && (k%2===1);
+        c.setTransform(esc,0,0,esc, xc, L.tops[k]+(fa?1:3)*L.sd+L.med);   /* sol: 2.ª línea · fa: 4.ª línea */
+        c.fill(fa ? P_FA : P_SOL);
+      }
+      c.setTransform(1,0,0,1,0,0);
+    }
+    if(piano){
+      for(k=0;k<4;k+=2){
+        var yA=yLinea(k,0), yB=yLinea(k+1,4)+L.td;
+        c.fillRect(L.x0, yA, L.td, yB-yA);                     /* barra inicial que une el sistema */
+        llave(c, L.x0-Math.round(0.3*L.sd), yA, yB);
+      }
+    }
+  }
+
+  /* ---------- tinta ---------- */
+  function uX(x){ return (x-L.ox)/L.s; } function uY(y){ return (y-L.oy)/L.s; }
+  function pX(u){ return L.ox+u*L.s; }  function pY(v){ return L.oy+v*L.s; }
+  function ancho(t){ return t.e ? GOMA[t.g]*L.s : GROSOR[t.g]*L.t; }
+  function estilo(t){
+    ictx.globalCompositeOperation = t.e ? 'destination-out' : 'source-over';
+    ictx.strokeStyle = ictx.fillStyle = t.e ? '#000000' : t.c;
+    ictx.lineWidth = ancho(t);
+  }
+  function punto(x,y){ ictx.beginPath(); ictx.arc(x,y,ictx.lineWidth/2,0,2*Math.PI); ictx.fill(); }
+  function inicio(){ for(var i=st.trazos.length-1;i>=0;i--){ if(st.trazos[i].borrar) return i+1; } return 0; }
+  function hayTinta(){ return inicio()<st.trazos.length; }
+  function redibujarTrazo(t){
+    var p=t.p, n=p.length; if(!n) return;
+    estilo(t);
+    if(n===2){ punto(pX(p[0]),pY(p[1])); return; }
+    ictx.beginPath(); ictx.moveTo(pX(p[0]),pY(p[1]));
+    for(var i=2;i<n;i+=2) ictx.lineTo(pX(p[i]),pY(p[i+1]));
+    ictx.stroke();
+  }
+  function limites(t){ var p=t.p, a=p[0], b=p[1], c=p[0], d=p[1]; for(var i=2;i<p.length;i+=2){ if(p[i]<a) a=p[i]; if(p[i]>c) c=p[i]; if(p[i+1]<b) b=p[i+1]; if(p[i+1]>d) d=p[i+1]; } t.b=[a,b,c,d]; }
+  function caja(t){   /* rectángulo que puede tocar un trazo (con su grosor y 1 px de margen), en espacios */
+    if(!t.b) limites(t);
+    var m=(ancho(t)/2+1)/L.s;
+    return [t.b[0]-m, t.b[1]-m, t.b[2]+m, t.b[3]+m];
+  }
+  function repintarZona(z){   /* al deshacer: solo se repinta el rectángulo del trazo quitado, con los trazos que pasan por él */
+    var d=L.dpr, x0=Math.floor(pX(z[0])*d), y0=Math.floor(pY(z[1])*d), x1=Math.ceil(pX(z[2])*d), y1=Math.ceil(pY(z[3])*d);
+    ictx.save();
+    ictx.setTransform(1,0,0,1,0,0); ictx.globalCompositeOperation='source-over';
+    ictx.beginPath(); ictx.rect(x0,y0,x1-x0,y1-y0); ictx.clip();
+    ictx.clearRect(x0,y0,x1-x0,y1-y0);
+    ictx.setTransform(d,0,0,d,0,0);
+    for(var i=inicio();i<st.trazos.length;i++){ var c=caja(st.trazos[i]); if(c[0]<=z[2] && c[2]>=z[0] && c[1]<=z[3] && c[3]>=z[1]) redibujarTrazo(st.trazos[i]); }
+    ictx.restore();
+  }
+  function pintarTinta(){   /* toda la tinta: al cambiar de tamaño o al deshacer un «Borrar todo» (al dibujar se pinta tramo a tramo) */
+    ictx.setTransform(1,0,0,1,0,0); ictx.globalCompositeOperation='source-over';
+    ictx.clearRect(0,0,tinta.width,tinta.height);
+    ictx.setTransform(L.dpr,0,0,L.dpr,0,0); ictx.lineCap='round'; ictx.lineJoin='round';
+    for(var i=inicio();i<st.trazos.length;i++) redibujarTrazo(st.trazos[i]);
+    ictx.globalCompositeOperation='source-over';
+    if(cur) estilo(cur);
+  }
+
+  /* ---------- puntero (ratón, lápiz y dedo) · latencia mínima ---------- */
+  function bajar(e){
+    if(activo!==null || !L) return;
+    if(e.pointerType==='mouse' && e.button!==0) return;
+    e.preventDefault();
+    if(armado) desarmar();
+    if(!rect) rect=tinta.getBoundingClientRect();             /* se toma al abrir y al cambiar de tamaño: así el toque no obliga a recalcular la página */
+    activo=e.pointerId; porRaw=false;
+    try{ tinta.setPointerCapture(e.pointerId); }catch(er){}
+    var x=e.clientX-rect.left, y=e.clientY-rect.top;
+    cur={ c:COLORES[st.color][0], g:st.grosor, e:(st.goma || e.button===5 || (e.buttons&32)===32), p:[uX(x),uY(y)] };   /* (la goma del lápiz también borra) */
+    st.trazos.push(cur);
+    estilo(cur); punto(x,y);                                  /* el punto se ve al instante, aunque no se mueva */
+    lx=x; ly=y;
+  }
+  function mover(e){
+    if(e.pointerId!==activo) return;
+    if(e.type==='pointerrawupdate') porRaw=true;
+    else if(e.type==='pointermove' && porRaw) return;         /* ya se pintó al llegar por «pointerrawupdate» */
+    var l=(typeof e.getCoalescedEvents==='function') ? e.getCoalescedEvents() : null;
+    if(!l || !l.length) l=[e];
+    var p=cur.p, hay=false;
+    ictx.beginPath(); ictx.moveTo(lx,ly);
+    for(var i=0;i<l.length;i++){
+      var x=l[i].clientX-rect.left, y=l[i].clientY-rect.top, dx=x-lx, dy=y-ly;
+      if(dx*dx+dy*dy<0.25) continue;                          /* menos de medio píxel: no aporta nada */
+      ictx.lineTo(x,y); p.push(uX(x),uY(y)); lx=x; ly=y; hay=true;
+    }
+    if(hay) ictx.stroke();                                    /* se pinta YA, en este mismo evento */
+  }
+  function soltar(e){
+    if(e.pointerId!==activo) return;
+    if(e.type==='pointerup') mover(e);                         /* último tramo, si al soltar cambió de sitio */
+    limites(cur);                                              /* su rectángulo, para «Deshacer» */
+    activo=null; cur=null;                                     /* (la captura del puntero la suelta el navegador solo) */
+    ictx.globalCompositeOperation='source-over';
+    estados();
+  }
+
+  /* ---------- tamaño: al abrir y al cambiar la ventana se recalcula y se redibuja todo ---------- */
+  var _raf=0;
+  function pedirMedida(){ if(!st.abierto || _raf) return; _raf=(window.requestAnimationFrame||setTimeout)(function(){ _raf=0; medir(false); }); }
+  function medir(forzar){
+    if(!st.abierto || !zona) return;
+    var W=zona.clientWidth, H=zona.clientHeight, dpr=window.devicePixelRatio||1;
+    if(!W || !H) return;
+    if(!forzar && L && L.W===W && L.H===H && L.dpr===dpr) return;
+    L=medidas(W,H,dpr);
+    [fondo,tinta].forEach(function(c){ c.width=Math.round(W*dpr); c.height=Math.round(H*dpr); c.style.width=W+'px'; c.style.height=H+'px'; });
+    pintarFondo(); pintarTinta(); cursor();
+    rect=tinta.getBoundingClientRect();
+    if(activo!==null && cur){ lx=pX(cur.p[cur.p.length-2]); ly=pY(cur.p[cur.p.length-1]); }
+  }
+  function vigilarDensidad(){   /* p. ej. al pasar la ventana a otra pantalla o con el zoom del navegador */
+    try{
+      var mq=window.matchMedia('(resolution: '+(window.devicePixelRatio||1)+'dppx)');
+      var f=function(){ try{ if(mq.removeEventListener) mq.removeEventListener('change',f); else mq.removeListener(f); }catch(e){} pedirMedida(); vigilarDensidad(); };
+      if(mq.addEventListener) mq.addEventListener('change',f); else if(mq.addListener) mq.addListener(f);
+    }catch(e){}
+  }
+
+  /* ---------- herramientas ---------- */
+  var armado=0, _tArm=0;
+  function ahora(){ return (window.performance && performance.now) ? performance.now() : Date.now(); }
+  function desarmar(){
+    armado=0; clearTimeout(_tArm);
+    var b=document.getElementById('pz-borrar'); if(b){ b.classList.remove('pz-armado'); b.setAttribute('title','Borrar todo'); }
+  }
+  function borrarTodo(){
+    if(activo!==null) return;
+    if(!hayTinta()){ desarmar(); return; }
+    var t=ahora();
+    if(armado){
+      if(t-armado<400) return;                                 /* un doble clic sin querer no borra: hay que volver a pulsar */
+      desarmar(); st.trazos.push({ borrar:true });
+      /* memoria: se guardan como mucho las 3 últimas pizarras borradas (para poder deshacer «Borrar todo») */
+      for(var i=st.trazos.length-1, n=0;i>=0;i--){ if(st.trazos[i].borrar && ++n>3){ st.trazos=st.trazos.slice(i+1); break; } }
+      pintarTinta(); estados(); return;
+    }
+    armado=t;
+    var b=document.getElementById('pz-borrar'); b.classList.add('pz-armado'); b.setAttribute('title','Pulsa otra vez para borrar todo');
+    clearTimeout(_tArm); _tArm=setTimeout(desarmar,3000);
+  }
+  function deshacer(){
+    if(activo!==null || !st.trazos.length) return;
+    if(armado) desarmar();
+    var t=st.trazos.pop();
+    if(t.borrar || !t.p || !t.p.length) pintarTinta(); else repintarZona(caja(t));
+    estados();
+  }
+  function cursor(){
+    if(!tinta || !L) return;
+    if(!st.goma){ tinta.style.cursor='crosshair'; return; }
+    var d=Math.max(8,Math.min(120,Math.round(GOMA[st.grosor]*L.s))), r=d/2+1;
+    var svg='<svg xmlns="http://www.w3.org/2000/svg" width="'+(d+2)+'" height="'+(d+2)+'"><circle cx="'+r+'" cy="'+r+'" r="'+(d/2)+'" fill="#ffffff" fill-opacity="0.35" stroke="#374151" stroke-width="1.5"/></svg>';
+    tinta.style.cursor='url("data:image/svg+xml,'+encodeURIComponent(svg)+'") '+Math.round(r)+' '+Math.round(r)+', crosshair';
+  }
+  function estados(){   /* solo lo que puede cambiar al dibujar: deshacer y borrar */
+    var d=document.getElementById('pz-deshacer'), b=document.getElementById('pz-borrar');
+    if(d) d.disabled=!st.trazos.length;
+    if(b) b.disabled=!hayTinta();
+  }
+  function marcar(){
+    var o=document.getElementById('pz-ov'); if(!o) return;
+    Array.prototype.forEach.call(o.querySelectorAll('[data-modo]'),function(b){ var on=b.getAttribute('data-modo')===st.modo; b.classList.toggle('pz-on',on); b.setAttribute('aria-pressed',on?'true':'false'); });
+    Array.prototype.forEach.call(o.querySelectorAll('[data-color]'),function(b){ var on=!st.goma && +b.getAttribute('data-color')===st.color; b.classList.toggle('pz-on',on); b.setAttribute('aria-pressed',on?'true':'false'); });
+    Array.prototype.forEach.call(o.querySelectorAll('[data-grosor]'),function(b){ var on=+b.getAttribute('data-grosor')===st.grosor; b.classList.toggle('pz-on',on); b.setAttribute('aria-pressed',on?'true':'false'); });
+    var g=document.getElementById('pz-goma'); g.classList.toggle('pz-on',st.goma); g.setAttribute('aria-pressed',st.goma?'true':'false');
+    o.style.setProperty('--pz-tinta', COLORES[st.color][0]);
+    estados(); cursor();
+  }
+
+  /* ---------- ventana ---------- */
+  var ICO={
+    goma:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.6 14.6 13.4 5.8a2 2 0 0 1 2.8 0l3 3a2 2 0 0 1 0 2.8L11.4 19.4H7.8L4.6 16.2a1.1 1.1 0 0 1 0-1.6z"/><path d="M9.2 10.2l5.6 5.6"/><path d="M11.4 19.4H20"/></svg>',
+    deshacer:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg>',
+    borrar:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16"/><path d="M9.5 7V4.5h5V7"/><path d="M6.5 7l.9 12.5h9.2L17.5 7"/><path d="M10.3 11v5.5M13.7 11v5.5"/></svg>',
+    cerrar:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>'
+  };
+  function clave(d, vb, cls){ return '<svg class="pz-clave '+cls+'" viewBox="'+vb+'" aria-hidden="true"><path d="'+d+'"/></svg>'; }
+  function css(){
+    if(document.getElementById('pz-css')) return;
+    var s=document.createElement('style'); s.id='pz-css';
+    s.textContent=
+      /* botón de la barra de arriba: neutro (es una herramienta, no un apartado) */
+      '.da-mini.pz-mini .da-btn{border-color:rgba(255,255,255,.42);background:rgba(255,255,255,.10);color:#f1f5f9}'
+      +'.da-mini.pz-mini .da-btn:hover:not(:disabled){background:rgba(255,255,255,.22);border-color:#fff;color:#fff}'
+      +'html.lm-fam-portal #lm-tester #pz-mini .da-btn{background:var(--lm-neutro,#243044) !important}'
+      /* con la pizarra abierta, lo de debajo no se pinta (menos trabajo para el ordenador del aula) */
+      +'html.pz-abierto{overflow:hidden !important}'
+      +'html.pz-abierto body>*:not(#pz-ov){visibility:hidden !important}'
+      +'#pz-ov{position:fixed;inset:0;z-index:2147483000;display:none;flex-direction:column;background:#fff;color:#1f2937;'
+      +'font:600 14px/1 "Helvetica Neue",Helvetica,Arial,sans-serif;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;outline:none}'
+      +'#pz-ov.pz-open{display:flex}#pz-ov *{box-sizing:border-box}'
+      +'#pz-bar{flex:0 0 auto;display:flex;flex-wrap:wrap;align-items:center;gap:6px 16px;min-height:46px;padding:5px 10px;background:#f3f4f6;border-bottom:1px solid #d1d5db}'
+      +'.pz-g{display:flex;align-items:center;gap:6px}.pz-g.pz-cols{gap:8px}'
+      +'.pz-b{height:34px;min-width:34px;margin:0;padding:0 11px;display:inline-flex;align-items:center;justify-content:center;gap:7px;'
+      +'border:1px solid #d1d5db;border-radius:8px;background:#fff;color:#1f2937;font:inherit;cursor:pointer;touch-action:manipulation;box-shadow:none}'
+      +'.pz-b.pz-q{width:34px;padding:0}'
+      +'.pz-b:hover:not(:disabled){border-color:#6b7280}'
+      +'.pz-b.pz-on{background:#1f2937;border-color:#1f2937;color:#fff}'
+      +'.pz-b:disabled{opacity:.35;cursor:default}'
+      +'.pz-b svg{width:20px;height:20px;display:block;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}'
+      +'.pz-b svg.pz-clave{height:25px;width:auto;fill:currentColor;stroke:none}'
+      +'.pz-b svg.pz-clave.pz-cfa{height:15px}'
+      +'.pz-seg{display:flex;gap:2px;padding:2px;border:1px solid #d1d5db;border-radius:10px;background:#fff}'
+      +'.pz-seg .pz-b{height:28px;border:0;border-radius:7px}'
+      +'.pz-col{width:34px;height:34px;margin:0;padding:0;border:0;border-radius:8px;background:var(--c);cursor:pointer;touch-action:manipulation}'
+      +'.pz-col.pz-on{outline:2px solid #1f2937;outline-offset:2px}'
+      +'.pz-lin{display:block;width:18px;border-radius:2px;background:var(--pz-tinta,#000)}'
+      +'.pz-b.pz-on .pz-lin{outline:1px solid rgba(255,255,255,.7)}'
+      +'#pz-borrar .pz-conf{display:none}'
+      +'#pz-borrar.pz-armado{width:auto;padding:0 12px;background:#dc2626;border-color:#dc2626;color:#fff}'
+      +'#pz-borrar.pz-armado .pz-conf{display:inline}'
+      +'.pz-hueco{flex:1 1 auto}'
+      +'#pz-zona{position:relative;flex:1 1 auto;min-height:0;overflow:hidden;background:#fff;touch-action:none}'
+      +'#pz-zona canvas{position:absolute;left:0;top:0;display:block;touch-action:none}';
+    document.head.appendChild(s);
+  }
+  function ov(){
+    var o=document.getElementById('pz-ov'); if(o) return o;
+    css();
+    o=document.createElement('div'); o.id='pz-ov'; o.className='lm-sin-iconos';
+    o.setAttribute('role','dialog'); o.setAttribute('aria-modal','true'); o.setAttribute('aria-label','Pentagrama'); o.tabIndex=-1;
+    var h='<div id="pz-bar">'
+      +'<div class="pz-seg" role="group" aria-label="Claves">'
+      +'<button type="button" class="pz-b" data-modo="sol" title="Solo clave de sol">'+clave(D_SOL,'-30 -1600 1030 2580','pz-csol')+'Sol</button>'
+      +'<button type="button" class="pz-b" data-modo="piano" title="Clave de sol y clave de fa, como el piano">'+clave(D_SOL,'-30 -1600 1030 2580','pz-csol')+clave(D_FA,'-30 -400 1040 1340','pz-cfa')+'Sol y fa</button>'
+      +'</div>'
+      +'<div class="pz-g pz-cols" role="group" aria-label="Color">';
+    COLORES.forEach(function(c,i){ h+='<button type="button" class="pz-col" data-color="'+i+'" style="--c:'+c[0]+'" title="'+c[1]+'" aria-label="'+c[1]+'"></button>'; });
+    h+='</div><div class="pz-g" role="group" aria-label="Grosor">';
+    GROSOR.forEach(function(g,i){ h+='<button type="button" class="pz-b pz-q" data-grosor="'+i+'" title="'+NOMBRE_GROSOR[i]+'" aria-label="'+NOMBRE_GROSOR[i]+'"><span class="pz-lin" style="height:'+[2,4,8][i]+'px"></span></button>'; });
+    h+='<button type="button" class="pz-b pz-q" id="pz-goma" title="Goma" aria-label="Goma">'+ICO.goma+'</button></div>'
+      +'<div class="pz-g">'
+      +'<button type="button" class="pz-b pz-q" id="pz-deshacer" title="Deshacer (Ctrl+Z)" aria-label="Deshacer">'+ICO.deshacer+'</button>'
+      +'<button type="button" class="pz-b pz-q" id="pz-borrar" title="Borrar todo" aria-label="Borrar todo">'+ICO.borrar+'<span class="pz-conf">¿Borrar todo?</span></button>'
+      +'</div><span class="pz-hueco"></span>'
+      +'<button type="button" class="pz-b pz-q" id="pz-x" title="Cerrar (Esc)" aria-label="Cerrar">'+ICO.cerrar+'</button>'
+      +'</div><div id="pz-zona" aria-label="Pizarra: escribe con el ratón, el lápiz o el dedo"><canvas id="pz-fondo"></canvas><canvas id="pz-tinta"></canvas></div>';
+    o.innerHTML=h;
+    document.body.appendChild(o);
+    zona=o.querySelector('#pz-zona'); fondo=o.querySelector('#pz-fondo'); tinta=o.querySelector('#pz-tinta');
+    fctx=fondo.getContext('2d',{ alpha:false });
+    ictx=tinta.getContext('2d',{ desynchronized:true });      /* baja latencia donde el navegador lo admite */
+    /* botones de la barra */
+    o.querySelector('#pz-bar').addEventListener('click',function(e){
+      var b=e.target && e.target.closest ? e.target.closest('button') : null; if(!b || b.disabled) return;
+      if(b.id!=='pz-borrar' && armado) desarmar();
+      if(b.hasAttribute('data-modo')){ if(st.modo!==b.getAttribute('data-modo')){ st.modo=b.getAttribute('data-modo'); if(L) pintarFondo(); } marcar(); }
+      else if(b.hasAttribute('data-color')){ st.color=+b.getAttribute('data-color'); st.goma=false; marcar(); }
+      else if(b.hasAttribute('data-grosor')){ st.grosor=+b.getAttribute('data-grosor'); marcar(); }
+      else if(b.id==='pz-goma'){ st.goma=!st.goma; marcar(); }
+      else if(b.id==='pz-deshacer') deshacer();
+      else if(b.id==='pz-borrar') borrarTodo();
+      else if(b.id==='pz-x') cerrar();
+    });
+    /* lienzo de tinta: Pointer Events (touch-action:none) · cada movimiento se pinta en su propio evento */
+    tinta.addEventListener('pointerdown',bajar);
+    if('onpointerrawupdate' in window) tinta.addEventListener('pointerrawupdate',mover);   /* sin esperar al fotograma (Chrome/Edge) */
+    tinta.addEventListener('pointermove',mover);                                           /* los demás navegadores (y si no llegara el anterior) */
+    tinta.addEventListener('pointerup',soltar);
+    tinta.addEventListener('pointercancel',soltar);
+    tinta.addEventListener('lostpointercapture',function(e){ if(e.pointerId===activo) soltar(e); });
+    zona.addEventListener('contextmenu',function(e){ e.preventDefault(); });
+    [fondo,tinta].forEach(function(c){ c.addEventListener('contextrestored',function(){ medir(true); }); });
+    window.addEventListener('resize',pedirMedida);
+    if(typeof ResizeObserver==='function'){ try{ new ResizeObserver(pedirMedida).observe(zona); }catch(e){} }
+    vigilarDensidad();
+    document.addEventListener('keydown',function(e){
+      if(!st.abierto) return;
+      if(e.key==='Escape'){ e.preventDefault(); e.stopPropagation(); cerrar(); }
+      else if((e.ctrlKey || e.metaKey) && !e.altKey && !e.shiftKey && (e.key==='z' || e.key==='Z')){ e.preventDefault(); e.stopPropagation(); deshacer(); }
+    },true);
+    marcar();
+    return o;
+  }
+  function abrir(){
+    if(!esTester()) return;
+    var o=ov();
+    st.abierto=true; o.classList.add('pz-open');
+    document.documentElement.classList.add('pz-abierto');
+    medir(false); marcar();
+    rect=tinta.getBoundingClientRect();
+    try{ o.focus({ preventScroll:true }); }catch(e){}
+  }
+  function cerrar(){
+    var o=document.getElementById('pz-ov'); if(!o) return;
+    if(activo!==null){ activo=null; cur=null; if(ictx) ictx.globalCompositeOperation='source-over'; }
+    desarmar();
+    st.abierto=false; o.classList.remove('pz-open');
+    document.documentElement.classList.remove('pz-abierto');
+    var b=document.querySelector('#pz-mini .da-btn'); if(b){ try{ b.focus({ preventScroll:true }); }catch(e){} }
+  }
+
+  /* ---------- botón «Pentagrama» junto a los demás de prueba (mismo patrón que «Libros») ---------- */
+  var _mo=null;
+  function colocar(){   /* con la piel nueva, a la hilera de Tester/Protester (al final, sin tocar el orden de las demás) */
+    var caja=document.getElementById('pz-mini'), fila=document.getElementById('lm-tester');
+    if(caja && fila && caja.parentNode!==fila) fila.appendChild(caja);
+  }
+  function pintarBoton(){
+    var host=document.querySelector('.topbar-right'); if(!host) return;
+    var old=document.getElementById('pz-mini');
+    if(!esTester()){ if(old) old.remove(); if(st.abierto) cerrar(); return; }
+    if(old){ colocar(); return; }
+    css();
+    var caja=document.createElement('div'); caja.id='pz-mini'; caja.className='da-mini pz-mini';
+    caja.innerHTML='<button type="button" class="da-btn" title="Pentagrama · pizarra para el aula · solo profesor">Pentagrama</button>';
+    var by=host.querySelector('.by'); if(by) host.insertBefore(caja,by); else host.appendChild(caja);
+    colocar();
+    caja.querySelector('button').addEventListener('click',function(){ abrir(); });
+    if(!_mo && typeof MutationObserver==='function'){
+      var tb=document.querySelector('.topbar');
+      if(tb){ try{ _mo=new MutationObserver(colocar); _mo.observe(tb,{ childList:true, subtree:true }); }catch(e){} }
+    }
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', pintarBoton); else pintarBoton();
+  document.addEventListener('visibilitychange', function(){ if(document.visibilityState==='visible') pintarBoton(); });
+  var _ss=window.setSession;
+  if(typeof _ss==='function'){ window.setSession=function(s){ var r=_ss(s); setTimeout(pintarBoton,300); return r; }; }
+  window.PentagramaAula={ abrir:abrir, cerrar:cerrar };
+})();
+</script>
+<!-- (28-sep-2026, Iago) fin del PENTAGRAMA -->
 </body>
 </html>
