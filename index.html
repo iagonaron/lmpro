@@ -94,6 +94,11 @@ if(window.Sentry && !/^(localhost|127\.0\.0\.1)$/.test(location.hostname)){
   @media (prefers-reduced-motion: reduce){ .carrusel-btn .cb-spiral svg{ animation:none; } }
   /* (10-sep-2026) Carrusel solo para alumnos validados */
   body:not(.alu-validado) .carrusel-btn{ display:none; }
+  /* (28-sep-2026, noche, Iago) «En los portales no quiero que a los alumnos les salga lo de carrusel. Eso solo para las
+     Tester y Protester»: el botón solo sale con esas cuentas (marca html.lm-carr-si, la pone el script que va justo después
+     del MODO VISOR). Los alumnos entran al Carrusel PRO por el QR que proyecta el profe. En el Ojeador tampoco sale.
+     Para quitarlo: borrar esta regla y ese script. */
+  html:not(.lm-carr-si) .topbar .topbar-right > a.carrusel-btn{ display:none !important; }
 
   /* ===== HERO con animación ===== */
   .hero{text-align:center;margin:46px 0 48px;position:relative;z-index:75}
@@ -686,6 +691,26 @@ body.tester-sin-by .topbar-right .by{display:none}
       try{ avisoSoloLectura(); }catch(e){ try{ alert('Modo profesor: solo lectura. Desde el Ojeador no se abren la ficha ni el quiz.'); }catch(e2){} }
     }, true);
   }catch(e){ if(window.console) console.warn('[visor] init',e); }
+})();
+</script>
+<script>
+/* (28-sep-2026, noche, Iago) El Carrusel PRO de arriba, SOLO para Protester (y Tester): pone o quita la marca
+   html.lm-carr-si que mira la regla de .carrusel-btn. Va después del MODO VISOR para que en el Ojeador lea la sesión
+   del alumno (y el botón no salga). */
+(function () {
+  'use strict';
+  var IDS = { '23a2b7fb-3373-4877-b245-3a37d1f53de6': 1, '4a3a8cf5-1ed6-4e86-99d1-5b090d5eacfb': 1 };
+  var NOMBRES = ['iago gonzalez tester', 'iago gonzalez protester', 'iago gonzalez pro tester'];
+  function norm(s) { return String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, ' ').trim().toLowerCase(); }
+  function mirar() {
+    var s = null; try { s = JSON.parse(localStorage.getItem('lmpro_session') || 'null'); } catch (e) {}
+    var si = !!(s && s.estado === 'validado' && (IDS[String(s.id || '')] || NOMBRES.indexOf(norm(s.nombre)) >= 0));
+    document.documentElement.classList.toggle('lm-carr-si', si);
+  }
+  mirar();
+  document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') mirar(); });
+  window.addEventListener('storage', mirar);
+  setInterval(mirar, 3000);
 })();
 </script>
 
