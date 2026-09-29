@@ -6,6 +6,10 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 29-sep 18:53 · Fichas y rediseño · EN CURSO · index.html (lmpro) · dictado animado (reproductor de clase, solo
+  Protester), ventana «Repeticiones por frase»: las dos ruedas van de número en número (rueda del ratón, dedo, lápiz y
+  toque). Solo funciones nuevas ruedaPaso/ruedaManejo y su enganche en abrirReps; marcas «(29-sep-2026, Iago)». Lo
+  mismo irá esta noche en ipad.html del Diario.
 - 29-sep 17:22 · Fichas y rediseño · EN CURSO · App de corrección ENTONACIÓN ELEMENTAL (Netlify entonacionelemental ·
   correccionentonacion.lmathome.es): por parejas, afinación y ritmo de 5 % en 5 % (parejas.js); «Otro» no resta sin
   motivo escrito (parejas.js y app.js); 😥 en vez de 🥲, que no sale en el ordenador del aula (pantalla.js y app.js); la
