@@ -6,7 +6,7 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
-- 29-sep 07:42 · Fichas y rediseño · EN CURSO · index.html (ritmoathome) · carta 1.3: el orden corchea+negra /
+- 29-sep 07:42 · Fichas y rediseño · HECHO · commit 8a2766b (ritmoathome) · index.html (ritmoathome) · carta 1.3: el orden corchea+negra /
   negra+corchea como el de los ritmos nuevos (la negra coincide)
 - 29-sep 07:33 · Fichas y rediseño · HECHO · commit 8082ccf (ritmoathome) · index.html (ritmoathome) · carta 1.3: «¿De qué lo conoces?» y árbol
   con negra+corchea y corchea+negra, crafteo solo con los dos tajos
