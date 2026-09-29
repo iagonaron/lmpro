@@ -8127,17 +8127,12 @@ body.tester-sin-by .topbar-right #rs-mini{order:2}
     if(activo!==null) return;
     if(sel){ desarmar(); borrarSel(); return; }                /* (29-sep-2026) con algo seleccionado, la papelera borra solo eso */
     if(!hayTinta()){ desarmar(); return; }
-    var t=ahora();
-    if(armado){
-      if(t-armado<400) return;                                 /* un doble clic sin querer no borra: hay que volver a pulsar */
-      desarmar(); st.trazos.push({ borrar:true });
-      /* memoria: se guardan como mucho las 3 últimas pizarras borradas (para poder deshacer «Borrar todo») */
-      for(var i=st.trazos.length-1, n=0;i>=0;i--){ if(st.trazos[i].borrar && ++n>3){ st.trazos=st.trazos.slice(i+1); break; } }
-      pintarTinta(); estados(); return;
-    }
-    armado=t;
-    var b=document.getElementById('pz-borrar'); b.classList.add('pz-armado'); b.setAttribute('title','Pulsa otra vez para borrar todo');
-    clearTimeout(_tArm); _tArm=setTimeout(desarmar,3000);
+    /* (29-sep-2026, Iago) «que simplemente haya que pulsar una vez, sin confirmar nada»: borra al momento.
+       Si fue sin querer, «Deshacer» trae la pizarra de vuelta. */
+    desarmar(); st.trazos.push({ borrar:true });
+    /* memoria: se guardan como mucho las 3 últimas pizarras borradas (para poder deshacer «Borrar todo») */
+    for(var i=st.trazos.length-1, n=0;i>=0;i--){ if(st.trazos[i].borrar && ++n>3){ st.trazos=st.trazos.slice(i+1); break; } }
+    pintarTinta(); estados();
   }
   function deshacer(){
     if(activo!==null || !st.trazos.length) return;
@@ -8150,7 +8145,9 @@ body.tester-sin-by .topbar-right #rs-mini{order:2}
   function cursor(){
     if(!tinta || !L) return;
     if(st.herr){ tinta.style.cursor=(st.herr==='lazo') ? 'crosshair' : 'default'; return; }   /* (29-sep-2026) */
-    if(!st.goma){ tinta.style.cursor='crosshair'; return; }
+    /* (29-sep-2026, Iago) escribiendo, SIN puntero: «que no se vea puntero alguno» (también en el ordenador del aula, con Linux).
+       La goma conserva su círculo (enseña qué se va a borrar); el lazo y el cursor, el suyo. */
+    if(!st.goma){ tinta.style.cursor='none'; return; }
     var d=Math.max(8,Math.min(120,Math.round(GOMA[st.grosor]*L.s))), r=d/2+1;
     var svg='<svg xmlns="http://www.w3.org/2000/svg" width="'+(d+2)+'" height="'+(d+2)+'"><circle cx="'+r+'" cy="'+r+'" r="'+(d/2)+'" fill="#ffffff" fill-opacity="0.35" stroke="#374151" stroke-width="1.5"/></svg>';
     tinta.style.cursor='url("data:image/svg+xml,'+encodeURIComponent(svg)+'") '+Math.round(r)+' '+Math.round(r)+', crosshair';
