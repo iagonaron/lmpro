@@ -7353,6 +7353,15 @@ body.tester-sin-by .topbar-right #rs-mini{order:2}
    · Los PDF son los del Diario (tabla «libros»); el reparto de páginas
      por lección/acto/unidad está medido sobre esos PDF (25-sep-2026).
    · Visor a pantalla completa con pdf.js (cdnjs), ‹ › y teclado.
+   · (29-sep-2026, Iago) «No se aprovecha la pantalla y tampoco me deja hacer
+     zoom. ¿Puedes hacer que se ajuste al ancho? Y que aparezca el botón de
+     ampliar toda pantalla»: TODAS las páginas al ancho (también las apaisadas
+     de FaActos); zoom con − / % / +, pellizco, Ctrl+rueda, doble toque y las
+     teclas + − 0; con zoom se arrastra la página (dedo o ratón) y el gesto de
+     lado ya no pasa página. Botón «Ampliar» del propio visor, siempre visible
+     con una página abierta: fuera la barra y la lista, pantalla completa y la
+     página SIN sus márgenes blancos al ancho; arriba a la derecha, pequeño:
+     ‹ pág › − + y reducir (Esc también reduce).
    ================================================================ */
 (function(){
   'use strict';
@@ -7363,6 +7372,16 @@ body.tester-sin-by .topbar-right #rs-mini{order:2}
   var SBK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndvaXB0a3lyeGticG52aW95cGl0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0NzI2ODYsImV4cCI6MjA5MjA0ODY4Nn0.B2nKgj5rD0rkdLeMIrd9KgD8lUPWsBT4Y7aCtmnvbjA';
   var PDFJS='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
   var PDFJS_W='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  /* (29-sep-2026) zoom: 100 % = la página (o su contenido, al ampliar) justo al ancho */
+  var ZMIN=0.5, ZMAX=3, ZPASO=1.25;
+  var IOS=/iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform==='MacIntel' && navigator.maxTouchPoints>1);
+  var CAP=IOS ? 16e6 : 24e6;   /* píxeles por lienzo: el iPad no pasa de ~16 Mpx */
+  var ICO={
+    menos:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14"/></svg>',
+    mas:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
+    ampliar:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>',
+    reducir:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/></svg>'
+  };
 
   function norm(s){ return String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/\s+/g,' ').trim().toLowerCase(); }
   function ses(){ try{ return JSON.parse(localStorage.getItem(KEY)||'null'); }catch(e){ return null; } }
@@ -7397,7 +7416,8 @@ body.tester-sin-by .topbar-right #rs-mini{order:2}
     ];
 
   /* ---------- estado ---------- */
-  var st={ curso:null, paths:{}, activo:{}, doc:null, docPath:null, libro:null, item:null, pag:1, cargado:false, col:false };
+  var st={ curso:null, paths:{}, activo:{}, doc:null, docPath:null, libro:null, item:null, pag:1, cargado:false, col:false,
+            zoom:1, amp:false, fsAmp:false };   /* (29-sep-2026) zoom · ampliado · pantalla completa pedida al ampliar */
 
   async function cargarDatos(){
     var cursos=[]; try{ cursos=await rest('cursos?select=codigo,activo'); }catch(e){}
@@ -7466,14 +7486,32 @@ body.tester-sin-by .topbar-right #rs-mini{order:2}
       +'@media (max-width:700px){.lb-col{position:absolute;right:0;top:0;bottom:0;width:min(320px,86vw);z-index:2;box-shadow:-12px 0 30px rgba(0,0,0,.45)}'
       /* (28-sep-2026) móvil: la barra en dos filas (arriba título, páginas, Lista y ✕; debajo los libros) para que la ✕ no se salga */
       +'.lb-top{flex-wrap:wrap;row-gap:8px;padding:8px 10px}.lb-tabs{order:9;flex:1 1 100%;overflow-x:auto}.lb-tabs .lb-b{flex:0 0 auto}'
-      +'.lb-b{height:36px;min-width:36px;padding:0 10px}.lb-pag{min-width:52px}}'
+      +'.lb-b{height:36px;min-width:36px;padding:0 10px}.lb-pag{min-width:52px}#lb-ov .lb-zg{display:none}}'
+      /* (29-sep-2026) zoom · ampliar · mandos flotantes */
+      +'.lb-b svg{width:20px;height:20px;display:block;flex:0 0 auto}'
+      +'.lb-b.lm-lb-ic{width:40px;padding:0}'
+      +'.lb-zg{display:inline-flex;align-items:center;gap:4px;flex:0 0 auto}'
+      +'.lb-zp{min-width:66px;padding:0 8px;font-variant-numeric:tabular-nums}'
+      +'#lm-lb-max,#lm-lb-flot{display:none!important}'   /* los del aspecto (piel) de antes: el botón ahora es del visor */
+      +'@media (max-width:920px) and (min-width:701px){.lb-top{flex-wrap:wrap;row-gap:8px}.lb-tabs{order:9;flex:1 1 100%;overflow-x:auto}.lb-tabs .lb-b{flex:0 0 auto}}'
+      +'.lb-flot{display:none;position:absolute;top:10px;right:10px;z-index:5;align-items:center;gap:2px;padding:4px;border-radius:12px;background:rgba(11,18,32,.82);box-shadow:0 6px 22px rgba(0,0,0,.35);transition:opacity .4s}'
+      +'#lb-ov.lb-amp #lb-flot{display:flex}'
+      +'#lb-ov.lb-amp #lb-flot.lb-quieto{opacity:.3}#lb-ov.lb-amp #lb-flot:hover{opacity:1}'
+      +'.lb-f{width:40px;height:40px;border:0;border-radius:9px;background:transparent;color:#fff;font:800 22px/1 system-ui,-apple-system,"Segoe UI",sans-serif;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;padding:0}'
+      +'.lb-f:hover{background:rgba(255,255,255,.16)}.lb-f svg{width:20px;height:20px}'
+      +'.lb-fp{min-width:58px;text-align:center;color:#fff;font:700 13px/1 system-ui,-apple-system,"Segoe UI",sans-serif;font-variant-numeric:tabular-nums}'
+      +'.lb-fsep{width:1px;height:22px;background:rgba(255,255,255,.25);margin:0 3px}'
+      +'#lb-ov.lb-amp .lb-top,#lb-ov.lb-amp .lb-col{display:none!important}'
+      +'#lb-ov.lb-amp #lb-vis{padding:10px!important;background:#fff!important}'
+      +'#lb-ov.lb-amp #lb-vis canvas{box-shadow:none}'
+      +'#lb-vis.lb-arrastra canvas{cursor:grab}#lb-vis.lb-arrastrando canvas{cursor:grabbing}'
       +'.lb-lista{padding:16px;display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px;max-width:1400px;margin:0 auto}'
       +'.lb-it{text-align:left;border:2px solid var(--c);border-radius:12px;background:#111a2b;color:#e8eef5;padding:12px 14px;font:800 15px inherit;cursor:pointer;min-height:58px}'
       +'.lb-it small{display:block;font-size:11.5px;color:#8a95a5;font-weight:700;margin-top:3px}'
       +'.lb-it.act{background:var(--c);color:#fff}.lb-it.act small{color:#fff;opacity:.85}'
       /* (28-sep-2026, Iago) «aprovechando el ancho»: las páginas verticales se amplían al ancho y se bajan con scroll;
          las horizontales se ven enteras */
-      +'.lb-vis{position:absolute;inset:0;display:block;overflow-x:hidden;overflow-y:auto;padding:8px 8px 24px;background:#e9ecf1;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;scrollbar-gutter:stable}'
+      +'.lb-vis{position:absolute;inset:0;display:block;overflow:auto;padding:8px 8px 24px;background:#e9ecf1;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;scrollbar-gutter:stable;touch-action:pan-x pan-y}'
       +'.lb-vis canvas{display:block;margin:0 auto;max-width:none;max-height:none;box-shadow:0 0 0 1px #c9ced8;background:#fff}'
       +'.lb-vis .lb-msg{margin-top:10vh}'
       +'.lb-msg{padding:40px;text-align:center;color:#8a95a5;font-weight:700}'
@@ -7486,23 +7524,110 @@ body.tester-sin-by .topbar-right #rs-mini{order:2}
     o=document.createElement('div'); o.id='lb-ov'; o.className='lb-ov';
     o.innerHTML='<div class="lb-top"><div class="lb-tabs" id="lb-tabs"></div><div class="lb-tit" id="lb-tit">Libros</div>'
       +'<button class="lb-b" id="lb-prev" title="Página anterior">‹</button><span class="lb-pag" id="lb-pag"></span><button class="lb-b" id="lb-next" title="Página siguiente">›</button>'
+      /* (29-sep-2026, Iago) zoom (− % +) y «Ampliar», antes de «Lista» */
+      +'<div class="lb-zg" id="lb-zg" role="group" aria-label="Zoom"><button class="lb-b lm-lb-ic" id="lb-zmenos" title="Alejar (−)" aria-label="Alejar">'+ICO.menos+'</button>'
+      +'<button class="lb-b lb-zp" id="lb-zp" title="Ajustar al ancho (0)">100 %</button>'
+      +'<button class="lb-b lm-lb-ic" id="lb-zmas" title="Acercar (+)" aria-label="Acercar">'+ICO.mas+'</button></div>'
+      +'<button class="lb-b lm-lb-ic" id="lb-amp" title="Ampliar a toda la pantalla" aria-label="Ampliar a toda la pantalla">'+ICO.ampliar+'</button>'
       +'<button class="lb-b" id="lb-lista" title="Lista (columna a la derecha)">Lista</button><button class="lb-b" id="lb-x" title="Cerrar">✕</button></div>'
-      +'<div class="lb-main"><div class="lb-body" id="lb-body"></div><aside class="lb-col" id="lb-col" aria-label="Lista"><div class="lb-col-h" id="lb-col-h"></div><div class="lb-col-l" id="lb-col-l"></div></aside></div>';
+      +'<div class="lb-main"><div class="lb-body" id="lb-body"></div><aside class="lb-col" id="lb-col" aria-label="Lista"><div class="lb-col-h" id="lb-col-h"></div><div class="lb-col-l" id="lb-col-l"></div></aside></div>'
+      +'<div class="lb-flot" id="lb-flot" role="toolbar" aria-label="Página y zoom">'
+      +'<button type="button" class="lb-f" data-a="prev" title="Página anterior" aria-label="Página anterior">‹</button><span class="lb-fp" id="lb-fpag"></span>'
+      +'<button type="button" class="lb-f" data-a="next" title="Página siguiente" aria-label="Página siguiente">›</button><span class="lb-fsep"></span>'
+      +'<button type="button" class="lb-f" data-a="menos" title="Alejar" aria-label="Alejar">'+ICO.menos+'</button>'
+      +'<button type="button" class="lb-f" data-a="mas" title="Acercar" aria-label="Acercar">'+ICO.mas+'</button>'
+      +'<button type="button" class="lb-f" data-a="red" title="Reducir (Esc)" aria-label="Reducir">'+ICO.reducir+'</button></div>';
     document.body.appendChild(o);
     o.querySelector('#lb-x').addEventListener('click',cerrar);
     o.querySelector('#lb-lista').addEventListener('click',function(){ columna(!st.col); });   /* (28-sep-2026, Iago) abre/cierra la columna */
     o.querySelector('#lb-prev').addEventListener('click',function(){ irPag(st.pag-1); });
     o.querySelector('#lb-next').addEventListener('click',function(){ irPag(st.pag+1); });
+    /* (29-sep-2026) zoom y ampliar */
+    o.querySelector('#lb-zmenos').addEventListener('click',function(){ zoomA(st.zoom/ZPASO); });
+    o.querySelector('#lb-zmas').addEventListener('click',function(){ zoomA(st.zoom*ZPASO); });
+    o.querySelector('#lb-zp').addEventListener('click',function(){ zoomA(1); });
+    o.querySelector('#lb-amp').addEventListener('click',function(){ ampliar(true); });
+    o.querySelector('#lb-flot').addEventListener('click',function(e){
+      var b=e.target.closest && e.target.closest('.lb-f'); if(!b) return;
+      e.stopPropagation();
+      var a=b.getAttribute('data-a');
+      if(a==='prev') irPag(st.pag-1); else if(a==='next') irPag(st.pag+1);
+      else if(a==='menos') zoomA(st.zoom/ZPASO); else if(a==='mas') zoomA(st.zoom*ZPASO);
+      else if(a==='red') ampliar(false);
+      tocarFlot();
+    });
     document.addEventListener('keydown',function(e){ if(!o.classList.contains('open')) return;
-      if(e.key==='Escape') cerrar(); else if(e.key==='ArrowRight'||e.key==='PageDown') irPag(st.pag+1); else if(e.key==='ArrowLeft'||e.key==='PageUp') irPag(st.pag-1); });
+      if(e.key==='Escape'){ if(st.amp) ampliar(false); else cerrar(); }   /* (29-sep-2026) ampliado: Esc primero reduce */
+      else if(e.key==='ArrowRight'||e.key==='PageDown') irPag(st.pag+1); else if(e.key==='ArrowLeft'||e.key==='PageUp') irPag(st.pag-1);
+      else if(!e.ctrlKey && !e.metaKey && !e.altKey && st.item){   /* (29-sep-2026) + − 0 (Ctrl + / − siguen siendo del navegador) */
+        if(e.key==='+'||e.key==='=') zoomA(st.zoom*ZPASO); else if(e.key==='-'||e.key==='_') zoomA(st.zoom/ZPASO); else if(e.key==='0') zoomA(1);
+      } });
     var x0=null, y0=null;   /* (28-sep-2026) solo un gesto de lado cambia de página: bajar por la página o por la lista, no */
     o.addEventListener('touchstart',function(e){ if(e.target && e.target.closest && e.target.closest('#lb-col')){ x0=null; return; } x0=e.touches[0].clientX; y0=e.touches[0].clientY; },{passive:true});
     o.addEventListener('touchend',function(e){ if(x0==null||!st.item) return; var dx=e.changedTouches[0].clientX-x0, dy=e.changedTouches[0].clientY-y0; x0=null;
+      /* (29-sep-2026) con zoom (la página no cabe a lo ancho), el dedo la mueve: no pasa página */
+      var v=document.getElementById('lb-vis'); if(v && v.scrollWidth>v.clientWidth+2) return;
       if(Math.abs(dx)>60 && Math.abs(dx)>1.5*Math.abs(dy)) irPag(st.pag+(dx<0?1:-1)); },{passive:true});
+    /* (29-sep-2026) PELLIZCO con dos dedos: zoom alrededor de los dedos (y moverlos arrastra la página) */
+    var pin=null;
+    o.addEventListener('touchstart',function(e){
+      if(e.touches.length!==2 || !document.getElementById('lb-vis') || !(e.target.closest && e.target.closest('#lb-vis'))) return;
+      var a=e.touches[0], b=e.touches[1];
+      pin={ d:Math.max(1,Math.hypot(b.clientX-a.clientX,b.clientY-a.clientY)), z:st.zoom, mx:(a.clientX+b.clientX)/2, my:(a.clientY+b.clientY)/2 };
+      x0=null; if(e.cancelable) e.preventDefault();
+    },{passive:false});
+    o.addEventListener('touchmove',function(e){
+      if(!pin || e.touches.length!==2) return;
+      var a=e.touches[0], b=e.touches[1], d=Math.max(1,Math.hypot(b.clientX-a.clientX,b.clientY-a.clientY)), mx=(a.clientX+b.clientX)/2, my=(a.clientY+b.clientY)/2;
+      /* si el navegador nos deja el gesto, el arrastre de los dos dedos lo hacemos aquí; si no, ya lo hace él */
+      if(e.cancelable){ e.preventDefault(); var v=document.getElementById('lb-vis'); if(v){ v.scrollLeft-=mx-pin.mx; v.scrollTop-=my-pin.my; } }
+      pin.mx=mx; pin.my=my;
+      zoomA(pin.z*d/pin.d, mx, my);
+    },{passive:false});
+    o.addEventListener('touchend',function(e){ if(pin && e.touches.length<2){ pin=null; x0=null; } },{passive:true});
+    o.addEventListener('touchcancel',function(){ pin=null; },{passive:true});
+    o.addEventListener('gesturestart',function(e){ if(e.target.closest && e.target.closest('#lb-vis')) e.preventDefault(); });   /* Safari: que no amplíe la página entera */
+    /* Ctrl/⌘ + rueda (y el pellizco del trackpad): zoom alrededor del puntero */
+    /* (en el documento y no en el visor: así Chrome entrega también el Ctrl+rueda y deja anularle el zoom de toda la página) */
+    document.addEventListener('wheel',function(e){
+      if(!(e.ctrlKey||e.metaKey) || !o.classList.contains('open') || !document.getElementById('lb-vis')) return;
+      if(!(e.target && e.target.closest && e.target.closest('#lb-ov'))) return;
+      e.preventDefault();
+      zoomA(st.zoom*Math.exp(-e.deltaY*0.0025), e.clientX, e.clientY);
+    },{ passive:false, capture:true });
+    /* doble toque / doble clic en la página: 100 % ↔ 200 % */
+    o.addEventListener('dblclick',function(e){
+      if(!(e.target && e.target.tagName==='CANVAS' && e.target.closest && e.target.closest('#lb-vis'))) return;
+      e.preventDefault(); zoomA(st.zoom>1.05 ? 1 : 2, e.clientX, e.clientY);
+    });
+    /* con el ratón (y en pantallas cuyo dedo hace de ratón): arrastrar la página cuando no cabe */
+    var arr=null;
+    o.addEventListener('pointerdown',function(e){
+      if(st.amp) tocarFlot();
+      if(e.pointerType!=='mouse' || e.button!==0 || !(e.target && e.target.tagName==='CANVAS')) return;
+      var v=document.getElementById('lb-vis'); if(!v || !v.contains(e.target)) return;
+      if(v.scrollWidth<=v.clientWidth+2 && v.scrollHeight<=v.clientHeight+2) return;
+      arr={ id:e.pointerId, x:e.clientX, y:e.clientY, sl:v.scrollLeft, sp:v.scrollTop, v:v, va:false };   /* va: ya arrastrando */
+    });
+    o.addEventListener('pointermove',function(e){
+      if(st.amp) tocarFlot();
+      if(!arr || e.pointerId!==arr.id) return;
+      var dx=e.clientX-arr.x, dy=e.clientY-arr.y;
+      if(!arr.va){ if(Math.abs(dx)+Math.abs(dy)<5) return;   /* un clic o un doble clic no es arrastrar */
+        arr.va=true; try{ arr.v.setPointerCapture(arr.id); }catch(_){} arr.v.classList.add('lb-arrastrando'); }
+      e.preventDefault();
+      arr.v.scrollLeft=arr.sl-dx; arr.v.scrollTop=arr.sp-dy;
+    });
+    var finArr=function(){ if(!arr) return; if(arr.va){ try{ arr.v.releasePointerCapture(arr.id); }catch(_){} arr.v.classList.remove('lb-arrastrando'); } arr=null; };
+    o.addEventListener('pointerup',finArr); o.addEventListener('pointercancel',finArr);
+    /* si se sale de la pantalla completa que pidió «Ampliar» (tecla del navegador), se reduce también */
+    var finFS=function(){ if(!(document.fullscreenElement||document.webkitFullscreenElement) && st.amp && st.fsAmp){ st.fsAmp=false; ampliar(false,true); } };
+    document.addEventListener('fullscreenchange',finFS); document.addEventListener('webkitfullscreenchange',finFS);
     window.addEventListener('resize',function(){ if(o.classList.contains('open') && st.item) render(); });
     return o;
   }
-  function cerrar(){ var o=document.getElementById('lb-ov'); if(o) o.classList.remove('open'); document.documentElement.style.overflow='';
+  function cerrar(){ var o=document.getElementById('lb-ov'); if(o){ o.classList.remove('open'); o.classList.remove('lb-amp'); } document.documentElement.style.overflow='';
+    st.amp=false; st.fsAmp=false;   /* (29-sep-2026) */
     /* (28-sep-2026, Iago) si la pantalla completa la pidió el libro, se quita al cerrarlo */
     try{ var fe=document.fullscreenElement||document.webkitFullscreenElement; if(o && fe===o) (document.exitFullscreen||document.webkitExitFullscreen).call(document); }catch(e){} }
   function tabs(){
@@ -7513,8 +7638,10 @@ body.tester-sin-by .topbar-right #rs-mini{order:2}
   function barra(){
     var tit=document.getElementById('lb-tit'), pag=document.getElementById('lb-pag');
     var enVis=!!st.item;
-    ['lb-prev','lb-next'].forEach(function(id){ var b=document.getElementById(id); if(b) b.style.visibility=enVis?'visible':'hidden'; });
+    ['lb-prev','lb-next','lb-zg','lb-amp'].forEach(function(id){ var b=document.getElementById(id); if(b) b.style.visibility=enVis?'visible':'hidden'; });
     pag.textContent=enVis&&st.doc ? (st.pag+' / '+st.doc.numPages) : '';
+    var fp=document.getElementById('lb-fpag'); if(fp) fp.textContent=pag.textContent;   /* (29-sep-2026) */
+    pintarZoom();
     var a=st.libro&&st.activo[st.libro.tipo];
     tit.innerHTML=st.libro ? esc(st.libro.t)+(st.item?' · '+esc(st.item.t):'')+'<small>'+(st.item?(a&&a.id===st.item.id?'Esta semana':'&nbsp;'):'Todas las '+(st.libro.tipo==='teoria'&&MODO==='GP'?'unidades':(st.libro.tipo==='faactos'?'actos':(st.libro.tipo==='teoria'?'secciones':'lecciones'))))+'</small>' : 'Libros';
     var bl=document.getElementById('lb-lista'); if(bl){ bl.classList.toggle('on',!!st.col); bl.setAttribute('aria-pressed',st.col?'true':'false'); }
@@ -7555,25 +7682,113 @@ body.tester-sin-by .topbar-right #rs-mini{order:2}
       await render();
     }catch(e){ body.innerHTML='<div class="lb-msg">'+esc(e.message||e)+'</div>'; }
   }
-  var _rt=0, _pagPintada=0;
+  var _rt=0, _pagPintada=0, _zt=0, _tq=0, _cajas={};
   async function render(){
     var tk=++_rt; var vis=document.getElementById('lb-vis'); if(!vis||!st.doc) return;
-    var page=await st.doc.getPage(st.pag); if(tk!==_rt) return;
-    var W=vis.clientWidth-16, H=vis.clientHeight-32;
+    var pag=st.pag, zoom=st.zoom, amp=st.amp;
+    var page=await st.doc.getPage(pag); if(tk!==_rt) return;
     var v1=page.getViewport({scale:1});
-    /* (28-sep-2026, Iago) «aprovechando el ancho»: la página vertical, al ancho (se baja con scroll); la horizontal, entera */
-    var sc=(v1.height>v1.width) ? W/v1.width : Math.min(W/v1.width, H/v1.height);
-    var dpr=Math.min(2.5, window.devicePixelRatio||1), cw=v1.width*sc, ch=v1.height*sc;
-    if(cw*ch*dpr*dpr>16e6) dpr=Math.max(1, Math.sqrt(16e6/(cw*ch)));   /* tope de los iPad: 16 Mpx por lienzo */
-    var vp=page.getViewport({scale:sc*dpr});
-    var c=document.createElement('canvas'); c.width=Math.floor(vp.width); c.height=Math.floor(vp.height);
-    var hc=Math.floor(vp.height/dpr);
-    c.style.width=Math.floor(vp.width/dpr)+'px'; c.style.height=hc+'px';
-    c.style.marginTop=(hc<H) ? Math.floor((H-hc)/2)+'px' : '0';   /* la que cabe entera, centrada */
+    /* (29-sep-2026) ampliado: solo el contenido, sin los márgenes blancos de la página */
+    var bb=amp ? await caja(page, pag) : null; if(tk!==_rt) return;
+    if(!bb) bb={ x:0, y:0, w:1, h:1 };
+    var pad=amp?10:8, W=Math.max(60, vis.clientWidth-2*pad), H=Math.max(60, vis.clientHeight-(amp?20:32));
+    var bw=v1.width*bb.w, bh=v1.height*bb.h;
+    /* (28-sep-2026) la vertical al ancho · (29-sep-2026, Iago) «que se ajuste al ancho»: TODAS al ancho, también
+       las apaisadas (FaActos); el zoom multiplica y lo que no cabe se mueve con scroll, dedo o ratón */
+    var sc=(W/bw)*zoom, cw=bw*sc, ch=bh*sc;
+    var dpr=Math.min(2.5, window.devicePixelRatio||1);
+    if(cw*ch*dpr*dpr>CAP) dpr=Math.max(0.5, Math.sqrt(CAP/(cw*ch)));   /* tope de píxeles por lienzo (iPad: 16 Mpx) */
+    var k=sc*dpr;
+    var vp=page.getViewport({ scale:k, offsetX:-v1.width*bb.x*k, offsetY:-v1.height*bb.y*k });
+    var c=document.createElement('canvas'); c.width=Math.max(1,Math.floor(cw*dpr)); c.height=Math.max(1,Math.floor(ch*dpr));
+    c.style.width=Math.floor(cw)+'px'; c.style.height=Math.floor(ch)+'px';
+    c.style.marginTop=(ch<H) ? Math.floor((H-ch)/2)+'px' : '0';   /* la que cabe entera, centrada */
     await page.render({ canvasContext:c.getContext('2d'), viewport:vp }).promise;
-    if(tk!==_rt) return;
-    var otra=(_pagPintada!==st.pag); _pagPintada=st.pag;
-    vis.innerHTML=''; vis.appendChild(c); if(otra) vis.scrollTop=0; barra();
+    if(tk!==_rt || pag!==st.pag || zoom!==st.zoom || amp!==st.amp) return;   /* mientras, cambió algo: ya viene otra */
+    var otra=(_pagPintada!==pag); _pagPintada=pag;
+    var vieja=vis.querySelector('canvas');
+    if(vieja && !otra) vis.replaceChild(c, vieja);   /* misma página (zoom, tamaño): se cambia sin perder el sitio */
+    else { vis.innerHTML=''; vis.appendChild(c); }
+    if(otra){ vis.scrollTop=0; vis.scrollLeft=0; }
+    arrastrable(); barra();
+  }
+  /* (29-sep-2026) dónde hay tinta en la página (fracciones de la página), para ampliar sin márgenes */
+  async function caja(page, pag){
+    var key=st.docPath+'|'+pag; if(_cajas.hasOwnProperty(key)) return _cajas[key];
+    var r=null;
+    try{
+      var v=page.getViewport({scale:1}), s=Math.min(2, 600/v.width), vp=page.getViewport({scale:s});
+      var cv=document.createElement('canvas'); cv.width=Math.ceil(vp.width); cv.height=Math.ceil(vp.height);
+      var x=cv.getContext('2d',{ willReadFrequently:true }); x.fillStyle='#fff'; x.fillRect(0,0,cv.width,cv.height);
+      await page.render({ canvasContext:x, viewport:vp }).promise;
+      var Wc=cv.width, Hc=cv.height, d=x.getImageData(0,0,Wc,Hc).data, x0=Wc, y0=Hc, x1=-1, y1=-1;
+      for(var yy=0;yy<Hc;yy++){ for(var xx=0;xx<Wc;xx++){ var p=(yy*Wc+xx)*4;
+        if(d[p]<200||d[p+1]<200||d[p+2]<200){ if(xx<x0) x0=xx; if(xx>x1) x1=xx; if(yy<y0) y0=yy; if(yy>y1) y1=yy; } } }
+      if(x1>=0){
+        var m=Math.round(Wc*0.015); x0=Math.max(0,x0-m); y0=Math.max(0,y0-m); x1=Math.min(Wc-1,x1+m); y1=Math.min(Hc-1,y1+m);
+        r={ x:x0/Wc, y:y0/Hc, w:(x1-x0+1)/Wc, h:(y1-y0+1)/Hc };
+        if(r.w>0.97 && r.h>0.97) r=null;   /* no hay márgenes que quitar */
+      }
+    }catch(e){ r=null; }
+    _cajas[key]=r; return r;
+  }
+  /* (29-sep-2026) ZOOM · z relativo a «al ancho»; (fx,fy) = el punto de la pantalla que se queda quieto
+     (los dedos, el puntero); sin él, el centro. Al momento se estira el lienzo que hay; al parar, se vuelve
+     a dibujar nítido a ese tamaño. */
+  function zoomA(z, fx, fy){
+    if(!st.item) return;
+    z=Math.max(ZMIN, Math.min(ZMAX, Math.round(z*1000)/1000));
+    if(Math.abs(z-st.zoom)<0.002) return;
+    var vis=document.getElementById('lb-vis'), c=vis && vis.querySelector('canvas'), f=z/st.zoom;
+    st.zoom=z; pintarZoom();
+    if(c){
+      var vr=vis.getBoundingClientRect(), r=c.getBoundingClientRect();
+      if(fx==null){ fx=vr.left+vr.width/2; fy=vr.top+vr.height/2; }
+      var ux=(fx-r.left)/(r.width||1), uy=(fy-r.top)/(r.height||1), nw=r.width*f, nh=r.height*f, H=vis.clientHeight-(st.amp?20:32);
+      c.style.width=nw+'px'; c.style.height=nh+'px'; c.style.marginTop=(nh<H) ? Math.floor((H-nh)/2)+'px' : '0';
+      var r2=c.getBoundingClientRect();
+      vis.scrollLeft+=(r2.left+ux*nw)-fx; vis.scrollTop+=(r2.top+uy*nh)-fy;
+      arrastrable();
+    }
+    clearTimeout(_zt); _zt=setTimeout(function(){ render(); }, 200);
+  }
+  function pintarZoom(){
+    var p=document.getElementById('lb-zp'); if(p) p.textContent=Math.round(st.zoom*100)+' %';
+    var a=document.getElementById('lb-zmenos'), b=document.getElementById('lb-zmas');
+    if(a) a.disabled=st.zoom<=ZMIN+0.001; if(b) b.disabled=st.zoom>=ZMAX-0.001;
+  }
+  function arrastrable(){
+    var v=document.getElementById('lb-vis'); if(!v) return;
+    v.classList.toggle('lb-arrastra', v.scrollWidth>v.clientWidth+2 || v.scrollHeight>v.clientHeight+2);
+  }
+  /* (29-sep-2026, Iago) «que aparezca el botón de ampliar toda pantalla»: AMPLIAR = fuera la barra y la lista,
+     pantalla completa (si el aparato deja y no lo estaba ya) y la página sin márgenes al ancho. Reducir (o Esc)
+     deja todo como estaba; la pantalla completa solo se quita si la pidió «Ampliar». */
+  function ampliar(on, yaFuera){
+    var o=document.getElementById('lb-ov'); on=!!on; if(!o || on===st.amp) return;
+    if(on && !st.item) return;
+    st.amp=on; o.classList.toggle('lb-amp', on);
+    _pagPintada=0;   /* cambia todo el encuadre: se empieza arriba a la izquierda */
+    if(on){
+      if(!(document.fullscreenElement||document.webkitFullscreenElement)){
+        var rq=o.requestFullscreen||o.webkitRequestFullscreen;
+        if(rq){ try{ var pr=rq.call(o); st.fsAmp=true; if(pr&&pr.catch) pr.catch(function(){ st.fsAmp=false; }); }catch(e){ st.fsAmp=false; } }
+      }
+      tocarFlot();
+    } else {
+      if(st.fsAmp && !yaFuera){ try{ if(document.fullscreenElement||document.webkitFullscreenElement) (document.exitFullscreen||document.webkitExitFullscreen).call(document); }catch(e){} }
+      st.fsAmp=false;
+      var ba=document.getElementById('lb-amp'); if(ba){ try{ ba.focus({ preventScroll:true }); }catch(e){} }
+    }
+    barra();
+    (window.requestAnimationFrame||setTimeout)(function(){ render(); });
+    setTimeout(function(){ if(o.classList.contains('open')) render(); }, 450);   /* tras la animación de pantalla completa */
+  }
+  /* los mandos flotantes se atenúan si no se toca nada en 3 s */
+  function tocarFlot(){
+    var f=document.getElementById('lb-flot'); if(!f) return;
+    f.classList.remove('lb-quieto'); clearTimeout(_tq);
+    _tq=setTimeout(function(){ if(st.amp) f.classList.add('lb-quieto'); }, 3000);
   }
   function irPag(n){ if(!st.doc||!st.item) return; n=Math.max(1,Math.min(st.doc.numPages,n)); if(n===st.pag) return; st.pag=n;
     /* si se sale del capítulo, el título sigue al capítulo en que cae la página */
@@ -7581,6 +7796,7 @@ body.tester-sin-by .topbar-right #rs-mini{order:2}
     render(); }
   function abrirLibro(tipo){
     var b=CATALOGO.filter(function(x){ return x.tipo===tipo; })[0]; if(!b) return;
+    if(st.libro!==b){ st.zoom=1; pintarZoom(); }   /* (29-sep-2026) otro libro: vuelve a «al ancho» */
     st.libro=b; var a=st.activo[b.tipo];
     var it=a ? b.items.filter(function(i){ return i.id===a.id; })[0] : null;
     /* (28-sep-2026, Iago) siempre se abre una página: la de esta semana; si no hay (o es el kit), la primera (en el kit,
