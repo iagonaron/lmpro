@@ -5504,6 +5504,52 @@ window.DictadoClase = (function(){
     r.scrollTop=(valor-1)*ih;
     ruedaLeer(id);
   }
+  /* (29-sep-2026, Iago) «funciona bastante mal el selector de repeticiones por frase … estuve un
+     buen rato para poner 3 repeticiones en clave de fa». Cada golpe de la rueda del ratón (100–120 px)
+     saltaba 2 o 3 números (de 2 a 4 o a 5: el 3 no había manera) y con el dedo la inercia se pasaba.
+     Ahora: cada golpe de rueda = un número; con el dedo, el lápiz o arrastrando con el ratón la rueda
+     sigue al dedo SIN inercia y al soltar se queda en el número más cercano; tocar un número lo elige. */
+  function ruedaPaso(id, d){
+    var v=Math.max(1, Math.min(6, ruedaLeer(id)+d));
+    ruedaColoca(id, v); pintaRepsDur();
+  }
+  function ruedaManejo(r, id){
+    r.style.touchAction='none';                       // sin desplazamiento nativo: lo mueve esto
+    var acum=0, tUlt=0, tPaso=0, arr=null;
+    r.addEventListener('wheel', function(e){
+      e.preventDefault();
+      var dy=e.deltaMode===1 ? e.deltaY*40 : (e.deltaMode===2 ? e.deltaY*400 : e.deltaY);
+      var t=Date.now();
+      if(t-tUlt>250) acum=0;                          // gesto nuevo
+      tUlt=t; acum+=dy;
+      if(Math.abs(acum)>=40){                         // un golpe de ratón (o un trozo de trackpad) = un número
+        if(t-tPaso>=90){ ruedaPaso(id, acum>0?1:-1); tPaso=t; }
+        acum=0;
+      }
+    }, {passive:false});
+    r.addEventListener('pointerdown', function(e){
+      if(e.pointerType==='mouse' && e.button!==0) return;
+      arr={p:e.pointerId, y:e.clientY, top:r.scrollTop, movido:false, it:e.target.closest('.dc-rueda-it')};
+      try{ r.setPointerCapture(e.pointerId); }catch(_){}
+      r.style.scrollSnapType='none';                  // mientras se arrastra, sin imán
+      e.preventDefault();
+    });
+    r.addEventListener('pointermove', function(e){
+      if(!arr || e.pointerId!==arr.p) return;
+      var dy=e.clientY-arr.y;
+      if(Math.abs(dy)>6) arr.movido=true;
+      if(arr.movido){ r.scrollTop=arr.top-dy; ruedaLeer(id); pintaRepsDur(); }
+    });
+    function suelta(e){
+      if(!arr || e.pointerId!==arr.p) return;
+      var a=arr; arr=null;
+      r.style.scrollSnapType='';
+      if(!a.movido && a.it){ ruedaColoca(id, parseInt(a.it.getAttribute('data-v'),10)||3); pintaRepsDur(); return; }
+      ruedaColoca(id, ruedaLeer(id)); pintaRepsDur();
+    }
+    r.addEventListener('pointerup', suelta);
+    r.addEventListener('pointercancel', suelta);
+  }
   function abrirReps(){
     var w=el('dcReps');
     if(!w){
@@ -5522,10 +5568,7 @@ window.DictadoClase = (function(){
       ['dcRuedaSol','dcRuedaFa'].forEach(function(id){
         var r=el(id); if(!r) return;
         r.addEventListener('scroll', function(){ ruedaLeer(id); pintaRepsDur(); }, {passive:true});
-        r.addEventListener('click', function(e){
-          var it=e.target.closest('.dc-rueda-it'); if(!it) return;
-          ruedaColoca(id, parseInt(it.getAttribute('data-v'),10)||3);
-        });
+        ruedaManejo(r, id);   // (29-sep-2026, Iago) de número en número: rueda del ratón, dedo, lápiz y toque
       });
     }
     w.classList.add('on');
