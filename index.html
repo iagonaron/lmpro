@@ -2131,7 +2131,7 @@ function showEnig(kind){
         '.anot-b.on{border-color:'+AP.on+';background:'+AP.onBg+';color:'+AP.onTxt+';box-shadow:0 0 0 1px '+AP.onSh+'}'+
         '.anot-sw{width:18px;height:18px;border-radius:5px;display:inline-block;vertical-align:-4px}'+'.anot-b.anot-color{padding:6px 8px;line-height:0}'+
         /* (26-sep-2026, Iago) punta fina negra: un punto negro (con aro claro para que se vea sobre la barra oscura) */
-        '.anot-sw.anot-sw-k{position:relative}'+'.anot-sw-k i{position:absolute;left:50%;top:50%;width:10px;height:10px;margin:-5px 0 0 -5px;border-radius:50%;background:#000;box-shadow:0 0 0 1.5px rgba(255,255,255,.85)}'+
+        '.anot-sw.anot-sw-k{position:relative}'+'.anot-sw-k i{position:absolute;left:50%;top:50%;width:10px;height:10px;margin:-5px 0 0 -5px;border-radius:50%;background:#16a34a;box-shadow:0 0 0 1.5px rgba(255,255,255,.85)}'+
         /* (26-sep-2026, Iago) rueda de TONALIDAD arriba a la izquierda (como en TEORÍA at home): notas · ♯/♭ · M/m */
         '.anot-ton{position:relative;display:flex;gap:5px;align-items:center;border:1px solid '+AP.borde+';border-radius:10px;padding:5px;background:rgba(0,0,0,.22);margin:3px 4px 0 0}'+
         '.anot-ton-lbl{position:absolute;left:8px;top:-6px;font:800 8px/1 Arial;letter-spacing:.14em;color:'+AP.tit+';background:'+AP.lbl+';padding:1px 4px;border-radius:3px;text-transform:uppercase;pointer-events:none}'+
@@ -2172,7 +2172,7 @@ function showEnig(kind){
       +'<button class="anot-b anot-color" data-t="c1" aria-label="Subrayar verde"><span class="anot-sw" style="background:#50e68c"></span></button>'
       +'<button class="anot-b anot-color" data-t="c2" aria-label="Subrayar rosa"><span class="anot-sw" style="background:#ff6eb4"></span></button>'
       +'<button class="anot-b anot-color" data-t="c3" aria-label="Subrayar azul"><span class="anot-sw" style="background:#5ab4ff"></span></button>'
-      +'<button class="anot-b anot-color" data-t="k" aria-label="Punta fina negra" title="Punta fina negra"><span class="anot-sw anot-sw-k"><i></i></span></button>'   /* (26-sep-2026, Iago) punta fina negra */
+      +'<button class="anot-b anot-color" data-t="k" aria-label="Punta fina verde" title="Punta fina verde"><span class="anot-sw anot-sw-k"><i></i></span></button>'   /* (26-sep-2026, Iago) punta fina; (29-sep) verde, el color de ritmo */
       +'<button class="anot-b" data-t="nota">📝 Nota</button>'
       +'<button class="anot-b" data-t="goma">🧽 Goma</button>'
       +'<span style="flex:1 1 auto"></span>'
@@ -2264,8 +2264,9 @@ function showEnig(kind){
           return;
         }
         if(tool==='goma'){ pg.borrando=true; borraEn(pg,nx,ny); try{ cv.setPointerCapture(ev.pointerId); }catch(e){} return; }
-        /* (26-sep-2026, Iago) 'k' = punta FINA NEGRA totalmente opaca; los rotuladores de color, igual que antes */
-        pg.cur=(tool==='k')?{c:'#000',w:0.0022,f:1,p:[[nx,ny]]}:{c:COLORS[parseInt(tool.slice(1),10)]||COLORS[0],w:0.008,p:[[nx,ny]]};
+        /* (26-sep-2026, Iago) 'k' = punta FINA totalmente opaca; los rotuladores de color, igual que antes.
+           (29-sep-2026, Iago) «que el puntero opaco de ritmo sea verde»: el verde de ritmo (lo ya dibujado en negro se queda) */
+        pg.cur=(tool==='k')?{c:'#16a34a',w:0.0022,f:1,p:[[nx,ny]]}:{c:COLORS[parseInt(tool.slice(1),10)]||COLORS[0],w:0.008,p:[[nx,ny]]};
         pg.data.strokes.push(pg.cur);
         try{ cv.setPointerCapture(ev.pointerId); }catch(e){}
         redraw(pg);
