@@ -351,9 +351,10 @@ if(window.Sentry && !/^(localhost|127\.0\.0\.1)$/.test(location.hostname)){
   /* (29-sep-2026, Iago) «Las reclamaciones resueltas, con un botón a la derecha: Marcar como leído» */
   .alu-item.alu-recl{align-items:flex-start}
   /* (29-sep-2026, Iago) el 0 por no entregar la ficha a tiempo: rojo, que se vea */
-  .alu-item.alu-cero{border:1px solid rgba(239,68,68,.75);border-left:4px solid #ef4444;border-radius:12px;background:rgba(127,29,29,.42);padding-left:10px;padding-right:10px;margin:6px 0}
-  .alu-item.alu-cero .alu-item-tit{color:#fecaca}
-  .alu-item.alu-cero .alu-item-cuerpo{color:#fee2e2}
+  /* (29-sep-2026, Iago) «como en la ventana de morosos: negro opaco y contorno blanco; nada de resaltados por uno de los lados» */
+  .alu-item.alu-cero{border:1.5px solid #fff;border-radius:14px;background:#000;padding-left:10px;padding-right:10px;margin:6px 0}
+  .alu-item.alu-cero .alu-item-tit{color:#fff}
+  .alu-item.alu-cero .alu-item-cuerpo{color:#fff}
   .alu-recl-leido{flex:0 0 auto;align-self:center;margin-left:6px;background:transparent;border:1px solid rgba(255,255,255,.38);color:#fff;border-radius:10px;padding:8px 12px;font:700 12.5px/1.15 "Helvetica Neue",Arial,sans-serif;cursor:pointer;white-space:nowrap}
   .alu-recl-leido:hover,.alu-recl-leido:focus-visible{border-color:#fff;outline:none}
   @media (max-width:560px){.alu-recl-leido{padding:7px 9px;font-size:12px;white-space:normal;max-width:96px;text-align:center}}
@@ -1941,7 +1942,7 @@ function showEnig(kind){
     var st=estadoPlazo(el.getAttribute('data-fin'), el.getAttribute('data-gracia'));
     if(!st){ el.textContent=''; return; }
     if(st.fase==='normal'){ el.style.color='#e9c96a'; el.textContent='Te quedan '+fmtCuenta(st.restante); }
-    else if(st.fase==='gracia'){ el.style.color='#ff5c80'; el.textContent='⏰ Semana de recuperación · te quedan '+fmtCuenta(st.restante); }
+    else if(st.fase==='gracia'){ el.style.color='#ff5c80'; el.textContent=(el.closest&&el.closest('.alu-extra-pin')?'Te quedan ':'⏰ Periodo extra · te quedan ')+fmtCuenta(st.restante);   /* (29-sep-2026, Iago) bajo el recuadro TIEMPO EXTRA, solo «te quedan» */ }
     else { el.style.color='#ef4444'; el.textContent='Plazo terminado'; }
   }
   function tickCuentas(){
@@ -3066,7 +3067,10 @@ function showEnig(kind){
       // FASE 8 · TIEMPO EXTRA (para el alumno, sin jerga): mensaje claro + pin rojo
       var extra=enTiempoExtra(o);
       if(extra){
-        cuerpoTxt='Te quedaste sin tiempo y has sacado un 0, crack. Para recuperar la puntuación de esta ficha te doy UNA SEMANA MÁS. Si te pasas, ya sí que la liaste.';
+        /* (29-sep-2026, Iago) «que no diga que ha sacado un cero: que diga que está en periodo extra» */
+        var fgX=pj.fin_gracia?new Date(pj.fin_gracia):null, cuandoX='';
+        try{ if(fgX && !isNaN(fgX)) cuandoX=fgX.toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long'}).replace(',','')+' a las '+fgX.toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'}); }catch(eX){}
+        cuerpoTxt='Estás en el periodo extra: 7 días más para entregarla'+(cuandoX?', hasta el '+cuandoX:'')+'. Si para entonces no la has entregado, ahí sí que la liaste';
       }
       var accionHTML='';
       if(fid){
@@ -3078,8 +3082,10 @@ function showEnig(kind){
         
         +(fid?'<div class="neb-mini" aria-hidden="true"><i class="n1"></i><i class="n2"></i><i class="n3"></i></div>':'')
         +'<span class="alu-dot"></span>'
-        +'<div class="alu-item-main"><div class="alu-item-tit">'+(extra?'<span class="alu-extra-chip">⏰ TIEMPO EXTRA</span> ':'')+esc(o.titulo||'Aviso')+(hecha?' <span class="alu-hecha-check" aria-label="Entregada">✓</span>':'')+'</div>'
-        +(cuerpoTxt?'<div class="alu-item-cuerpo'+((pj.bienvenida||pj.mensaje_prof)?' alu-prewrap':'')+'">'+esc(cuerpoTxt)+'</div>':'')
+        /* (29-sep-2026, Iago) el recuadro TIEMPO EXTRA va aparte (a la izquierda, con «te quedan…» debajo); la calavera, delante del 0 */
+        +'<div class="alu-item-main">'+(extra?'<span class="alu-extra-chip">⏰ TIEMPO EXTRA</span>':'')+'<div class="alu-item-tit">'+(pj.cero_ficha?'<svg class="lm-calavera lm-calavera-t" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-label="calavera" role="img" style="display:inline-block;width:1.15em;height:1.15em;vertical-align:-.22em;margin-right:.35em"><path d="M12 2.8c-4.6 0-8.3 3.4-8.3 8 0 2.6 1.2 4.6 3.2 5.9v2.4c0 1 .8 1.8 1.8 1.8h6.6c1 0 1.8-.8 1.8-1.8v-2.4c2-1.3 3.2-3.3 3.2-5.9 0-4.6-3.7-8-8.3-8z"/><circle cx="8.9" cy="11.2" r="1.9" fill="currentColor" stroke="none"/><circle cx="15.1" cy="11.2" r="1.9" fill="currentColor" stroke="none"/><path d="M12 13.9l-1 1.9h2z" fill="currentColor" stroke-width="1.2"/><path d="M10.3 18.4v2.4M13.7 18.4v2.4"/></svg>':'')+esc(o.titulo||'Aviso')+(hecha?' <span class="alu-hecha-check" aria-label="Entregada">✓</span>':'')+'</div>'
+        /* (29-sep-2026, Iago) «donde dice ya sí que la liaste, la misma calavera, icono sencillo» (la de los morosos) */
+        +(cuerpoTxt?'<div class="alu-item-cuerpo'+((pj.bienvenida||pj.mensaje_prof)?' alu-prewrap':'')+'">'+esc(cuerpoTxt)+(extra?'<svg class="lm-calavera" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-label="calavera" role="img" style="display:inline-block;width:1.15em;height:1.15em;vertical-align:-.22em;margin-left:.15em"><path d="M12 2.8c-4.6 0-8.3 3.4-8.3 8 0 2.6 1.2 4.6 3.2 5.9v2.4c0 1 .8 1.8 1.8 1.8h6.6c1 0 1.8-.8 1.8-1.8v-2.4c2-1.3 3.2-3.3 3.2-5.9 0-4.6-3.7-8-8.3-8z"/><circle cx="8.9" cy="11.2" r="1.9" fill="currentColor" stroke="none"/><circle cx="15.1" cy="11.2" r="1.9" fill="currentColor" stroke="none"/><path d="M12 13.9l-1 1.9h2z" fill="currentColor" stroke-width="1.2"/><path d="M10.3 18.4v2.4M13.7 18.4v2.4"/></svg>':'')+'</div>':'')
         +((fid&&pj.fin_normal&&!hecha)?'<div class="alu-item-plazo" data-fin="'+esc(pj.fin_normal)+'" data-gracia="'+esc(pj.fin_gracia||'')+'" style="font-size:12px;font-weight:700;margin-top:4px;font-variant-numeric:tabular-nums"></div>':'')
         +progHTML
         +'<div class="alu-item-fecha">'+fecha(o.creado_en)+'</div>'
@@ -6732,8 +6738,9 @@ window.DictadoClase = (function(){
        · no recibe fichas de teoria digitales ni sus avisos,
        · solo ve el ciclo de tareas EN CURSO (quiz + tareas de ritmo), para que
          no se le acumulen semanas si entra poco,
-       · no acumula periodos de gracia ni ceros automaticos (eso lo garantiza
-         la base de datos: suite_fichas_barrer_vencidas salta a los de papel).
+       · (29-sep-2026, Iago: CAMBIA) la misma semana de gracia y el mismo 0 automatico
+         que en digital: si al acabar la gracia no tiene nota del papel ni «Ya entregó»
+         (boton de los morosos), suite_fichas_barrer_vencidas le pone el 0 y le avisa.
      Al darse de alta elige sin mas; para CAMBIARLO despues se le pide el nº de
      expediente, y a Iago le llega aviso.
      Se puede quitar borrando este bloque y los cuatro enganches marcados @FORMATO.
@@ -6898,7 +6905,11 @@ window.DictadoClase = (function(){
       if(pj.tareas_semana){ var t=Date.parse(o.creado_en)||0; if(t>corte) corte=t; }
     });
     if(!corte) return l;
-    return l.filter(function(o){ return (Date.parse(o.creado_en)||0) >= corte-60000; });
+    /* (29-sep-2026, Iago) los de papel también reciben el 0 automático al acabar la semana de gracia: ese aviso
+       se ve aunque sea de antes del ciclo en curso (8 días, lo que dura la lista de morosos con la calavera). */
+    return l.filter(function(o){ var pj=(o&&o.payload_json)||{}, t=Date.parse(o.creado_en)||0;
+      if(pj.cero_ficha && Date.now()-t < 8*864e5) return true;
+      return t >= corte-60000; });
   }
 
   function velo(html, mini){
