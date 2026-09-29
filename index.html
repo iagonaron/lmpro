@@ -5282,13 +5282,15 @@ window.DictadoClase = (function(){
         /* (19-sep-2026, Iago) «Sube tambien ese piano.» Mismo bus que el del
            reproductor grande: aqui cada nota va a gain 1.0, asi que el bus se
            queda en 5.0 para dar la misma altura que el PreDict PRO. */
-        _verBus = _verCtx.createGain(); _verBus.gain.value = 5.0;
+        // (29-sep-2026, Iago) igual que el reproductor grande: paso alto a 110 Hz y bus 5.0→4.6 (mismo volumen audible)
+        _verBus = _verCtx.createGain(); _verBus.gain.value = 4.6;
+        var _verPA = _verCtx.createBiquadFilter(); _verPA.type = 'highpass'; _verPA.frequency.value = 110; _verPA.Q.value = 0.707;
         _verLim = _verCtx.createDynamicsCompressor();
         try{
           _verLim.threshold.value = -8; _verLim.knee.value = 14; _verLim.ratio.value = 6;
           _verLim.attack.value = 0.003; _verLim.release.value = 0.16;
         }catch(e){}
-        _verBus.connect(_verLim); _verLim.connect(_verCtx.destination);
+        _verBus.connect(_verPA); _verPA.connect(_verLim); _verLim.connect(_verCtx.destination);
         _verPiano=await Soundfont.instrument(_verCtx, 'acoustic_grand_piano', { gain: 2.2, destination: _verBus });
       }
     }catch(e){ console.warn('[ver] audio', e); return; }
@@ -5695,13 +5697,21 @@ window.DictadoClase = (function(){
          suave, que aqui hay acordes de cuatro notas y sin el distorsionaria.
          Si algun dia hay que retocarlo, es este numero y solo este. */
       // (23-sep-2026, Iago) «Necesito más volumen de piano en los dictados» (GP): 5.0 -> 6.5
-      pianoBus = ctx.createGain(); pianoBus.gain.value = esGP() ? 6.5 : 5.0;
+      /* (29-sep-2026, Iago) «El sonido de piano de los dictados animados suena un poco distorsionado si
+         subo el volumen». Medido con el mismo piano: la app NO satura (pico -4 dB; -1 dB en pasajes muy
+         densos de graves). Lo que distorsiona es el altavoz empujado por el grave más profundo (Do2–La2),
+         que en altavoces pequeños casi no se oye y solo mueve el cono. Paso alto a 110 Hz antes del
+         limitador y bus 6.5→6.0 (GP) y 5.0→4.6 (GE): mismo volumen audible (por encima de 200 Hz, −0,2 dB)
+         y los fundamentales graves bajan (Do2 −9,5 dB, Mi2 −6, La2 −3). Deshacer: quitar el filtro PA y
+         volver a 6.5/5.0 conectando el bus directamente al limitador. */
+      pianoBus = ctx.createGain(); pianoBus.gain.value = esGP() ? 6.0 : 4.6;
+      var pianoPA = ctx.createBiquadFilter(); pianoPA.type = 'highpass'; pianoPA.frequency.value = 110; pianoPA.Q.value = 0.707;
       pianoLim = ctx.createDynamicsCompressor();
       try{
         pianoLim.threshold.value = -8; pianoLim.knee.value = 14; pianoLim.ratio.value = 6;
         pianoLim.attack.value = 0.003; pianoLim.release.value = 0.16;
       }catch(e){}
-      pianoBus.connect(pianoLim); pianoLim.connect(ctx.destination);
+      pianoBus.connect(pianoPA); pianoPA.connect(pianoLim); pianoLim.connect(ctx.destination);
       piano=await Soundfont.instrument(ctx, 'acoustic_grand_piano', { gain: 3.4, destination: pianoBus });
       pianoListo=true;
     }catch(e){
