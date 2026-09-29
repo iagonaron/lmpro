@@ -7,8 +7,11 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
 
 ## Registro (lo más reciente arriba · hora de Galicia)
 - 29-sep 17:22 · Fichas y rediseño · EN CURSO · App de corrección ENTONACIÓN ELEMENTAL (Netlify entonacionelemental ·
-  correccionentonacion.lmathome.es): por parejas, afinación y ritmo de 5 % en 5 % con el porcentaje a la vista (antes,
-  4 saltos); matices y fluidez igual. parejas.js e index.html (parejas.js?v=p3).
+  correccionentonacion.lmathome.es): por parejas, afinación y ritmo de 5 % en 5 % (parejas.js); «Otro» no resta sin
+  motivo escrito (parejas.js y app.js); 😥 en vez de 🥲, que no sale en el ordenador del aula (pantalla.js y app.js); la
+  pantalla del aula se recarga sola si hay versión nueva (pantalla.html); index.html con ?v nuevos. Listo y probado;
+  SIN PUBLICAR (la sesión de Netlify del Chrome está cerrada): se publica esta noche. No tocar esos ficheros mientras
+  tanto.
 - 29-sep 17:13 · Fichas y rediseño · HECHO · commit f8e608e (LMEAVathome) · Piel · ENTONACIÓN zoom y carriles (LMEAVathome piel/apps/portal.js y
   portal.css, sección 17): en «a todo el ancho» la música pasa al 80 % del ancho (se veía granulado de tan grande) y
   los lados son carriles para desplazar sin pintar (dedo, lápiz y ratón). Solo el visor del libro (Tester, GE).
