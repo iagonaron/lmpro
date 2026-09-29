@@ -6,20 +6,23 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 29-sep 21:33 · Fichas y rediseño · EN CURSO · Diario (Netlify diariodeiagocmus) · CAMPANA (suite-campana.js): lo que
+  marcas como visto ya no vuelve a contar al cerrar (el recuento del globo pisaba el «visto» recién mandado) y el globo
+  baja en el acto. index.html, ipad.html e iphone.html solo cambian a suite-campana.js?v=s30. No tocar esos 4 ficheros
+  mientras tanto.
 - 29-sep 20:13 · Fichas y rediseño · HECHO · commit 8972d4a (lmpro) y cebace6 (LMEAVathome), Diario deploy 6abc0101ef5f4d1ae1934071 · index.html de GP (lmpro) y de GE (LMEAVathome) · dictado animado:
   piano con paso alto a 110 Hz y bus 6.5→6.0 (GP) / 5.0→4.6 (GE y reproductor «ver»), mismo volumen audible y menos
   grave profundo (distorsionaba el altavoz al subir el volumen). Solo esas líneas, marcadas «(29-sep-2026, Iago)». Lo
-  mismo irá esta noche en ipad.html del Diario.
+  mismo está en ipad.html del Diario (deploy 6abc0101).
 - 29-sep 18:53 · Fichas y rediseño · HECHO · commit c108b66 · index.html (lmpro) · dictado animado (reproductor de clase, solo
   Protester), ventana «Repeticiones por frase»: las dos ruedas van de número en número (rueda del ratón, dedo, lápiz y
   toque). Solo funciones nuevas ruedaPaso/ruedaManejo y su enganche en abrirReps; marcas «(29-sep-2026, Iago)». Lo
-  mismo irá esta noche en ipad.html del Diario.
+  mismo está en ipad.html del Diario (deploy 6abc0101).
 - 29-sep 17:22 · Fichas y rediseño · HECHO · Netlify deploy 6abc00ba87c1426ec5387059 (entonacionelemental, 29-sep 20:20) · App de corrección ENTONACIÓN ELEMENTAL (Netlify entonacionelemental ·
   correccionentonacion.lmathome.es): por parejas, afinación y ritmo de 5 % en 5 % (parejas.js); «Otro» no resta sin
   motivo escrito (parejas.js y app.js); 😥 en vez de 🥲, que no sale en el ordenador del aula (pantalla.js y app.js); la
-  pantalla del aula se recarga sola si hay versión nueva (pantalla.html); index.html con ?v nuevos. Listo y probado;
-  SIN PUBLICAR (la sesión de Netlify del Chrome está cerrada): se publica esta noche. No tocar esos ficheros mientras
-  tanto.
+  pantalla del aula se recarga sola si hay versión nueva (pantalla.html); index.html con ?v nuevos. Probado y
+  publicado el 29-sep a las 20:20.
 - 29-sep 17:13 · Fichas y rediseño · HECHO · commit f8e608e (LMEAVathome) · Piel · ENTONACIÓN zoom y carriles (LMEAVathome piel/apps/portal.js y
   portal.css, sección 17): en «a todo el ancho» la música pasa al 80 % del ancho (se veía granulado de tan grande) y
   los lados son carriles para desplazar sin pintar (dedo, lápiz y ratón). Solo el visor del libro (Tester, GE).
