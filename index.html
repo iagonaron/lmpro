@@ -7862,6 +7862,9 @@ body.tester-sin-by .topbar-right #rs-mini{order:2}
      con un brillo que parpadea, un marco y cuatro asas; al soltar, queda en su
      sitio nuevo y «Deshacer» lo devuelve. Con algo seleccionado, la papelera
      (o Supr) borra solo eso y Esc lo suelta.
+   · (29-sep-2026, Iago) «Un botón a la derecha de sol+fa, un cuadrado blanco, que signifique poner la
+     pantalla en blanco, sin pentagramas.» Modo 'blanco': el fondo va liso, sin líneas, claves ni compases.
+     Lo escrito no se mueve al cambiar de modo (las medidas son las mismas en los tres).
    Para quitarlo: borrar este bloque entero (desde el comentario «PENTAGRAMA»
    hasta el de «fin del PENTAGRAMA»). No queda nada más que limpiar.
    ================================================================ */
@@ -7937,6 +7940,7 @@ body.tester-sin-by .topbar-right #rs-mini{order:2}
     var c=fctx, k, i, piano=(st.modo==='piano');
     c.setTransform(1,0,0,1,0,0); c.globalCompositeOperation='source-over';
     c.fillStyle='#ffffff'; c.fillRect(0,0,fondo.width,fondo.height);
+    if(st.modo==='blanco') return;                              /* (29-sep-2026, Iago) pantalla en blanco */
     c.fillStyle=GRIS;
     for(k=0;k<4;k++) for(i=0;i<5;i++) c.fillRect(L.x0, yLinea(k,i), L.x1-L.x0, L.td);   /* en píxeles enteros: nítidas */
     /* (28-sep-2026, Iago) línea divisoria al final de cada pentagrama (en «Sol y fa», la del sistema entero, más abajo) */
@@ -8394,7 +8398,8 @@ body.tester-sin-by .topbar-right #rs-mini{order:2}
     var o=document.getElementById('pz-ov'); if(!o) return;
     Array.prototype.forEach.call(o.querySelectorAll('[data-cmp]'),function(b){ var on=+b.getAttribute('data-cmp')===st.compases; b.classList.toggle('pz-on',on); b.setAttribute('aria-pressed',on?'true':'false'); });
     var cb=document.getElementById('pz-cmp');
-    if(cb){ var hay=st.compases>1; cb.querySelector('.pz-cmpn').textContent=hay?String(st.compases):''; cb.classList.toggle('pz-cmpon',hay);
+    if(cb){ cb.disabled=(st.modo==='blanco');   /* (29-sep-2026) en blanco no hay compases que dividir */
+      var hay=st.compases>1; cb.querySelector('.pz-cmpn').textContent=hay?String(st.compases):''; cb.classList.toggle('pz-cmpon',hay);
       cb.setAttribute('title', hay ? st.compases+' compases por pentagrama' : 'Compases por pentagrama'); }
     Array.prototype.forEach.call(o.querySelectorAll('[data-modo]'),function(b){ var on=b.getAttribute('data-modo')===st.modo; b.classList.toggle('pz-on',on); b.setAttribute('aria-pressed',on?'true':'false'); });
     Array.prototype.forEach.call(o.querySelectorAll('[data-color]'),function(b){ var on=!st.goma && !st.herr && +b.getAttribute('data-color')===st.color; b.classList.toggle('pz-on',on); b.setAttribute('aria-pressed',on?'true':'false'); });
@@ -8414,7 +8419,9 @@ body.tester-sin-by .topbar-right #rs-mini{order:2}
     barra:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M3 9h18M3 12h18M3 15h18M3 18h18" stroke-width="1" opacity=".42"/><path d="M12 4.5v15" stroke-width="2.4"/></svg>',
     /* (29-sep-2026) selección libre (un lazo de trazo discontinuo) y cursor (la flecha de siempre) */
     lazo:'<svg viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="13" cy="9.5" rx="7.6" ry="5.4" stroke-dasharray="2.6 2.5"/><path d="M8.2 13.6c-1.9 1.4-2.2 3.4-.9 4.5 1.2 1 3.2.5 3.3 2.1"/></svg>',
-    cursor:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3.5v15l3.9-3.7 2.6 5.6 2.5-1.2-2.6-5.5h5.4z"/></svg>'
+    cursor:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3.5v15l3.9-3.7 2.6 5.6 2.5-1.2-2.6-5.5h5.4z"/></svg>',
+    /* (29-sep-2026) pantalla en blanco: un cuadrado blanco */
+    blanco:'<svg class="pz-blanco" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="2.4"/></svg>'
   };
   function botonesCompases(){
     return COMPASES.map(function(n){
@@ -8453,6 +8460,7 @@ body.tester-sin-by .topbar-right #rs-mini{order:2}
       /* (28-sep-2026, Iago) claves solo con el símbolo, y el botón de compases con sus números */
       +'.pz-seg .pz-b{gap:3px;padding:0 10px}'
       +'.pz-mas{font-size:13px;font-weight:700;line-height:1;opacity:.72}'
+      +'.pz-b svg.pz-blanco{width:21px;height:21px}.pz-b svg.pz-blanco rect{fill:#fff;stroke:currentColor;stroke-width:1.7}'   /* (29-sep-2026) */
       +'#pz-cmp .pz-cmpn{font-size:16px;font-weight:700;line-height:1}'
       +'#pz-cmp .pz-cmpn:empty{display:none}'
       +'#pz-cmp.pz-cmpon{width:auto;padding:0 11px 0 8px;gap:5px}'
@@ -8493,6 +8501,7 @@ body.tester-sin-by .topbar-right #rs-mini{order:2}
       +'<div class="pz-seg" role="group" aria-label="Claves">'
       +'<button type="button" class="pz-b" data-modo="sol" title="Clave de sol" aria-label="Clave de sol">'+clave(D_SOL,'-30 -1600 1030 2580','pz-csol')+'</button>'
       +'<button type="button" class="pz-b" data-modo="piano" title="Clave de sol y clave de fa, como el piano" aria-label="Clave de sol y clave de fa">'+clave(D_SOL,'-30 -1600 1030 2580','pz-csol')+'<span class="pz-mas" aria-hidden="true">+</span>'+clave(D_FA,'-30 -400 1040 1340','pz-cfa')+'</button>'
+      +'<button type="button" class="pz-b" data-modo="blanco" title="En blanco, sin pentagramas" aria-label="En blanco, sin pentagramas">'+ICO.blanco+'</button>'   /* (29-sep-2026) */
       +'</div>'
       +'<div class="pz-g">'
       +'<button type="button" class="pz-b pz-q" id="pz-cmp" title="Compases por pentagrama" aria-label="Compases por pentagrama" aria-haspopup="true" aria-expanded="false">'+ICO.barra+'<span class="pz-cmpn"></span></button>'
