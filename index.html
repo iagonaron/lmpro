@@ -348,6 +348,15 @@ if(window.Sentry && !/^(localhost|127\.0\.0\.1)$/.test(location.hostname)){
   .alu-recl-chip.ok{background:rgba(52,211,153,.18);color:#7ee7b6}
   .alu-recl-chip.no{background:rgba(229,72,77,.18);color:#ff9a9e}
   .alu-recl-ej{font-size:12px;color:#c9d2e6;margin-top:3px;font-weight:600}
+  /* (29-sep-2026, Iago) «Las reclamaciones resueltas, con un botón a la derecha: Marcar como leído» */
+  .alu-item.alu-recl{align-items:flex-start}
+  /* (29-sep-2026, Iago) el 0 por no entregar la ficha a tiempo: rojo, que se vea */
+  .alu-item.alu-cero{border:1px solid rgba(239,68,68,.75);border-left:4px solid #ef4444;border-radius:12px;background:rgba(127,29,29,.42);padding-left:10px;padding-right:10px;margin:6px 0}
+  .alu-item.alu-cero .alu-item-tit{color:#fecaca}
+  .alu-item.alu-cero .alu-item-cuerpo{color:#fee2e2}
+  .alu-recl-leido{flex:0 0 auto;align-self:center;margin-left:6px;background:transparent;border:1px solid rgba(255,255,255,.38);color:#fff;border-radius:10px;padding:8px 12px;font:700 12.5px/1.15 "Helvetica Neue",Arial,sans-serif;cursor:pointer;white-space:nowrap}
+  .alu-recl-leido:hover,.alu-recl-leido:focus-visible{border-color:#fff;outline:none}
+  @media (max-width:560px){.alu-recl-leido{padding:7px 9px;font-size:12px;white-space:normal;max-width:96px;text-align:center}}
   .alu-recl-msg{white-space:pre-wrap;margin-top:6px;padding:8px 10px;border-radius:10px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);color:#e6ecf7}
   .alu-recl-nota{font-size:13px;margin-top:6px;color:#c9d2e6}.alu-recl-nota b{color:#7ee7b6;font-size:14px}.alu-recl-nota s{opacity:.6}
   .alu-recl-ver{display:inline-block;margin-top:8px;font-size:13px;font-weight:700;color:#5b9dff;text-decoration:none;border:1px solid rgba(91,157,255,.5);border-radius:8px;padding:6px 10px}
@@ -3038,7 +3047,10 @@ function showEnig(kind){
           +notaR
           +(pr.url?'<a class="alu-recl-ver" href="'+esc(pr.url)+'" target="_blank" rel="noopener">🔍 Ver mi ficha corregida →</a>':'')
           +'<div class="alu-item-fecha">'+fecha(o.creado_en)+'</div>'
-          +'</div></div>';
+          +'</div>'
+          /* (29-sep-2026, Iago) botón a la derecha para darla por leída */
+          +(o.leido?'':'<button type="button" class="alu-recl-leido" data-recl-leido="'+esc(o.id)+'">Marcar como leído</button>')
+          +'</div>';
       }
       var fid=(o.payload_json && o.payload_json.ficha_id) ? o.payload_json.ficha_id : '';
       var pj=o.payload_json||{};
@@ -3062,7 +3074,7 @@ function showEnig(kind){
           ? '<span class="alu-hecha-badge">✓ Entregada</span>'
           : '<button class="alu-hacer'+(prog?' alu-continuar':'')+'" data-ficha="'+esc(fid)+'" data-n="'+esc(pj.numero!=null?pj.numero:'')+'" data-fin="'+esc(pj.fin_normal||'')+'" data-gracia="'+esc(pj.fin_gracia||'')+'" style="margin-top:8px;background:linear-gradient(90deg,#e9c96a,#c8862b);color:#1a1305;border:0;border-radius:8px;padding:8px 12px;font-weight:700;font-size:13px;cursor:pointer">'+(prog?'Continuar la ficha ('+prog.hechos+'/'+prog.total+') →':'Hacer la ficha →')+'</button>';
       }
-      return '<div class="alu-item'+((o.leido||hecha)?'':' no-leido')+(fid?' ficha':'')+(hecha?' hecha':'')+(extra?' alu-extra-pin':'')+'" data-id="'+esc(o.id)+'"'+(fid?(' data-ficha="'+esc(fid)+'"'):'')+'>'
+      return '<div class="alu-item'+((o.leido||hecha)?'':' no-leido')+(fid?' ficha':'')+(hecha?' hecha':'')+(extra?' alu-extra-pin':'')+(pj.cero_ficha?' alu-cero':'')+'" data-id="'+esc(o.id)+'"'+(fid?(' data-ficha="'+esc(fid)+'"'):'')+'>'
         
         +(fid?'<div class="neb-mini" aria-hidden="true"><i class="n1"></i><i class="n2"></i><i class="n3"></i></div>':'')
         +'<span class="alu-dot"></span>'
@@ -3185,6 +3197,15 @@ function showEnig(kind){
         var it=b.closest('.alu-item');
         marcar(b.getAttribute('data-reco-ok'), it);
         if(it) it.classList.add('hecha');
+      });
+    });
+    // (29-sep-2026, Iago) reclamación: «Marcar como leído»
+    Array.prototype.forEach.call(body.querySelectorAll('.alu-recl-leido'),function(b){
+      b.addEventListener('click',function(ev){
+        ev.stopPropagation(); ev.preventDefault();
+        var it=b.closest('.alu-item');
+        b.disabled=true; b.textContent='Leído';
+        marcar(b.getAttribute('data-recl-leido'), it);
       });
     });
     // Clic en una notificación sin acción: solo marcar leído.
@@ -6763,6 +6784,18 @@ window.DictadoClase = (function(){
   .lmf-fila{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:14px}
   .lmf-link{background:none;border:none;color:var(--muted);font:700 13px inherit;cursor:pointer;font-family:inherit}
   .lmf-err{color:#ff6b81;font:700 13px inherit;margin:10px 0 0;min-height:1em}
+  /* (29-sep-2026, Iago) la ficha en marcha al cambiar de formato */
+  .lmf-ficha{margin:0 0 12px;padding:13px 14px;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.03)}
+  .lmf-ficha-q{margin:0 0 10px;font-weight:600;font-size:14px;line-height:1.45;color:var(--ink)}
+  .lmf-elige{display:flex;gap:10px}
+  .lmf-opcion{flex:1 1 0;min-width:0;display:flex;flex-direction:column;gap:4px;text-align:left;cursor:pointer;
+    padding:11px 12px;border-radius:11px;border:1px solid var(--line);background:rgba(0,0,0,.18);color:var(--ink);font-family:inherit}
+  .lmf-opcion-tit{font-weight:800;font-size:14px;line-height:1.3}
+  .lmf-opcion-txt{font-weight:400;font-size:12.5px;line-height:1.45;color:var(--muted)}
+  .lmf-opcion:hover{border-color:rgba(255,255,255,.5)}
+  .lmf-opcion.on{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset;background:color-mix(in srgb, var(--accent) 12%, transparent)}
+  .lmf-opcion:focus-visible{outline:2px solid #fff;outline-offset:2px}
+  @media(max-width:620px){ .lmf-elige{flex-direction:column} }
   @media(max-width:620px){ .lmf-ops{flex-direction:column} }
 </style>
 <script>
@@ -6803,7 +6836,8 @@ window.DictadoClase = (function(){
     if(_estado && !forzar && !(_estado.sin_cuenta && id) && !(_estado.error && id) && !(_estado.reserva && id)) return _estado;
     if(!id){ _estado={formato:'papel',elegido:false,sin_cuenta:true}; return _estado; }
     try{ var d=await rpc('suite_formato_leer',{p_cuenta_id:id});
-         _estado={formato:(d&&d.formato)||'papel', elegido:!!(d&&d.elegido)};
+         _estado={formato:(d&&d.formato)||'papel', elegido:!!(d&&d.elegido),
+                  excepciones:(d&&Array.isArray(d.excepciones))?d.excepciones:[]};   /* (29-sep-2026) formato propio de una ficha */
          /* (27-sep-2026, Iago) Formato de reserva: este aparato SOLO recuerda que el alumno es de PAPEL
             (a los de digital no se les guarda nada, y si vuelve a digital se quita la marca). */
          try{ var kf='lmpro_fmt_'+id; if(_estado.formato==='papel' && _estado.elegido){ if(localStorage.getItem(kf)!=='papel') localStorage.setItem(kf,'papel'); } else if(localStorage.getItem(kf)!=null) localStorage.removeItem(kf); }catch(e2){}
@@ -6821,11 +6855,25 @@ window.DictadoClase = (function(){
   }
   function esPapel(){ return !!(_estado && !_estado.sin_cuenta && !_estado.error && _estado.formato==='papel'); }
 
+  /* (29-sep-2026, Iago) FORMATO DE ESA FICHA: si el alumno cambió de formato con una ficha en marcha, eligió en qué
+     formato hace ESA ficha (suite_formato_leer → excepciones). Para las demás, el formato de ahora. */
+  function fmtFicha(fid, num){
+    var ex=(_estado && Array.isArray(_estado.excepciones)) ? _estado.excepciones : [];
+    for(var i=0;i<ex.length;i++){ var e=ex[i]||{};
+      if(fid ? String(e.ficha_id)===String(fid) : (num!=null && String(e.numero)===String(num))) return e.formato; }
+    return (_estado && _estado.formato) || 'papel';
+  }
+  function hayExcepciones(){ return !!(_estado && !_estado.sin_cuenta && !_estado.error && Array.isArray(_estado.excepciones) && _estado.excepciones.length); }
+
   // El filtro de los de PAPEL: fuera las fichas digitales, y del resto solo el
   // ciclo en curso (desde la ultima «Tareas de la semana» en adelante).
+  // (29-sep-2026) Con las excepciones: una ficha que el alumno hace en papel (aunque ahora sea digital) sale como
+  // «Entregar en papel»; una que hace en digital (aunque ahora sea de papel) se queda como ficha digital.
   function filtrar(list){
-    if(!esPapel() || !Array.isArray(list)) return list;
-    var l=list.filter(function(o){ var pj=(o&&o.payload_json)||{}; return !pj.ficha_id; });
+    if(!Array.isArray(list)) return list;
+    var papel=esPapel();
+    if(!papel && !hayExcepciones()) return list;
+    var l=list.filter(function(o){ var pj=(o&&o.payload_json)||{}; return !pj.ficha_id || fmtFicha(pj.ficha_id, null)!=='papel'; });
     // (17-sep-2026, Iago) La ficha de la semana NO desaparece: se convierte en un
     // recordatorio de entregarla EN PAPEL, con su boton «Entendido». Asi el numero
     // de tareas es el mismo que el de un companero de formato digital, y la semana
@@ -6833,6 +6881,7 @@ window.DictadoClase = (function(){
     l.forEach(function(o){
       var pj=(o&&o.payload_json)||{};
       if(!pj.tareas_semana || !pj.ficha || pj.ficha.numero==null || pj.__papel) return;
+      if(fmtFicha(pj.ficha.ficha_id||pj.ficha.id||null, pj.ficha.numero)!=='papel') return;   /* (29-sep-2026) esa ficha, en digital */
       var n=pj.ficha.numero;
       pj.otras=(Array.isArray(pj.otras)?pj.otras.slice():[]).concat([{
         titulo:'Entregar Ficha '+n+' en papel',
@@ -6842,6 +6891,7 @@ window.DictadoClase = (function(){
       delete pj.ficha;
       pj.__papel=true;
     });
+    if(!papel) return l;   /* (29-sep-2026) digital con una ficha en papel: el resto, como siempre */
     var corte=0;
     l.forEach(function(o){
       var pj=(o&&o.payload_json)||{};
@@ -6900,15 +6950,47 @@ window.DictadoClase = (function(){
     });
   }
 
-  function cambiar(){
+  /* (29-sep-2026, Iago) ¿Hay una ficha en marcha sin entregar? Antes de cambiar, el alumno elige qué pasa con ELLA.
+     Digital → papel: «Cambiar ya a papel» (a Iago le llega un aviso para traerle la ficha impresa) o «Esta en digital y
+     las siguientes en papel». Papel → digital: «Hacerla ya en digital» o «Completarla en papel» (el cambio, desde la
+     siguiente). Sin ficha en marcha, todo como antes. */
+  async function situacionFicha(){
+    var id=cuenta(); if(!id) return null;
+    try{ var d=await rpc('suite_formato_situacion',{p_cuenta_id:id}); return (d && d.ok && d.ficha && d.ficha.numero!=null) ? d.ficha : null; }
+    catch(e){ return null; }
+  }
+  function fechaPlazo(iso){
+    try{ return new Date(iso).toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long',timeZone:'Europe/Madrid'}); }catch(e){ return ''; }
+  }
+  var _cambiando=false;
+  async function cambiar(){
+    if(_cambiando) return; _cambiando=true;
+    var fi=null; try{ fi=await situacionFicha(); }catch(e){} finally{ _cambiando=false; }
     var actual=(_estado&&_estado.formato)||'papel';
     var otro = actual==='digital' ? 'papel' : 'digital';
+    var ops = !fi ? null : (otro==='papel'
+      ? [{ff:'papel',   tit:'Cambiar ya a papel', txt:'A tu profesor le llega un aviso para traerte la Ficha '+esc(fi.numero)+' impresa.'},
+         {ff:'digital', tit:'Esta en digital y las siguientes en papel', txt:'Terminas la Ficha '+esc(fi.numero)+' aqu&iacute;, en tu portal.'}]
+      : [{ff:'digital', tit:'Hacerla ya en digital', txt:'La Ficha '+esc(fi.numero)+' te aparece aqu&iacute;, en tu portal, con el mismo plazo.'},
+         {ff:'papel',   tit:'Completarla en papel', txt:'El cambio a digital ser&aacute; a partir de la siguiente ficha.'}]);
+    var plazo = fi && fi.fin_normal ? fechaPlazo(fi.fin_normal) : '';
+    var pregunta = !fi ? '' :
+      '<div class="lmf-ficha">'+
+        '<p class="lmf-ficha-q">'+(otro==='papel'
+          ? 'Tienes la <b>Ficha '+esc(fi.numero)+'</b> en marcha en digital'
+          : 'La <b>Ficha '+esc(fi.numero)+'</b> est&aacute; prevista en papel')+(plazo?' (plazo: '+esc(plazo)+')':'')+'. &iquest;Qu&eacute; prefieres?</p>'+
+        '<div class="lmf-elige">'+ops.map(function(o){
+          return '<button type="button" class="lmf-opcion" data-ff="'+o.ff+'"><span class="lmf-opcion-tit">'+o.tit+'</span><span class="lmf-opcion-txt">'+o.txt+'</span></button>';
+        }).join('')+'</div>'+
+      '</div>';
+    var ffElegido=null;
     var explica = actual==='digital'
       ? 'Las fichas te llegan como notificaci&oacute;n y las haces aqu&iacute; mismo, con tus resultados al momento.'
       : 'Tu profesor te da las fichas en papel en clase. Aqu&iacute; solo ves las tareas de la semana en curso.';
     var v=velo(
       '<h3>Tienes el formato '+actual+'</h3>'+
       '<p class="lmf-sub">'+explica+'</p>'+
+      pregunta+
       '<div class="lmf-exp">'+
         '<p>Para cambiar a <b>'+otro+'</b>, escribe tu n&uacute;mero de expediente. Tu profesor se entera del cambio.</p>'+
         '<input id="lmf-exp" type="text" placeholder="N&uacute;mero de expediente" autocomplete="off" autocapitalize="off" spellcheck="false">'+
@@ -6919,13 +7001,23 @@ window.DictadoClase = (function(){
         '<button type="button" class="lmf-btn pri" id="lmf-si" style="width:auto;padding:10px 18px">Cambiar a '+otro+'</button>'+
       '</div>', true);
     v.querySelector('#lmf-no').onclick=function(){ cerrar(v); };
+    Array.prototype.forEach.call(v.querySelectorAll('.lmf-opcion'),function(b){
+      b.onclick=function(){
+        ffElegido=b.getAttribute('data-ff');
+        Array.prototype.forEach.call(v.querySelectorAll('.lmf-opcion'),function(x){ x.classList.toggle('on', x===b); x.setAttribute('aria-pressed', x===b?'true':'false'); });
+        var e2=v.querySelector('#lmf-err2'); if(e2) e2.textContent='';
+      };
+    });
     v.querySelector('#lmf-si').onclick=async function(){
       var exp=(v.querySelector('#lmf-exp').value||'').trim();
       var err=v.querySelector('#lmf-err2'); err.textContent='';
+      if(fi && !ffElegido){ err.textContent='Elige qué hacer con la Ficha '+fi.numero+'.'; return; }
       if(exp.length<3){ err.textContent='Escribe tu nº de expediente completo.'; return; }
       var b=v.querySelector('#lmf-si'); b.disabled=true; b.textContent='Cambiando…';
       try{
-        var d=await rpc('suite_formato_elegir',{p_cuenta_id:cuenta(), p_formato:otro, p_expediente:exp});
+        var args={p_cuenta_id:cuenta(), p_formato:otro, p_expediente:exp};
+        if(fi && ffElegido) args.p_ficha_formato=ffElegido;   /* (29-sep-2026) qué pasa con la ficha en marcha */
+        var d=await rpc('suite_formato_elegir',args);
         if(!d || !d.ok){
           err.textContent = (d&&d.error==='expediente_no_coincide')
             ? 'Ese nº de expediente no es el tuyo. Míralo en CentrosNET o en tu carnet.'
