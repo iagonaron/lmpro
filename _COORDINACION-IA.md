@@ -6,6 +6,9 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 30-sep 12:16 · Fichas y rediseño · EN CURSO · index.html de GE (LMEAVathome, parto de cebace6) y de GP (lmpro, parto de
+  094f5b0): el INVITADO ya no vuelve a ver la puerta ni la contraseña al volver de una app a la portada en la misma
+  pestaña (marca GATE_DENTRO en sessionStorage; «cerrar sesión» la borra). Solo el bloque del gate, marcas «30-sep-2026».
 - 30-sep 10:53 · Fichas y rediseño · HECHO · commit 59b38d4 (PredictCarrusel, anterior 1cbfc54) · Carrusel Elemental GUIADO en la
   pantalla de clase (?pantalla=1, la espiral de Tester): guiado.js y guiado.css NUEVOS (portada, 4 ejercicios guiados, bonus de
   cadencia y créditos); index.html: botón «Generar carrusel», enlace a guiado.css/js y PCGuiado.abrir() al principio de
