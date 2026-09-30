@@ -1345,6 +1345,16 @@ body.tester-sin-by .topbar-right .by{display:none}
 // ===== Gate de acceso (contraseña) =====
 const GATE_PASS='aula30año26';
 const GATE_KEY='lmpro_gate_fill';
+// (30-sep-2026, Iago) «Una compañera entra como invitada y, cada vez que vuelve de una app (Intervalia...) a la
+// portada, le vuelve a salir la contraseña». Quien ya ha entrado EN ESTA PESTAÑA (invitado, o alumno pendiente que
+// sigue como invitado) no vuelve a ver la puerta al volver a la portada; al abrir el portal de nuevo (otra pestaña u
+// otro día) la puerta sale como siempre, con la contraseña ya escrita si marcó «Recordar». La marca vive en
+// sessionStorage (se borra sola al cerrar la pestaña) y la borra también «cerrar sesión». Para quitarlo: borrar
+// estas cuatro líneas de GATE_DENTRO y las llamadas a marcarDentro/yaDentro/olvidarDentro (marcadas 30-sep-2026).
+const GATE_DENTRO='lmpro_gate_dentro';
+function marcarDentro(){ try{ sessionStorage.setItem(GATE_DENTRO,'1'); }catch(e){} }
+function yaDentro(){ try{ return sessionStorage.getItem(GATE_DENTRO)==='1'; }catch(e){ return false; } }
+function olvidarDentro(){ try{ sessionStorage.removeItem(GATE_DENTRO); }catch(e){} }
 // limpieza de marcas antiguas que saltaban el gate (versiones previas)
 try{ localStorage.removeItem('lmpro_gate_ok'); sessionStorage.removeItem('lmpro_gate_ok'); }catch(e){}
 
@@ -1434,7 +1444,7 @@ function abrirRegistro(){
   mostrarPanel('alumnoRegistro');
   setTimeout(()=>{ try{ document.getElementById('regNombre').focus(); }catch(e){} }, 60);
 }
-function continuarComoInvitadoPend(){ unlockGate(); }
+function continuarComoInvitadoPend(){ marcarDentro(); unlockGate(); }   // (30-sep-2026) marca de «ya dentro»
 // 10-sep-2026: primera vez = continuación de «Entrar» (nombre y contraseña ya escritos)
 function abrirPrimeraVez(nombre, pass){
   const n=document.getElementById('regNombre'), p=document.getElementById('regPass'), rc=document.getElementById('regRecordar');
@@ -1659,6 +1669,7 @@ async function alumnoEntrar(){
 function alumnoCerrarSesion(){
   if(!confirm('¿Cerrar sesión en este dispositivo?\n\nPodrás volver a entrar con tu nombre y contraseña (o con otra cuenta).')) return;
   try{ localStorage.removeItem('lmpro_session'); }catch(e){}
+  olvidarDentro();   // (30-sep-2026) al cerrar sesión vuelve a salir la puerta
   location.reload();
 }
 function gateRemembered(){
@@ -1682,7 +1693,7 @@ function backToPass(){
   document.getElementById('gateMobile').style.display='none';
   if(_avisoOrigen==='alumno'){ abrirLogin(); } else { abrirInvitado(true); }
 }
-function continueAnyway(){ const t=_trasEntrar; _trasEntrar=null; unlockGate(); if(t) setTimeout(t, 500); }
+function continueAnyway(){ const t=_trasEntrar; _trasEntrar=null; if(_avisoOrigen==='invitado') marcarDentro(); unlockGate(); if(t) setTimeout(t, 500); }   // (30-sep-2026) marca de «ya dentro»
 // 11-sep-2026: los alumnos también reciben el aviso de móvil (Iago lo pidió), antes de entrar
 function unlockGateAlumno(tras){
   if(isMobileDevice()){ showMobileNotice('alumno', tras); }
@@ -1718,7 +1729,7 @@ function submitGate(){
     }catch(e){}
     // contraseña correcta: si es móvil, mostramos el aviso antes de revelar
     if(isMobileDevice()){ showMobileNotice('invitado'); }
-    else{ unlockGate(); }
+    else{ marcarDentro(); unlockGate(); }   // (30-sep-2026) marca de «ya dentro»
   } else {
     err.textContent='Contraseña incorrecta';
     document.getElementById('gateInput').value='';
@@ -1727,7 +1738,8 @@ function submitGate(){
   }
 }
 (function(){
-  // El gate se muestra SIEMPRE (con su animación) para invitados. Si se ha
+  // El gate se muestra SIEMPRE (con su animación) para invitados al abrir el portal (30-sep-2026: salvo si ya
+  // entró en esta misma pestaña: marca GATE_DENTRO). Si se ha
   // pedido recordar, solo se pre-rellena el campo. EXCEPCIÓN: un alumno ya
   // validado (sesión recordada) salta el gate directamente.
   const remembered=gateRemembered();
@@ -1808,6 +1820,8 @@ function submitGate(){
       // Si en este dispositivo ya hay una cuenta de alumno registrada (aunque
       // esté pendiente), no mostramos el cartel de invitado: vamos directos al
       // login con el nombre y la contraseña ya puestos (si pidió recordar).
+      // (30-sep-2026, Iago) ya entró en ESTA pestaña (vuelve de una app a la portada): ni puerta ni contraseña
+      if(yaDentro()){ saltarGate(); return; }
       const s2=getSession();
       if(s2 && s2.id){ abrirLogin(); }
       else if(remembered){ abrirInvitado(true); }   // invitado con contraseña recordada y sin cuenta
