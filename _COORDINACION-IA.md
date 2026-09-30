@@ -6,6 +6,9 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 30-sep 14:16 · Fichas y rediseño · EN CURSO · PredictCarrusel (parto de 5404920): carrusel guiado, segunda ronda de lo
+  pedido desde el aula (sonido en cada portada, nube del rítmico, melódico, TonCom y Armónico guiados, Bonus extra ·
+  Cadencias, «Pantalla completa» arriba a la derecha y duración total en la portada). guiado.js/css e index.html (?v=3).
 - 30-sep 13:09 · Fichas y rediseño · HECHO · commit 5404920 (PredictCarrusel, anterior 59b38d4) · carrusel guiado, lo que Iago pidió
   desde el aula: minuto «El carrusel empezará en…» al pulsar Empezar; «Pausa» y «Pantalla completa» siempre a la vista;
   5·4·3·2·1 verde liso con «✎ Escribe»; melódico con 3·2·1, avisos que no tapan la tonalidad y 35 s de corrección; TonCom
