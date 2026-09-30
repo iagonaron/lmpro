@@ -6,6 +6,10 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 30-sep 09:26 · Fichas y rediseño · EN CURSO · Diario (parto del deploy 6abc1771…) · ipad.html: «Ir al diario» en la
+  cuenta atrás de la escaleta (el Diario se abre ENCIMA, en un marco, con una ventana flotante del tiempo que queda; bloque
+  nuevo al final «ir-diario» + una línea window.__escaleta) y «Siguiente: tareas» con solo «tareas» en amarillo; index.html:
+  el filo amarillo de las tarjetas 4Ge/2Gp de la portada, quieto (un <style id="tarjetas-fijas"> antes de </head>).
 - 29-sep 21:53 · Fichas y rediseño · HECHO · Diario deploy 6abc1771c1a8d8c8750d0907 (anterior 6abc1373…) · PLAN DE RITMO
   ENTONADO 2.º GP (diario-progresion.js, PLAN_GP): 1.2 → 10·11, 1.4 → solo la 18 (C1 y C2), 1.7 → 21·22, 3.3 → 135·149;
   index.html solo sube a diario-progresion.js?v=r20. Lección 90 de 2Gp: full y thumb ya son la completa del libro (copia
