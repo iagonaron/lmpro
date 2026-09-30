@@ -6,9 +6,10 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
-- 30-sep 20:35 · Fichas y rediseño · EN CURSO · PredictCarrusel (parto de cbffadf): tiempos del carrusel guiado tras
-  probarlo en clase (preparación 45 s, +2 s antes de «Solución en», +3 s de solución, +5 s tras el acorde 1) · guiado.js e
-  index.html (?v=9).
+- 30-sep 20:45 · Fichas y rediseño · HECHO · commit 353c2cf (PredictCarrusel, anterior cbffadf) · tiempos del carrusel
+  guiado tras probarlo en clase: preparación 45 s (música repartida en 22 compases + anacrusa), «Termina de completar» 12 s
+  (12…6 y luego «Solución en 5…1»), +3 s de solución en las cuatro pruebas y +5 s con la solución del acorde 1 del armónico;
+  +10 s en total (10:51–11:17 con preparación). guiado.js e index.html (?v=9). Comprobado en vivo. Copia y LEEME en Dropbox.
 - 30-sep 19:50 · Fichas y rediseño · EN CURSO · LMEAVathome (parto de c6677f9): música de los portales · carpeta nueva musica/
   (30 MP3 de Kevin MacLeod, CC BY 4.0, subidos a mano por Iago desde Dropbox) y, después, el reproductor en piel/apps/portal.js
   y portal.css (solo Tester/Protester, GE y GP).
