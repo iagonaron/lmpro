@@ -6,6 +6,9 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 30-sep 22:55 · Fichas y rediseño · EN CURSO · LMEAVathome (parto de ffb6507): el aviso «empieza la clase» de la
+  música del portal lee las horas del horario del Diario (horario_clases_publico) y MUS_HORAS queda de respaldo.
+  piel/apps/portal.js.
 - 30-sep 22:45 · Fichas y rediseño · HECHO · deploy 6abd7030 del Diario (Netlify diariodeiagocmus, anterior 6abcb9f3) ·
   wizard «Nuevo curso»: contraseña del Diario antes de tocar nada, vaciado con la clave de la suite y paso «5 · Horario»
   tras «Grupos» (guarda horario_clases del curso nuevo); el editor de horario del visor ya trae las horas. app.js
