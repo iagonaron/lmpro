@@ -6,6 +6,10 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 30-sep 22:35 · Fichas y rediseño · EN CURSO · Diario (Netlify diariodeiagocmus, parto del deploy 6abcb9f3): wizard
+  «Nuevo curso» con la contraseña del Diario antes de vaciar el curso (y el vaciado ya pide la clave de la suite en el
+  servidor) y paso nuevo «Horario» tras «Grupos» que guarda horario_clases del curso nuevo. app.js, index.html y
+  diario-visor.js. Luego: portal (LMEAVathome piel/apps/portal.js) leyendo ese horario.
 - 30-sep 22:00 · Fichas y rediseño · HECHO · commit ffb6507 (LMEAVathome, anterior f40c5c7) · música del portal 3 dB más
   baja (MUS_VOL 0,43 → 0,3) y el aviso de clase con las horas escritas en MUS_HORAS (mar 16:00, 18:00, 19:00 · mié 17:30 ·
   jue 18:00, 19:00 · vie 16:00, 17:30), de 5 min antes a 5 min después, sin depender del Diario (la pantalla del aula no lo
