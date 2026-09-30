@@ -6,6 +6,9 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 30-sep 10:31 · Fichas y rediseño · EN CURSO · PredictCarrusel (Carrusel Elemental, parto de 1cbfc54): MODO GUIADO en la pantalla
+  de clase (?pantalla=1): guiado.js y guiado.css NUEVOS; index.html: el botón pasa a «Generar carrusel», enlaza guiado.css/js
+  y abrirPantalla() llama a PCGuiado.abrir(). En el iPad, además, una esquina con la cadencia del bonus. Nada más del repo.
 - 30-sep 09:28 · Fichas y rediseño · HECHO · Diario deploy 6abcb9f3f2fe8b616bcc2854 (anterior 6abc1771…) · ipad.html:
   «Ir al diario» en la cuenta atrás de la escaleta (el Diario se abre ENCIMA, en un marco, con una ventana flotante del
   tiempo que queda; bloque nuevo al final «ir-diario» + una línea window.__escaleta) y «Siguiente: tareas» con solo
