@@ -6,6 +6,9 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 30-sep 19:50 · Fichas y rediseño · EN CURSO · LMEAVathome (parto de c6677f9): música de los portales · carpeta nueva musica/
+  (30 MP3 de Kevin MacLeod, CC BY 4.0, subidos a mano por Iago desde Dropbox) y, después, el reproductor en piel/apps/portal.js
+  y portal.css (solo Tester/Protester, GE y GP).
 - 30-sep 19:45 · Fichas y rediseño · HECHO · Netlify dictadosprofesional deploy 6abd49f0300260b7670f53b0 (anterior
   6ab62cf2308cc4dc8ad3364a) · el resumen de la sesión envía solo a evaluación (el eval_tipo elegido a todas las notas de la
   sesión) y desaparece el botón «Confirmar y enviar» (solo sale «Reintentar» si falla). Cada nota ya llegaba a evaluaciones al
