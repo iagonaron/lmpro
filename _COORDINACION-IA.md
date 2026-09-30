@@ -6,6 +6,9 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 30-sep 19:10 · Fichas y rediseño · EN CURSO · PredictCarrusel (parto de fe73195): variedad de cadencias en el bonus (16
+  progresiones, 10 tonalidades, sin repetir el tipo del carrusel anterior) y, en el armónico, la corrección del acorde 2 con la
+  nota del bajo de referencia. guiado.js e index.html (?v=8).
 - 30-sep 18:55 · Fichas y rediseño · HECHO · commit c6677f9 (LMEAVathome, anterior 27aafe2) · libro de entonación del portal
   (sección 17 de piel/apps/portal.js, solo Tester): punta fina NEGRA por defecto (el azul se confundía con la 4J) y los 12
   intervalos con el trazo del libro de Intervalia: opaco, extremos rectos y 0,0036 del ancho de la página (antes 0,010 y
