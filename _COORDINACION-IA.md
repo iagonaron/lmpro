@@ -6,6 +6,10 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 1-oct 10:15 · Fichas y rediseño · EN CURSO · ALERTAS amarilla y roja en el visor de las lecciones de ritmo (portales
+  GE y GP, para todos) y alerta amarilla en el libro de entonación (solo lo abre Tester). Voy a tocar: LMEAVathome
+  piel/apps/portal.js y portal.css y luego index.html (parto de 38dc1e2); lmpro index.html (parto de d9da61a). No
+  subáis esos ficheros hasta que ponga HECHO.
 - 1-oct 08:55 · Fichas y rediseño · HECHO · Supabase: CLAVE ANTERIOR DE LA SUITE RETIRADA (con el «vale» de Iago).
   Solo vale la nueva: cualquier Diario o app con la clave anterior recibe «secreto». NO subáis copias antiguas del
   Diario (anteriores al deploy 6abdf341) ni de Fichas en papel (anteriores a 6abdecef). La anterior queda guardada en
