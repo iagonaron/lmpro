@@ -6,10 +6,13 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
-- 2-oct 01:50 · Fichas y rediseño · EN CURSO · Diario (Netlify diariodeiagocmus, vivo 6abee958): index.html,
-  diario-lupa.js y ficha-resultados.js. LUPA DE AUDITORÍA, fase 4: las mismas ventanas desde la ficha del alumno
-  (ordenador e iPad) y desde la tabla de arriba de la pestaña «Ev. inicial». Solo lectura. Quien vaya a subir el
-  Diario, que espere al HECHO o parta del deploy nuevo.
+- 2-oct 01:55 · Fichas y rediseño · HECHO · deploy 6abef22e del Diario (Netlify diariodeiagocmus, anterior 6abee958) ·
+  LUPA DE AUDITORÍA, fase 4: diario-lupa.js (?v=l3), ficha-resultados.js (?v=f3) e index.html (solo esos dos números
+  de versión); 73 ficheros. Las mismas ventanas, ahora también desde la FICHA DEL ALUMNO (ordenador e iPad): notas de
+  clase, medias de apartado y media ponderada, exámenes, fila «Ini» y nota del boletín; y desde la tabla de arriba de
+  la pestaña «Ev. inicial». ficha-resultados.js solo añade atributos data-lp-… (la fila de evaluaciones de la que
+  sale cada nota) y FichaResultados.datos(); la ficha se ve y calcula igual. Solo lee. Quien toque el Diario, que
+  parta de 6abef22e. Copias y LEEME en Dropbox. Deshacer: publicar en Netlify el deploy 6abee958.
 - 2-oct 01:20 · Fichas y rediseño · HECHO · deploy 6abee958 del Diario (Netlify diariodeiagocmus, anterior 6abed913) ·
   LUPA DE AUDITORÍA, fases 2 y 3: diario-lupa.js (?v=l2) e index.html (solo ese número de versión); 73 ficheros. En
   «Resultados» ya tiene lupa toda nota con algo detrás: dictados de elemental (corr_notas: rúbrica y solución) y de
