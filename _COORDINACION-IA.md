@@ -6,10 +6,14 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
-- 2-oct 01:05 · Fichas y rediseño · EN CURSO · Diario (Netlify diariodeiagocmus, vivo 6abed913): index.html y
-  diario-lupa.js. LUPA DE AUDITORÍA, fases 2 y 3: dictados de elemental y de profesional (solución, foto del alumno,
-  autocorrección y revisión), entonación de elemental, medias de apartado, «Media clase», exámenes y nota del boletín.
-  Solo lectura. Quien vaya a subir el Diario, que espere al HECHO o parta del deploy nuevo.
+- 2-oct 01:20 · Fichas y rediseño · HECHO · deploy 6abee958 del Diario (Netlify diariodeiagocmus, anterior 6abed913) ·
+  LUPA DE AUDITORÍA, fases 2 y 3: diario-lupa.js (?v=l2) e index.html (solo ese número de versión); 73 ficheros. En
+  «Resultados» ya tiene lupa toda nota con algo detrás: dictados de elemental (corr_notas: rúbrica y solución) y de
+  profesional (dictados: solución, foto del alumno con visor de zoom y giro, autocorrección, revisión y comentarios),
+  entonación de elemental (ent_notas), la media de cada apartado (qué notas la forman), «Media clase», exámenes y
+  boletín (el cálculo entero, comprobado contra calcularMediaMock). Solo lee; no toca evaluaciones-reader.js ni
+  app.js. Quien toque el Diario, que parta de 6abee958. Copias y LEEME en Dropbox. Deshacer: publicar en Netlify el
+  deploy 6abed913.
 - 2-oct 00:15 · Fichas y rediseño · HECHO · deploy 6abed913 del Diario (Netlify diariodeiagocmus, anterior 6abeca85) ·
   LUPA DE AUDITORÍA, fase 1: index.html (carga diario-lupa.js ?v=l1 y el lector ?v=fp4), evaluaciones-reader.js y
   diario-lupa.js (nuevo); 73 ficheros. En «Resultados», una lupa en cada nota de clase de Ritmo y de Teoría (y en la
