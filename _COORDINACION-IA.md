@@ -6,9 +6,10 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
-- 1-oct 12:35 · Fichas y rediseño · EN CURSO · libro de entonación (solo Tester): el nombre del intervalo (2m, 5J…),
-  pequeño y negro, paralelo a la línea y justo debajo. Voy a tocar: LMEAVathome piel/apps/portal.js (parto de e5f7805).
-  No lo subáis hasta que ponga HECHO.
+- 1-oct 12:38 · Fichas y rediseño · HECHO · libro de entonación (solo Tester): el nombre del intervalo (2m, 5J, 4A/5D…),
+  pequeño y negro, paralelo a su línea y justo debajo; sale al soltar y también en las líneas ya pintadas (no se guarda
+  nada nuevo). LMEAVathome: commit f959325 (piel/apps/portal.js, anterior e5f7805). Copia en Dropbox. Deshacer: git
+  revert f959325.
 - 1-oct 11:38 · Fichas y rediseño · HECHO · visor de ritmo: la punta fina, la PRIMERA (punta, verde, gris, △/U, alertas),
   como en entonación. LMEAVathome: commits 91a1f43 (piel/apps/portal.js) y e5f7805 (index.html); lmpro: commit 4e66703
   (index.html). Solo cambia el orden. Copia en Dropbox. Deshacer: git revert de esos tres.
