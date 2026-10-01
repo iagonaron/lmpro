@@ -6,10 +6,14 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
-- 2-oct 00:10 · Fichas y rediseño · EN CURSO · Diario (Netlify diariodeiagocmus, vivo 6abeca85): index.html,
-  evaluaciones-reader.js y un fichero nuevo, diario-lupa.js. LUPA DE AUDITORÍA, fase 1: en «Resultados», una lupa en cada
-  nota de clase de Ritmo y de Teoría que dice de dónde sale (app, lección, rúbrica, ficha, cambios). Solo lectura.
-  Quien vaya a subir el Diario, que espere al HECHO o parta del deploy nuevo.
+- 2-oct 00:15 · Fichas y rediseño · HECHO · deploy 6abed913 del Diario (Netlify diariodeiagocmus, anterior 6abeca85) ·
+  LUPA DE AUDITORÍA, fase 1: index.html (carga diario-lupa.js ?v=l1 y el lector ?v=fp4), evaluaciones-reader.js y
+  diario-lupa.js (nuevo); 73 ficheros. En «Resultados», una lupa en cada nota de clase de Ritmo y de Teoría (y en la
+  Entonación de 2.º GP que sale de Ritmo entonado) abre una ventana con el origen de la nota: lección, app, rúbrica
+  (rit_notas / rep_notas), desglose de la ficha, reclamación y cambios (eval_audit). Solo lee. El lector deja un
+  índice nuevo, window.EVAL_ORIGEN (qué fila de evaluaciones dejó la nota en cada casilla), y une en UNA columna la
+  ficha que llega como «Ficha 2» (digital) y como «2» (papel). Quien toque el Diario, que parta de 6abed913. Copias y
+  LEEME en Dropbox. Deshacer: publicar en Netlify el deploy 6abeca85.
 - 1-oct 23:10 · Fichas y rediseño · HECHO · deploy 6abeca85 del Diario (Netlify diariodeiagocmus, anterior 6abdf341) ·
   ipad.html, selector-ritmo.js (?v=r5), iphone.html e iphone-app.js (?v=s27); 72 ficheros, solo esos cuatro cambian.
   Escaleta de la C2 de 2.º GP: primero la pregunta y después la lección (ORDEN_B2.c2), minutos por defecto 14 · 10 · 8
