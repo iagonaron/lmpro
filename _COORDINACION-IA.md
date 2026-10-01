@@ -6,9 +6,12 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
-- 1-oct 22:33 · Fichas y rediseño · EN CURSO · «Mis resultados» (portales GE y GP): la Ev. Inicial a la vista del alumno
-  (rombos en la gráfica, leyenda y lista de notas de clase con «no cuenta para la media»). LMEAVathome: index.html;
-  lmpro: index.html. Solo el bloque de «Mis resultados».
+- 1-oct 22:33 · Fichas y rediseño · HECHO · «Mis resultados» (portales GE y GP): la Ev. Inicial a la vista del alumno:
+  un rombo suelto en su fecha en la gráfica, «evaluación inicial (no cuenta para la media)» en la leyenda y, en la
+  lista de notas de clase, al principio del curso (abajo: la lista va de lo más reciente a lo más antiguo) con
+  «Ev. inicial (no cuenta para la media)». No entran en la media ni en ningún cálculo; sin SQL (suite_mis_resultados
+  ya las devolvía). LMEAVathome: commit 6c0a19d (index.html, anterior 9b73d7f); lmpro: commit 8bb81a4 (index.html,
+  anterior 4e66703). Copia en Dropbox. Deshacer: git revert de esos dos.
 - 1-oct 22:19 · Fichas y rediseño · HECHO · apps de corrección de RITMO: las lecciones a preguntar salen de lo que se
   MANDÓ a los alumnos (suite_semana_envio), no de la preparación del Diario; el 1-oct en 2.º GP salieron 14 y 16 (la
   preparación de la semana 39, cambiada después de mandar) en vez de 7 y 8. Ritmo entonado, además: reparto de
