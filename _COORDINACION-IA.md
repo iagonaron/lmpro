@@ -6,6 +6,9 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 1-oct 22:33 · Fichas y rediseño · EN CURSO · «Mis resultados» (portales GE y GP): la Ev. Inicial a la vista del alumno
+  (rombos en la gráfica, leyenda y lista de notas de clase con «no cuenta para la media»). LMEAVathome: index.html;
+  lmpro: index.html. Solo el bloque de «Mis resultados».
 - 1-oct 22:19 · Fichas y rediseño · HECHO · apps de corrección de RITMO: las lecciones a preguntar salen de lo que se
   MANDÓ a los alumnos (suite_semana_envio), no de la preparación del Diario; el 1-oct en 2.º GP salieron 14 y 16 (la
   preparación de la semana 39, cambiada después de mandar) en vez de 7 y 8. Ritmo entonado, además: reparto de
