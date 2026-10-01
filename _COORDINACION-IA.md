@@ -6,6 +6,10 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 2-oct 01:50 · Fichas y rediseño · EN CURSO · Diario (Netlify diariodeiagocmus, vivo 6abee958): index.html,
+  diario-lupa.js y ficha-resultados.js. LUPA DE AUDITORÍA, fase 4: las mismas ventanas desde la ficha del alumno
+  (ordenador e iPad) y desde la tabla de arriba de la pestaña «Ev. inicial». Solo lectura. Quien vaya a subir el
+  Diario, que espere al HECHO o parta del deploy nuevo.
 - 2-oct 01:20 · Fichas y rediseño · HECHO · deploy 6abee958 del Diario (Netlify diariodeiagocmus, anterior 6abed913) ·
   LUPA DE AUDITORÍA, fases 2 y 3: diario-lupa.js (?v=l2) e index.html (solo ese número de versión); 73 ficheros. En
   «Resultados» ya tiene lupa toda nota con algo detrás: dictados de elemental (corr_notas: rúbrica y solución) y de
