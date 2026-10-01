@@ -3690,13 +3690,35 @@ function showEnig(kind){
   function sesiones(){
     var out=[];
     (_st.rows||[]).forEach(function(e){
-      if(e.eval_tipo==='inicial'||e.trimestre==='inicial') return;   /* la Ev. Inicial nunca se muestra al alumno */
+      if(e.eval_tipo==='inicial'||e.trimestre==='inicial') return;   /* la Ev. Inicial no es nota de clase: va aparte, en iniciales() */
       if(((e.eval_tipo)||'sesion')!=='sesion') return;
       if(e.sin_evaluar) return;
       var ap=apartadoDe(e), n=num(e.nota_final);
       if(ap && ORDEN_CL.indexOf(ap)>=0 && n!=null) out.push({ ap:ap, fecha:e.fecha||null, trim:e.trimestre||null, leccion:e.leccion, nota:n });
       var ap2=apSecundario(e), n2=num(e.nota_secundaria);
       if(ap2 && ORDEN_CL.indexOf(ap2)>=0 && n2!=null) out.push({ ap:ap2, fecha:e.fecha||null, trim:e.trimestre||null, leccion:e.leccion, nota:n2 });
+    });
+    out.sort(function(a,b){ return String(a.fecha||'').localeCompare(String(b.fecha||'')); });
+    return out;
+  }
+  /* (1-oct-2026, Iago) LA EVALUACIÓN INICIAL, A LA VISTA DEL ALUMNO.
+     «En mi Diario veo las notas de la evaluación inicial con forma de rombo. Me gusta mucho.
+      ¿Puedes hacer que también le salga a los alumnos en "Mis resultados" y que la leyenda lo
+      aclare? Y que les salgan también en el apartado de la izquierda de notas de clase, eso sí:
+      que estén al principio (orden cronológico correcto) y que ponga entre paréntesis: no cuenta
+      para la media.»
+     Van APARTE de sesiones(): no entran en la media de clase ni en ningún cálculo. En la gráfica
+     son un rombo suelto en su fecha (sin unir a la línea de las clases) y en la lista de notas de
+     clase salen en su sitio por fecha (son las más antiguas), con «(no cuenta para la media)». */
+  function iniciales(){
+    var out=[];
+    (_st.rows||[]).forEach(function(e){
+      if(!(e.eval_tipo==='inicial'||e.trimestre==='inicial')) return;
+      if(e.sin_evaluar) return;
+      var ap=apartadoDe(e), n=num(e.nota_final);
+      if(ap && ORDEN_CL.indexOf(ap)>=0 && n!=null) out.push({ ap:ap, fecha:e.fecha||null, trim:'inicial', leccion:e.leccion, nota:n, ini:true });
+      var ap2=apSecundario(e), n2=num(e.nota_secundaria);
+      if(ap2 && ORDEN_CL.indexOf(ap2)>=0 && n2!=null) out.push({ ap:ap2, fecha:e.fecha||null, trim:'inicial', leccion:e.leccion, nota:n2, ini:true });
     });
     out.sort(function(a,b){ return String(a.fecha||'').localeCompare(String(b.fecha||'')); });
     return out;
@@ -3770,11 +3792,21 @@ function showEnig(kind){
   function actitudTxt(n){ if(n==null||isNaN(n)) return '—'; for(var i=0;i<ACTITUD.length;i++){ if(n>=ACTITUD[i].min) return ACTITUD[i].txt; } return '—'; }
 
   /* ================= bloques ================= */
-  function bloqueClase(ss){
-    var m=mediaClase(ss), p=pesosCurso();
+  function bloqueClase(ss, ini){
+    var m=mediaClase(ss), p=pesosCurso();   /* la media, SOLO con las notas de clase (sin la Ev. Inicial) */
     var hoy=new Date().toLocaleDateString('es-ES',{day:'numeric',month:'long',year:'numeric'});
-    var lista=ss.length
-      ? ss.slice().reverse().map(function(s){ var a=APARTADOS[s.ap];
+    /* (1-oct-2026) las de la Ev. Inicial van AL PRINCIPIO del curso, todas juntas y por fecha, antes
+       que cualquier nota de clase (aunque esa semana se entregase ya alguna ficha). Como la lista va
+       de lo más reciente a lo más antiguo, quedan abajo del todo. */
+    var todas=(ini&&ini.length) ? ini.concat(ss) : ss;
+    var lista=todas.length
+      ? todas.slice().reverse().map(function(s){ var a=APARTADOS[s.ap];
+          if(s.ini){ var lec=etiquetaLeccion(s); if(/sortead/i.test(lec)) lec='Lección sorteada';
+            return '<div class="mr-fila mr-fila-ini" style="--apc:'+a.color+'" title="Evaluación inicial: no cuenta para la media"><span class="mr-barrita"></span>'
+              +'<span class="mr-fmeta"><span class="mr-flec"><i class="mr-f-ini"></i>'+esc(lec)+'</span>'
+              +'<span class="mr-fsub">'+esc(a.label)+' · '+fFecha(s.fecha)+'</span>'
+              +'<span class="mr-fsub mr-fsub-ini">Ev. inicial (no cuenta para la media)</span></span>'
+              +'<span class="mr-fnota" style="color:'+colorNota(s.nota)+'">'+f2(s.nota)+'</span></div>'; }
           return '<div class="mr-fila" style="--apc:'+a.color+'"><span class="mr-barrita"></span>'
             +'<span class="mr-fmeta"><span class="mr-flec">'+esc(etiquetaLeccion(s))+'</span>'
             +'<span class="mr-fsub">'+esc(a.label)+' · '+fFecha(s.fecha)+'</span></span>'
@@ -3817,7 +3849,7 @@ function showEnig(kind){
       +'<div class="mr-bols">'+filas+'</div></section>';
   }
   /* gráfica: 14 sep → 15 jun del curso, sin scroll; exámenes como estrellas al final de su trimestre */
-  function bloqueGrafica(ss, ex){
+  function bloqueGrafica(ss, ex, ini){
     var s0=anioInicio();
     var W=1200,H=240,L=34,R=14,T=12,B=24;
     var mn=Date.parse(s0+'-09-14'), mx=Date.parse((s0+1)+'-06-15');
@@ -3837,6 +3869,15 @@ function showEnig(kind){
       s+='<path d="'+l.map(function(x,i){ return (i?'L':'M')+X(Date.parse(x.fecha)).toFixed(1)+' '+Y(x.nota).toFixed(1); }).join(' ')+'" fill="none" stroke="'+col+'" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" opacity=".9"/>';
       l.forEach(function(x){ s+='<circle cx="'+X(Date.parse(x.fecha)).toFixed(1)+'" cy="'+Y(x.nota).toFixed(1)+'" r="4.2" style="fill:var(--mr-pc)" stroke="'+col+'" stroke-width="2.2"><title>'+esc(APARTADOS[ap].label)+' · '+esc(etiquetaLeccion(x))+' · '+fFecha(x.fecha)+' · '+f2(x.nota)+'</title></circle>'; });
     });
+    /* (1-oct-2026) Ev. Inicial: un ROMBO suelto en su fecha, del color del apartado, sin unir a la línea */
+    var rombo=function(cx,cy,r){ return 'M'+cx.toFixed(1)+' '+(cy-r).toFixed(1)+'L'+(cx+r).toFixed(1)+' '+cy.toFixed(1)+'L'+cx.toFixed(1)+' '+(cy+r).toFixed(1)+'L'+(cx-r).toFixed(1)+' '+cy.toFixed(1)+'Z'; };
+    var hayIni=false;
+    (ini||[]).forEach(function(x){
+      if(!x.fecha || !isFinite(Date.parse(x.fecha)) || !APARTADOS[x.ap]) return;
+      hayIni=true;
+      var lec=etiquetaLeccion(x); if(/sortead/i.test(lec)) lec='Lección sorteada';
+      s+='<path d="'+rombo(X(Date.parse(x.fecha)),Y(x.nota),6.2)+'" style="fill:var(--mr-pc)" stroke="'+APARTADOS[x.ap].color+'" stroke-width="2.2" stroke-linejoin="round"><title>Evaluación inicial (no cuenta para la media) · '+esc(APARTADOS[x.ap].label)+' · '+esc(lec)+' · '+fFecha(x.fecha)+' · '+f2(x.nota)+'</title></path>';
+    });
     var FIN_T={ '1T':s0+'-12-18', '2T':(s0+1)+'-03-26', '3T':(s0+1)+'-06-15' };
     var estrella=function(cx,cy,r){ var d=''; for(var i=0;i<10;i++){ var a=-Math.PI/2+i*Math.PI/5, rr=i%2?r*0.45:r; d+=(i?'L':'M')+(cx+rr*Math.cos(a)).toFixed(1)+' '+(cy+rr*Math.sin(a)).toFixed(1); } return d+'Z'; };
     ['1T','2T','3T'].forEach(function(t){
@@ -3848,7 +3889,8 @@ function showEnig(kind){
     s+='</svg>';
     var ley=ORDEN_CL.map(function(ap){ return '<span class="mr-chip" style="--apc:'+APARTADOS[ap].color+'">'+esc(APARTADOS[ap].label)+'</span>'; }).join('')
       +(ORDEN_EX.indexOf('entonacion_atonal')>=0 ? '<span class="mr-chip" style="--apc:'+APARTADOS.entonacion_atonal.color+'">'+esc(APARTADOS.entonacion_atonal.label)+' (solo examen)</span>' : '')
-      +'<span class="mr-chip mr-chip-forma" style="--apc:var(--mr-dim)"><i class="mr-f-clase"></i>clase</span><span class="mr-chip mr-chip-forma" style="--apc:var(--mr-dim)"><i class="mr-f-ex"></i>examen</span>';
+      +'<span class="mr-chip mr-chip-forma" style="--apc:var(--mr-dim)"><i class="mr-f-clase"></i>clase</span><span class="mr-chip mr-chip-forma" style="--apc:var(--mr-dim)"><i class="mr-f-ex"></i>examen</span>'
+      +(hayIni ? '<span class="mr-chip mr-chip-forma" style="--apc:var(--mr-dim)"><i class="mr-f-ini"></i>evaluación inicial (no cuenta para la media)</span>' : '');
     return '<section class="mr-card mr-graf"><div class="mr-ctit"><span>Tu evolución durante el curso</span><span class="mr-ctit-r">14 sep → 15 jun</span></div>'
       +'<div class="mr-graf-svg">'+s+'</div><div class="mr-ley">'+ley+'</div></section>';
   }
@@ -3911,10 +3953,10 @@ function showEnig(kind){
   }
   function render(){
     var body=document.getElementById('mr-body'); if(!body) return;
-    var ss=sesiones(), ex=examenes();
+    var ss=sesiones(), ex=examenes(), ini=iniciales();
     pintarQuien();
-    body.innerHTML='<div class="mr-grid">'+bloqueClase(ss)+bloqueExamenes(ex)+bloqueBoletin(ex)+'</div>'
-      +bloqueGrafica(ss,ex)
+    body.innerHTML='<div class="mr-grid">'+bloqueClase(ss,ini)+bloqueExamenes(ex)+bloqueBoletin(ex)+'</div>'
+      +bloqueGrafica(ss,ex,ini)
       +'<div class="mr-pie">Todo sale del Diario del profesor: tus notas de clase, tus notas de examen, tu actitud y la nota del boletín.</div>';
     var bi=body.querySelector('#mr-btn-info'); if(bi) bi.addEventListener('click',abrirInfo);
     body.scrollTop=0;
@@ -4076,6 +4118,11 @@ function showEnig(kind){
       +'.mr-chip-forma{gap:6px}'
       +'.mr-f-clase{display:inline-block;width:10px;height:10px;border-radius:50%;border:2px solid currentColor;box-sizing:border-box}'
       +'.mr-f-ex{display:inline-block;width:12px;height:12px;border-radius:50%;background:currentColor}'
+      /* (1-oct-2026) Ev. Inicial: rombo (leyenda y lista) y fila de contorno discontinuo */
+      +'.mr-f-ini{display:inline-block;width:9px;height:9px;border:2px solid currentColor;box-sizing:border-box;transform:rotate(45deg);margin:0 2px;flex:none}'
+      +'.mr-flec .mr-f-ini{margin:0 8px 0 2px;vertical-align:1px;color:var(--apc);border-color:var(--apc) !important}'
+      +'.mr-fila.mr-fila-ini{border-style:dashed !important}'
+      +'.mr-fila-ini .mr-fsub-ini{white-space:normal;color:var(--mr-dim) !important;font-weight:700}'
       +'@media (max-width:1080px){.mr-grid{grid-template-columns:1fr;height:auto}.mr-grid>.mr-card{height:auto}.mr-lista{max-height:260px}.mr-bol-t{writing-mode:horizontal-tb;transform:none}}'
       +'@media (max-width:600px){.mr-top{padding:12px 14px;gap:10px}.mr-quien{display:none}.mr-wrap{padding:4px 14px 22px}}';
     document.head.appendChild(s);
