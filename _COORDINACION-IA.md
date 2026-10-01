@@ -6,8 +6,9 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
-- 1-oct · Fichas y rediseño · EN CURSO · lmpro (parto de 25d4b7b): quito la ruleta de lecciones («la ruleta puedes
-  eliminarla, ya no la necesito»): borro SORTEO/index.html y el bloque @SORTEO-BTN de index.html.
+- 1-oct · Fichas y rediseño · HECHO · commits 4088d9a (index.html: fuera el bloque @SORTEO-BTN) y e8bf12a (borrado
+  SORTEO/index.html) · ruleta de lecciones eliminada («ya no la necesito»; además tenía nombres de alumnos en una
+  página pública). La tabla suite_sorteo_lecciones y lo que la lee (iPad, Ritmo entonado PRO) no se tocan.
 - 30-sep 23:05 · Fichas y rediseño · HECHO · commit 38dc1e2 (LMEAVathome, anterior ffb6507) · el aviso «empieza la
   clase» de la música del portal lee las horas de horario_clases_publico (lo que guarda el paso «Horario» del wizard
   del Diario), las recuerda en el aparato y MUS_HORAS queda de respaldo. piel/apps/portal.js. Comprobado en vivo.
