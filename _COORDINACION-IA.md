@@ -6,6 +6,19 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 1-oct 07:40 · Fichas y rediseño · EN CURSO · Diario (Netlify diariodeiagocmus, parto del deploy 6abd7030): la clave
+  nueva de la suite en los 7 ficheros que la llevan, la memoria final para cualquier curso (no solo 3Ge + 2Gp) y listas
+  de reserva con lo último leído bien. app.js (?v=d75), index.html, ipad.html, iphone.html, iphone-app.js (?v=s26),
+  suite-campana.js (?v=s31), diario-mensajes.js (?v=s26), diario-semana-gp.js (?v=r22), diario-visor.js (?v=r4),
+  selector-ritmo.js (?v=r4) y ficha-resultados.js (?v=f2).
+- 1-oct · Fichas y rediseño · HECHO · deploy 6abdecef de Fichas en papel (Netlify fichasenpapel-cmus, anterior
+  6abb707f) · la clave nueva de la suite y la web protegida con el inicio de sesión de Netlify. index.html.
+- 1-oct · Fichas y rediseño · HECHO · Supabase: (1) vw_diario_grupos_alumnos con regla general para curso_diario
+  (nGp… → nGp; GE que empieza por número → nGe); (2) horario_clases: se lee solo el curso escolar más reciente y no se
+  escribe sin la clave (horario_clases_guardar); (3) clave de la suite cambiada CON TRANSICIÓN: valen la nueva y la
+  anterior (gate_secreto_prev) hasta que Iago abra el Diario nuevo en sus aparatos. Quien suba algo que lleve la clave,
+  que la copie de un fichero VIVO, no de una copia antigua, y nunca en código público. Deshacer: Dropbox, carpeta
+  SQL-BD del Diario, ficheros DESHACER-*-2026-10-01.sql.
 - 1-oct · Fichas y rediseño · HECHO · commits 4088d9a (index.html: fuera el bloque @SORTEO-BTN) y e8bf12a (borrado
   SORTEO/index.html) · ruleta de lecciones eliminada («ya no la necesito»; además tenía nombres de alumnos en una
   página pública). La tabla suite_sorteo_lecciones y lo que la lee (iPad, Ritmo entonado PRO) no se tocan.
