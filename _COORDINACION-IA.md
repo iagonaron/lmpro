@@ -6,11 +6,13 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
-- 1-oct 23:06 · Fichas y rediseño · EN CURSO · Diario (Netlify diariodeiagocmus, vivo 6abdf341): ipad.html,
-  selector-ritmo.js, iphone.html e iphone-app.js. Escaleta de la C2 de 2.º GP (primero la pregunta, después la lección;
-  minutos 14 · 10 · 8), «Pregunta» (GP) y «Evaluación de Ritmo» (GE) del iPad con lo que se MANDÓ a los alumnos
-  (suite_envio_lecciones) y, en la portada del móvil, las copias en papel por curso (4Ge / 2Gp). Quien vaya a subir
-  el Diario, que espere al HECHO o parta del deploy nuevo.
+- 1-oct 23:10 · Fichas y rediseño · HECHO · deploy 6abeca85 del Diario (Netlify diariodeiagocmus, anterior 6abdf341) ·
+  ipad.html, selector-ritmo.js (?v=r5), iphone.html e iphone-app.js (?v=s27); 72 ficheros, solo esos cuatro cambian.
+  Escaleta de la C2 de 2.º GP: primero la pregunta y después la lección (ORDEN_B2.c2), minutos por defecto 14 · 10 · 8
+  (las semanas con orden o minutos puestos a mano los conservan). «Pregunta» (GP) y «Evaluación de Ritmo» (GE) del
+  iPad con lo que se MANDÓ a los alumnos (suite_envio_lecciones; la preparación, de respaldo y con aviso si difiere).
+  Móvil: en la portada, copias en papel por curso (4Ge / 2Gp) con los nombres al tocar. Quien toque el Diario, que
+  parta de 6abeca85. Copias y LEEME en Dropbox. Deshacer: publicar en Netlify el deploy 6abdf341.
 - 1-oct 22:33 · Fichas y rediseño · HECHO · «Mis resultados» (portales GE y GP): la Ev. Inicial a la vista del alumno:
   un rombo suelto en su fecha en la gráfica, «evaluación inicial (no cuenta para la media)» en la leyenda y, en la
   lista de notas de clase, al principio del curso (abajo: la lista va de lo más reciente a lo más antiguo) con
