@@ -6,6 +6,11 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 1-oct 11:03 · Fichas y rediseño · EN CURSO · VISOR DE RITMO (GE y GP): solo verde, gris, punta fina negra, △/U (patrones que
+  se ponen bonitos) y alertas; «Borrar todo» de un toque con la tonalidad; en Tester/Protester el visor se vacía al entrar
+  y al salir. Y en el libro de entonación, lo mismo de «Borrar todo» y el vaciado. Voy a tocar: LMEAVathome
+  piel/apps/portal.js y portal.css y luego index.html (parto de f22fe02); lmpro index.html (parto de f37956b). No
+  subáis esos ficheros hasta que ponga HECHO.
 - 1-oct 10:20 · Fichas y rediseño · HECHO · ALERTAS amarilla y roja en el visor de las lecciones de ritmo (portales GE
   y GP, para todos) y alerta amarilla en el libro de entonación (solo lo abre Tester) · LMEAVathome: commits 0793a88
   (piel/apps/portal.js y portal.css, anterior 38dc1e2) y f22fe02 (index.html); lmpro: commit 8eeba9d (index.html,
