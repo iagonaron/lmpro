@@ -6,8 +6,9 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
-- 1-oct 22:00 · Fichas y rediseño · EN CURSO · música del portal (Tester/Protester): el ▶ responde en todo el círculo
-  (el bloque del título, transparente y con z-index 75, tapaba su mitad de abajo). LMEAVathome: piel/apps/portal.css.
+- 1-oct 22:00 · Fichas y rediseño · HECHO · música del portal (Tester/Protester): el ▶ responde en todo el círculo
+  (el bloque del título, transparente y con z-index 75, tapaba su mitad de abajo; .portal-welcome pasa a z-index 76).
+  LMEAVathome: commit 9b73d7f (piel/apps/portal.css, anterior f959325). Copia en Dropbox. Deshacer: git revert 9b73d7f.
 - 1-oct 12:38 · Fichas y rediseño · HECHO · libro de entonación (solo Tester): el nombre del intervalo (2m, 5J, 4A/5D…),
   pequeño y negro, paralelo a su línea y justo debajo; sale al soltar y también en las líneas ya pintadas (no se guarda
   nada nuevo). LMEAVathome: commit f959325 (piel/apps/portal.js, anterior e5f7805). Copia en Dropbox. Deshacer: git
