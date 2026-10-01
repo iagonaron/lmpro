@@ -6,11 +6,12 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
-- 1-oct 07:40 · Fichas y rediseño · EN CURSO · Diario (Netlify diariodeiagocmus, parto del deploy 6abd7030): la clave
-  nueva de la suite en los 7 ficheros que la llevan, la memoria final para cualquier curso (no solo 3Ge + 2Gp) y listas
-  de reserva con lo último leído bien. app.js (?v=d75), index.html, ipad.html, iphone.html, iphone-app.js (?v=s26),
-  suite-campana.js (?v=s31), diario-mensajes.js (?v=s26), diario-semana-gp.js (?v=r22), diario-visor.js (?v=r4),
-  selector-ritmo.js (?v=r4) y ficha-resultados.js (?v=f2).
+- 1-oct 07:46 · Fichas y rediseño · HECHO · deploy 6abdf341 del Diario (Netlify diariodeiagocmus, anterior 6abd7030) ·
+  la clave nueva de la suite en los 7 ficheros que la llevan, la memoria final para cualquier curso (con 4Ge: la
+  versión anterior fallaba) y listas de reserva con lo último leído bien. app.js (?v=d75), index.html, ipad.html,
+  iphone.html, iphone-app.js (?v=s26), suite-campana.js (?v=s31), diario-mensajes.js (?v=s26), diario-semana-gp.js
+  (?v=r22), diario-visor.js (?v=r4), selector-ritmo.js (?v=r4) y ficha-resultados.js (?v=f2). 72 ficheros, 72
+  iguales. Copia y LEEME en Dropbox. OJO: quien parta de una versión anterior del Diario lleva la clave vieja.
 - 1-oct · Fichas y rediseño · HECHO · deploy 6abdecef de Fichas en papel (Netlify fichasenpapel-cmus, anterior
   6abb707f) · la clave nueva de la suite y la web protegida con el inicio de sesión de Netlify. index.html.
 - 1-oct · Fichas y rediseño · HECHO · Supabase: (1) vw_diario_grupos_alumnos con regla general para curso_diario
