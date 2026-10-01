@@ -6,6 +6,8 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 1-oct · Fichas y rediseño · EN CURSO · lmpro (parto de 25d4b7b): quito la ruleta de lecciones («la ruleta puedes
+  eliminarla, ya no la necesito»): borro SORTEO/index.html y el bloque @SORTEO-BTN de index.html.
 - 30-sep 23:05 · Fichas y rediseño · HECHO · commit 38dc1e2 (LMEAVathome, anterior ffb6507) · el aviso «empieza la
   clase» de la música del portal lee las horas de horario_clases_publico (lo que guarda el paso «Horario» del wizard
   del Diario), las recuerda en el aparato y MUS_HORAS queda de respaldo. piel/apps/portal.js. Comprobado en vivo.
