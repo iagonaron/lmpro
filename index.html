@@ -2128,6 +2128,122 @@ function showEnig(kind){
      · se guarda en ESTE dispositivo (localStorage) por alumno + lección + página. */
   function tsAnotar(ov, clave, cid){
     var PREF='ts_anot_'+(cid||'anon')+'_'+clave+'_';
+    /* ======== (1-oct-2026, Iago) △/U · PATRONES ========
+       «Un botón con el triángulo y la U: si hago un trazo que se parezca a un triángulo, me lo transforma en triángulo; si
+        recuerda a una U, me la pone bonita, en verde. Escribo a mano y un segundo después lo transforma mientras sigo con los
+        siguientes.» Triángulo = subdivisión ternaria; U (cuadrada) = binaria: los mismos símbolos que las intros (en verde).
+       · Cada trazo espera PT_ESPERA ms; si empiezas otro a su lado antes, espera a que acabes (un triángulo en 2 o 3 trazos).
+       · Lo que no se parezca a ninguno de los dos se queda tal cual, en verde fino.
+       · El símbolo bonito sustituye al trazo (deshacer lo quita entero) y se guarda como un trazo más: {c,w,f,s:'tri'|'u',p}. */
+    var PT_COL='#16a34a', PT_W=0.0028, PT_ESPERA=900;
+    var PT_SVG='<svg viewBox="0 0 26 20" aria-hidden="true"><path d="M2.6 15.6h8.6L6.9 8Z" fill="none" stroke="#22c55e" stroke-width="2.1" stroke-linejoin="round"/><path d="M15 8v7.6h8.6V8" fill="none" stroke="#22c55e" stroke-width="2.1" stroke-linejoin="round" stroke-linecap="round"/></svg>';
+    function ptPx(pg,sk){ var W=pg.canvas.clientWidth||1, H=pg.canvas.clientHeight||1; return sk.p.map(function(q){ return [q[0]*W,q[1]*H]; }); }
+    function ptCaja(L){ var b=[1e9,1e9,-1e9,-1e9]; L.forEach(function(sk){ sk.p.forEach(function(q){ if(q[0]<b[0])b[0]=q[0]; if(q[1]<b[1])b[1]=q[1]; if(q[0]>b[2])b[2]=q[0]; if(q[1]>b[3])b[3]=q[1]; }); }); return b; }
+    function ptCasco(P){   /* envolvente convexa (cadena monótona) */
+      var a=P.slice().sort(function(p,q){ return (p[0]-q[0])||(p[1]-q[1]); }); if(a.length<3) return a;
+      var cr=function(o,p,q){ return (p[0]-o[0])*(q[1]-o[1])-(p[1]-o[1])*(q[0]-o[0]); }, lo=[], hi=[], i;
+      for(i=0;i<a.length;i++){ while(lo.length>=2 && cr(lo[lo.length-2],lo[lo.length-1],a[i])<=0) lo.pop(); lo.push(a[i]); }
+      for(i=a.length-1;i>=0;i--){ while(hi.length>=2 && cr(hi[hi.length-2],hi[hi.length-1],a[i])<=0) hi.pop(); hi.push(a[i]); }
+      lo.pop(); hi.pop(); return lo.concat(hi);
+    }
+    function ptSuave(s){   /* puntos cada 1/40 de la diagonal y media de 5: el pulso del dedo no hace esquinas */
+      if(s.length<3) return s;
+      var x0=1e9,y0=1e9,x1=-1e9,y1=-1e9; s.forEach(function(p){ if(p[0]<x0)x0=p[0]; if(p[1]<y0)y0=p[1]; if(p[0]>x1)x1=p[0]; if(p[1]>y1)y1=p[1]; });
+      var d=Math.sqrt((x1-x0)*(x1-x0)+(y1-y0)*(y1-y0))/40; if(!(d>0)) return s;
+      var o=[s[0].slice()], resto=d, a=s[0];
+      for(var i=1;i<s.length;i++){ var b=s[i], dx=b[0]-a[0], dy=b[1]-a[1], seg=Math.sqrt(dx*dx+dy*dy), t0=0;
+        while(seg-t0>=resto){ t0+=resto; o.push([a[0]+dx*t0/seg, a[1]+dy*t0/seg]); resto=d; }
+        resto-=(seg-t0); a=b; }
+      o.push(s[s.length-1].slice());
+      if(o.length<7) return o;
+      var r=[o[0],o[1]]; for(var j=2;j<o.length-2;j++){ var sx=0,sy=0; for(var k=-2;k<=2;k++){ sx+=o[j+k][0]; sy+=o[j+k][1]; } r.push([sx/5,sy/5]); }
+      r.push(o[o.length-2],o[o.length-1]); return r;
+    }
+    function ptArea(T){ var s=0; for(var i=0;i<T.length;i++){ var p=T[i], q=T[(i+1)%T.length]; s+=p[0]*q[1]-q[0]*p[1]; } return Math.abs(s)/2; }
+    function ptReconoce(S){   /* S: trazos en px de pantalla → {t:'tri'|'u', up, cx, cy, w, h} o null */
+      var P=[].concat.apply([],S.map(ptSuave)); if(P.length<6) return null;
+      var x0=1e9,y0=1e9,x1=-1e9,y1=-1e9; P.forEach(function(p){ if(p[0]<x0)x0=p[0]; if(p[1]<y0)y0=p[1]; if(p[0]>x1)x1=p[0]; if(p[1]>y1)y1=p[1]; });
+      var w=x1-x0, h=y1-y0, dg=Math.sqrt(w*w+h*h); if(dg<12) return null;
+      var L=0; S.forEach(function(s){ for(var i=1;i<s.length;i++) L+=Math.sqrt(Math.pow(s[i][0]-s[i-1][0],2)+Math.pow(s[i][1]-s[i-1][1],2)); });
+      var r={cx:(x0+x1)/2, cy:(y0+y1)/2, w:w, h:h};
+      /* triángulo: figura cerrada cuya envolvente es (casi) un triángulo, recorrida más o menos una vez */
+      var C=ptCasco(P), Ac=C.length>=3?ptArea(C):0;
+      if(Ac>0.08*w*h && w>0.3*h && h>0.3*w){
+        var Vx=C; if(Vx.length>48){ var st=Vx.length/48, Vy=[]; for(var k=0;k<48;k++) Vy.push(C[Math.floor(k*st)]); Vx=Vy; }
+        var best=0, bt=null, i, j, m, A;
+        for(i=0;i<Vx.length;i++) for(j=i+1;j<Vx.length;j++) for(m=j+1;m<Vx.length;m++){ A=ptArea([Vx[i],Vx[j],Vx[m]]); if(A>best){ best=A; bt=[Vx[i],Vx[j],Vx[m]]; } }
+        var per=0; for(i=0;i<C.length;i++){ var a=C[i], b=C[(i+1)%C.length]; per+=Math.sqrt(Math.pow(b[0]-a[0],2)+Math.pow(b[1]-a[1],2)); }
+        var s0=S[0], gap=Math.sqrt(Math.pow(s0[0][0]-s0[s0.length-1][0],2)+Math.pow(s0[0][1]-s0[s0.length-1][1],2));
+        var cerrado=(S.length===1) ? gap<0.3*dg : true;
+        if(cerrado && bt && best/Ac>0.72 && L>0.75*per && L<1.6*per){
+          var ys=bt.map(function(p){ return p[1]; }).sort(function(p,q){ return p-q; });
+          r.t='tri'; r.up=(ys[1]-y0)>0.5*h; return r;   /* dos vértices abajo: la punta arriba (como en las intros) */
+        }
+      }
+      /* U: un solo trazo abierto, con los dos extremos del mismo lado (arriba: U; abajo: ∩) */
+      if(S.length===1){
+        var s=ptSuave(S[0]), e0=s[0], e1=s[s.length-1], gp=Math.sqrt(Math.pow(e1[0]-e0[0],2)+Math.pow(e1[1]-e0[1],2));
+        if(gp>0.45*w && h>0.3*w && h<2.6*w && Math.abs(e0[0]-e1[0])>0.5*w){
+          var arriba=(e0[1]-y0<0.4*h)&&(e1[1]-y0<0.4*h), abajo=(y1-e0[1]<0.4*h)&&(y1-e1[1]<0.4*h);
+          if(arriba||abajo){
+            var ex=0, ev=arriba?-1e9:1e9; for(var n=0;n<s.length;n++){ var v=s[n][1]; if(arriba?v>ev:v<ev){ ev=v; ex=n; } }
+            var fr=ex/(s.length-1), xe=s[ex][0], xa=Math.min(e0[0],e1[0]), xb=Math.max(e0[0],e1[0]);
+            var vu=0, dir=arriba?1:-1, ref=s[0][1], T=0.3*h;   /* vueltas en vertical (con margen T): la U, una; la W, tres */
+            for(var q=1;q<s.length;q++){ var yq=s[q][1]; if((yq-ref)*dir>0) ref=yq; else if((ref-yq)*dir>T){ vu++; dir=-dir; ref=yq; } }
+            if(vu===1 && fr>0.12 && fr<0.88 && xe>xa-0.1*w && xe<xb+0.1*w && L<2.2*(w+2*h)){ r.t='u'; r.up=arriba; return r; }
+          }
+        }
+      }
+      return null;
+    }
+    function ptPon(pg,sks,r){   /* el símbolo bonito (proporción de las intros, 14:12), en el sitio del trazo */
+      var W=pg.canvas.clientWidth||1, H=pg.canvas.clientHeight||1, z=Math.max(10,(r.w+r.h*14/12)/2), w=z, h=z*12/14;
+      var xa=(r.cx-w/2)/W, xb=(r.cx+w/2)/W, ya=(r.cy-h/2)/H, yb=(r.cy+h/2)/H, xc=r.cx/W, rd=function(v){ return Math.round(v*1e4)/1e4; }, p;
+      if(r.t==='tri') p=r.up?[[xa,yb],[xb,yb],[xc,ya],[xa,yb]]:[[xa,ya],[xb,ya],[xc,yb],[xa,ya]];
+      else p=r.up?[[xa,ya],[xa,yb],[xb,yb],[xb,ya]]:[[xa,yb],[xa,ya],[xb,ya],[xb,yb]];
+      var nuevo={c:PT_COL, w:PT_W, f:1, s:r.t, p:p.map(function(q){ return [rd(q[0]),rd(q[1])]; })};
+      var Ls=pg.data.strokes, pos=Math.min.apply(null, sks.map(function(sk){ return Ls.indexOf(sk); }));
+      sks.forEach(function(sk){ var k=Ls.indexOf(sk); if(k>=0) Ls.splice(k,1); });
+      Ls.splice(Math.max(0,Math.min(pos,Ls.length)),0,nuevo);
+      var primero=true;   /* el historial: el primer trazo pasa a ser el símbolo; los demás se van */
+      for(var k=0;k<hist.length;k++){ var hh=hist[k]; if(hh.t==='trazo' && sks.indexOf(hh.sk)>=0){ if(primero){ hh.sk=nuevo; primero=false; } else { hist.splice(k,1); k--; } } }
+    }
+    function ptResuelve(pg,g){
+      if(g.t){ clearTimeout(g.t); } g.t=null;
+      var i=(pg.ptG||[]).indexOf(g); if(i>=0) pg.ptG.splice(i,1);
+      if(!ov.isConnected && !ov.__saliendo) return;
+      var vivos=g.sks.filter(function(sk){ return pg.data.strokes.indexOf(sk)>=0; }); if(!vivos.length) return;
+      var cambio=false, resto=[];
+      vivos.forEach(function(sk){ var r=ptReconoce([ptPx(pg,sk)]); if(r){ ptPon(pg,[sk],r); cambio=true; } else resto.push(sk); });   /* cada trazo solo, primero */
+      if(resto.length>=2 && resto.length<=4){ var r2=ptReconoce(resto.map(function(sk){ return ptPx(pg,sk); })); if(r2 && r2.t==='tri'){ ptPon(pg,resto,r2); cambio=true; } }
+      if(cambio){ save(pg); redraw(pg); }
+    }
+    function ptToca(pg,nx,ny){   /* empieza un trazo △/U: si cae junto a un grupo que aún espera, ese grupo espera a que acabe */
+      pg.ptJ=null;
+      (pg.ptG||[]).forEach(function(g){ var b=ptCaja(g.sks), m=Math.max(0.012, 0.35*Math.sqrt(Math.pow(b[2]-b[0],2)+Math.pow(b[3]-b[1],2)));
+        if(nx>b[0]-m && nx<b[2]+m && ny>b[1]-m && ny<b[3]+m){ if(g.t){ clearTimeout(g.t); g.t=null; } if(!pg.ptJ) pg.ptJ=g; } });
+    }
+    function ptSuelta(pg,sk){
+      pg.ptG=pg.ptG||[]; var g=pg.ptJ; pg.ptJ=null;
+      if(!g || pg.ptG.indexOf(g)<0){ g={sks:[],t:null}; pg.ptG.push(g); }
+      g.sks.push(sk); if(g.t){ clearTimeout(g.t); g.t=null; }
+      pg.ptG.forEach(function(x){ if(!x.t) x.t=setTimeout(function(){ ptResuelve(pg,x); }, PT_ESPERA); });
+    }
+    function ptCancela(){ pages.forEach(function(pg){ (pg.ptG||[]).forEach(function(g){ if(g.t) clearTimeout(g.t); }); pg.ptG=[]; pg.ptJ=null; }); }
+    function ptYa(){ pages.forEach(function(pg){ (pg.ptG||[]).slice().forEach(function(g){ ptResuelve(pg,g); }); }); }
+    /* (1-oct-2026, Iago) TESTER y PROTESTER: «lo uso en clase con varios grupos del mismo curso: cada vez que entre, la pantalla
+       despejada». Lo de esta lección (trazos, alertas, notas y tonalidad) se borra al ENTRAR y al SALIR del visor. A los alumnos
+       se les sigue guardando («si estudian la lección y vuelven al día siguiente, que siga»). */
+    function anotProfe(){
+      try{ var s=ses(); if(!s || s.estado!=='validado') return false;
+        var n=String(s.nombre||'').normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/\s+/g,' ').trim().toLowerCase();
+        return ['iago gonzalez tester','iago gonzalez protester','iago gonzalez pro tester'].indexOf(n)>=0;
+      }catch(e){ return false; }
+    }
+    var PROFE=anotProfe();
+    function anotVacia(){ try{ for(var i=localStorage.length-1;i>=0;i--){ var k=localStorage.key(i); if(k && k.indexOf(PREF)===0) localStorage.removeItem(k); } }catch(e){} }
+    if(PROFE) anotVacia();
+    ov.__anotSale=function(){ ov.__saliendo=true; try{ ptYa(); }catch(e){} ov.__saliendo=false; if(PROFE) anotVacia(); };
     /* (26-sep-2026, Iago) El editor salía MARRÓN/DORADO (estética de GP) también en el portal
        de Grado Elemental: los colores estaban escritos a pelo, copiados del portal GP. Ahora
        van por PORTAL, fijado en cada fichero (nunca por datos compartidos ni por la sesión):
@@ -2143,10 +2259,10 @@ function showEnig(kind){
         '.anot-tit{font:800 10.5px/1 Arial;letter-spacing:.12em;color:'+AP.tit+';text-transform:uppercase;margin-right:2px}'+
         '.anot-b{border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.06);color:'+AP.txt+';border-radius:9px;padding:7px 10px;font:700 12.5px Arial;cursor:pointer;line-height:1;touch-action:manipulation}'+
         '.anot-b.on{border-color:'+AP.on+';background:'+AP.onBg+';color:'+AP.onTxt+';box-shadow:0 0 0 1px '+AP.onSh+'}'+
-        '.anot-sw{width:18px;height:18px;border-radius:5px;display:inline-block;vertical-align:-4px}'+'.anot-b.anot-color{padding:6px 8px;line-height:0}'+'.anot-al svg{width:20px;height:20px;display:block}'+   /* (1-oct-2026) los dos botones de alerta */
+        '.anot-sw{width:18px;height:18px;border-radius:5px;display:inline-block;vertical-align:-4px}'+'.anot-b.anot-color{padding:6px 8px;line-height:0}'+'.anot-al svg{width:20px;height:20px;display:block}'+'.anot-pt svg{width:23px;height:18px;display:block}'+   /* (1-oct-2026) los dos botones de alerta */
         
         /* (26-sep-2026, Iago) punta fina negra: un punto negro (con aro claro para que se vea sobre la barra oscura) */
-        '.anot-sw.anot-sw-k{position:relative}'+'.anot-sw-k i{position:absolute;left:50%;top:50%;width:10px;height:10px;margin:-5px 0 0 -5px;border-radius:50%;background:#16a34a;box-shadow:0 0 0 1.5px rgba(255,255,255,.85)}'+
+        '.anot-sw.anot-sw-k{position:relative}'+'.anot-sw-k i{position:absolute;left:50%;top:50%;width:10px;height:10px;margin:-5px 0 0 -5px;border-radius:50%;background:#000;box-shadow:0 0 0 1.5px rgba(255,255,255,.85)}'+
         /* (26-sep-2026, Iago) rueda de TONALIDAD arriba a la izquierda (como en TEORÍA at home): notas · ♯/♭ · M/m */
         '.anot-ton{position:relative;display:flex;gap:5px;align-items:center;border:1px solid '+AP.borde+';border-radius:10px;padding:5px;background:rgba(0,0,0,.22);margin:3px 4px 0 0}'+
         '.anot-ton-lbl{position:absolute;left:8px;top:-6px;font:800 8px/1 Arial;letter-spacing:.14em;color:'+AP.tit+';background:'+AP.lbl+';padding:1px 4px;border-radius:3px;text-transform:uppercase;pointer-events:none}'+
@@ -2230,22 +2346,23 @@ function showEnig(kind){
       +'</div>'
       +'<div class="anot-tools">'   /* (26-sep-2026, Iago) las herramientas de siempre, en su caja a la derecha de la rueda */
       +'<span class="anot-tit">✏️ Anotar</span>'
-      +'<button class="anot-b anot-color" data-t="c0" aria-label="Subrayar amarillo"><span class="anot-sw" style="background:#ffde3c"></span></button>'
-      +'<button class="anot-b anot-color" data-t="c1" aria-label="Subrayar verde"><span class="anot-sw" style="background:#50e68c"></span></button>'
-      +'<button class="anot-b anot-color" data-t="c2" aria-label="Subrayar rosa"><span class="anot-sw" style="background:#ff6eb4"></span></button>'
-      +'<button class="anot-b anot-color" data-t="c3" aria-label="Subrayar azul"><span class="anot-sw" style="background:#5ab4ff"></span></button>'
-      +'<button class="anot-b anot-color" data-t="k" aria-label="Punta fina verde" title="Punta fina verde"><span class="anot-sw anot-sw-k"><i></i></span></button>'   /* (26-sep-2026, Iago) punta fina; (29-sep) verde, el color de ritmo */
+      /* (1-oct-2026, Iago) «En ritmo solo verde y gris, una punta fina opaca negra, △/U y las alertas»: verde = ritmos nuevos;
+         gris = los vistos en clases anteriores (no los de esta semana); la punta negra, para lo libre. Fuera el amarillo, el
+         rosa, el azul y la nota de texto: lo ya dibujado con ellos se sigue viendo (y se borra con la goma). */
+      +'<button class="anot-b anot-color" data-t="c1" aria-label="Verde · ritmos nuevos" title="Verde · ritmos nuevos"><span class="anot-sw" style="background:#50e68c"></span></button>'
+      +'<button class="anot-b anot-color" data-t="c4" aria-label="Gris · ritmos ya vistos" title="Gris · ritmos ya vistos"><span class="anot-sw" style="background:#a3a3a3"></span></button>'
+      +'<button class="anot-b anot-color" data-t="k" aria-label="Punta fina negra" title="Punta fina negra"><span class="anot-sw anot-sw-k"><i></i></span></button>'
+      +'<button class="anot-b anot-color anot-pt" data-t="pt" aria-label="Triángulo y U" title="Triángulo y U · dibújalo a mano y se pone bonito">'+PT_SVG+'</button>'
       /* (1-oct-2026, Iago) ALERTAS · toque = el icono en ese sitio · pulsar y arrastrar = zona de su color con el icono encabezándola */
       +'<button class="anot-b anot-color anot-al" data-t="aa" aria-label="Alerta amarilla" title="Alerta amarilla · toca: aviso · arrastra: zona">'+AL_SVG('a')+'</button>'
       +'<button class="anot-b anot-color anot-al" data-t="ar" aria-label="Alerta roja" title="Alerta roja · toca: aviso · arrastra: zona difícil">'+AL_SVG('r')+'</button>'
-      +'<button class="anot-b" data-t="nota">📝 Nota</button>'
       +'<button class="anot-b" data-t="goma">🧽 Goma</button>'
       +'<span style="flex:1 1 auto"></span>'
       +'<button class="anot-b" data-t="undo">↶ Deshacer</button>'
       +'<button class="anot-b" data-t="clear">🗑 Borrar todo</button>'
       +'</div>';
     host.insertBefore(bar, host.children[1]||null);
-    var COLORS=['rgba(255,222,60,.5)','rgba(80,230,140,.45)','rgba(255,110,180,.45)','rgba(90,180,255,.45)'];
+    var COLORS=['rgba(255,222,60,.5)','rgba(80,230,140,.45)','rgba(255,110,180,.45)','rgba(90,180,255,.45)','rgba(118,118,118,.45)'];   /* (1-oct-2026) 4 = gris */
     var tool='mano', pages=[], hist=[], clearArm=null;
     function save(pg){ try{ localStorage.setItem(PREF+pg.idx, JSON.stringify(pg.data)); }catch(e){} }
     function load(idx){ var d=null; try{ var s=localStorage.getItem(PREF+idx); if(s) d=JSON.parse(s); }catch(e){}
@@ -2343,8 +2460,10 @@ function showEnig(kind){
           return;
         }
         /* (26-sep-2026, Iago) 'k' = punta FINA totalmente opaca; los rotuladores de color, igual que antes.
-           (29-sep-2026, Iago) «que el puntero opaco de ritmo sea verde»: el verde de ritmo (lo ya dibujado en negro se queda) */
-        pg.cur=(tool==='k')?{c:'#16a34a',w:0.0022,f:1,p:[[nx,ny]]}:{c:COLORS[parseInt(tool.slice(1),10)]||COLORS[0],w:0.008,p:[[nx,ny]]};
+           (1-oct-2026, Iago) «una punta fina y opaca que será de color negro» (lo ya dibujado en verde se queda verde).
+           'pt' = △/U: el trazo a mano, en verde, y al segundo se cambia por el símbolo bonito si lo parece. */
+        if(tool==='pt') ptToca(pg,nx,ny);
+        pg.cur=(tool==='k')?{c:'#000000',w:0.0022,f:1,p:[[nx,ny]]}:(tool==='pt')?{c:PT_COL,w:0.0022,f:1,p:[[nx,ny]]}:{c:COLORS[parseInt(tool.slice(1),10)]||COLORS[0],w:0.008,p:[[nx,ny]]};
         pg.data.strokes.push(pg.cur);
         try{ cv.setPointerCapture(ev.pointerId); }catch(e){}
         redraw(pg);
@@ -2376,12 +2495,14 @@ function showEnig(kind){
           }
           redraw(pg);
         }
-        if(pg.cur){ hist.push({pg:pg,t:'trazo'}); save(pg); pg.cur=null; }
+        if(pg.cur){ var skF=pg.cur; hist.push({pg:pg,t:'trazo',sk:skF}); save(pg); pg.cur=null;
+          if(tool==='pt' && !(ev && ev.type==='pointercancel')) ptSuelta(pg,skF); }   /* (1-oct-2026) △/U: al segundo, bonito */
         if(pg.borrando){ pg.borrando=false; save(pg); }
       };
       cv.addEventListener('pointerup',fin); cv.addEventListener('pointercancel',fin);
     });
     function setTool(t,btn){
+      if(tool==='pt' && t!=='pt'){ try{ ptYa(); }catch(e){} }   /* (1-oct-2026) △/U pendientes: ya */
       tool=t;
       Array.prototype.forEach.call(bar.querySelectorAll('.anot-b'),function(b){ b.classList.remove('on'); });
       if(btn) btn.classList.add('on');
@@ -2393,18 +2514,26 @@ function showEnig(kind){
       var t=b.getAttribute('data-t');
       if(t==='undo'){
         var h=hist.pop(); if(!h) return;
-        if(h.t==='trazo') h.pg.data.strokes.pop();
+        if(h.t==='borrar'){   /* (1-oct-2026) «Borrar todo» de un toque: deshacer lo devuelve todo, tonalidad incluida */
+          h.antes.forEach(function(a){ a.pg.data=a.data; save(a.pg); redraw(a.pg); placeNotes(a.pg); });
+          if(h.ton){ ton={n:h.ton.n,a:h.ton.a,m:h.ton.m}; tonSave(); try{ rueda.fija(ton.n?NOTAS_R.indexOf(ton.n):NOTAS_R.length-1,true); }catch(e){} tonPinta(); }
+          return;
+        }
+        if(h.t==='trazo'){ var kS=h.sk?h.pg.data.strokes.indexOf(h.sk):-1; if(kS>=0) h.pg.data.strokes.splice(kS,1); else if(!h.sk) h.pg.data.strokes.pop(); }   /* (1-oct-2026) ese trazo, no «el último» */
         else if(h.t==='nota') h.pg.data.notes.pop();
         else if(h.t==='alerta') h.pg.data.alertas.pop();   /* (1-oct-2026) */
         save(h.pg); redraw(h.pg); placeNotes(h.pg);
         return;
       }
       if(t==='clear'){
-        if(!clearArm){ b.textContent='¿Seguro? Toca otra vez'; clearArm=setTimeout(function(){ b.innerHTML='🗑 Borrar todo'; clearArm=null; },2600); return; }
-        clearTimeout(clearArm); clearArm=null; b.innerHTML='🗑 Borrar todo';
+        /* (1-oct-2026, Iago) «que el botón borrar sea de un toque, sin darle dos veces, y que también borre la tonalidad»: de un
+           toque se va todo (trazos, alertas, notas y la tonalidad). Si fue sin querer, «Deshacer» lo devuelve. */
+        var hay=pages.some(function(pg){ return pg.data.strokes.length||pg.data.notes.length||(pg.data.alertas&&pg.data.alertas.length); })||!!(ton.n||ton.a||ton.m);
+        if(!hay) return;
+        ptCancela();
+        hist.push({t:'borrar', antes:pages.map(function(pg){ return {pg:pg,data:pg.data}; }), ton:{n:ton.n,a:ton.a,m:ton.m}});
         pages.forEach(function(pg){ pg.data={strokes:[],notes:[],alertas:[]}; save(pg); redraw(pg); placeNotes(pg); });
-        hist.length=0;
-        try{ tonReset(); }catch(e){}   /* (26-sep-2026, Iago) «Borrar todo» también quita la tonalidad */
+        try{ tonReset(); }catch(e){}
         return;
       }
       // tocar la herramienta activa la SUELTA (sin herramienta = mover/scroll)
@@ -2528,6 +2657,7 @@ function showEnig(kind){
     function alAtrasVisor(ev){ if(ev && ev.state && ev.state.tsVisor===_visTok) return; cerrarVisor(true); }
     function cerrarVisor(porAtras){
       window.removeEventListener('popstate', alAtrasVisor);
+      try{ if(ov.__anotSale) ov.__anotSale(); }catch(e){}   /* (1-oct-2026) △/U pendientes y, en Tester/Protester, vaciar */
       if(ov.isConnected) ov.remove();
       if(!porAtras){ try{ if(history.state && history.state.tsVisor===_visTok) history.back(); }catch(e){} }
     }
