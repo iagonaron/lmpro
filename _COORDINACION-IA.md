@@ -6,6 +6,9 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 1-oct 11:34 · Fichas y rediseño · EN CURSO · visor de ritmo: la punta fina, la PRIMERA (punta, verde, gris, △/U,
+  alertas), como en entonación. Voy a tocar: LMEAVathome piel/apps/portal.js e index.html (parto de 0cf3d33); lmpro
+  index.html (parto de b4a1ab0). No subáis esos ficheros hasta que ponga HECHO.
 - 1-oct 11:12 · Fichas y rediseño · HECHO · VISOR DE RITMO (GE y GP): solo verde (ritmos nuevos), gris (ya vistos), punta
   fina NEGRA, △/U (el trazo a mano se cambia al segundo por el triángulo o la U de las intros, en verde; lo que no se
   parece se queda) y alertas; fuera amarillo, rosa, azul y nota de texto (lo ya dibujado se sigue viendo). «Borrar
