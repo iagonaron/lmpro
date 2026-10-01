@@ -6,6 +6,10 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 1-oct 22:19 · Fichas y rediseño · EN CURSO · apps de corrección de RITMO (Netlify ritmoentonadoprofesional y
+  ritmoelemental): las lecciones a preguntar salen de lo que se MANDÓ a los alumnos (no de la preparación) y, en
+  Ritmo entonado, reparto de lecciones mitad y mitad. Solo app.js e index.html de cada una. Supabase: función nueva
+  suite_envio_lecciones (solo lectura) y corrección de las notas de 2.º GP del 1-oct (lecciones 7, 8).
 - 1-oct 22:00 · Fichas y rediseño · HECHO · música del portal (Tester/Protester): el ▶ responde en todo el círculo
   (el bloque del título, transparente y con z-index 75, tapaba su mitad de abajo; .portal-welcome pasa a z-index 76).
   LMEAVathome: commit 9b73d7f (piel/apps/portal.css, anterior f959325). Copia en Dropbox. Deshacer: git revert 9b73d7f.
