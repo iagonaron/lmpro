@@ -6,10 +6,15 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
-- 1-oct 22:19 · Fichas y rediseño · EN CURSO · apps de corrección de RITMO (Netlify ritmoentonadoprofesional y
-  ritmoelemental): las lecciones a preguntar salen de lo que se MANDÓ a los alumnos (no de la preparación) y, en
-  Ritmo entonado, reparto de lecciones mitad y mitad. Solo app.js e index.html de cada una. Supabase: función nueva
-  suite_envio_lecciones (solo lectura) y corrección de las notas de 2.º GP del 1-oct (lecciones 7, 8).
+- 1-oct 22:19 · Fichas y rediseño · HECHO · apps de corrección de RITMO: las lecciones a preguntar salen de lo que se
+  MANDÓ a los alumnos (suite_semana_envio), no de la preparación del Diario; el 1-oct en 2.º GP salieron 14 y 16 (la
+  preparación de la semana 39, cambiada después de mandar) en vez de 7 y 8. Ritmo entonado, además: reparto de
+  lecciones mitad y mitad con «Cambio de lección» (como Ritmo elemental). Netlify ritmoentonadoprofesional: deploy
+  6abec0fc (anterior 6abb8c78), app.js ?v=r25 e index.html. Netlify ritmoelemental: deploy 6abec12e (anterior
+  6abb8aae), app.js ?v=nv2 e index.html. Supabase: función nueva de solo lectura suite_envio_lecciones(curso, año,
+  semana) para anon; las 23 notas de rep_notas del 1-oct pasan de «14, 16» a «7, 8» (copia en
+  _copia_rep_7y8_2gp_20261001). Quien toque esas apps, que parta de lo vivo. Copias, LEEME y DESHACER en Dropbox
+  (APPS CORRECCION y SQL-BD del Diario).
 - 1-oct 22:00 · Fichas y rediseño · HECHO · música del portal (Tester/Protester): el ▶ responde en todo el círculo
   (el bloque del título, transparente y con z-index 75, tapaba su mitad de abajo; .portal-welcome pasa a z-index 76).
   LMEAVathome: commit 9b73d7f (piel/apps/portal.css, anterior f959325). Copia en Dropbox. Deshacer: git revert 9b73d7f.
