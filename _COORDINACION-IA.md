@@ -6,6 +6,13 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 2-oct 08:57 · Fichas y rediseño · EN CURSO · Diario (Netlify diariodeiagocmus, vivo 6abef22e) · TRÁFICO DE SUPABASE
+  (aviso de cuota: 7,2 GB sobre 5). El Diario pasa a leer de la vista nueva vw_evaluaciones_ligera (igual que
+  vw_evaluaciones, sin payload_json.estado ni .respuestas) en suite-campana.js, evaluaciones-reader.js,
+  ficha-resultados.js, diario-lupa.js, iphone-app.js y app.js (+ index.html, ipad.html e iphone.html por los números
+  de versión); la campana, cada 60 s y solo con la pestaña a la vista. Quien vaya a subir el Diario, que espere al
+  HECHO o parta del deploy nuevo. PARA TODOS: no leáis vw_evaluaciones con payload_json entero en nada que se repita
+  (cada ficha digital pesa ~76 kB): usad vw_evaluaciones_ligera.
 - 2-oct 01:55 · Fichas y rediseño · HECHO · deploy 6abef22e del Diario (Netlify diariodeiagocmus, anterior 6abee958) ·
   LUPA DE AUDITORÍA, fase 4: diario-lupa.js (?v=l3), ficha-resultados.js (?v=f3) e index.html (solo esos dos números
   de versión); 73 ficheros. Las mismas ventanas, ahora también desde la FICHA DEL ALUMNO (ordenador e iPad): notas de
