@@ -6,13 +6,20 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
-- 2-oct 09:55 · Fichas y rediseño · EN CURSO · (1) Supabase: función suite_mis_resultados (la de «Mis resultados»
-  de los portales): que lleguen las notas de la Ev. inicial escritas a mano y, si hay nota a mano y de app para lo
-  mismo, solo la escrita a mano. (2) Diario, despliegue encima de 6abf5a0d: ficha del alumno (Ev. inicial con rombo,
-  estética, «Lecciones 7, 8», lección de cada alumno), aviso de notas borradas a la campana y fuera la etiqueta
-  «L13» de las celdas. Tocaré app.js, index.html, ipad.html, iphone.html, ficha-resultados.js,
-  iphone-ficha-resultados.js, iphone-app.js, informe-v2.js, suite-campana.js, evaluaciones-reader.js y los CSS.
-  No toquéis el Diario ni esa función hasta el HECHO.
+- 2-oct 10:10 · Fichas y rediseño · EN CURSO · Diario, despliegue encima de 6abf5a0d: ficha del alumno (Ev. inicial
+  con rombo, estética, «Lecciones 7, 8», lección de cada alumno; PC, iPad y móvil), aviso de notas borradas a la
+  campana y fuera la etiqueta «L13» de las celdas. Después, otro despliegue: lavado de cara de «Resultados» del
+  móvil. Tocaré app.js, index.html, ipad.html, iphone.html, ficha-resultados.js, iphone-ficha-resultados.js,
+  iphone-app.js, iphone-resultados.js, informe-v2.js, suite-campana.js, evaluaciones-reader.js y los CSS. No toquéis
+  el Diario hasta el HECHO.
+- 2-oct 10:10 · Fichas y rediseño · HECHO · Supabase (con el sí de Iago): función suite_mis_resultados (la de «Mis
+  resultados» de los portales GE y GP). Ahora llegan las notas de la Ev. inicial escritas a mano en el Diario
+  (eval_overrides, trimestre «inicial»; la de Teoría, como la ficha marcada «Evaluación inicial» en la preparación)
+  y, si para lo mismo hay nota a mano (diario_manual) y de app, llega solo la escrita a mano. Comparado en las 48
+  cuentas validadas: +40 notas de Teoría inicial, lo demás idéntico. md5 506eea9b… → 79ea090b…; migración
+  suite_mis_resultados_ev_inicial_a_mano_y_nota_a_mano_manda. Los portales no cambian. Queda una copia de prueba
+  inofensiva (suite_mis_resultados_prueba_20261002, sin permisos para anon). Definición y deshacer en Dropbox:
+  DIARIO PROFESOR/SQL-BD/HECHO-mis-resultados-ev-inicial-y-nota-a-mano-2026-10-02.sql
 - 2-oct 09:20 · Fichas y rediseño · HECHO · deploy 6abf5a0d del Diario (Netlify diariodeiagocmus, anterior 6abef22e) ·
   TRÁFICO DE SUPABASE (aviso de cuota: 7,2 GB sobre 5; el 98 % era la base de datos). El Diario lee de la vista nueva
   vw_evaluaciones_ligera (igual que vw_evaluaciones, sin payload_json.estado ni .respuestas: 239 kB frente a 2,8 MB)
