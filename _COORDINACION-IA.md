@@ -6,6 +6,13 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 2-oct 09:55 · Fichas y rediseño · EN CURSO · (1) Supabase: función suite_mis_resultados (la de «Mis resultados»
+  de los portales): que lleguen las notas de la Ev. inicial escritas a mano y, si hay nota a mano y de app para lo
+  mismo, solo la escrita a mano. (2) Diario, despliegue encima de 6abf5a0d: ficha del alumno (Ev. inicial con rombo,
+  estética, «Lecciones 7, 8», lección de cada alumno), aviso de notas borradas a la campana y fuera la etiqueta
+  «L13» de las celdas. Tocaré app.js, index.html, ipad.html, iphone.html, ficha-resultados.js,
+  iphone-ficha-resultados.js, iphone-app.js, informe-v2.js, suite-campana.js, evaluaciones-reader.js y los CSS.
+  No toquéis el Diario ni esa función hasta el HECHO.
 - 2-oct 09:20 · Fichas y rediseño · HECHO · deploy 6abf5a0d del Diario (Netlify diariodeiagocmus, anterior 6abef22e) ·
   TRÁFICO DE SUPABASE (aviso de cuota: 7,2 GB sobre 5; el 98 % era la base de datos). El Diario lee de la vista nueva
   vw_evaluaciones_ligera (igual que vw_evaluaciones, sin payload_json.estado ni .respuestas: 239 kB frente a 2,8 MB)
