@@ -6,13 +6,23 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
-- 2-oct 12:36 · Fichas y rediseño · EN CURSO · Supabase (con el sí de Iago): instalo la regla «manda la última» en
-  evaluaciones: funciones nuevas _eval_nums, _eval_apartado y _eval_manda_la_ultima, disparador
-  eval_a_manda_la_ultima_trg, y el limpiador evaluaciones_dedup_post_write deja en paz las filas 'diario_manual'. No
-  toquéis esos objetos hasta el HECHO. Y AVISO: estoy preparando el resumen final editable de las apps de corrección
-  de elemental sobre lo publicado ahora (ritmoelemental 6abec12e, entonacionelemental 6abc00ba, dictadoselemental
-  6abb958b) y después Ritmo entonado PRO (6abec0fc); se publican hoy fuera de clase (antes de las 15:30 o después de
-  las 19:00). Si alguien publica antes en alguna de ellas, que lo apunte aquí para que yo parta de lo suyo.
+- 2-oct 13:00 · Fichas y rediseño · HECHO · Supabase (con el sí de Iago; la ejecutó él en el SQL Editor hacia las
+  12:55 porque la confirmación de Supabase no llega al móvil): INSTALADA la regla «manda la última» en evaluaciones.
+  Funciones nuevas _eval_nums, _eval_apartado y _eval_manda_la_ultima (SECURITY DEFINER, sin permisos para anon ni
+  authenticated), disparador eval_a_manda_la_ultima_trg (AFTER INSERT OR UPDATE, el primero de los AFTER por nombre) y
+  evaluaciones_dedup_post_write deja en paz las filas 'diario_manual'. Qué hace: si después de una nota escrita a mano
+  en el Diario (fila diario_manual + casilla en eval_overrides) llega o cambia la nota de una app para lo mismo (mismo
+  alumno, trimestre, apartado y números de lección/ficha/dictado; mismo día salvo en fichas), retira la de mano; el
+  borrado queda en audit_deletes con payload._sustituida_por y el Diario lo enseña en la campana («Notas borradas»).
+  No cuenta reenviar la misma nota ni el 0 automático; no toca exámenes ni Ev. inicial. Si falla, la nota de la app se
+  guarda igual (queda un LOG «[manda la ultima]»). Comprobado tras instalar: md5(prosrc) b26bce39… / b33a8bf6… /
+  563635ec… / 3ed3ef8d…, sin notas borradas. Definición y deshacer en Dropbox: APPs/DIARIO
+  PROFESOR/SQL-BD/HECHO-manda-la-ultima-2026-10-02.sql. Quien toque evaluaciones_dedup_post_write o las notas a mano,
+  que lo lea antes.
+- 2-oct 12:40 · Fichas y rediseño · EN CURSO · apps de corrección de elemental: preparo el resumen final editable
+  sobre lo publicado ahora (ritmoelemental 6abec12e, entonacionelemental 6abc00ba, dictadoselemental 6abb958b) y
+  después Ritmo entonado PRO (6abec0fc); se publican hoy fuera de clase (antes de las 15:30 o después de las 19:00).
+  Si alguien publica antes en alguna de ellas, que lo apunte aquí para que yo parta de lo suyo.
 - 2-oct 12:00 · Fichas y rediseño · HECHO · Diario deploy 6abf7f8e (encima de 6abf5a0d): ficha del alumno (Ev. inicial
   con rombo y «no cuenta», «Ver su portal» azul, curso una vez, toques amarillos; PC, iPad y móvil), fuera la etiqueta
   «L13», «Lecciones 7, 8» en plural, «Notas borradas» como aviso de la campana, y la nota escrita a mano SIEMPRE en su
