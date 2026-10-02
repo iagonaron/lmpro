@@ -7758,11 +7758,17 @@ body.tester-sin-by .topbar-right #rs-mini{order:2}
     if(_pj) return _pj;
     _pj=new Promise(function(res,rej){ var s=document.createElement('script'); s.src=PDFJS; s.onload=function(){ try{ window.pdfjsLib.GlobalWorkerOptions.workerSrc=PDFJS_W; }catch(e){} res(window.pdfjsLib); }; s.onerror=function(){ _pj=null; rej(new Error('pdf.js')); }; document.head.appendChild(s); });
     return _pj; }
+  /* (2-oct-2026, Iago) «marco FaActos y me abre Intervalia de primeras»: si se abría un libro mientras otro se estaba
+     cargando, el PDF que LLEGABA EL ÚLTIMO se quedaba con la pantalla, aunque ya no fuera el elegido. Cada apertura
+     lleva su turno: el documento solo se pone si sigue siendo el de la última; el que llega tarde se suelta. */
+  var _turnoDoc=0;
   async function abrirDoc(path){
-    if(st.doc && st.docPath===path) return st.doc;
+    if(st.doc && st.docPath===path){ ++_turnoDoc; return st.doc; }   /* el que ya está: lo que viniera de camino ya no vale */
+    var yo=++_turnoDoc;
     var L=await pdfjs();
-    st.doc=await L.getDocument(SBU+'/storage/v1/object/public/diario/'+path.split('/').map(encodeURIComponent).join('/')).promise;
-    st.docPath=path; return st.doc;
+    var d=await L.getDocument(SBU+'/storage/v1/object/public/diario/'+path.split('/').map(encodeURIComponent).join('/')).promise;
+    if(yo!==_turnoDoc){ try{ d.destroy(); }catch(e){} return null; }
+    st.doc=d; st.docPath=path; return d;
   }
 
   /* ---------- interfaz ---------- */
@@ -7985,10 +7991,11 @@ body.tester-sin-by .topbar-right #rs-mini{order:2}
     barra();
     try{
       var path=st.paths[st.libro.tipo]; if(!path) throw new Error('Este libro no está subido en el Diario ('+st.curso+').');
-      await abrirDoc(path);
+      var doc=await abrirDoc(path);
+      if(!doc || st.item!==it) return;   /* (2-oct-2026) mientras cargaba se abrió otro libro u otra lección: esta ya no pinta */
       st.pag=Math.min(st.doc.numPages, it.p[0] + ((ses===2 && it.p[1]>it.p[0]) ? 1 : 0));
       await render();
-    }catch(e){ body.innerHTML='<div class="lb-msg">'+esc(e.message||e)+'</div>'; }
+    }catch(e){ if(st.item!==it) return; body.innerHTML='<div class="lb-msg">'+esc(e.message||e)+'</div>'; }
   }
   var _rt=0, _pagPintada=0, _zt=0, _tq=0, _cajas={};
   async function render(){
@@ -8112,13 +8119,15 @@ body.tester-sin-by .topbar-right #rs-mini{order:2}
     if(b.lista || !it){ columna(true); abrirItem(b.items[0]); return; }
     columna(st.col); abrirItem(it, a.ses);
   }
-  async function abrirPanel(btn){
+  /* (2-oct-2026) «tipo» (opcional): el libro que se quiere abrir; sin él, el último que se vio o el primero */
+  async function abrirPanel(btn, tipo){
     var o=ov(); o.classList.add('open'); document.documentElement.style.overflow='hidden';
     /* (28-sep-2026, Iago) «que todo lo que abra sea pantalla completa»: si la página no lo está ya, la pide el libro */
     try{ if(!(document.fullscreenElement||document.webkitFullscreenElement)){ var rq=o.requestFullscreen||o.webkitRequestFullscreen; if(rq){ var pr=rq.call(o); if(pr&&pr.catch) pr.catch(function(){}); } } }catch(e){}
     var body=document.getElementById('lb-body');
     if(!st.cargado){ body.innerHTML='<div class="lb-msg">Cargando…</div>'; try{ await cargarDatos(); }catch(e){} }
-    abrirLibro((st.libro||CATALOGO[0]).tipo);
+    var quiere=(typeof tipo==='string' && CATALOGO.some(function(x){ return x.tipo===tipo; })) ? tipo : (st.libro||CATALOGO[0]).tipo;
+    abrirLibro(quiere);
   }
 
   function pintarBoton(){
