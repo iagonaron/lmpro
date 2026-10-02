@@ -6,6 +6,13 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 2-oct 13:40 · Fichas y rediseño · HECHO · Supabase (con el sí de Iago de esta mañana; no cambia ninguna nota):
+  columna nueva rep_notas.leccion_num (integer, vacía) y evaluaciones_upsert_rep_notas la copia a
+  payload_json.leccion_num cuando la hay (la lección que leyó CADA alumno con reparto «7, 8», como ya hace Ritmo de
+  4.º). Migración rep_notas_leccion_num_y_sync_a_evaluaciones; md5 de la definición 6217e4f8… → 9315a866… (prosrc
+  75641351…). El resto de la función es idéntico. La app de Ritmo entonado que rellena la columna va en el despliegue
+  de después de las 19:00 (si la columna no existiera, guarda igual sin ella). Definición y deshacer en Dropbox
+  APPs/DIARIO PROFESOR/SQL-BD/HECHO-ritmo-entonado-leccion-de-cada-alumno-2026-10-02.sql.
 - 2-oct 13:22 · Fichas y rediseño · EN CURSO · lo siguiente, para publicar HOY DESPUÉS DE LAS 19:00 (antes hay clase):
   (1) Ritmo entonado PRO (ritmoentonadoprofesional, vivo 6abec0fc): resumen final editable y la lección de cada alumno
   en la nota; (2) Diario (diariodeiagocmus, vivo 6abf7f8e): lavado de cara del móvil (portada, Resultados, Listado con
