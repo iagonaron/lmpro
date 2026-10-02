@@ -6,6 +6,16 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 2-oct 17:49 · Fichas y rediseño · EN CURSO · para publicar HOY DESPUÉS DE LAS 19:00 (antes hay clase), en CUATRO
+  sitios: (1) Ritmo entonado PRO (ritmoentonadoprofesional, vivo 6abec0fc): resumen final editable y la lección de
+  cada alumno en la nota: app.js, index.html y resumen-editable.js/.css nuevos; (2) Diario (diariodeiagocmus, vivo
+  6abf7f8e): el móvil al día (iphone.html, iphone-app.js, iphone-resultados.js, iphone-ficha-resultados.js e
+  iphone-canon.css nuevo) Y TAMBIÉN ipad.html (recordatorio de fichas en papel: el título y una línea por grupo, en la
+  escaleta y en la cuenta atrás; sin «Desde el PDF…»). OJO: ipad.html lo tocamos varios; si alguien lo publica antes,
+  que lo apunte aquí y parto de lo suyo; (3) Fichas en papel (fichasenpapel-cmus, vivo 6abdecef): index.html (la fecha
+  de la nota pasa a ser el día en que se corrige, no el viernes de la semana de la ficha); (4) Dictado elemental
+  (dictadoselemental, vivo 6abf924e): app.js, index.html y buscador.css nuevo (el alumno se elige con un buscador en
+  vez de ir en orden). En Supabase no toco nada.
 - 2-oct 13:40 · Fichas y rediseño · HECHO · Supabase (con el sí de Iago de esta mañana; no cambia ninguna nota):
   columna nueva rep_notas.leccion_num (integer, vacía) y evaluaciones_upsert_rep_notas la copia a
   payload_json.leccion_num cuando la hay (la lección que leyó CADA alumno con reparto «7, 8», como ya hace Ritmo de
@@ -13,11 +23,6 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   75641351…). El resto de la función es idéntico. La app de Ritmo entonado que rellena la columna va en el despliegue
   de después de las 19:00 (si la columna no existiera, guarda igual sin ella). Definición y deshacer en Dropbox
   APPs/DIARIO PROFESOR/SQL-BD/HECHO-ritmo-entonado-leccion-de-cada-alumno-2026-10-02.sql.
-- 2-oct 13:22 · Fichas y rediseño · EN CURSO · lo siguiente, para publicar HOY DESPUÉS DE LAS 19:00 (antes hay clase):
-  (1) Ritmo entonado PRO (ritmoentonadoprofesional, vivo 6abec0fc): resumen final editable y la lección de cada alumno
-  en la nota; (2) Diario (diariodeiagocmus, vivo 6abf7f8e): lavado de cara del móvil (portada, Resultados, Listado con
-  fotos): iphone.html, iphone.css, iphone-app.js, iphone-resultados.js, iphone-ficha-resultados.js, canon-plano.css.
-  Si alguien publica antes en alguno de los dos, que lo apunte aquí para que yo parta de lo suyo.
 - 2-oct 13:22 · Fichas y rediseño · HECHO · apps de corrección de ELEMENTAL, el resumen final se puede tocar (lapicito
   en cada fila; ventana con nota, «No vino» y «Corrección completa»; en Ritmo de 4.º se elige la lección del que llegó
   tarde; se puede seguir editando tras «Confirmar»): ritmoelemental deploy 6abf91ed (anterior 6abec12e),
