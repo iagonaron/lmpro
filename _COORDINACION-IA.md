@@ -6,6 +6,13 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 2-oct 12:36 · Fichas y rediseño · EN CURSO · Supabase (con el sí de Iago): instalo la regla «manda la última» en
+  evaluaciones: funciones nuevas _eval_nums, _eval_apartado y _eval_manda_la_ultima, disparador
+  eval_a_manda_la_ultima_trg, y el limpiador evaluaciones_dedup_post_write deja en paz las filas 'diario_manual'. No
+  toquéis esos objetos hasta el HECHO. Y AVISO: estoy preparando el resumen final editable de las apps de corrección
+  de elemental sobre lo publicado ahora (ritmoelemental 6abec12e, entonacionelemental 6abc00ba, dictadoselemental
+  6abb958b) y después Ritmo entonado PRO (6abec0fc); se publican hoy fuera de clase (antes de las 15:30 o después de
+  las 19:00). Si alguien publica antes en alguna de ellas, que lo apunte aquí para que yo parta de lo suyo.
 - 2-oct 12:00 · Fichas y rediseño · HECHO · Diario deploy 6abf7f8e (encima de 6abf5a0d): ficha del alumno (Ev. inicial
   con rombo y «no cuenta», «Ver su portal» azul, curso una vez, toques amarillos; PC, iPad y móvil), fuera la etiqueta
   «L13», «Lecciones 7, 8» en plural, «Notas borradas» como aviso de la campana, y la nota escrita a mano SIEMPRE en su
