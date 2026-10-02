@@ -6,11 +6,21 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
-- 2-oct 21:55 · Fichas y rediseño · EN CURSO · esta noche, por este orden: (1) lmpro index.html (libros del aula: el
-  mismo arreglo que en elemental); (2) Netlify diariodeiagocmus, un deploy encima de 6abfe8a9: iphone.html,
-  iphone-canon.css, iphone-resultados.js (portada del móvil: cursos 1×1 que se voltean), ipad.html (recordatorio de
-  papel sin el número), app.js e index.html («Ver su portal» y Ojeador con nombres oficiales); (3) Netlify
-  dictadoselemental: pantalla.html y un pantalla nuevo (que avise si no carga).
+- 2-oct 22:20 · Fichas y rediseño · HECHO · cuatro cosas esta noche. (1) lmpro index.html b088dff: libros del aula, el
+  mismo arreglo que LMEAVathome a5d0c05 (el visor solo pone el PDF de la última apertura y admite que se le pida un
+  libro). (2) Netlify diariodeiagocmus 6ac00a3b (encima de 6abfe8a9): iphone.html, iphone-canon.css?v=m2 e
+  iphone-resultados.js?v=s23 (portada del móvil: cursos 1×1 que se voltean para elegir grupo, cuatro tarjetas hasta
+  abajo, la línea de sincronización solo con avisos; IpResultados.elegir nuevo), ipad.html (recordatorio de papel sin
+  el número), app.js?v=d78 e index.html («Ver su portal» abre la pestaña en el toque; app.js deja
+  window.verPortalAlumno; el Ojeador lista alumnos_canon con el nombre oficial). (3) Netlify dictadoselemental
+  6ac00f92 (encima de 6abfe8b1): pantalla.html, pantalla.js?v=c20261002-robusta (notas antes que la foto; avisos con
+  «Reintentar»; a los 10 s avisa), caritas-r1.js NUEVO (dibujos de repuesto si al aparato le falta algún emoji; vale
+  para las otras tres pantallas, que NO se han tocado) y supabase-js-2.117.2.min.js en el propio sitio (la pantalla ya
+  no pide nada a jsDelivr; Sentry, async). index.html y app.js de esa app, sin tocar. (4) LMEAVathome index.html
+  98d564f: «✔ Corregir» del dictado de clase abre la corrección en un marco (#dcCorr) dentro de #dcOverlay; ya no usa
+  window.open. En lmpro ese botón no cambia (enseña la solución en el sitio). Espejos de Dropbox al día; lo de antes,
+  en APPs/_PARA BORRAR/espejos-antes-2oct-libros-gp y espejos-antes-2oct-corregir-ge. Pendiente apuntado en DIARIO
+  PROFESOR/PENDIENTES-2-oct-2026-noche.txt (N1–N4).
 - 2-oct 20:34 · Fichas y rediseño · HECHO · Netlify fichasenpapel-cmus 6abff91f (encima de 6abfe8b6; solo index.html).
   Pedido por Iago a las 20:25: los ejercicios ya no empiezan al 100 %; empiezan SIN MARCAR (gris, 0) y hay que
   tocarlos todos, también para dejar un 0. Mientras falte alguno no hay nota y el botón dice «Faltan N ejercicios» en
