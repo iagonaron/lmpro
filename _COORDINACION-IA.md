@@ -6,16 +6,19 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
-- 2-oct 17:49 · Fichas y rediseño · EN CURSO · para publicar HOY DESPUÉS DE LAS 19:00 (antes hay clase), en CUATRO
-  sitios: (1) Ritmo entonado PRO (ritmoentonadoprofesional, vivo 6abec0fc): resumen final editable y la lección de
-  cada alumno en la nota: app.js, index.html y resumen-editable.js/.css nuevos; (2) Diario (diariodeiagocmus, vivo
-  6abf7f8e): el móvil al día (iphone.html, iphone-app.js, iphone-resultados.js, iphone-ficha-resultados.js e
-  iphone-canon.css nuevo) Y TAMBIÉN ipad.html (recordatorio de fichas en papel: el título y una línea por grupo, en la
-  escaleta y en la cuenta atrás; sin «Desde el PDF…»). OJO: ipad.html lo tocamos varios; si alguien lo publica antes,
-  que lo apunte aquí y parto de lo suyo; (3) Fichas en papel (fichasenpapel-cmus, vivo 6abdecef): index.html (la fecha
-  de la nota pasa a ser el día en que se corrige, no el viernes de la semana de la ficha); (4) Dictado elemental
-  (dictadoselemental, vivo 6abf924e): app.js, index.html y buscador.css nuevo (el alumno se elige con un buscador en
-  vez de ir en orden). En Supabase no toco nada.
+- 2-oct 19:30 · Fichas y rediseño · EN CURSO · LMEAVathome: index.html y piel/apps/portal.js (libros del aula de
+  Tester/Protester: «Libro → FaActos» abría Intervalia a la primera). Dos commits seguidos, ahora mismo.
+- 2-oct 19:27 · Fichas y rediseño · HECHO · Netlify, cuatro sitios publicados: ritmoentonadoprofesional 6abfe8a1
+  (encima de 6abec0fc; app-r26.js nuevo, index.html, resumen-editable.css y .js nuevos: resumen final editable);
+  diariodeiagocmus 6abfe8a9 (encima de 6abf7f8e; ipad.html, iphone.html, iphone-app.js, iphone-resultados.js,
+  iphone-ficha-resultados.js, iphone-canon.css nuevo: Diario móvil y recordatorio de fichas en papel con un grupo por
+  línea); dictadoselemental 6abfe8b1 (encima de 6abf924e; app-buscador.js y buscador.css nuevos, index.html: buscador
+  de alumno); fichasenpapel-cmus 6abfe8b6 (encima de 6abdecef; index.html: la nota se pone SOLO con deslizadores, uno
+  por ejercicio, y lleva la fecha del día de corrección; guarda payload_json.ejercicios_pct). Supabase (lo pegó Iago a
+  las 18:31): _trg_rit_notas_sync_agg pasa a security definer (Ritmo elemental «No vino» ya guarda);
+  evaluaciones_dedup_post_write no confunde dos fichas distintas; quitada suite_mis_resultados_prueba_20261002. OJO en
+  las apps de corrección: el código nuevo va en ficheros con NOMBRE NUEVO (app-r26.js, app-buscador.js) y app.js NO se
+  toca, porque su sw.js sirve la copia guardada y una página antigua podía cargar código nuevo a medias.
 - 2-oct 13:40 · Fichas y rediseño · HECHO · Supabase (con el sí de Iago de esta mañana; no cambia ninguna nota):
   columna nueva rep_notas.leccion_num (integer, vacía) y evaluaciones_upsert_rep_notas la copia a
   payload_json.leccion_num cuando la hay (la lección que leyó CADA alumno con reparto «7, 8», como ya hace Ritmo de
