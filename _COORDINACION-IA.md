@@ -6,8 +6,12 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
-- 2-oct 19:30 · Fichas y rediseño · EN CURSO · LMEAVathome: index.html y piel/apps/portal.js (libros del aula de
-  Tester/Protester: «Libro → FaActos» abría Intervalia a la primera). Dos commits seguidos, ahora mismo.
+- 2-oct 19:29 · Fichas y rediseño · HECHO · LMEAVathome: index.html (a5d0c05) y piel/apps/portal.js (5c865ef). Libros
+  del aula de Tester/Protester: el visor solo pone el PDF de la ÚLTIMA apertura y admite que se le pida un libro
+  concreto (LibrosAula.abrir(botón, tipo)); el cuadrado «Libros» de la piel se lo pide. Antes «Libro → FaActos» salía
+  con la página de Intervalia. El portal GP (lmpro) tiene la misma carrera y NO se ha tocado: la piel nueva con el
+  index.html viejo de GP hace lo de siempre. Espejos de Dropbox al día; lo de antes, en APPs/_PARA
+  BORRAR/espejos-antes-2oct-libros-faactos.
 - 2-oct 19:27 · Fichas y rediseño · HECHO · Netlify, cuatro sitios publicados: ritmoentonadoprofesional 6abfe8a1
   (encima de 6abec0fc; app-r26.js nuevo, index.html, resumen-editable.css y .js nuevos: resumen final editable);
   diariodeiagocmus 6abfe8a9 (encima de 6abf7f8e; ipad.html, iphone.html, iphone-app.js, iphone-resultados.js,
