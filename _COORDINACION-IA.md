@@ -6,6 +6,23 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 2-oct 13:22 · Fichas y rediseño · EN CURSO · lo siguiente, para publicar HOY DESPUÉS DE LAS 19:00 (antes hay clase):
+  (1) Ritmo entonado PRO (ritmoentonadoprofesional, vivo 6abec0fc): resumen final editable y la lección de cada alumno
+  en la nota; (2) Diario (diariodeiagocmus, vivo 6abf7f8e): lavado de cara del móvil (portada, Resultados, Listado con
+  fotos): iphone.html, iphone.css, iphone-app.js, iphone-resultados.js, iphone-ficha-resultados.js, canon-plano.css.
+  Si alguien publica antes en alguno de los dos, que lo apunte aquí para que yo parta de lo suyo.
+- 2-oct 13:22 · Fichas y rediseño · HECHO · apps de corrección de ELEMENTAL, el resumen final se puede tocar (lapicito
+  en cada fila; ventana con nota, «No vino» y «Corrección completa»; en Ritmo de 4.º se elige la lección del que llegó
+  tarde; se puede seguir editando tras «Confirmar»): ritmoelemental deploy 6abf91ed (anterior 6abec12e),
+  entonacionelemental 6abf9226 (anterior 6abc00ba), dictadoselemental 6abf924e (anterior 6abb958b). Ficheros: app.js e
+  index.html en las tres, parejas.js en Entonación, y resumen-editable.js/.css nuevos (iguales en las tres). De paso,
+  arreglado: «Anterior» de Ritmo y Dictado salía con la rúbrica vacía si el alumno tenía notas de otros días
+  (maybeSingle sin fecha); en Dictado el «⏭ no vino» borraba la rúbrica en pantalla y quitaba al alumno del resumen, y
+  el resumen leía notas de todos los días; en Entonación, tocar una nota de examen en el resumen la volvía de clase.
+  La base de datos no cambia. OJO quien toque estas apps: toda lectura de rit_notas/ent_notas/corr_notas con
+  maybeSingle() tiene que filtrar por fecha (hay una fila por alumno y día). Copias
+  .bak-antes-resumen-editable-20261002 junto a cada fichero y LEEME-2-OCT-resumen-final-editable.txt en Dropbox
+  APPs/APPS CORRECCION (netlify x6).
 - 2-oct 13:00 · Fichas y rediseño · HECHO · Supabase (con el sí de Iago; la ejecutó él en el SQL Editor hacia las
   12:55 porque la confirmación de Supabase no llega al móvil): INSTALADA la regla «manda la última» en evaluaciones.
   Funciones nuevas _eval_nums, _eval_apartado y _eval_manda_la_ultima (SECURITY DEFINER, sin permisos para anon ni
@@ -19,10 +36,6 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   563635ec… / 3ed3ef8d…, sin notas borradas. Definición y deshacer en Dropbox: APPs/DIARIO
   PROFESOR/SQL-BD/HECHO-manda-la-ultima-2026-10-02.sql. Quien toque evaluaciones_dedup_post_write o las notas a mano,
   que lo lea antes.
-- 2-oct 12:40 · Fichas y rediseño · EN CURSO · apps de corrección de elemental: preparo el resumen final editable
-  sobre lo publicado ahora (ritmoelemental 6abec12e, entonacionelemental 6abc00ba, dictadoselemental 6abb958b) y
-  después Ritmo entonado PRO (6abec0fc); se publican hoy fuera de clase (antes de las 15:30 o después de las 19:00).
-  Si alguien publica antes en alguna de ellas, que lo apunte aquí para que yo parta de lo suyo.
 - 2-oct 12:00 · Fichas y rediseño · HECHO · Diario deploy 6abf7f8e (encima de 6abf5a0d): ficha del alumno (Ev. inicial
   con rombo y «no cuenta», «Ver su portal» azul, curso una vez, toques amarillos; PC, iPad y móvil), fuera la etiqueta
   «L13», «Lecciones 7, 8» en plural, «Notas borradas» como aviso de la campana, y la nota escrita a mano SIEMPRE en su
