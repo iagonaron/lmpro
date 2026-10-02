@@ -6,13 +6,20 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
-- 2-oct 08:57 · Fichas y rediseño · EN CURSO · Diario (Netlify diariodeiagocmus, vivo 6abef22e) · TRÁFICO DE SUPABASE
-  (aviso de cuota: 7,2 GB sobre 5). El Diario pasa a leer de la vista nueva vw_evaluaciones_ligera (igual que
-  vw_evaluaciones, sin payload_json.estado ni .respuestas) en suite-campana.js, evaluaciones-reader.js,
-  ficha-resultados.js, diario-lupa.js, iphone-app.js y app.js (+ index.html, ipad.html e iphone.html por los números
-  de versión); la campana, cada 60 s y solo con la pestaña a la vista. Quien vaya a subir el Diario, que espere al
-  HECHO o parta del deploy nuevo. PARA TODOS: no leáis vw_evaluaciones con payload_json entero en nada que se repita
-  (cada ficha digital pesa ~76 kB): usad vw_evaluaciones_ligera.
+- 2-oct 09:20 · Fichas y rediseño · HECHO · deploy 6abf5a0d del Diario (Netlify diariodeiagocmus, anterior 6abef22e) ·
+  TRÁFICO DE SUPABASE (aviso de cuota: 7,2 GB sobre 5; el 98 % era la base de datos). El Diario lee de la vista nueva
+  vw_evaluaciones_ligera (igual que vw_evaluaciones, sin payload_json.estado ni .respuestas: 239 kB frente a 2,8 MB)
+  en las 14 lecturas que hacía de la vista de siempre: suite-campana.js (?v=s32), evaluaciones-reader.js (?v=fp5),
+  ficha-resultados.js (?v=f4), diario-lupa.js (?v=l4), iphone-app.js (?v=s28) y app.js (?v=d76); index.html,
+  ipad.html e iphone.html solo por esos números. La campana, cada 60 s y solo con la pestaña a la vista. 73 ficheros.
+  PARA TODOS: no leáis vw_evaluaciones con payload_json entero en nada que se repita (cada ficha digital pesa
+  ~76 kB); usad vw_evaluaciones_ligera. Quien toque el Diario, que parta de 6abf5a0d. Copias y LEEME en Dropbox.
+  Deshacer: publicar 6abef22e (la vista puede quedarse).
+- 2-oct 09:20 · Fichas y rediseño · HECHO · Supabase (con el sí de Iago; copias y deshacer en SQL-BD del Diario):
+  (1) vista nueva vw_evaluaciones_ligera; (2) _trg_rit_notas_sync_agg añade payload_json.leccion_num (la lección de
+  cada alumno en Ritmo de 4.º) y se rellenó en las 16 notas del 25-sep; (3) las 2 notas a mano de 2GpF del 1-oct
+  pasan de «Lección 14, 16» a «Lección 7, 8» (con leccion_num 8); (4) una nota a mano duplicada de 2GpC (Ficha 2)
+  quitada: vale la de la ficha digital. Tabla de copias: _copias_2026_10_02 (RLS, sin políticas).
 - 2-oct 01:55 · Fichas y rediseño · HECHO · deploy 6abef22e del Diario (Netlify diariodeiagocmus, anterior 6abee958) ·
   LUPA DE AUDITORÍA, fase 4: diario-lupa.js (?v=l3), ficha-resultados.js (?v=f3) e index.html (solo esos dos números
   de versión); 73 ficheros. Las mismas ventanas, ahora también desde la FICHA DEL ALUMNO (ordenador e iPad): notas de
