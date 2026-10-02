@@ -6,6 +6,11 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 2-oct 21:55 · Fichas y rediseño · EN CURSO · esta noche, por este orden: (1) lmpro index.html (libros del aula: el
+  mismo arreglo que en elemental); (2) Netlify diariodeiagocmus, un deploy encima de 6abfe8a9: iphone.html,
+  iphone-canon.css, iphone-resultados.js (portada del móvil: cursos 1×1 que se voltean), ipad.html (recordatorio de
+  papel sin el número), app.js e index.html («Ver su portal» y Ojeador con nombres oficiales); (3) Netlify
+  dictadoselemental: pantalla.html y un pantalla nuevo (que avise si no carga).
 - 2-oct 20:34 · Fichas y rediseño · HECHO · Netlify fichasenpapel-cmus 6abff91f (encima de 6abfe8b6; solo index.html).
   Pedido por Iago a las 20:25: los ejercicios ya no empiezan al 100 %; empiezan SIN MARCAR (gris, 0) y hay que
   tocarlos todos, también para dejar un 0. Mientras falte alguno no hay nota y el botón dice «Faltan N ejercicios» en
