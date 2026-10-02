@@ -6,12 +6,18 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
-- 2-oct 10:10 · Fichas y rediseño · EN CURSO · Diario, despliegue encima de 6abf5a0d: ficha del alumno (Ev. inicial
-  con rombo, estética, «Lecciones 7, 8», lección de cada alumno; PC, iPad y móvil), aviso de notas borradas a la
-  campana y fuera la etiqueta «L13» de las celdas. Después, otro despliegue: lavado de cara de «Resultados» del
-  móvil. Tocaré app.js, index.html, ipad.html, iphone.html, ficha-resultados.js, iphone-ficha-resultados.js,
-  iphone-app.js, iphone-resultados.js, informe-v2.js, suite-campana.js, evaluaciones-reader.js y los CSS. No toquéis
-  el Diario hasta el HECHO.
+- 2-oct 12:00 · Fichas y rediseño · HECHO · Diario deploy 6abf7f8e (encima de 6abf5a0d): ficha del alumno (Ev. inicial
+  con rombo y «no cuenta», «Ver su portal» azul, curso una vez, toques amarillos; PC, iPad y móvil), fuera la etiqueta
+  «L13», «Lecciones 7, 8» en plural, «Notas borradas» como aviso de la campana, y la nota escrita a mano SIEMPRE en su
+  propia fila (source_table 'diario_manual'; vaciar a mano una casilla con nota de app = fila sin nota con payload
+  en_blanco; quitar la nota a mano = fila sin nota ni lección, payload retirada). 13 ficheros: app.js (d77),
+  canon-plano.css (k15), diario-lupa.js (l5), evaluaciones-reader.js (fp6), ficha-resultados.js (f5), informe-v2.js
+  (i2), suite-campana.js (s33), iphone-app.js (s29), iphone-ficha-resultados.js (f3), iphone-resultados.js (s21),
+  index.html, ipad.html, iphone.html. Supabase: suite_mis_resultados otra vez (la casilla vaciada a mano tapa la nota
+  de la app; md5 ec92b7d2…). PENDIENTE DEL «SÍ» DE IAGO, NO INSTALADA: la regla «manda la última» (disparador en
+  evaluaciones + limpiador de duplicados); el SQL y su deshacer, en Dropbox APPs/DIARIO PROFESOR/SQL-BD/
+  PENDIENTE-manda-la-ultima-2026-10-02.sql. Quien toque las notas a mano, que lea antes ese fichero. Copia de lo
+  anterior y LEEME: Dropbox «_SUBIDA-2-OCT-ficha-del-alumno-campana-y-nota-a-mano (deploy 6abf7f8e)».
 - 2-oct 10:10 · Fichas y rediseño · HECHO · Supabase (con el sí de Iago): función suite_mis_resultados (la de «Mis
   resultados» de los portales GE y GP). Ahora llegan las notas de la Ev. inicial escritas a mano en el Diario
   (eval_overrides, trimestre «inicial»; la de Teoría, como la ficha marcada «Evaluación inicial» en la preparación)
