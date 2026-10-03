@@ -6,13 +6,24 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
-- 3-oct 11:35 · Fichas y rediseño · EN CURSO · (1) Netlify fichasenpapel-cmus, encima de 6abff91f: index.html (cada
-  ejercicio se puntúa con cinco bolitas 0 · 25 · 50 · 75 · 100 y un «−» / «+» de 5 en 5; el marcador de arriba va
-  sumando; ejercicios de refuerzo de cada alumno; aviso al portal con la nota y la ficha en formato solución). (2)
-  Después, Diario (Netlify diariodeiagocmus, encima de 6ac00a3b): botón de morosos y lista de verificados solo si
-  falta alguien, en PC, iPad y móvil; en el móvil, los iconos de papel pasan a avisar solo de los cambios desde la
-  última ficha. Tocaré index.html, app.js, ipad.html, iphone.html y sus JS y CSS. No toquéis esas dos apps hasta el
-  HECHO.
+- 3-oct 12:05 · Fichas y rediseño · HECHO · tres cosas de hoy. (1) Netlify fichasenpapel-cmus 6ac0cbe6 (encima de
+  6abff91f; solo index.html): cada ejercicio se puntúa con cinco bolitas 0 · 25 · 50 · 75 · 100 en una línea y un «−»
+  / «+» de 5 en 5 por fila; el marcador de arriba suma y acaba en rosa; el número de ejercicios lo pone el sistema
+  (los de la ficha + los de refuerzo del alumno si su formato en esa ficha es papel: índice suite_fichas_indice_v2 y
+  suite_formato_de_ficha); al guardar manda al portal un aviso con la nota y el enlace a la ficha en formato solución
+  (suite_cuenta_de_alumno + suite_notif_crear, tipo «aviso», payload {reclamacion:true, estado:'papel', nota_despues,
+  url, ficha_ref}; SIN ficha_id). En evaluaciones.payload_json guarda de más ficha_id, n_refuerzo y aviso_n. (2)
+  Netlify diariodeiagocmus 6ac0d2c4 (encima de 6ac00a3b): suite-campana.js?v=s34 (bloque nuevo al final: triángulo de
+  fichas pendientes con globo rojo = semana extra y globo negro = ceros, lista por grupos con línea de dos tramos; lee
+  suite_pendientes_fichas; el ✓ de cuentas se oculta con todas validadas), iphone-app.js?v=s31 e iphone.html (iconos
+  de papel: «+N» / «−N» solo por cambios de formato posteriores a la última ficha generada, con «cambiados» y
+  «ultimas» de suite_formatos_de_grupo), index.html e ipad.html (solo la versión de suite-campana.js). Quien toque el
+  Diario, que parta de 6ac0d2c4. (3) teoriaathome 71ec2c2 + 1dacaf8 y teoriapro bd04603 + c5bef86 (PDF de papel con
+  nombres, refuerzo y 1 ficha sin nombre; ficha en formato solución): está en el _COORDINACION-IA.md de cada uno. Base
+  de datos: cuatro funciones NUEVAS pegadas por Iago (suite_ficha_profe_contexto_v2, suite_fichas_indice_v2,
+  suite_ficha_solucion_papel, suite_pendientes_fichas; SQL y DESHACER en Dropbox, DIARIO
+  PROFESOR/SQL-BD/PEGAR-3-oct-2026--fichas-papel-refuerzo-y-morosos.sql); no se ha cambiado ninguna de las de antes.
+  Copias y cómo volver atrás: LEEME-3-oct-2026 de cada carpeta de Dropbox.
 - 2-oct 22:20 · Fichas y rediseño · HECHO · cuatro cosas esta noche. (1) lmpro index.html b088dff: libros del aula, el
   mismo arreglo que LMEAVathome a5d0c05 (el visor solo pone el PDF de la última apertura y admite que se le pida un
   libro). (2) Netlify diariodeiagocmus 6ac00a3b (encima de 6abfe8a9): iphone.html, iphone-canon.css?v=m2 e
