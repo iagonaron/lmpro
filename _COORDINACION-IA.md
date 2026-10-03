@@ -6,6 +6,13 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 3-oct 15:15 · Fichas y rediseño · EN CURSO · dos cosas. (1) Portales: LMEAVathome index.html y lmpro index.html — en
+  la campana, la parte «Entregar Ficha N en papel» de «Tareas de la semana» pasa a «¡Corregida!» (nota y «Ver ficha
+  con las soluciones») cuando existe el aviso papel_corregida de esa ficha; el aviso suelto se pinta con el mismo
+  aspecto; pastilla «Ficha N corregida» bajo la campana. Toco: otrasPendiente, el filtro, el orden y la tarjeta de
+  tareas dentro de render(), autoLeer, injectNebCSS y filtrar() del bloque @FORMATO. (2) Diario (Netlify
+  diariodeiagocmus, encima de 6ac0d2c4): diario-lupa.js — la nota de una ficha en papel enseña el % de cada ejercicio
+  y abre la ficha corregida. Quien vaya a tocar esos ficheros, que espere al HECHO.
 - 3-oct 12:05 · Fichas y rediseño · HECHO · tres cosas de hoy. (1) Netlify fichasenpapel-cmus 6ac0cbe6 (encima de
   6abff91f; solo index.html): cada ejercicio se puntúa con cinco bolitas 0 · 25 · 50 · 75 · 100 en una línea y un «−»
   / «+» de 5 en 5 por fila; el marcador de arriba suma y acaba en rosa; el número de ejercicios lo pone el sistema
