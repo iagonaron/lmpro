@@ -6,6 +6,13 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 3-oct 11:35 · Fichas y rediseño · EN CURSO · (1) Netlify fichasenpapel-cmus, encima de 6abff91f: index.html (cada
+  ejercicio se puntúa con cinco bolitas 0 · 25 · 50 · 75 · 100 y un «−» / «+» de 5 en 5; el marcador de arriba va
+  sumando; ejercicios de refuerzo de cada alumno; aviso al portal con la nota y la ficha en formato solución). (2)
+  Después, Diario (Netlify diariodeiagocmus, encima de 6ac00a3b): botón de morosos y lista de verificados solo si
+  falta alguien, en PC, iPad y móvil; en el móvil, los iconos de papel pasan a avisar solo de los cambios desde la
+  última ficha. Tocaré index.html, app.js, ipad.html, iphone.html y sus JS y CSS. No toquéis esas dos apps hasta el
+  HECHO.
 - 2-oct 22:20 · Fichas y rediseño · HECHO · cuatro cosas esta noche. (1) lmpro index.html b088dff: libros del aula, el
   mismo arreglo que LMEAVathome a5d0c05 (el visor solo pone el PDF de la última apertura y admite que se le pida un
   libro). (2) Netlify diariodeiagocmus 6ac00a3b (encima de 6abfe8a9): iphone.html, iphone-canon.css?v=m2 e
