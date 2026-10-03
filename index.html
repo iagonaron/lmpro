@@ -2005,7 +2005,7 @@ function showEnig(kind){
     return [{titulo:'Otras tareas', sub:String(o)}];
   }
   function otraParte(i){ return i===0?'otras':('otra_'+i); }
-  function otrasPendiente(pj,se){ return otrasLista(pj).some(function(x,i){ return !parteHecha(se,otraParte(i)); }); }
+  function otrasPendiente(pj,se){ return otrasLista(pj).some(function(x,i){ return !x.corregida && !parteHecha(se,otraParte(i)); }); }   /* (3-oct-2026) una ficha en papel ya corregida no está pendiente */
   function tareasHechaCore(o, fichasPorNumero){
     var pj=(o&&o.payload_json)||{}, se=pj.semana_envio_id;
     if(semanaDespues(o.creado_en) <= Date.now()) return true;   // semana caducada
@@ -2820,6 +2820,17 @@ function showEnig(kind){
     var pill=document.getElementById('alu-campana-prog');
     if(pill){ pill.remove(); b.title='Notificaciones'; }
   }
+  /* (3-oct-2026, Iago) «que llame la atención»: mientras haya una ficha en papel corregida SIN ABRIR, la campana lleva
+     debajo una pastilla «Ficha N corregida» (además de su número). Se va sola al abrir la ficha o marcarla leída. */
+  function pintarCampanaPapel(list){
+    var b=btn(); if(!b) return;
+    var nuevas=(list||[]).filter(function(o){ var pj=(o&&o.payload_json)||{}; return !!pj.papel_corregida && !o.leido; });
+    var pill=document.getElementById('alu-campana-papel');
+    if(!nuevas.length){ if(pill && pill.parentNode) pill.parentNode.removeChild(pill); return; }
+    if(!pill){ pill=document.createElement('span'); pill.id='alu-campana-papel'; pill.className='portal-bell-prog portal-bell-papel'; b.appendChild(pill); }
+    var n1=nuevas[0].payload_json.numero;
+    pill.textContent=(nuevas.length===1) ? ('Ficha '+(n1!=null?n1+' ':'')+'corregida') : (nuevas.length+' fichas corregidas');
+  }
   function ultimo(){ try{ var v=parseInt(localStorage.getItem(LS_ULT),10); return isNaN(v)?null:v; }catch(e){ return null; } }
   function guardar(n){ try{ localStorage.setItem(LS_ULT,String(n)); }catch(e){} }
   function btn(){ return document.getElementById('alu-campana-btn'); }
@@ -2877,6 +2888,7 @@ function showEnig(kind){
         try{ await cargarSemanaHechos(id); }catch(e2){}
         try{ await cargarProgresos(id); }catch(e2){}
         n=contarPendientes(rl.notificaciones);
+        try{ pintarCampanaPapel(rl.notificaciones); }catch(e3){}   /* (3-oct-2026) «Ficha N corregida» bajo la campana */
         // (12-sep-2026) estado de las «Tareas de la semana» para el Temazo de la semana (@TEMAZO)
         try{
           var _sem=(rl.notificaciones||[]).filter(function(o){ var pj=(o&&o.payload_json)||{}; return pj.tareas_semana && pj.semana_envio_id && (semanaDespues(o.creado_en)>Date.now()); });
@@ -3057,10 +3069,17 @@ function showEnig(kind){
       return !!(st && st.fase==='fin');
     };
     var esHecha=function(o){ var f=(o.payload_json&&o.payload_json.ficha_id)||''; return !!(f && _entregadas[f]) || esQuizHecho(o) || tareasHecha(o); };
-    list=list.filter(function(o){ return !fichaOculta(o) && !fichaAbsorbida(o) && !fichaCaducada(o); });
+    /* (3-oct-2026, Iago) FICHA EN PAPEL YA CORREGIDA: si su tarjeta «Tareas de la semana» sigue a la vista, el aviso se
+       enseña DENTRO de la parte «Entregar Ficha N en papel» (que recupera el color) y no además suelto. */
+    var papelEnTarjeta=function(o){ var pj=(o&&o.payload_json)||{}; return !!(pj.papel_corregida && pj.__enTarjeta); };
+    /* «que llame la atención»: lo que lleva una ficha en papel recién corregida (sin abrir) va arriba y no se apaga */
+    var papelNueva=function(o){ var pj=(o&&o.payload_json)||{};
+      if(pj.papel_corregida) return !o.leido;
+      return !!(pj.tareas_semana && otrasLista(pj).some(function(x){ return x.corregida && !x.corregida.leido; })); };
+    list=list.filter(function(o){ return !fichaOculta(o) && !fichaAbsorbida(o) && !fichaCaducada(o) && !papelEnTarjeta(o); });
     list.sort(function(a,b){
-      var pa=(enTiempoExtra(a)?-1:0)+(esHecha(a)?1:0);
-      var pb=(enTiempoExtra(b)?-1:0)+(esHecha(b)?1:0);
+      var pa=papelNueva(a)?-1:((enTiempoExtra(a)?-1:0)+(esHecha(a)?1:0));
+      var pb=papelNueva(b)?-1:((enTiempoExtra(b)?-1:0)+(esHecha(b)?1:0));
       return pa-pb;
     });
     body.innerHTML=(list.length?list.map(function(o){
@@ -3119,6 +3138,20 @@ function showEnig(kind){
         // 3º-bis se pinta después; primero preparar OTRAS
         otrasLista(tj).forEach(function(ot,oi){
           var oParte=otraParte(oi), oh=parteHecha(se,oParte);
+          /* (3-oct-2026, Iago) la ficha en papel YA CORREGIDA: la parte recupera el color (aunque estuviera en gris
+             por el «Entendido») y enseña la nota y la ficha con las soluciones. Sin abrir («nueva») llama la
+             atención: rellena, con latido y punto rojo; al abrirla se queda en color, tranquila. */
+          if(ot.corregida){
+            var oc=ot.corregida, ocN=(oc.nota!=null && isFinite(Number(oc.nota)))?Number(oc.nota).toFixed(2).replace('.',','):'';
+            partes+='<div class="ts-parte ts-otras ts-papel-corr'+(oc.leido?'':' nueva')+'" data-papel-nid="'+esc(oc.id)+'"'+(oc.leido?' data-leido="1"':'')+'>'
+              +(oc.leido?'':'<span class="ts-dot" aria-hidden="true"></span>')
+              +'<div class="ts-parte-tit">📝 Ficha '+esc(ot.papel_n)+' en papel <span class="ts-papel-chip">¡Corregida!</span></div>'
+              +'<div class="ts-parte-sub">Tu Ficha '+esc(ot.papel_n)+' ya ha sido corregida.</div>'
+              +(ocN?'<div class="ts-papel-notaL">Nota <b class="ts-papel-nota">'+ocN+'</b></div>':'')
+              +(oc.url?'<a class="ts-papel-ver" href="'+esc(oc.url)+'" target="_blank" rel="noopener">Ver ficha con las soluciones →</a>':'')
+              +'</div>';
+            return;
+          }
           partes+='<div class="ts-parte ts-otras'+(oh?' ts-hecha':'')+'">'
             +((oh||caduSem)?'':'<span class="ts-dot" aria-hidden="true"></span>')
             +'<div class="ts-parte-tit">📝 '+esc(ot.titulo||'Otras tareas')+(oh?' <b class="ts-check">✓</b>':'')+'</div>'
@@ -3152,7 +3185,7 @@ function showEnig(kind){
               +'<div class="ts-parte-sub">🕐 Se activa el viernes a las 19:00.</div></div>';
           }
         }
-        return '<div class="alu-item alu-item-tareas'+((o.leido||hechaT)?'':' no-leido')+(hechaT?' hecha':'')+'" data-id="'+esc(o.id)+'">'
+        return '<div class="alu-item alu-item-tareas'+((o.leido||hechaT)?'':' no-leido')+((hechaT && !papelNueva(o))?' hecha':'')+'" data-id="'+esc(o.id)+'">'
           +'<span class="alu-dot"></span>'
           +'<div class="alu-item-main">'
           +'<div class="alu-item-tit">📦 Tareas de la semana'+(hechaT?' <span class="alu-hecha-check" aria-label="Hechas">✓</span>':'')+'</div>'
@@ -3263,6 +3296,23 @@ function showEnig(kind){
       /* (24-sep-2026, Iago) RESPUESTA DEL PROFE A UNA RECLAMACIÓN (o un comentario suyo sobre
          tu ficha): llega por la campana, no por ningún sobre. Se pinta aparte: el veredicto,
          su mensaje tal cual (con saltos de línea), tu nota nueva y el enlace a la ficha corregida. */
+      /* (3-oct-2026, Iago) FICHA EN PAPEL YA CORREGIDA, suelta (la tarjeta de su semana ya no está a la vista): al
+         grano y que se note — «Tu Ficha N ya ha sido corregida», la nota en grande y la ficha con las soluciones.
+         Va antes que las reclamaciones porque su aviso viaja con la misma marca (reclamacion:true). */
+      if(o.payload_json && o.payload_json.papel_corregida){
+        var pc=o.payload_json, pcF=(pc.numero!=null)?('Ficha '+pc.numero):'Ficha';
+        var pcN=(pc.nota_despues!=null&&isFinite(Number(pc.nota_despues)))?Number(pc.nota_despues).toFixed(2).replace('.',','):'';
+        return '<div class="alu-item alu-recl alu-papel-corr'+(o.leido?'':' no-leido')+'" data-id="'+esc(o.id)+'">'
+          +'<span class="alu-dot"></span>'
+          +'<div class="alu-item-main"><div class="alu-item-tit">📝 '+esc(pcF)+' en papel <span class="ts-papel-chip">¡Corregida!</span></div>'
+          +'<div class="alu-item-cuerpo">Tu '+esc(pcF)+' ya ha sido corregida.</div>'
+          +(pcN?'<div class="ts-papel-notaL">Nota <b class="ts-papel-nota">'+pcN+'</b></div>':'')
+          +(pc.url?'<a class="alu-recl-ver ts-papel-ver" href="'+esc(pc.url)+'" target="_blank" rel="noopener">Ver ficha con las soluciones →</a>':'')
+          +'<div class="alu-item-fecha">'+fecha(o.creado_en)+'</div>'
+          +'</div>'
+          +(o.leido?'':'<button type="button" class="alu-recl-leido" data-recl-leido="'+esc(o.id)+'">Marcar como leído</button>')
+          +'</div>';
+      }
       if(o.payload_json && o.payload_json.reclamacion){
         var pr=o.payload_json, est=pr.estado||'';
         var chipR=est==='aceptada'?'<span class="alu-recl-chip ok">✅ Aceptada</span>':est==='denegada'?'<span class="alu-recl-chip no">❌ Denegada</span>':'<span class="alu-recl-chip">📝 Comentario</span>';
@@ -3325,7 +3375,11 @@ function showEnig(kind){
     // ya cumplió: que el globito rojo no le persiga). Un solo refresco al final.
     // (5-ago) las fichas CADUCADAS sin entregar también se auto-marcan leídas:
     // ya no llevan a ningún sitio (el player las rechaza) y no deben dar globo.
-    var autoLeer=listTodas.filter(function(o){ return (esHecha(o)||esNotifValidacion(o)||fichaCaducada(o)) && !o.leido; });
+    /* (3-oct-2026) si cambié la nota de una ficha en papel llega un aviso nuevo: los anteriores de esa ficha ya no se
+       enseñan (los quita el filtro de formato) y aquí se dan por leídos, para que no sumen en la campana. */
+    var _pcUlt={}; try{ if(window.__LM_FMT__ && window.__LM_FMT__.papelCorregidas) _pcUlt=window.__LM_FMT__.papelCorregidas(listTodas); }catch(e){}
+    var papelSuperada=function(o){ var pj=(o&&o.payload_json)||{}; if(!pj.papel_corregida || pj.numero==null) return false; var u=_pcUlt[String(pj.numero)]; return !!(u && u!==o); };
+    var autoLeer=listTodas.filter(function(o){ return (esHecha(o)||esNotifValidacion(o)||fichaCaducada(o)||papelSuperada(o)) && !o.leido; });
     if(autoLeer.length){
       Promise.all(autoLeer.map(function(o){ return rpc('suite_alumno_marcar_leido',{p_cuenta_id:id,p_notif_id:o.id}); }))
         .then(function(){ refrescar(); }).catch(function(){});
@@ -3433,6 +3487,17 @@ function showEnig(kind){
         if(it) it.classList.add('hecha');
       });
     });
+    // (3-oct-2026, Iago) ficha en papel corregida DENTRO de la tarjeta de la semana: abrirla (o tocar su parte) la da
+    // por leída — se van el latido y el punto rojo y baja la campana; el color se queda.
+    Array.prototype.forEach.call(body.querySelectorAll('.ts-papel-corr[data-papel-nid]'),function(p){
+      p.addEventListener('click',function(ev){
+        ev.stopPropagation();
+        if(p.getAttribute('data-leido')==='1') return;
+        p.setAttribute('data-leido','1'); p.classList.remove('nueva');
+        var d=p.querySelector('.ts-dot'); if(d && d.parentNode) d.parentNode.removeChild(d);
+        marcar(p.getAttribute('data-papel-nid'), null);
+      });
+    });
     // (29-sep-2026, Iago) reclamación: «Marcar como leído»
     Array.prototype.forEach.call(body.querySelectorAll('.alu-recl-leido'),function(b){
       b.addEventListener('click',function(ev){
@@ -3509,6 +3574,30 @@ function showEnig(kind){
       '.ts-parte-sub{font-size:11.5px;color:#c9b98f;white-space:pre-wrap;max-height:64px;overflow:auto}'+
       '.ts-check{color:#7ef0c0}'+
       '.ts-parte.ts-hecha{filter:grayscale(1);opacity:.55}'+
+      // (3-oct-2026, Iago) FICHA EN PAPEL YA CORREGIDA: la parte recupera el color; sin abrir, que llame la atención
+      '.ts-parte.ts-papel-corr{border-color:rgba(236,72,153,.75);background:rgba(236,72,153,.1)}'+
+      '.ts-parte.ts-papel-corr .ts-parte-sub{max-height:none;overflow:visible;white-space:normal}'+
+      '.ts-papel-chip{display:inline-block;margin-left:6px;padding:1px 7px;border-radius:6px;border:1px solid rgba(236,72,153,.9);color:#ffd0e6;font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;vertical-align:middle;line-height:15px;white-space:nowrap}'+
+      '.ts-papel-notaL{font-size:12px;font-weight:700;color:#e2ebff;line-height:1.1}'+
+      '.ts-papel-nota{font-size:20px;font-weight:800;color:#fff;margin-left:3px;font-variant-numeric:tabular-nums}'+
+      '.ts-parte .ts-papel-ver,.alu-item .ts-papel-ver{margin-top:auto;align-self:flex-start;display:inline-block;border:0;border-radius:10px;padding:8px 13px;font-weight:800;font-size:12.5px;line-height:1.25;text-decoration:none;color:#fff;background:#db2777}'+
+      '.alu-item .alu-recl-ver.ts-papel-ver{margin-top:8px}'+
+      '.ts-papel-ver:hover{filter:brightness(1.12)}'+
+      '.alu-item.alu-papel-corr{position:relative;border:1px solid rgba(236,72,153,.6);border-radius:14px;margin:8px 0;padding:10px 12px}'+
+      '.ts-parte.ts-papel-corr.nueva,.alu-item.alu-papel-corr.no-leido{border:2px solid #ec4899;background:rgba(236,72,153,.24)}'+
+      '.ts-papel-corr.nueva .ts-papel-chip,.alu-papel-corr.no-leido .ts-papel-chip{background:#db2777;border-color:#db2777;color:#fff}'+
+      '.ts-parte.ts-papel-corr.nueva .ts-parte-tit{padding-right:16px}'+
+      '.ts-parte.ts-papel-corr.nueva::after,.alu-item.alu-papel-corr.no-leido::after{content:"";position:absolute;inset:-2px;border-radius:inherit;pointer-events:none;box-shadow:0 0 0 0 rgba(236,72,153,.65);animation:papelPulso 1.8s ease-out infinite}'+
+      '@keyframes papelPulso{0%{box-shadow:0 0 0 0 rgba(236,72,153,.65)}70%{box-shadow:0 0 0 9px rgba(236,72,153,0)}100%{box-shadow:0 0 0 0 rgba(236,72,153,0)}}'+
+      '.portal-bell-prog.portal-bell-papel{left:auto;right:-6px;bottom:-23px;transform:none;background:#db2777;background-image:none;animation:papelLatido 1.8s ease-in-out infinite;color:#fff;font-size:10px;padding:2px 8px;border-radius:6px;box-shadow:0 2px 10px rgba(219,39,119,.55)}'+
+      '@keyframes papelLatido{0%,100%{transform:scale(1)}50%{transform:scale(1.07)}}'+
+      '@media (prefers-reduced-motion:reduce){.ts-parte.ts-papel-corr.nueva::after,.alu-item.alu-papel-corr.no-leido::after,.portal-bell-prog.portal-bell-papel{animation:none!important}}'+
+      // con la estética nueva (sus reglas mandan con !important: aquí se les gana por ser más concretas)
+      'html.lm-fam-portal .ts-parte.ts-otras.ts-papel-corr{--lm-ts:var(--lm-rosa)}'+
+      'html.lm-fam-portal .ts-parte.ts-otras.ts-papel-corr.nueva,html.lm-fam-portal .alu-item.alu-recl.alu-papel-corr.no-leido{background:rgba(236,72,153,.24) !important;border-width:2px !important}'+
+      'html.lm-fam-portal .ts-papel-ver,html.lm-fam-portal .alu-item .alu-recl-ver.ts-papel-ver{background:var(--lm-rosa-f) !important;background-image:none !important;border:0 !important;border-radius:10px !important;color:#fff !important}'+
+      'html.lm-fam-portal .alu-item .alu-recl-ver.ts-papel-ver{box-sizing:border-box;height:auto !important;min-height:34px;padding:6px 14px !important;text-align:left}'+
+      'html.lm-fam-portal .ts-papel-notaL{color:rgba(255,255,255,.8)}'+
       '.ts-marcar,.ts-ver-lecciones{margin-top:8px;border:0;border-radius:8px;padding:8px 13px;font-weight:800;font-size:12.5px;cursor:pointer}'+
       '.ts-ver-lecciones{color:#241703;background:linear-gradient(90deg,#ffe49a,#b8860b);box-shadow:0 6px 20px rgba(212,175,55,.35)}'+
       '.ts-marcar{color:#f0e6c8;background:rgba(255,222,150,.1);border:1px solid rgba(255,235,190,.3)}'+
@@ -7173,8 +7262,40 @@ window.DictadoClase = (function(){
   // ciclo en curso (desde la ultima «Tareas de la semana» en adelante).
   // (29-sep-2026) Con las excepciones: una ficha que el alumno hace en papel (aunque ahora sea digital) sale como
   // «Entregar en papel»; una que hace en digital (aunque ahora sea de papel) se queda como ficha digital.
+  /* (3-oct-2026, Iago) FICHA EN PAPEL YA CORREGIDA. Al ponerle nota, la app «Fichas en papel» manda un aviso
+     (payload papel_corregida, con numero, nota_despues y la url de la ficha con las soluciones). Aquí:
+       · de los avisos de una misma ficha solo vale el ÚLTIMO (si cambio la nota llega otro);
+       · si la tarjeta «Tareas de la semana» de esa ficha sigue a la vista, el aviso se enseña DENTRO de su parte
+         «Entregar Ficha N en papel», que recupera el color; si no, sale como aviso suelto;
+       · el aviso no se pierde al cambiar de semana: se ve hasta que se lee (y 8 días en cualquier caso).
+     Para quitarlo: borrar papelCorregidas() y enlazarPapel() y sus llamadas en filtrar(). */
+  function papelCorregidas(list){
+    var ult={};
+    (list||[]).forEach(function(o){ var pj=(o&&o.payload_json)||{};
+      if(!pj.papel_corregida || pj.numero==null) return;
+      var k=String(pj.numero), p=ult[k];
+      if(!p || (Date.parse(o.creado_en||'')||0) >= (Date.parse(p.creado_en||'')||0)) ult[k]=o; });
+    return ult;
+  }
+  function enlazarPapel(l, pc){
+    l.forEach(function(o){ var pj=(o&&o.payload_json)||{}; if(pj.papel_corregida) delete pj.__enTarjeta; });
+    l.forEach(function(o){
+      var pj=(o&&o.payload_json)||{};
+      if(!pj.tareas_semana || !Array.isArray(pj.otras)) return;
+      pj.otras.forEach(function(ot){
+        if(!ot || ot.papel_n==null) return;
+        var c=pc[String(ot.papel_n)], cj=(c&&c.payload_json)||null;
+        if(!c || !cj || l.indexOf(c)<0){ delete ot.corregida; return; }
+        ot.corregida={ id:c.id, nota:cj.nota_despues, url:cj.url||'', leido:!!c.leido };
+        cj.__enTarjeta=true;
+      });
+    });
+    return l;
+  }
   function filtrar(list){
     if(!Array.isArray(list)) return list;
+    var _pc=papelCorregidas(list);   /* (3-oct-2026) de cada ficha en papel corregida, solo el último aviso */
+    list=list.filter(function(o){ var pj=(o&&o.payload_json)||{}; return !pj.papel_corregida || pj.numero==null || _pc[String(pj.numero)]===o; });
     var papel=esPapel();
     if(!papel && !hayExcepciones()) return list;
     var l=list.filter(function(o){ var pj=(o&&o.payload_json)||{}; return !pj.ficha_id || fmtFicha(pj.ficha_id, null)!=='papel'; });
@@ -7190,23 +7311,25 @@ window.DictadoClase = (function(){
       pj.otras=(Array.isArray(pj.otras)?pj.otras.slice():[]).concat([{
         titulo:'Entregar Ficha '+n+' en papel',
         sub:'Tienes de plazo toda la semana que viene. Si alguna vez necesitas m\u00e1s tiempo, d\u00edmelo en clase.',
-        boton:'Entendido'
+        boton:'Entendido',
+        papel_n:n   /* (3-oct-2026) para enlazarla con su aviso «ficha corregida» */
       }]);
       delete pj.ficha;
       pj.__papel=true;
     });
-    if(!papel) return l;   /* (29-sep-2026) digital con una ficha en papel: el resto, como siempre */
+    if(!papel) return enlazarPapel(l, _pc);   /* (29-sep-2026) digital con una ficha en papel: el resto, como siempre */
     var corte=0;
     l.forEach(function(o){
       var pj=(o&&o.payload_json)||{};
       if(pj.tareas_semana){ var t=Date.parse(o.creado_en)||0; if(t>corte) corte=t; }
     });
-    if(!corte) return l;
+    if(!corte) return enlazarPapel(l, _pc);
     /* (29-sep-2026, Iago) los de papel también reciben el 0 automático al acabar la semana de gracia: ese aviso
        se ve aunque sea de antes del ciclo en curso (8 días, lo que dura la lista de morosos con la calavera). */
-    return l.filter(function(o){ var pj=(o&&o.payload_json)||{}, t=Date.parse(o.creado_en)||0;
+    return enlazarPapel(l.filter(function(o){ var pj=(o&&o.payload_json)||{}, t=Date.parse(o.creado_en)||0;
       if(pj.cero_ficha && Date.now()-t < 8*864e5) return true;
-      return t >= corte-60000; });
+      if(pj.papel_corregida && (!o.leido || Date.now()-t < 8*864e5)) return true;   /* (3-oct-2026) la ficha en papel corregida no se pierde al cambiar de semana */
+      return t >= corte-60000; }), _pc);
   }
 
   function velo(html, mini){
@@ -7376,7 +7499,7 @@ window.DictadoClase = (function(){
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',function(){ setTimeout(arranque,700); });
   else setTimeout(arranque,700);
 
-  window.__LM_FMT__={ cargar:cargar, esPapel:esPapel, filtrar:filtrar,
+  window.__LM_FMT__={ cargar:cargar, esPapel:esPapel, filtrar:filtrar, papelCorregidas:papelCorregidas,
                       decidir:decidir, cambiar:cambiar, pintarPastilla:pintarPastilla,
                       estado:function(){ return _estado; } };
 })();
