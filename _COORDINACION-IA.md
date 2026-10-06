@@ -6,6 +6,13 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 6-oct 18:35 · Intros didácticas (la conversación de los vídeos y de «La cabaña») · EN CURSO · dos cosas que ha pedido Iago hoy
+  («publicarlo en Iago González Protester para que lo vea desde la propia web y así de paso veo el icono nuevo»):
+  (1) cualidadesdelsonido (acustica.gp.lmathome.es), partiendo de 6c60ffa: AÑADIR prueba.html y la carpeta cabana/
+  («La cabaña», la Acústica nueva: 189 ficheros, 522 MB). No se toca index.html ni nada de lo que ya hay.
+  (2) lmpro, solo index.html, bloque @MEDALLERO, partiendo de 205ba8f: con las cuentas Tester/Protester la medalla de
+  Acústica sale abierta, con un icono nuevo (imágenes «u2n») y abre prueba.html. Para los alumnos no cambia nada.
+  Quien vaya a subir index.html de lmpro, que espere a la línea HECHO (o que me avise aquí).
 - 6-oct 18:15 · Fichas y rediseño · HECHO · PredictCarrusel 84cdafd (encima de 353c2cf): guiado.js, guiado.css e
   index.html (en este, solo guiado.js?v=10 y guiado.css?v=7). QUIEN TOQUE EL CARRUSEL GUIADO, QUE PARTA DE 84cdafd.
   Iago: «que la única nota señalada al final sea la del bajo […] que se desplace lateralmente, paralelo a las líneas,
