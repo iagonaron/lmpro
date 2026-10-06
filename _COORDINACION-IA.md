@@ -6,12 +6,24 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
-- 6-oct 16:55 · Fichas y rediseño · EN CURSO · URGENTE, pedido por Iago en plena clase («despliégalo ya»): morosos en
-  el portal. Supabase (añade suite_config.cuentas_profe y la función suite_morosos_llave_cuenta; no cambia nada de lo
-  que hay) y LMEAVathome, solo piel/apps/portal.js (sección 15, morosos), partiendo de ac3f2fe. El ⚠ de
-  Tester/Protester no salía en el ordenador del aula porque dependía de la llave que deja el Diario en el navegador.
-  No toco el index.html de los portales, ni lm-piel.js, ni el Diario. Quien vaya a subir algo a piel/apps/portal.js,
-  que espere a la línea HECHO.
+- 6-oct 17:10 · Fichas y rediseño · HECHO · morosos en el portal (urgente, pedido por Iago en clase). LMEAVathome
+  03dc89f (encima de ac3f2fe), solo piel/apps/portal.js, sección 15. QUIEN TOQUE piel/apps/portal.js, QUE PARTA DE
+  03dc89f. Qué pasaba: el ⚠ de Tester/Protester necesitaba la llave «lm_profe» que solo deja el Diario en el navegador
+  donde se abre; en clase el Diario va en el iPad y el portal en el ordenador del aula, que nunca la tuvo (registros:
+  127 peticiones del portal GE y ninguna de morosos). Qué: (1) sin llave, el portal la pide con la cuenta (pedirLlave
+  → suite_morosos_llave_cuenta, un intento cada 5 min como mucho) y la guarda como el Diario; (2) si la lista responde
+  no_autorizado, tira la llave vieja y pide otra, una vez (antes repetía la petición dos veces por segundo); freno de
+  30 s cuando la lista falla (MOR.tMal); (3) la hora de clase, en hora de Galicia y con el reloj del servidor
+  (ahoraGalicia, mirarReloj: cabecera Date de un HEAD a /manifest.webmanifest). SUPABASE: columna
+  suite_config.cuentas_profe (uuid[], las dos cuentas del profe) y función suite_morosos_llave_cuenta(p_cuenta_id),
+  que da la misma llave que el Diario solo a esas cuentas; no cambia nada de lo que había. La pegó Iago en el editor
+  SQL desde el móvil (a Claude se lo bloqueó el control de seguridad de su sesión). Comprobado: 49 comprobaciones en
+  el banco de pruebas; en vivo el fichero es el probado (bfc5d94f…) y a las 16:57:34 el ordenador del aula pidió la
+  llave, la recibió y pidió la lista. Pendiente de ver el icono en el aula (4B ya no tenía morosos). OJO: en 2GpC y
+  2GpF hay un alumno con dos cuentas validadas y sale repetido en la lista (sin tocar). Nota: APPs/LMATHOME GE (github
+  LMEAVathome)/LEEME-6-oct-2026-morosos-en-el-portal-salen-en-cualquier-aparato.txt. SQL y deshacer: APPs/DIARIO
+  PROFESOR (netlify diariodeiagocmus)/SQL-BD/2026-10-06-morosos-llave-por-cuenta(-DESHACER).sql. Copia de antes:
+  APPs/_PARA BORRAR/6-oct-2026-morosos-en-el-portal-llave-por-cuenta/. Espejo de Dropbox al día.
 - 6-oct 14:05 · Fichas y rediseño · HECHO · PreDictPROCarrusel cd0a954 (encima de 6581d5d), solo index.html. QUIEN
   TOQUE EL CARRUSEL PRO, QUE PARTA DE cd0a954. Pedido de Iago: que un móvil al que se le va la señal vuelva a la
   partida con sus puntos, y QR + código al pausar. Causa: cada carga de la página inventaba un identificador nuevo y
