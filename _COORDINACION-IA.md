@@ -6,9 +6,12 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
-- 6-oct 17:16 · Fichas y rediseño · EN CURSO · LMEAVathome, solo piel/apps/portal.js, partiendo de 03dc89f: Iago pide
-  que el ⚠ de morosos salga a la hora exacta de la clase (hoy sale desde 30 min antes). Una línea en gruposEnClase().
-  Quien vaya a subir algo a piel/apps/portal.js, que espere a la línea HECHO.
+- 6-oct 17:20 · Fichas y rediseño · HECHO · LMEAVathome 226a581 (encima de 03dc89f), solo piel/apps/portal.js. QUIEN
+  TOQUE piel/apps/portal.js, QUE PARTA DE 226a581. Iago: «lo que me interesa es que se active en el momento exacto de
+  la clase»: el ⚠ de morosos sale de la hora de inicio a la de fin del grupo (gruposEnClase: min >= ini && min < fin;
+  antes, desde 30 min antes y con la hora de fin incluida), cualquier día, según el horario del Diario; y se mira cada
+  15 s (antes 60) para que salga en punto. Probado en el banco de pruebas (11 comprobaciones de hora + 22 de repaso).
+  Espejo de Dropbox al día. Deshacer: volver a subir la de 03dc89f.
 - 6-oct 17:10 · Fichas y rediseño · HECHO · morosos en el portal (urgente, pedido por Iago en clase). LMEAVathome
   03dc89f (encima de ac3f2fe), solo piel/apps/portal.js, sección 15. QUIEN TOQUE piel/apps/portal.js, QUE PARTA DE
   03dc89f. Qué pasaba: el ⚠ de Tester/Protester necesitaba la llave «lm_profe» que solo deja el Diario en el navegador
