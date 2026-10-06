@@ -6,6 +6,12 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 6-oct 20:55 · Fichas y rediseño · EN CURSO (esta noche, Iago ya no está en clase) · (1) Diario, un deploy encima de
+  6ac4bdf5: app.js, ipad.html e index.html (Intervalia PRO de 2.º GP en la clase 2 por defecto, con sus botones C1/C2
+  en Preparación y 9 minutos). (2) LMEAVathome piel/apps/portal.js encima de c0c7ab9 (el editor de lecciones: el
+  portal quieto mientras está abierto, la salida de sonido de la música se cierra al parar, «caja negra» solo
+  Tester/Protester). (3) Campana de los portales por orden cronológico: index.html de LMEAVathome (encima de c0c7ab9)
+  y de lmpro (encima de 83f1ac7). NADIE MÁS TOQUE ESOS FICHEROS HASTA QUE ESTO DIGA HECHO.
 - 6-oct 19:05 · Intros didácticas (la conversación de los vídeos y de «La cabaña») · HECHO · dos cosas que pidió Iago hoy
   («publicarlo en Iago González Protester para que lo vea desde la propia web y así de paso veo el icono nuevo»).
   (1) cualidadesdelsonido 5bb582f (encima de 6c60ffa): AÑADIDOS prueba.html y cabana/ («La cabaña», la Acústica nueva:
