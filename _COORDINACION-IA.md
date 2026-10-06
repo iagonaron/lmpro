@@ -6,6 +6,13 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 6-oct 17:58 · Fichas y rediseño · EN CURSO · PredictCarrusel (carrusel guiado GE), partiendo de 353c2cf: guiado.js,
+  guiado.css e index.html (en este, solo las versiones ?v=). Corrección del acorde 2 del Armónico: al final solo se
+  señala el bajo, que viaja hasta su sitio en el acorde ordenado. Quien vaya a subir algo a PredictCarrusel, que
+  espere a la línea HECHO.
+- 6-oct 17:57 · Fichas y rediseño · EN CURSO · LMEAVathome, solo piel/apps/portal.js, partiendo de 226a581: Iago pide
+  que el ⚠ de morosos salga 5 minutos antes de cada clase, a la vez que el ▶ de la música (gruposEnClase y
+  musVentana). Quien vaya a subir algo a piel/apps/portal.js, que espere a la línea HECHO.
 - 6-oct 17:20 · Fichas y rediseño · HECHO · LMEAVathome 226a581 (encima de 03dc89f), solo piel/apps/portal.js. QUIEN
   TOQUE piel/apps/portal.js, QUE PARTA DE 226a581. Iago: «lo que me interesa es que se active en el momento exacto de
   la clase»: el ⚠ de morosos sale de la hora de inicio a la de fin del grupo (gruposEnClase: min >= ini && min < fin;
