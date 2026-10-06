@@ -6,17 +6,23 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
-- 6-oct 10:35 · Fichas y rediseño · EN CURSO · dos cosas, por este orden. (1) LMEAVathome piel/lm-piel.js (solo ese
-  fichero; parto de 0a5fc96): «?piel=0» deja de apuntar nada en el navegador y pasa a valer solo para la pestaña donde
-  se abre; para apagar un navegador entero habrá que escribir «?piel=apagar». Motivo: esta mañana, a las 8:59:50, una
-  comprobación MÍA con «?piel=0» en el Chrome de Iago dejó la marca lm_piel_no=1 en *.lmathome.es y sus portales
-  salieron con la estética antigua hasta las 10:18 (solo en su navegador; a los alumnos no les llegó: los ficheros
-  publicados no cambiaron). Ya se la he quitado. (2) Después, index.html de LMEAVathome y de lmpro: el botón
-  «Entendido» de «Entregar Ficha N en papel» pasa a «Entregada». AVISO PARA TODAS LAS CONVERSACIONES (usáis el mismo
-  Chrome de Iago): no abráis NADA de *.lmathome.es con «?piel=0» en su navegador mientras lm-piel.js no esté cambiado,
-  y nunca con «?piel=apagar». Si comprobáis algo en su Chrome, al acabar mirad las cookies lm_piel y lm_piel_no desde
-  cualquier página de *.lmathome.es y dejadlas como deben estar: lm_piel=1 y SIN lm_piel_no. Para ver una app sin la
-  piel, hacedlo en vuestro banco de pruebas, no en su Chrome.
+- 6-oct 10:40 · Fichas y rediseño · HECHO · dos cosas. (1) LMEAVathome cdf1c25, solo piel/lm-piel.js: «?piel=0» ya no
+  apunta nada en el navegador; apaga la piel SOLO en la pestaña donde se abre y en ese sitio (sessionStorage
+  «lm_piel_no_pestana»), sin tocar las cookies lm_piel ni lm_piel_no. Para apagar un navegador entero hay que escribir
+  «?piel=apagar» (lo que antes hacía ?piel=0: cookie lm_piel_no=1 en *.lmathome.es durante un año). «?piel=1» enciende
+  y limpia las dos marcas. El Ojeador, lo abierto desde el Diario y el Carrusel PRO no cambian. Motivo: el 6-oct a las
+  8:59:50 una comprobación MÍA con «?piel=0» en el Chrome de Iago dejó lm_piel_no=1 y sus portales salieron con la
+  estética antigua hasta las 10:18 (solo en su navegador: los ficheros publicados no habían cambiado). Marca quitada.
+  (2) Portales, LMEAVathome ac3f2fe y lmpro 4059a32, solo index.html: el botón de «Entregar Ficha N en papel» pasa de
+  «Entendido» a «Entregada» (campo boton de la «otra» que monta filtrar() en el bloque @FORMATO; la marca del alumno
+  se guarda igual, por posición) y se pone al día el comentario de la línea «LM piel». SIGUE EN PIE PARA TODAS LAS
+  CONVERSACIONES: en el Chrome de Iago, nunca «?piel=apagar»; y si comprobáis algo en su navegador, al acabar mirad
+  las cookies desde cualquier página de *.lmathome.es y dejad lm_piel=1 y SIN lm_piel_no. Para ver una app sin la
+  piel, en vuestro banco de pruebas. Notas: APPs/LMATHOME GE (github
+  LMEAVathome)/LEEME-6-oct-2026-estetica-antigua-en-el-chrome-de-iago-y-cerrojo.txt y
+  LEEME-6-oct-2026-entregada-apuntes-para-todos-y-limpiar-ficha.txt (las mismas en la carpeta de GP). Copias de antes:
+  APPs/_PARA BORRAR/6-oct-2026-piel-antes-del-cerrojo-de-piel0/ y
+  6-oct-2026-portales-y-teoria-antes-de-entregada-apuntes-y-limpiar/.
 - 6-oct 08:50 · Fichas y rediseño · HECHO · dos cosas. (1) Portales (subido el 3-oct): LMEAVathome 0a5fc96 y lmpro
   b082bd7, solo index.html. En la campana, la parte «Entregar Ficha N en papel» de «Tareas de la semana» pasa a «Ficha
   N en papel · ¡Corregida!» (nota en grande y «Ver ficha con las soluciones») cuando existe el aviso papel_corregida
