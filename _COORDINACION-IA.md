@@ -6,12 +6,35 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
-- 6-oct 20:55 · Fichas y rediseño · EN CURSO (esta noche, Iago ya no está en clase) · (1) Diario, un deploy encima de
-  6ac4bdf5: app.js, ipad.html e index.html (Intervalia PRO de 2.º GP en la clase 2 por defecto, con sus botones C1/C2
-  en Preparación y 9 minutos). (2) LMEAVathome piel/apps/portal.js encima de c0c7ab9 (el editor de lecciones: el
-  portal quieto mientras está abierto, la salida de sonido de la música se cierra al parar, «caja negra» solo
-  Tester/Protester). (3) Campana de los portales por orden cronológico: index.html de LMEAVathome (encima de c0c7ab9)
-  y de lmpro (encima de 83f1ac7). NADIE MÁS TOQUE ESOS FICHEROS HASTA QUE ESTO DIGA HECHO.
+- 6-oct 23:30 · Fichas y rediseño · EN CURSO (se publica el miércoles 7, bien probado; Iago lo prueba el jueves 8 a
+  las 17:30) · LMEAVathome piel/apps/portal.js encima de c0c7ab9: el editor de lecciones a prueba de «dedo fantasma»
+  (los botones actúan al levantar el dedo, «clic» de reserva en todo el portal, señal roja donde la pantalla nota algo
+  apoyado, «caja negra» con ?caja=1), solo Tester/Protester. NADIE MÁS TOQUE ESE FICHERO HASTA QUE ESTO DIGA HECHO.
+- 6-oct 23:30 · Fichas y rediseño · HECHO · tres publicaciones de esta noche y un arreglo de datos. (1) Netlify
+  diariodeiagocmus 6ac5429a (encima de 6ac4bdf5; app.js, ipad.html e index.html con app.js?v=d80): Intervalia PRO de
+  2.º GP en la clase 2 por defecto, botones C1/C2 excluyentes en Preparación de clases y 9 minutos
+  (bloques_data.__intervalia_pro_clase e intervalia_uso.clase). Quien toque el Diario, que parta de 6ac5429a. (2)
+  Campana del alumno por orden cronológico en los dos portales, solo index.html: LMEAVathome aedee0f (encima de
+  c0c7ab9) y lmpro 5f88c3b (encima de 83f1ac7). El orden es por creado_en, lo más reciente arriba; solo se quedan
+  fijados arriba papelNueva y enTiempoExtra (función _cuandoAviso). (3) Netlify fichasenpapel-cmus 6ac56693 (encima de
+  6ac0cbe6; solo index.html, pie «versión 6-oct»): periodo a prueba de despistes (franja ámbar fija si lo elegido no
+  es el periodo de hoy, el botón dice «Guardar en 1T», pregunta antes de guardar una ficha normal fuera del periodo de
+  hoy, un solo mensaje final con el periodo); fichas «Ya corregidas» a la vista, las de papel se vuelven a abrir y, si
+  están en un periodo distinto al del día en que se corrigieron, botón «Pasar a 1T»; en la lista salen también los
+  alumnos en digital con una ficha en papel sin corregir (suite_pendientes_fichas, formato papel o estado entrego);
+  tras guardar se vuelve a leer la nota y se compara; el 0 automático ya no cuenta como corregida. Una ficha cuya nota
+  es de la ficha DIGITAL aquí solo se ve (antes se le podía poner otra de papel encima y en el Diario seguía contando
+  la digital). Claves nuevas en evaluaciones.payload_json: periodo_confirmado, movida_de, movida_el. No cambia ninguna
+  tabla ni función. (4) Supabase, SOLO DATOS, lo pegó Iago a las 23:06: las Fichas 2 y 3 de un alumno de 2GpF, que la
+  app había guardado en «Ev. inicial» (el iPhone tenía ese periodo elegido), pasan a 1T, y las dos copias tecleadas a
+  mano en 1T quedan retiradas como las retira el Diario (fila diario_manual sin nota ni lección, payload retirada;
+  casillas de eval_overrides quitadas). Copia en _bak_david_fichas_20261006 (RLS activado, sin permisos para anon).
+  SQL y su DESHACER en Dropbox, APPs/DIARIO PROFESOR (netlify
+  diariodeiagocmus)/SQL-BD/YA-PEGADO-6-oct-23h06--david-fichas-2-y-3-a-1T.sql. Copias, espejos y LEEME en Dropbox:
+  APPs/DIARIO PROFESOR (netlify diariodeiagocmus)/LEEME-6-oct-2026-deploy-6ac5429a-intervalia-pro-en-c2.txt;
+  LEEME-6-oct-2026-campana-por-orden-de-fecha.txt en las carpetas de GE y de GP; APPs/APPS CORRECCION (netlify
+  x6)/FICHAS EN PAPEL (netlify
+  fichasenpapel-cmus)/LEEME-6-oct-2026-deploy-6ac56693-periodo-seguro-ya-corregidas-y-digital.txt.
 - 6-oct 19:05 · Intros didácticas (la conversación de los vídeos y de «La cabaña») · HECHO · dos cosas que pidió Iago hoy
   («publicarlo en Iago González Protester para que lo vea desde la propia web y así de paso veo el icono nuevo»).
   (1) cualidadesdelsonido 5bb582f (encima de 6c60ffa): AÑADIDOS prueba.html y cabana/ («La cabaña», la Acústica nueva:
