@@ -6,13 +6,24 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
-- 6-oct 18:35 · Intros didácticas (la conversación de los vídeos y de «La cabaña») · EN CURSO · dos cosas que ha pedido Iago hoy
-  («publicarlo en Iago González Protester para que lo vea desde la propia web y así de paso veo el icono nuevo»):
-  (1) cualidadesdelsonido (acustica.gp.lmathome.es), partiendo de 6c60ffa: AÑADIR prueba.html y la carpeta cabana/
-  («La cabaña», la Acústica nueva: 189 ficheros, 522 MB). No se toca index.html ni nada de lo que ya hay.
-  (2) lmpro, solo index.html, bloque @MEDALLERO, partiendo de 205ba8f: con las cuentas Tester/Protester la medalla de
-  Acústica sale abierta, con un icono nuevo (imágenes «u2n») y abre prueba.html. Para los alumnos no cambia nada.
-  Quien vaya a subir index.html de lmpro, que espere a la línea HECHO (o que me avise aquí).
+- 6-oct 19:05 · Intros didácticas (la conversación de los vídeos y de «La cabaña») · HECHO · dos cosas que pidió Iago hoy
+  («publicarlo en Iago González Protester para que lo vea desde la propia web y así de paso veo el icono nuevo»).
+  (1) cualidadesdelsonido 5bb582f (encima de 6c60ffa): AÑADIDOS prueba.html y cabana/ («La cabaña», la Acústica nueva:
+  189 ficheros, 522 MB, revisión 10061541). index.html y lo demás, sin tocar. En vivo:
+  https://acustica.gp.lmathome.es/prueba.html (sin enlazar desde ningún sitio y con noindex). Comprobado en la web real:
+  los 189 ficheros con su tamaño, 11 de ellos byte a byte, y la reproducción H.264 a 1080p60 y 720p30.
+  (2) lmpro 83f1ac7 (encima de 205ba8f), solo index.html, bloque @MEDALLERO: con las cuentas Tester/Protester la medalla de
+  Acústica (u2) sale ABIERTA, con el icono nuevo (imágenes «u2n», en una línea <script> nueva detrás de la de
+  window.__MED_IMG__) y abre prueba.html (objeto PRUEBA y función enPrueba()). Para los alumnos no cambia nada: su u2
+  sigue con su icono, su estado y su dirección. QUIEN TOQUE index.html DE lmpro, QUE PARTA DE 83f1ac7.
+  Apagarlo: PRUEBA = null. Deshacer: volver a subir el index.html de 205ba8f (copia en
+  APPs/_PARA BORRAR/6-oct-2026-portal-gp-antes-de-la-cabana-en-prueba/) y, si se quiere quitar la página, borrar
+  prueba.html y cabana/ de cualidadesdelsonido. Probado en un navegador de pruebas con la página y la piel reales
+  (Protester y Tester con y sin la unidad abierta, alumna con y sin la unidad abierta: 5 casos, sin errores de JS).
+  OJO: la piel (portal.css) enseña en sombra la imagen «on» de las medallas bloqueadas, así que el icono de u2 NO se ha
+  cambiado para todos: el día que Iago dé el visto bueno se pasan las imágenes u2n a u2 y la dirección a MEDALLAS.
+  Nota: APPs/LMATHOME GP (github lmpro)/LEEME-6-oct-2026-acustica-la-cabana-y-su-icono-en-prueba.txt. Espejo de
+  Dropbox al día (LMPRO/ y TEORIA INTERACTIVA 2GP/CUALIDADES DEL SONIDO/).
 - 6-oct 18:15 · Fichas y rediseño · HECHO · PredictCarrusel 84cdafd (encima de 353c2cf): guiado.js, guiado.css e
   index.html (en este, solo guiado.js?v=10 y guiado.css?v=7). QUIEN TOQUE EL CARRUSEL GUIADO, QUE PARTA DE 84cdafd.
   Iago: «que la única nota señalada al final sea la del bajo […] que se desplace lateralmente, paralelo a las líneas,
