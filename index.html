@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<script>/* LM piel (28-sep-2026, noche): la estetica nueva, PARA TODOS (Iago: «hazlo con cariño»). Quien decide es piel/lm-piel.js (y ?piel=0 la apaga en un navegador). Para volver a «solo Tester/Protester» basta con subir la version anterior de lm-piel.js; para quitarla del todo, borra esta linea. */try{document.write('<script src="https://ge.lmathome.es/piel/lm-piel.js" data-app="portal-gp"></scr'+'ipt>')}catch(e){}</script>
+<script>/* LM piel (28-sep-2026, noche): la estetica nueva, PARA TODOS (Iago: «hazlo con cariño»). Quien decide es piel/lm-piel.js (y ?piel=0 la apaga solo en la pestaña donde se abre: desde el 6-oct-2026 ya no deja apagado el navegador; para eso, ?piel=apagar). Para volver a «solo Tester/Protester» basta con subir la version anterior de lm-piel.js; para quitarla del todo, borra esta linea. */try{document.write('<script src="https://ge.lmathome.es/piel/lm-piel.js" data-app="portal-gp"></scr'+'ipt>')}catch(e){}</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <!-- Sentry (10-sep-2026): errores JS en producción. Sin datos personales: solo el id anónimo de la cuenta como etiqueta. -->
 <script src="https://browser.sentry-cdn.com/10.70.0/bundle.min.js" crossorigin="anonymous"></script>
@@ -7300,7 +7300,7 @@ window.DictadoClase = (function(){
     if(!papel && !hayExcepciones()) return list;
     var l=list.filter(function(o){ var pj=(o&&o.payload_json)||{}; return !pj.ficha_id || fmtFicha(pj.ficha_id, null)!=='papel'; });
     // (17-sep-2026, Iago) La ficha de la semana NO desaparece: se convierte en un
-    // recordatorio de entregarla EN PAPEL, con su boton «Entendido». Asi el numero
+    // recordatorio de entregarla EN PAPEL, con su boton «Entregada» (hasta el 6-oct-2026, «Entendido»). Asi el numero
     // de tareas es el mismo que el de un companero de formato digital, y la semana
     // se puede dar por terminada (si no, nunca completaria y no se ganaria el temazo).
     l.forEach(function(o){
@@ -7311,7 +7311,7 @@ window.DictadoClase = (function(){
       pj.otras=(Array.isArray(pj.otras)?pj.otras.slice():[]).concat([{
         titulo:'Entregar Ficha '+n+' en papel',
         sub:'Tienes de plazo toda la semana que viene. Si alguna vez necesitas m\u00e1s tiempo, d\u00edmelo en clase.',
-        boton:'Entendido',
+        boton:'Entregada',   /* (6-oct-2026, Iago) antes «Entendido»: lo que marca el alumno es que YA la entregó. Para volver: 'Entendido' */
         papel_n:n   /* (3-oct-2026) para enlazarla con su aviso «ficha corregida» */
       }]);
       delete pj.ficha;
