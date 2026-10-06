@@ -6,6 +6,17 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 6-oct 10:35 · Fichas y rediseño · EN CURSO · dos cosas, por este orden. (1) LMEAVathome piel/lm-piel.js (solo ese
+  fichero; parto de 0a5fc96): «?piel=0» deja de apuntar nada en el navegador y pasa a valer solo para la pestaña donde
+  se abre; para apagar un navegador entero habrá que escribir «?piel=apagar». Motivo: esta mañana, a las 8:59:50, una
+  comprobación MÍA con «?piel=0» en el Chrome de Iago dejó la marca lm_piel_no=1 en *.lmathome.es y sus portales
+  salieron con la estética antigua hasta las 10:18 (solo en su navegador; a los alumnos no les llegó: los ficheros
+  publicados no cambiaron). Ya se la he quitado. (2) Después, index.html de LMEAVathome y de lmpro: el botón
+  «Entendido» de «Entregar Ficha N en papel» pasa a «Entregada». AVISO PARA TODAS LAS CONVERSACIONES (usáis el mismo
+  Chrome de Iago): no abráis NADA de *.lmathome.es con «?piel=0» en su navegador mientras lm-piel.js no esté cambiado,
+  y nunca con «?piel=apagar». Si comprobáis algo en su Chrome, al acabar mirad las cookies lm_piel y lm_piel_no desde
+  cualquier página de *.lmathome.es y dejadlas como deben estar: lm_piel=1 y SIN lm_piel_no. Para ver una app sin la
+  piel, hacedlo en vuestro banco de pruebas, no en su Chrome.
 - 6-oct 08:50 · Fichas y rediseño · HECHO · dos cosas. (1) Portales (subido el 3-oct): LMEAVathome 0a5fc96 y lmpro
   b082bd7, solo index.html. En la campana, la parte «Entregar Ficha N en papel» de «Tareas de la semana» pasa a «Ficha
   N en papel · ¡Corregida!» (nota en grande y «Ver ficha con las soluciones») cuando existe el aviso papel_corregida
