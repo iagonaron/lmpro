@@ -6,6 +6,12 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 6-oct 16:55 · Fichas y rediseño · EN CURSO · URGENTE, pedido por Iago en plena clase («despliégalo ya»): morosos en
+  el portal. Supabase (añade suite_config.cuentas_profe y la función suite_morosos_llave_cuenta; no cambia nada de lo
+  que hay) y LMEAVathome, solo piel/apps/portal.js (sección 15, morosos), partiendo de ac3f2fe. El ⚠ de
+  Tester/Protester no salía en el ordenador del aula porque dependía de la llave que deja el Diario en el navegador.
+  No toco el index.html de los portales, ni lm-piel.js, ni el Diario. Quien vaya a subir algo a piel/apps/portal.js,
+  que espere a la línea HECHO.
 - 6-oct 14:05 · Fichas y rediseño · HECHO · PreDictPROCarrusel cd0a954 (encima de 6581d5d), solo index.html. QUIEN
   TOQUE EL CARRUSEL PRO, QUE PARTA DE cd0a954. Pedido de Iago: que un móvil al que se le va la señal vuelva a la
   partida con sus puntos, y QR + código al pausar. Causa: cada carga de la página inventaba un identificador nuevo y
