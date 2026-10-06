@@ -6,11 +6,27 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
-- 6-oct 12:55 · Fichas y rediseño · EN CURSO · PreDictPROCarrusel (Carrusel PRO de GP), solo index.html, partiendo del
-  commit 6581d5d. Pedido de Iago del 3-oct, confirmado el 6: que un móvil al que se le va la señal pueda volver a la
-  partida en curso conservando sus puntos, y que al pausar salgan el QR y el código de la sala. No toco el Carrusel de
-  GE (PredictCarrusel), ni LMEAVathome/piel, ni los portales. Si alguien va a subir algo a PreDictPROCarrusel, que
-  espere a la línea HECHO.
+- 6-oct 14:05 · Fichas y rediseño · HECHO · PreDictPROCarrusel cd0a954 (encima de 6581d5d), solo index.html. QUIEN
+  TOQUE EL CARRUSEL PRO, QUE PARTA DE cd0a954. Pedido de Iago: que un móvil al que se le va la señal vuelva a la
+  partida con sus puntos, y QR + código al pausar. Causa: cada carga de la página inventaba un identificador nuevo y
+  los puntos viven en la pantalla del aula apuntados a ese identificador, así que el móvil que recargaba volvía a 0.
+  Qué: (1) el móvil recuerda quién era en la sala (localStorage «pcarrusel_yo»: código, identificador y nombre, 6 h);
+  si recarga o vuelve a abrir la MISMA sala entra solo con el mismo identificador (yoLeer, yoGuardar, yoOlvidar,
+  initPlayer, playerEntrar). Salir con la ✕ lo olvida. (2) Desde otro navegador: mismo nombre (aliasNorm: sin
+  mayúsculas, tildes ni espacios de más) y la pantalla del aula le pasa los puntos del ausente (hostVuelve,
+  hostAdoptar); si el tocayo figura conectado, sondeo de 4 s con los mensajes «estas»/«sigo» (hostSondear, hostSigo);
+  si el identificador original da señales de vida, recupera sus puntos (hostVida, H.sust). (3) Pausa de la pantalla
+  del aula: QR (lleva «&encurso=1») + código + línea «N conectados · X (pts) ha entrado» (#pauseQrBox, #pauseCode,
+  #pauseEstado, hostPausaEstado); el móvil que llega por ese QR ve «Partida en curso · Sumarse» (#pjEnCurso). (4) El
+  que entra o vuelve recibe la pausa si la hay y el mensaje «vuelta» con sus puntos (hostSaluda, hostAvisarVuelta,
+  playerVuelta). (5) Llegar tarde: Armónico en fase 2, receta de Modos y podio (hostBroadcastPhase, playerOnPhase).
+  Mensajes nuevos del canal: estas, sigo, vuelta. Nada en la base (solo Realtime). No se ha tocado el Carrusel de GE
+  (PredictCarrusel), LMEAVathome/piel ni los portales. Probado en el banco de pruebas (81 + 21 + 40 comprobaciones y
+  dos partidas completas, una a velocidad real) y con la conexión real desde el Chrome de Iago, en silencio y sin
+  empezar partida; NO probado con móviles de verdad. En vivo: mismo sha256 que lo probado (fff826bf…). Nota:
+  APPs/LMATHOME GP (github lmpro)/LEEME-6-oct-2026-carrusel-pro-volver-a-la-partida-y-qr-en-la-pausa.txt. Copia de
+  antes: APPs/_PARA BORRAR/6-oct-2026-carrusel-pro-antes-de-volver-a-la-partida/PreDictPROCarrusel-index.html. Espejo
+  de Dropbox al día.
 - 6-oct 11:26 · Fichas y rediseño · HECHO · Diario, Netlify diariodeiagocmus: deploy 6ac4bdf5
   (6ac4bdf5eeaac3babb8c0539) encima de 6ac497db. QUIEN TOQUE EL DIARIO, QUE PARTA DE 6ac4bdf5. Solo app.js (ahora
   ?v=d79) e index.html (ese número de versión); 74 ficheros antes y después. Qué: la copia de seguridad que se ofrece
