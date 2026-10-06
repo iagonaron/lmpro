@@ -3077,10 +3077,19 @@ function showEnig(kind){
       if(pj.papel_corregida) return !o.leido;
       return !!(pj.tareas_semana && otrasLista(pj).some(function(x){ return x.corregida && !x.corregida.leido; })); };
     list=list.filter(function(o){ return !fichaOculta(o) && !fichaAbsorbida(o) && !fichaCaducada(o) && !papelEnTarjeta(o); });
+    /* (6-oct-2026, Iago) AVISOS POR ORDEN CRONOLÓGICO. «Le aparecía encabezando la verificación del dictado de esta
+       semana, que está bien, pero también le salía la verificación del dictado anterior. Eso ya es pasado: solo tiene
+       que estar ordenado cronológicamente. Si llega un viernes y hay tareas nuevas, eso tiene que salir por encima.»
+       Antes lo ya hecho (fichas entregadas, quiz hecho, tareas de la semana completas) se hundía al final, y por eso
+       un aviso antiguo que no es una tarea (un dictado revisado de la semana pasada) se quedaba por encima de las
+       tareas de esta. Ahora manda la fecha: lo más reciente, arriba. Solo se adelanta lo que pide atención: una ficha
+       en papel recién corregida que aún no se ha abierto y una ficha en su semana extra. Lo ya hecho se sigue viendo
+       apagado, pero en su sitio. Para volver a lo de antes: poner otra vez «+(esHecha(a)?1:0)» y quitar las fechas. */
+    var _cuandoAviso=function(o){ return Date.parse((o&&o.creado_en)||'')||0; };
     list.sort(function(a,b){
-      var pa=papelNueva(a)?-1:((enTiempoExtra(a)?-1:0)+(esHecha(a)?1:0));
-      var pb=papelNueva(b)?-1:((enTiempoExtra(b)?-1:0)+(esHecha(b)?1:0));
-      return pa-pb;
+      var pa=(papelNueva(a)||enTiempoExtra(a))?-1:0;
+      var pb=(papelNueva(b)||enTiempoExtra(b))?-1:0;
+      return (pa-pb) || (_cuandoAviso(b)-_cuandoAviso(a));
     });
     body.innerHTML=(list.length?list.map(function(o){
       // FASE 8 · TARJETA AGRUPADA "Tareas de la semana": quiz → lecciones → otras.
