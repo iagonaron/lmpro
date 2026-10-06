@@ -6,6 +6,11 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 6-oct 12:55 · Fichas y rediseño · EN CURSO · PreDictPROCarrusel (Carrusel PRO de GP), solo index.html, partiendo del
+  commit 6581d5d. Pedido de Iago del 3-oct, confirmado el 6: que un móvil al que se le va la señal pueda volver a la
+  partida en curso conservando sus puntos, y que al pausar salgan el QR y el código de la sala. No toco el Carrusel de
+  GE (PredictCarrusel), ni LMEAVathome/piel, ni los portales. Si alguien va a subir algo a PreDictPROCarrusel, que
+  espere a la línea HECHO.
 - 6-oct 11:26 · Fichas y rediseño · HECHO · Diario, Netlify diariodeiagocmus: deploy 6ac4bdf5
   (6ac4bdf5eeaac3babb8c0539) encima de 6ac497db. QUIEN TOQUE EL DIARIO, QUE PARTA DE 6ac4bdf5. Solo app.js (ahora
   ?v=d79) e index.html (ese número de versión); 74 ficheros antes y después. Qué: la copia de seguridad que se ofrece
