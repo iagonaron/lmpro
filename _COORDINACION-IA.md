@@ -6,6 +6,22 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 6-oct 11:26 · Fichas y rediseño · HECHO · Diario, Netlify diariodeiagocmus: deploy 6ac4bdf5
+  (6ac4bdf5eeaac3babb8c0539) encima de 6ac497db. QUIEN TOQUE EL DIARIO, QUE PARTA DE 6ac4bdf5. Solo app.js (ahora
+  ?v=d79) e index.html (ese número de versión); 74 ficheros antes y después. Qué: la copia de seguridad que se ofrece
+  tras «Guardar semana» en 2.º GP (y la del botón 💾 de Resultados) va directa a la carpeta que elija Iago (BACKUP
+  COPIA SEGURIDAD CURSO, dentro de APPs/DIARIO PROFESOR). Antes la carpeta se pedía con el ZIP ya fabricado y Chrome
+  se negaba (el selector de carpetas y el permiso de escritura necesitan un clic reciente), así que acababa siempre en
+  Descargas. Ahora se resuelve nada más pulsar «Sí, guardar» (bkpCarpetaDestino, «paso 0» de
+  bkpGenerarBackupCompleto). La ventana «Semana guardada» dice dónde se va a guardar y deja cambiar de carpeta
+  (#bkp-destino, bkpPintarDestino). El ZIP del profesor sustituto se sigue descargando. Sin carpeta, sin permiso o sin
+  selector (Safari, iPad): descarga normal, como antes. La ventana ya no depende de la clase is-saved del botón (podía
+  durar una décima): mira state.semanaGuardadaEn y espera hasta 8 s mientras siga guardando. No se ha tocado
+  ipad.html, iphone.html, iphone-app.js ni la base. Probado solo en el banco de pruebas con datos inventados: Iago ya
+  tiene preparadas las clases de la semana y pidió no dejar residuo, así que NO se ha abierto su Diario ni se ha
+  guardado ninguna semana. Nota: APPs/DIARIO PROFESOR (netlify
+  diariodeiagocmus)/LEEME-6-oct-2026-deploy-6ac4bdf5-copia-de-seguridad-a-su-carpeta.txt. Ficheros y copia de antes:
+  _SUBIDA-6-OCT-copia-de-seguridad-a-su-carpeta (deploy 6ac4bdf5)/ y, dentro, antes (deploy 6ac497db)/.
 - 6-oct 10:40 · Fichas y rediseño · HECHO · dos cosas. (1) LMEAVathome cdf1c25, solo piel/lm-piel.js: «?piel=0» ya no
   apunta nada en el navegador; apaga la piel SOLO en la pestaña donde se abre y en ese sitio (sessionStorage
   «lm_piel_no_pestana»), sin tocar las cookies lm_piel ni lm_piel_no. Para apagar un navegador entero hay que escribir
