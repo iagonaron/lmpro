@@ -6,13 +6,29 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
-- 6-oct 17:58 · Fichas y rediseño · EN CURSO · PredictCarrusel (carrusel guiado GE), partiendo de 353c2cf: guiado.js,
-  guiado.css e index.html (en este, solo las versiones ?v=). Corrección del acorde 2 del Armónico: al final solo se
-  señala el bajo, que viaja hasta su sitio en el acorde ordenado. Quien vaya a subir algo a PredictCarrusel, que
-  espere a la línea HECHO.
-- 6-oct 17:57 · Fichas y rediseño · EN CURSO · LMEAVathome, solo piel/apps/portal.js, partiendo de 226a581: Iago pide
-  que el ⚠ de morosos salga 5 minutos antes de cada clase, a la vez que el ▶ de la música (gruposEnClase y
-  musVentana). Quien vaya a subir algo a piel/apps/portal.js, que espere a la línea HECHO.
+- 6-oct 18:15 · Fichas y rediseño · HECHO · PredictCarrusel 84cdafd (encima de 353c2cf): guiado.js, guiado.css e
+  index.html (en este, solo guiado.js?v=10 y guiado.css?v=7). QUIEN TOQUE EL CARRUSEL GUIADO, QUE PARTA DE 84cdafd.
+  Iago: «que la única nota señalada al final sea la del bajo […] que se desplace lateralmente, paralelo a las líneas,
+  hasta coincidir con la posición de esa nota en el acorde ordenado, y ahí un cartelito que aclare». Corrección del
+  acorde 2 del Armónico (dibujaArmonico): el acorde ordenado se coloca anclado al bajo (en 2.ª inversión queda una
+  octava más abajo que antes; la fundamental más grave posible es sol3); al final solo queda de color el bajo, que
+  viaja en horizontal con un hilo hasta su nota en el acorde ordenado («es la fundamental / la tercera / la quinta») y
+  de ahí sale el estado («Por lo tanto, el acorde está en…»). La corrección dura lo mismo que antes. Probado en el
+  banco de pruebas (4 semillas vistas fotograma a fotograma, 400 semillas de registro, 3 carruseles completos sin
+  errores). Espejo de Dropbox al día; los de antes, en APPs/_PARA
+  BORRAR/6-oct-2026-carrusel-guiado-antes-del-bajo-que-viaja/. Deshacer: volver a subir esos tres ficheros.
+- 6-oct 18:15 · Fichas y rediseño · HECHO · LMEAVathome 5903ae9 y c0c7ab9 (encima de 226a581), solo
+  piel/apps/portal.js. QUIEN TOQUE piel/apps/portal.js, QUE PARTA DE c0c7ab9. (1) 5903ae9 · Iago: «que no se active
+  justo en punto, sino cinco minutos antes de cada clase, coincidiendo con la activación de la reproducción musical»:
+  el ⚠ de morosos sale desde MOR_ANTES = 5 minutos antes de la hora de inicio hasta la de fin (gruposEnClase); en el
+  cambio de clase manda el grupo que entra (la clase que empieza más tarde); y el ▶ de la música (musVentana) mira ya
+  el mismo reloj que el aviso (ahoraGalicia: hora de Galicia y reloj del servidor), para que se enciendan a la vez.
+  (2) c0c7ab9 · Iago, en clase: «quiero que solo aparezcan los de ese grupo»: la lista (pintarPanelMorosos) enseña
+  SOLO el grupo que está en clase, también en los ceros de abajo (antes, todos los grupos del portal con el de clase
+  arriba); si cambia el grupo con la lista abierta, se repinta sola. Probado en el banco de pruebas (80
+  comprobaciones). Espejo de Dropbox al día; la de antes, en APPs/_PARA
+  BORRAR/6-oct-2026-morosos-5-min-antes-de-clase/. Deshacer: MOR_ANTES = 0 para volver a «en punto»; para la lista con
+  todos los grupos, volver a subir la de 5903ae9.
 - 6-oct 17:20 · Fichas y rediseño · HECHO · LMEAVathome 226a581 (encima de 03dc89f), solo piel/apps/portal.js. QUIEN
   TOQUE piel/apps/portal.js, QUE PARTA DE 226a581. Iago: «lo que me interesa es que se active en el momento exacto de
   la clase»: el ⚠ de morosos sale de la hora de inicio a la de fin del grupo (gruposEnClase: min >= ini && min < fin;
