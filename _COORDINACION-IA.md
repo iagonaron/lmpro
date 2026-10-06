@@ -6,13 +6,24 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
-- 3-oct 15:15 · Fichas y rediseño · EN CURSO · dos cosas. (1) Portales: LMEAVathome index.html y lmpro index.html — en
-  la campana, la parte «Entregar Ficha N en papel» de «Tareas de la semana» pasa a «¡Corregida!» (nota y «Ver ficha
-  con las soluciones») cuando existe el aviso papel_corregida de esa ficha; el aviso suelto se pinta con el mismo
-  aspecto; pastilla «Ficha N corregida» bajo la campana. Toco: otrasPendiente, el filtro, el orden y la tarjeta de
-  tareas dentro de render(), autoLeer, injectNebCSS y filtrar() del bloque @FORMATO. (2) Diario (Netlify
-  diariodeiagocmus, encima de 6ac0d2c4): diario-lupa.js — la nota de una ficha en papel enseña el % de cada ejercicio
-  y abre la ficha corregida. Quien vaya a tocar esos ficheros, que espere al HECHO.
+- 6-oct 08:50 · Fichas y rediseño · HECHO · dos cosas. (1) Portales (subido el 3-oct): LMEAVathome 0a5fc96 y lmpro
+  b082bd7, solo index.html. En la campana, la parte «Entregar Ficha N en papel» de «Tareas de la semana» pasa a «Ficha
+  N en papel · ¡Corregida!» (nota en grande y «Ver ficha con las soluciones») cuando existe el aviso papel_corregida
+  de esa ficha; sin abrir va rellena en rosa, con latido y punto rojo, y su tarjeta sube arriba y no se apaga; al
+  abrirla se queda en color, tranquila. Si la tarjeta de esa semana ya no está a la vista, el mismo aviso sale suelto
+  (clase alu-papel-corr; va ANTES de la rama de reclamaciones porque viaja con reclamacion:true). De cada ficha solo
+  vale el último aviso (los anteriores se dan por leídos solos) y el aviso ya no se pierde al cambiar de semana (los
+  de papel solo ven el ciclo en curso): se ve hasta leerlo, y 8 días en cualquier caso. Pastilla «Ficha N corregida»
+  bajo la campana (#alu-campana-papel). Código: papelCorregidas() y enlazarPapel() en el bloque @FORMATO (filtrar()
+  las llama; se exporta __LM_FMT__.papelCorregidas) y, en la campana, otrasPendiente, pintarCampanaPapel,
+  papelEnTarjeta / papelNueva, la rama ot.corregida y los estilos «ts-papel-*» de injectNebCSS. No toca la piel
+  (piel/apps/portal.css y portal.js siguen igual) ni la base de datos. (2) Diario: Netlify diariodeiagocmus 6ac497db
+  (encima de 6ac0d2c4; solo diario-lupa.js?v=l6 e index.html): la lupa de una nota de ficha en papel enseña «Por
+  ejercicios» (payload ejercicios_pct y n_refuerzo; los nombres, con suite_ficha_ver) y el botón «Ver su ficha
+  corregida», que abre el generador con ?revision=papel:<alumno>&s=…&papel=1&curso=…&n=…&pct=…&nota=… (solo si la
+  ficha es del generador). Quien toque el Diario, que parta de 6ac497db. Notas: APPs/LMATHOME GE (github
+  LMEAVathome)/LEEME-6-oct-2026-portal-ficha-en-papel-corregida.txt (la misma en la carpeta de GP) y APPs/DIARIO
+  PROFESOR (netlify diariodeiagocmus)/LEEME-6-oct-2026-deploy-6ac497db-lupa-ficha-en-papel.txt.
 - 3-oct 12:05 · Fichas y rediseño · HECHO · tres cosas de hoy. (1) Netlify fichasenpapel-cmus 6ac0cbe6 (encima de
   6abff91f; solo index.html): cada ejercicio se puntúa con cinco bolitas 0 · 25 · 50 · 75 · 100 en una línea y un «−»
   / «+» de 5 en 5 por fila; el marcador de arriba suma y acaba en rosa; el número de ejercicios lo pone el sistema
