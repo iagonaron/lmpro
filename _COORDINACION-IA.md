@@ -6,10 +6,32 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
-- 6-oct 23:30 · Fichas y rediseño · EN CURSO (se publica el miércoles 7, bien probado; Iago lo prueba el jueves 8 a
-  las 17:30) · LMEAVathome piel/apps/portal.js encima de c0c7ab9: el editor de lecciones a prueba de «dedo fantasma»
-  (los botones actúan al levantar el dedo, «clic» de reserva en todo el portal, señal roja donde la pantalla nota algo
-  apoyado, «caja negra» con ?caja=1), solo Tester/Protester. NADIE MÁS TOQUE ESE FICHERO HASTA QUE ESTO DIGA HECHO.
+- 7-oct 10:30 · Fichas y rediseño · EN CURSO (esta mañana) · seis despliegues en Netlify, uno por sitio y solo con los
+  ficheros que cambian: entonacionelemental, ritmoelemental y dictadoselemental (resumen final editable al tocar la
+  tarjeta o la nota, y vista de iPad nueva: ficheros nuevos app-7oct.js, pantalla-7oct.js y
+  resumen-editable-7oct.js/.css, más index.html y pantalla.html), ritmoentonadoprofesional (resumen editable:
+  app-r27.js nuevo e index.html), dictadosprofesional (parámetro «Otro» en la autocorrección: app.js, panel.js,
+  index.html, profesor.html y styles.css) y fichasenpapel-cmus (solo index.html, encima de 6ac56693). NADIE MÁS
+  DESPLIEGUE EN ESOS SEIS SITIOS HASTA QUE ESTO DIGA HECHO.
+- 7-oct 10:30 · Fichas y rediseño · HECHO · tres cosas. (1) LMEAVathome 1535a6a (encima de aedee0f; solo
+  piel/apps/portal.js, versión «7-oct-n14»): el editor de lecciones aguanta el táctil enganchado del ordenador del
+  aula (clics y punteros de reserva, aro rojo donde la pantalla nota algo apoyado, aviso «táctil enganchado», «caja
+  negra» con ?caja=1). Con esa subida salió también la campana cronológica de aedee0f, cuyo despliegue de Pages (#216)
+  se había quedado en cola. OJO: #216 sigue «Queued» y, si arrancase, repondría la web anterior; lo cancela Iago.
+  Quien toque piel/apps/portal.js, que parta de 1535a6a. (2) ritmoathome 3a207a8 (encima de 8a2766b; solo index.html):
+  carta 1.4, la síncopa doble en la intro (su pregunta, su fusión y su rama del árbol) y «síncopa estándar» en lugar
+  de «síncopa simple». (3) Supabase, pegado por Iago a las 09:58
+  (SQL-BD/YA-PEGADO-7-oct-09h58--arreglo-ceros-y-prorroga-por-alumno.sql). ARREGLO del barrido de ceros de las fichas:
+  se caía entero en cuanto dos alumnos de una misma ficha se quedaban sin entregar, porque el aviso al alumno llevaba
+  la misma referencia para todos y suite_notificaciones no la admite repetida; ahora la referencia es
+  <ficha>:cero:<alumno>. Y PRÓRROGA POR ALUMNO, solo papel: tabla suite_ficha_prorroga, _suite_fin_gracia_de y
+  suite_ficha_prorrogar / suite_ficha_prorrogar_a / suite_ficha_prorroga_quitar (solo desde el editor de SQL). Cambian
+  suite_fichas_barrer_vencidas, suite_morosos_fichas_v2, suite_pendientes_fichas y suite_morosos_ya_entrego_token
+  (copia de las de antes en _bak_funciones_20261007): las filas de las listas traen una clave nueva, «prorroga», y su
+  fin_gracia pasa a ser el del alumno. Quien toque esas cuatro funciones, que parta de las de ahora. Para quitar la
+  prórroga dejando el arreglo: SQL-BD/DESHACER-7-oct-2026--prorroga-por-alumno.sql. Vistos y NO tocados:
+  suite_recos_barrer usa una referencia de aviso sin el alumno (el mismo choque cuando haya recomendaciones) y
+  _suite_ficha_retirar pone el estado «retirada», que el CHECK de suite_fichas_asignadas no admite.
 - 6-oct 23:30 · Fichas y rediseño · HECHO · tres publicaciones de esta noche y un arreglo de datos. (1) Netlify
   diariodeiagocmus 6ac5429a (encima de 6ac4bdf5; app.js, ipad.html e index.html con app.js?v=d80): Intervalia PRO de
   2.º GP en la clase 2 por defecto, botones C1/C2 excluyentes en Preparación de clases y 9 minutos
