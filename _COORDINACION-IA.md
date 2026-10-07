@@ -6,13 +6,26 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
-- 7-oct 23:25 · Fichas y rediseño · EN CURSO · colocador automático de la foto del dictado (encargo de Iago del 7-oct:
-  «casi nunca me aparece bien colocada y tengo que andar rotando y ampliando… como coger de referencia claves de sol…
-  también es demasiado sensible el zoom» y «que el visor del alumno tenga también el sistema mejorado de colocar la
-  imagen»). Voy a tocar: (1) Netlify dictadosprofesional, partiendo del deploy 6ac604410b42: profesor.html, panel.js
-  (solo el onload de la foto del alumno en renderReviewStep), zoom-foto.js y un fichero NUEVO, coloca-foto.js; (2)
-  este repo, partiendo de ac543b3: index.html (solo dvGiroZoom / abrirVisorDictado y sus estilos) y un fichero NUEVO
-  en la raíz, coloca-foto.js. Nada de Supabase.
+- 7-oct 23:25 · Fichas y rediseño · HECHO · colocador automático de la foto del dictado + zoom calibrado (EN CURSO en
+  440f1ae). Iago: «casi nunca me aparece bien colocada y tengo que andar rotando y ampliando… como coger de referencia
+  claves de sol… también es demasiado sensible el zoom» y «que el visor del alumno tenga también el sistema mejorado
+  de colocar la imagen». (1) NETLIFY dictadosprofesional → deploy 6ac6b80a73ed (antes 6ac604410b42; 26 → 27 ficheros;
+  quien toque ese sitio, que parta de ahí). coloca-foto.js (NUEVO, 148 KB, sin dependencias): detector LMColoca; mira
+  la foto EN EL NAVEGADOR (nada sale de él) y devuelve giro 0/90/180/270, inclinación fina y la caja de lo escrito,
+  con sus confianzas; LMColoca.decide() es la política prudente (umbral 0,9): solo si está seguro se gira + endereza +
+  encuadra; tumbada sin saber hacia qué lado → solo se gira; si duda → no se toca. zoom-foto.js (z2): aplica eso a la
+  foto del alumno (window.ZFColoca, que llama panel.js al cargar la foto), pastilla «✓ Colocada sola · ver entera /
+  encuadrar» junto al ↻, la foto girada cabe entera, y la rueda amplía en proporción al gesto y hacia el cursor
+  (mandos arriba del fichero: ZF_RUEDA, ZF_PELLIZCO, ZF_TOPE, ZF_AIRE, ZF_FRANJA). Apunta en localStorage
+  «zf_coloca_log» solo números (qué propuso y cómo quedó), nada de la foto. panel.js: en renderReviewStep se QUITA el
+  giro a ciegas de la foto que llegaba «de pie» y se llama a ZFColoca; la solución y el modal de detalle no se tocan.
+  profesor.html: panel.js?v=p18, coloca-foto.js?v=c1, zoom-foto.js?v=z2. Para volver atrás: quitar la línea de
+  coloca-foto.js en profesor.html (la foto se queda como llega) o republicar el deploy anterior. (2) ESTE REPO →
+  commit 58601af: coloca-foto.js (el mismo fichero, en la raíz) e index.html, solo dvGiroZoom / abrirVisorDictado y
+  sus estilos: en «Ver dictado y solución» la foto DEL ALUMNO se coloca sola con la misma política (el detector se
+  pide solo al abrir el visor); pastilla en una barrita debajo de la foto; la solución no se toca; si el fichero no
+  carga o la foto no se puede leer, el visor queda como estaba. Apagarlo: DV_COLOCA=false. OJO: probado con fotos
+  SINTÉTICAS, no con fotos reales de alumnos; tampoco en Safari / iPad. Nada de Supabase.
 - 7-oct 22:01 · Fichas y rediseño · HECHO · commit 8be265c (EN CURSO en 22c54d3, parto de 24f29af) · index.html de este
   portal, SOLO el visor «Ver dictado y solución» de la campana del alumno. Iago: «la suya, la de su dictado, no se la deja
   girar. Me gustaría que tuviesen la opción de girar y aumentar, al igual que tengo yo en la parte del profesor».
