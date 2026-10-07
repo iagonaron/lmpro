@@ -2916,22 +2916,147 @@ function showEnig(kind){
   }
   // DICTADO REVISADO (Iago jul-2026) · visor a pantalla completa con la foto
   // que sacó el alumno de su dictado y la(s) foto(s) de la solución.
+  /* (7-oct-2026, Iago: «la suya, la de su dictado, no se la deja girar. Me gustaría que tuviesen la opción de girar y
+     aumentar, al igual que tengo yo en la parte del profesor») · GIRAR Y AMPLIAR cada foto del visor, como en el panel
+     del profesor de Dictados Gp:
+       · ↻ en el rótulo de la foto: 90° cada vez. La foto sale como llega (como hasta hoy), pero ENTERA dentro de su
+         marco; no se gira sola (en el panel del profesor el giro automático acierta poco: pendiente el colocador).
+       · a la derecha de la foto, un deslizador vertical de 1× a 3× (también pellizcando con dos dedos, o Ctrl + rueda);
+         ampliada, se arrastra con el dedo o el ratón; la cifra (o doble clic en el deslizador) vuelve a 1×.
+       · sin ampliar, tocar la foto sigue abriéndola a tamaño completo en otra pestaña.
+     Todo es local (no se guarda nada). Devuelve la función que retira sus escuchas al cerrar el visor. */
+  function dvGiroZoom(fig){
+    var a=fig.querySelector('a.dv-img'), img=a&&a.querySelector('img'), btn=fig.querySelector('.dv-girar');
+    if(!a || !img) return null;
+    var MIN=1, MAX=3, rot=0, s=1, tx=0, ty=0, nw=0, nh=0, listo=false, W=0, cw=0, ch=0;
+    var lz=document.createElement('div'); lz.className='dv-lz';
+    var side=document.createElement('div'); side.className='dv-side';
+    side.innerHTML='<span class="dv-rail"><span class="dv-pm" aria-hidden="true">＋</span>'
+      +'<span class="dv-rango"><input type="range" min="'+MIN+'" max="'+MAX+'" step="0.05" value="1" aria-label="Ampliar la foto" title="Ampliar · doble clic para volver a 1×"></span>'
+      +'<span class="dv-pm" aria-hidden="true">－</span></span>'
+      +'<button type="button" class="dv-x" title="Volver a 1×" aria-label="Quitar la ampliación">1,0×</button>';
+    var rango=side.querySelector('.dv-rango'), range=side.querySelector('input'), lbl=side.querySelector('.dv-x');
+    function limita(){   /* ampliada, la foto no deja hueco dentro de su marco: no se puede «perder» arrastrando */
+      var mx=Math.max(0,(cw*s-W)/2), my=Math.max(0,(ch*s-ch)/2);
+      tx=Math.max(-mx,Math.min(mx,tx)); ty=Math.max(-my,Math.min(my,ty));
+    }
+    function pinta(){
+      if(!listo) return;
+      if(s<=1.001){ s=1; tx=0; ty=0; }
+      limita();
+      img.style.transform='translate(calc(-50% + '+tx.toFixed(1)+'px),calc(-50% + '+ty.toFixed(1)+'px)) rotate('+rot+'deg) scale('+s.toFixed(3)+')';
+      lz.classList.toggle('dv-on',s>1); lbl.classList.toggle('on',s>1);
+      lbl.textContent=s.toFixed(1).replace('.',',')+'×';
+      if(Number(range.value)!==s) range.value=String(s);
+    }
+    /* el marco toma la forma de la foto YA girada (como hasta ahora: todo el ancho y, como mucho, el 64 % del alto de
+       la pantalla); la imagen va centrada dentro, con su caja de antes de girar */
+    function ajusta(){
+      if(!listo) return;
+      W=lz.clientWidth||fig.clientWidth||300;
+      var maxH=Math.max(170,Math.round((window.innerHeight||700)*0.64));
+      var tumbada=(rot%180!==0), aw=tumbada?nh:nw, ah=tumbada?nw:nh;
+      cw=W; ch=W*ah/aw;
+      if(ch>maxH){ ch=maxH; cw=ch*aw/ah; }
+      lz.style.height=Math.round(ch)+'px';
+      img.style.width=Math.round(tumbada?ch:cw)+'px'; img.style.height=Math.round(tumbada?cw:ch)+'px';
+      /* el deslizador, a la medida del marco: en un marco bajo se acorta y pierde el ＋ y el － */
+      var corta=(ch<210), hd=Math.round(Math.max(44,Math.min(150,ch-(corta?62:98))));
+      side.classList.toggle('dv-corta',corta);
+      rango.style.height=hd+'px'; range.style.width=hd+'px';
+      pinta();
+    }
+    function fija(z){ s=Math.max(MIN,Math.min(MAX,Number(z)||1)); pinta(); }
+    function a1(){ s=1; tx=0; ty=0; pinta(); }
+    function arranca(){
+      if(listo) return;
+      nw=img.naturalWidth; nh=img.naturalHeight; if(!nw || !nh) return;
+      a.parentNode.insertBefore(lz,a); lz.appendChild(a); lz.appendChild(side);
+      listo=true;
+      ajusta();
+    }
+    if(img.complete && img.naturalWidth) arranca(); else img.addEventListener('load',arranca);
+
+    if(btn) btn.addEventListener('click',function(e){ e.preventDefault(); e.stopPropagation(); if(!listo) return; rot=(rot+90)%360; tx=0; ty=0; ajusta(); });
+    range.addEventListener('input',function(){ fija(range.value); });
+    range.addEventListener('dblclick',function(e){ e.preventDefault(); a1(); });
+    lbl.addEventListener('click',function(e){ e.preventDefault(); e.stopPropagation(); a1(); });
+    side.addEventListener('pointerdown',function(e){ e.stopPropagation(); });
+
+    /* rueda: solo amplía con Ctrl (o el pellizco del panel táctil) o si ya está ampliada; si no, la lista sigue bajando */
+    lz.addEventListener('wheel',function(e){
+      if(!listo || !(e.ctrlKey || s>1)) return;
+      e.preventDefault();
+      fija(Math.round((s+(e.deltaY>0?-1:1)*(e.ctrlKey?0.2:0.1))*20)/20);
+    },{passive:false});
+
+    /* ampliada, se arrastra */
+    var drag=null, movio=false;
+    img.addEventListener('dragstart',function(e){ e.preventDefault(); });
+    a.addEventListener('pointerdown',function(e){
+      if(s<=1) return;
+      if(e.button!=null && e.button!==0) return;
+      drag={x:e.clientX,y:e.clientY,tx:tx,ty:ty,id:e.pointerId}; movio=false;
+      lz.classList.add('dv-drag');
+      try{ a.setPointerCapture(e.pointerId); }catch(x){}
+      e.preventDefault();
+    });
+    a.addEventListener('pointermove',function(e){
+      if(!drag || e.pointerId!==drag.id) return;
+      var dx=e.clientX-drag.x, dy=e.clientY-drag.y;
+      if(Math.abs(dx)+Math.abs(dy)>3) movio=true;
+      tx=drag.tx+dx; ty=drag.ty+dy; pinta();
+    });
+    function suelta(e){
+      if(!drag || (e && e.pointerId!==drag.id)) return;
+      drag=null; lz.classList.remove('dv-drag');
+      try{ a.releasePointerCapture(e.pointerId); }catch(x){}
+    }
+    a.addEventListener('pointerup',suelta);
+    a.addEventListener('pointercancel',suelta);
+    a.addEventListener('lostpointercapture',function(){ drag=null; lz.classList.remove('dv-drag'); });
+    /* ampliada (o recién arrastrada), el toque no abre la foto en otra pestaña; sin ampliar, sí, como siempre */
+    a.addEventListener('click',function(e){ if(s>1 || movio){ e.preventDefault(); e.stopPropagation(); movio=false; } },true);
+
+    /* pellizco con dos dedos */
+    var pinch=null;
+    function dist(t){ var dx=t[0].clientX-t[1].clientX, dy=t[0].clientY-t[1].clientY; return Math.sqrt(dx*dx+dy*dy)||1; }
+    lz.addEventListener('touchstart',function(e){ if(listo && e.touches.length===2){ pinch={d:dist(e.touches),s:s}; e.preventDefault(); } },{passive:false});
+    lz.addEventListener('touchmove',function(e){ if(pinch && e.touches.length===2){ e.preventDefault(); fija(pinch.s*dist(e.touches)/pinch.d); } },{passive:false});
+    lz.addEventListener('touchend',function(e){ if(e.touches.length<2) pinch=null; });
+    lz.addEventListener('touchcancel',function(){ pinch=null; });
+    lz.addEventListener('gesturestart',function(e){ e.preventDefault(); });   /* Safari: que no amplíe la página entera */
+
+    /* teclado, con la foto enfocada: + · - · 0 */
+    a.addEventListener('keydown',function(e){
+      if(!listo) return;
+      if(e.key==='+' || e.key==='='){ fija(s+0.1); e.preventDefault(); }
+      else if(e.key==='-'){ fija(s-0.1); e.preventDefault(); }
+      else if(e.key==='0'){ a1(); e.preventDefault(); }
+    });
+
+    var alGirarElAparato=function(){ ajusta(); };
+    window.addEventListener('resize',alGirarElAparato);
+    return function(){ window.removeEventListener('resize',alGirarElAparato); };
+  }
   function abrirVisorDictado(dj){
     var old=document.getElementById('dictado-visor'); if(old) old.remove();
     var v=document.createElement('div'); v.className='dictado-visor'; v.id='dictado-visor';
     var figs='';
+    // (7-oct-2026, Iago) cada foto lleva su ↻ en el rótulo
+    var girar=function(de){ return '<button type="button" class="dv-girar" title="Girar 90°" aria-label="Girar la foto '+de+'">↻</button>'; };
     // (Iago 23-jul) TODAS las fotos caducan a los 7 días de la revisión
     var caducadas=!!(dj.fotos_caducan && (Date.parse(dj.fotos_caducan)||0)<=Date.now());
     if(caducadas){
       figs='<div class="alu-vacio" style="grid-column:1/-1">🕐 Las fotos de este dictado ya no están disponibles: se guardan 7 días desde la revisión. Tu nota y el comentario siguen en la notificación.</div>';
     } else {
       if(dj.foto_alumno){
-        figs+='<figure><figcaption>📸 Tu dictado (la foto que enviaste)</figcaption>'
+        figs+='<figure><figcaption><span class="dv-cap">📸 Tu dictado (la foto que enviaste)</span>'+girar('de tu dictado')+'</figcaption>'
           +'<a class="dv-img" href="'+esc(dj.foto_alumno)+'" target="_blank" rel="noopener"><img src="'+esc(dj.foto_alumno)+'" alt="Tu dictado" loading="lazy"></a></figure>';
       }
       var sols=(dj.fotos_solucion||[]).filter(Boolean);
       sols.forEach(function(u,k){
-        figs+='<figure><figcaption>✅ Solución'+(sols.length>1?(' '+(k+1)+' de '+sols.length):'')+' (la pizarra del profesor)</figcaption>'
+        figs+='<figure><figcaption><span class="dv-cap">✅ Solución'+(sols.length>1?(' '+(k+1)+' de '+sols.length):'')+' (la pizarra del profesor)</span>'+girar('de la solución')+'</figcaption>'
           +'<a class="dv-img" href="'+esc(u)+'" target="_blank" rel="noopener"><img src="'+esc(u)+'" alt="Solución del dictado" loading="lazy"></a></figure>';
       });
     }
@@ -2939,19 +3064,23 @@ function showEnig(kind){
     v.innerHTML='<div class="dv-head"><div class="dv-tit">🎧 '+(dj.numero!=null?('Dictado nº '+esc(dj.numero)):'Dictado')+' · tu foto y la solución</div>'
       +'<button class="dv-close" aria-label="Cerrar" title="Cerrar">✕</button></div>'
       +'<div class="dv-body">'+figs+'</div>'
-      +'<div class="dv-tip">Toca una imagen para abrirla a tamaño completo en otra pestaña.</div>';
+      +'<div class="dv-tip">↻ gira la foto · el deslizador (o pellizcar) la amplía y, ampliada, se arrastra · sin ampliar, tócala para abrirla a tamaño completo en otra pestaña.</div>';
     document.body.appendChild(v);
     // si un archivo ya fue borrado (limpieza de 7 días), sustituir la imagen
     // rota por una nota amable en su propia tarjeta
     v.querySelectorAll('.dv-img img').forEach(function(im){
       im.onerror=function(){
         var f=im.closest('figure'); if(!f) return;
+        var g=f.querySelector('.dv-girar'); if(g) g.remove();   // sin foto no hay nada que girar
         var cap=f.querySelector('figcaption'); var capHTML=cap?cap.outerHTML:'';
         f.innerHTML=capHTML+'<div style="padding:26px 18px;color:#8ba3c7;font-size:13px;text-align:center">🕐 Esta imagen ya no está disponible (se guarda 7 días desde la revisión).</div>';
       };
     });
+    // (7-oct-2026, Iago) girar y ampliar cada foto
+    var retiradas=[];
+    Array.prototype.forEach.call(v.querySelectorAll('figure'),function(f){ try{ var q=dvGiroZoom(f); if(q) retiradas.push(q); }catch(e){} });
     var onEsc=function(e){ if(e.key==='Escape'){ e.stopPropagation(); cierra(); } };
-    var cierra=function(){ try{ v.remove(); }catch(e){} document.removeEventListener('keydown',onEsc,true); };
+    var cierra=function(){ retiradas.forEach(function(q){ try{ q(); }catch(e){} }); try{ v.remove(); }catch(e){} document.removeEventListener('keydown',onEsc,true); };
     v.querySelector('.dv-close').addEventListener('click',cierra);
     v.addEventListener('click',function(e){ if(e.target===v) cierra(); });
     // captura: que el Escape cierre SOLO el visor (no también la campana de detrás)
@@ -3689,6 +3818,31 @@ function showEnig(kind){
       '.dictado-visor .dv-img{display:block;width:100%;background:#060b14}'+
       '.dictado-visor .dv-img img{display:block;width:100%;height:auto;max-height:64vh;object-fit:contain;cursor:zoom-in}'+
       '.dictado-visor .dv-tip{padding:0 16px 12px;text-align:center;color:#6d84ab;font-size:11.5px}'+
+      /* (7-oct-2026, Iago) girar y ampliar las fotos del visor, como en el panel del profesor */
+      '.dictado-visor figcaption{justify-content:space-between}'+
+      '.dictado-visor .dv-cap{min-width:0}'+
+      '.dictado-visor .dv-girar{flex:none;width:32px;height:32px;margin:-4px -4px -4px 0;padding:0;display:inline-flex;align-items:center;justify-content:center;border-radius:8px;background:rgba(255,255,255,.05);border:1px solid rgba(74,158,255,.5);color:#e3efff;font:800 18px/1 system-ui,sans-serif;cursor:pointer;-webkit-tap-highlight-color:transparent}'+
+      '.dictado-visor .dv-girar:hover{background:rgba(74,158,255,.2)}'+
+      '.dictado-visor .dv-girar:active{transform:translateY(1px)}'+
+      '.dictado-visor .dv-lz{position:relative;width:100%;overflow:hidden;background:#060b14;touch-action:pan-y}'+
+      '.dictado-visor .dv-lz.dv-on{touch-action:none}'+
+      '.dictado-visor .dv-lz .dv-img{position:absolute;left:0;top:0;right:0;bottom:0;width:auto;background:none}'+
+      '.dictado-visor .dv-lz .dv-img img{position:absolute;left:50%;top:50%;max-width:none;max-height:none;object-fit:fill;transform-origin:center center;will-change:transform;-webkit-user-drag:none;-webkit-user-select:none;user-select:none}'+
+      '.dictado-visor .dv-lz.dv-on .dv-img img{cursor:grab}'+
+      '.dictado-visor .dv-lz.dv-drag .dv-img img{cursor:grabbing}'+
+      '.dictado-visor .dv-body{grid-auto-rows:max-content}'+   /* las tarjetas no se aplastan cuando no caben: la lista se desliza */
+      '.dictado-visor .dv-side{position:absolute;top:8px;right:6px;bottom:8px;width:34px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;z-index:2;pointer-events:none}'+
+      '.dictado-visor .dv-side > *{pointer-events:auto}'+
+      '.dictado-visor .dv-rail{flex:none;width:30px;box-sizing:border-box;padding:7px 0;display:flex;flex-direction:column;align-items:center;gap:5px;border-radius:10px;background:rgba(8,14,26,.62);border:1px solid rgba(74,158,255,.45)}'+
+      '.dictado-visor .dv-rango{position:relative;flex:none;width:24px;height:120px}'+
+      '.dictado-visor .dv-rail input[type=range]{-webkit-appearance:none;appearance:none;position:absolute;left:50%;top:50%;width:120px;height:4px;margin:0;padding:0;transform:translate(-50%,-50%) rotate(-90deg);background:rgba(255,255,255,.3);border:0;border-radius:2px;outline:none;cursor:pointer}'+
+      '.dictado-visor .dv-rail input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:#7ab8ff;border:2px solid #0b1424;box-shadow:0 1px 4px rgba(0,0,0,.55);cursor:grab}'+
+      '.dictado-visor .dv-rail input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:#7ab8ff;border:2px solid #0b1424}'+
+      '.dictado-visor .dv-rail input[type=range]:focus-visible{box-shadow:0 0 0 2px rgba(122,184,255,.6)}'+
+      '.dictado-visor .dv-x{flex:none;min-width:34px;padding:5px 4px;border-radius:8px;background:rgba(8,14,26,.7);border:1px solid rgba(74,158,255,.45);color:#cfe3ff;font:800 11px/1 system-ui,sans-serif;font-variant-numeric:tabular-nums;text-align:center;cursor:pointer;-webkit-tap-highlight-color:transparent}'+
+      '.dictado-visor .dv-x.on{color:#0b1424;background:#7ab8ff;border-color:#7ab8ff}'+
+      '.dictado-visor .dv-pm{flex:none;font:800 12px/1 system-ui,sans-serif;color:#cfe3ff;opacity:.9;pointer-events:none}'+
+      '.dictado-visor .dv-side.dv-corta .dv-pm{display:none}'+
       '@media (prefers-reduced-motion:reduce){.alu-item.dictado .neb-mini i{animation:none!important}}';
     document.head.appendChild(s);
   }
