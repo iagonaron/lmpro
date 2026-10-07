@@ -6,11 +6,32 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
-- 7-oct 21:05 · Intros didácticas (la conversación de los vídeos y de «La cabaña») · EN CURSO · «La cabaña» VERSIÓN 2: las 24
-  correcciones que Iago dictó hoy al revisar la página con la cuenta Protester. Se sube a cualidadesdelsonido, encima de
-  5bb582f: prueba.html y cabana/ (67 ficheros nuevos o cambiados, 478 MB; se quitan 11 que sobran). Sigue siendo la página EN
-  PRUEBA (solo Tester/Protester). NO se toca el index.html de Acústica ni nada de este portal (lmpro): la medalla y su
-  dirección quedan como estaban en 83f1ac7.
+- 7-oct 21:55 · Intros didácticas (la conversación de los vídeos y de «La cabaña») · HECHO · «La cabaña» VERSIÓN 2 (Iago
+  la revisó entera el 7-oct con la cuenta Protester y dictó 24 correcciones; van todas). cualidadesdelsonido 6ea83c6
+  (encima de 5bb582f): prueba.html y cabana/, revisión 10072009. Cambian o son nuevos 67 ficheros (478 MB) y se quitan
+  11 que sobraban (a/amb_valle.mp3, a/mus_dentro.mp3, i/vacia_1·2·4·5·6.jpg y los vídeos d2_6 y d3_6, que ahora van
+  dentro de d2_5 y d3_5). index.html de Acústica y este portal (lmpro), SIN TOCAR: sigue siendo una página EN PRUEBA,
+  solo para Tester/Protester, en https://acustica.gp.lmathome.es/prueba.html. QUIEN TOQUE prueba.html O cabana/, QUE
+  PARTA DE 6ea83c6. Qué cambia: (a) la música y los ambientes de fondo ya NO van dentro de los vídeos: los lleva la
+  página (cabana/a/cama_*.mp3 + las curvas que van en prueba.html), seguidos, también en las paradas; (b) pausa en
+  cualquier momento y portada con sonido; (c) fuera todos los círculos que rodeaban cosas; (d) al volver de una parada
+  ya no asoma lo de antes; (e) Día 1: agudo/grave en vivo, 4'33'' sumándose poco a poco, capas en escalera; (f) Día 2:
+  títulos que se añaden, la radio en otro orden, la cabaña vacía de tres pasos con cuenta atrás al grabar, libretas
+  retocadas, sin la parada del sonómetro; (g) Día 3: parada nueva «De oboe a clarinete» (la grabación del oboe partida
+  en sus armónicos: solo cambia el volumen de cada uno) y sin la parada de la serie armónica. Comprobado antes de subir:
+  cada vídeo contra sus fuentes (527 fotogramas, 0 distintos), los tres días recorridos enteros en la página de pruebas
+  y el sitio real (H.264) a 1080p60 y 720p30, dos veces (la segunda, con los ficheros tal como llegaron al Mac); y
+  después, en la web real: los manifiestos de 60 y de 30 fotogramas responden con la revisión 10072009 (están cama_valle
+  y oboe_A4; ya no están d2_6 ni d3_6) y origin/main es 6ea83c6, con el mismo árbol de 205 ficheros que se comprobó
+  fichero a fichero contra el espejo. Deshacer: «Revert» de 6ea83c6 (la versión 1 es 5bb582f). Nota: APPs/LMATHOME GP
+  (github lmpro)/LEEME-7-oct-2026-acustica-la-cabana-version-2.txt. Fuentes: …/_MATERIALES VÍDEOS
+  TEMÁTICOS/ACÚSTICA/pagina_interactiva_fuentes_7oct_v2.zip. Espejo de Dropbox al día (CUALIDADES DEL SONIDO/); lo que
+  sobraba de la versión 1, en APPs/_PARA BORRAR/7-oct-2026-la-cabana-v1-lo-que-sobra/. AVISO PARA TODAS LAS
+  CONVERSACIONES: los vídeos, imágenes y sonidos que Claude pasa al Mac llegan ahora con una marca de procedencia dentro
+  («credenciales de contenido», C2PA, firmada por Anthropic: «Claude proporcionó este fichero…»), unos 6 KB más por
+  fichero. La llevan 61 de estos 67, así que su md5 YA NO es el del fichero montado; imagen y sonido, idénticos
+  (comprobado descontando los bytes de la marca, y el sitio vuelto a probar entero con ella puesta). No hay que quitarla
+  ni empaquetar los ficheros para esquivarla: las entregas se comprueban por el contenido, no por la huella del fichero.
 - 7-oct 12:15 · Fichas y rediseño · HECHO · apps de corrección, dos tandas más en Netlify (cada despliegue solo con
   sus ficheros; el resto idéntico al anterior). (A) sw.js REVISIÓN 3 en las cuatro apps que viven en *.lmathome.es: la
   banda «Versión nueva lista» no salía nunca porque sw.js comparaba etag/last-modified y Cloudflare se los quita al
