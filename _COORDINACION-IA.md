@@ -6,13 +6,24 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
-- 7-oct 10:30 · Fichas y rediseño · EN CURSO (esta mañana) · seis despliegues en Netlify, uno por sitio y solo con los
-  ficheros que cambian: entonacionelemental, ritmoelemental y dictadoselemental (resumen final editable al tocar la
-  tarjeta o la nota, y vista de iPad nueva: ficheros nuevos app-7oct.js, pantalla-7oct.js y
-  resumen-editable-7oct.js/.css, más index.html y pantalla.html), ritmoentonadoprofesional (resumen editable:
-  app-r27.js nuevo e index.html), dictadosprofesional (parámetro «Otro» en la autocorrección: app.js, panel.js,
-  index.html, profesor.html y styles.css) y fichasenpapel-cmus (solo index.html, encima de 6ac56693). NADIE MÁS
-  DESPLIEGUE EN ESOS SEIS SITIOS HASTA QUE ESTO DIGA HECHO.
+- 7-oct 10:50 · Fichas y rediseño · HECHO · seis despliegues en Netlify (de 10:30 a 10:35), cada uno solo con sus
+  ficheros y el resto idéntico al anterior. (1) Resumen final EN DOS ZONAS en las cuatro apps de corrección: tocar la
+  tarjeta del alumno abre su corrección con sus parámetros y tocar el recuadro de la nota deja escribirla a mano
+  (marca «a mano» y aviso al abrir la corrección). Ficheros nuevos resumen-editable-7oct.js/.css (iguales en las
+  cuatro) y app-7oct.js (app-r27.js en Ritmo entonado PRO), más index.html; app.js, app-buscador.js, app-r26.js y
+  resumen-editable.js NO se tocan (los usan las páginas guardadas en los aparatos). (2) Vista del iPad (pantalla.html
+  y pantalla-7oct.js nuevo; pantalla.js no se toca) en Entonación, Ritmo y Dictado: rótulo «Nota ajustada a mano» con
+  el desglose atenuado, o «Nota puesta a mano» si la fila no trae parámetros. (3) Dictado: los nombres de 2.º GP en la
+  «Corrección manual GP» (sin tildes ni mayúsculas, vale una palabra del nombre y, si casan varios, se pide el
+  apellido), dentro de app-7oct.js. Despliegues: entonacionelemental 6ac603c2 (encima de 6abf9226), ritmoelemental
+  6ac603dc (encima de 6abf91ed), dictadoselemental 6ac603f9 (encima de 6ac00f92) y ritmoentonadoprofesional 6ac6033f
+  (encima de 6abfe8a1). (4) dictadosprofesional 6ac60441 (encima de 6abd49f0): parámetro «Otro» en la autocorrección
+  del alumno, hasta 1 punto menos y con el motivo escrito (app.js, index.html y styles.css; panel.js y profesor.html
+  con panel.js?v=p17). Usa otro_puntos y otro_desc de la tabla dictados, que ya existían. FALTA la fila «Otro» en la
+  lupa del Diario (diario-lupa.js): va en el próximo despliegue agrupado del Diario. (5) fichasenpapel-cmus 6ac60450
+  (encima de 6ac56693; solo index.html, pie «versión 7-oct»): una Ficha 1 que ya tiene nota no dice «va a Ev.
+  inicial». Quien toque cualquiera de esos seis sitios, que parta de estos despliegues. LEEME, copias
+  (.bak-antes-…-20261007) y guiones en Dropbox, «APPS CORRECCION (netlify x6)».
 - 7-oct 10:30 · Fichas y rediseño · HECHO · tres cosas. (1) LMEAVathome 1535a6a (encima de aedee0f; solo
   piel/apps/portal.js, versión «7-oct-n14»): el editor de lecciones aguanta el táctil enganchado del ordenador del
   aula (clics y punteros de reserva, aro rojo donde la pantalla nota algo apoyado, aviso «táctil enganchado», «caja
