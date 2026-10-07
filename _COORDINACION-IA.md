@@ -6,6 +6,11 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 7-oct 21:05 · Intros didácticas (la conversación de los vídeos y de «La cabaña») · EN CURSO · «La cabaña» VERSIÓN 2: las 24
+  correcciones que Iago dictó hoy al revisar la página con la cuenta Protester. Se sube a cualidadesdelsonido, encima de
+  5bb582f: prueba.html y cabana/ (67 ficheros nuevos o cambiados, 478 MB; se quitan 11 que sobran). Sigue siendo la página EN
+  PRUEBA (solo Tester/Protester). NO se toca el index.html de Acústica ni nada de este portal (lmpro): la medalla y su
+  dirección quedan como estaban en 83f1ac7.
 - 7-oct 12:15 · Fichas y rediseño · HECHO · apps de corrección, dos tandas más en Netlify (cada despliegue solo con
   sus ficheros; el resto idéntico al anterior). (A) sw.js REVISIÓN 3 en las cuatro apps que viven en *.lmathome.es: la
   banda «Versión nueva lista» no salía nunca porque sw.js comparaba etag/last-modified y Cloudflare se los quita al
