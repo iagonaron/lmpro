@@ -6,6 +6,28 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 7-oct 12:15 · Fichas y rediseño · HECHO · apps de corrección, dos tandas más en Netlify (cada despliegue solo con
+  sus ficheros; el resto idéntico al anterior). (A) sw.js REVISIÓN 3 en las cuatro apps que viven en *.lmathome.es: la
+  banda «Versión nueva lista» no salía nunca porque sw.js comparaba etag/last-modified y Cloudflare se los quita al
+  HTML, así que cada versión nueva se veía a la segunda apertura. Ahora la página se pide primero a la red (3,5 s de
+  margen; si no llega, la copia guardada: igual que el sw del Diario) y, para avisar, se compara el TEXTO de la
+  página. El nombre de la caché NO cambia (lm-clase-r1-2026-09-22); dentro, const REVISION = 'r3-2026-10-07'.
+  Despliegues: entonacionelemental 6ac615babd46, ritmoelemental 6ac616d3cda4, dictadoselemental 6ac616d33abc y
+  ritmoentonadoprofesional 6ac616d3d36a (este es el VIVO de ese sitio). NO se ha tocado el sw.js de
+  dictadosprofesional ni el de fichasteoria (siguen en la revisión 1: en netlify.app las cabeceras sí llegan). Sin
+  probar en Safari. (B) Entonación, Ritmo y Dictado elemental: escribir OTRA nota a mano en el resumen BORRA los
+  parámetros de esa fila (ent_notas; rit_notas cuando hay una sola clave; corr_notas) y la vista del iPad dice «Nota
+  corregida a mano». Cambian app-7oct.js y pantalla-7oct.js; index.html y pantalla.html pasan a llamarlos con ?v=2.
+  (C) Dictado, «Corrección manual GP»: la app manda también pres_caligrafia a la tabla dictados y, mientras la columna
+  no exista, repite el guardado sin ella. Despliegues de B y C, que son los VIVOS: entonacionelemental 6ac619e1fd2a,
+  ritmoelemental 6ac61a0abc0e y dictadoselemental 6ac61a179387. Quien toque esos sitios, que parta de ahí. PENDIENTE
+  DE IAGO: pegar en Supabase «PEGAR-7-oct-2026--caligrafia-en-dictados.sql» (carpeta SQL-BD del Diario): añade la
+  columna dictados.pres_caligrafia y la clave pres_caligrafia a lo que guardan en evaluaciones.payload_json las
+  funciones evaluaciones_upsert_dictados y evaluaciones_upsert_corr_notas. Lleva un seguro por huella md5 de esas dos
+  funciones: quien las cambie antes de que se pegue tiene que rehacer ese texto sobre la versión nueva. FALTA en el
+  Diario (diario-lupa.js): las filas «Caligrafía y limpieza» y «Otro»; van en el próximo despliegue agrupado. LEEME en
+  Dropbox: «APPS CORRECCION (netlify
+  x6)/LEEME-7-OCT-mediodia-version-nueva-a-la-primera-y-nota-a-mano-borra-parametros.txt».
 - 7-oct 10:50 · Fichas y rediseño · HECHO · seis despliegues en Netlify (de 10:30 a 10:35), cada uno solo con sus
   ficheros y el resto idéntico al anterior. (1) Resumen final EN DOS ZONAS en las cuatro apps de corrección: tocar la
   tarjeta del alumno abre su corrección con sus parámetros y tocar el recuadro de la nota deja escribirla a mano
