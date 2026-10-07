@@ -6,7 +6,14 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
-- 7-oct 22:30 · Fichas y rediseño · HECHO · commit 8be265c (EN CURSO en 22c54d3, parto de 24f29af) · index.html de este
+- 7-oct 23:25 · Fichas y rediseño · EN CURSO · colocador automático de la foto del dictado (encargo de Iago del 7-oct:
+  «casi nunca me aparece bien colocada y tengo que andar rotando y ampliando… como coger de referencia claves de sol…
+  también es demasiado sensible el zoom» y «que el visor del alumno tenga también el sistema mejorado de colocar la
+  imagen»). Voy a tocar: (1) Netlify dictadosprofesional, partiendo del deploy 6ac604410b42: profesor.html, panel.js
+  (solo el onload de la foto del alumno en renderReviewStep), zoom-foto.js y un fichero NUEVO, coloca-foto.js; (2)
+  este repo, partiendo de ac543b3: index.html (solo dvGiroZoom / abrirVisorDictado y sus estilos) y un fichero NUEVO
+  en la raíz, coloca-foto.js. Nada de Supabase.
+- 7-oct 22:01 · Fichas y rediseño · HECHO · commit 8be265c (EN CURSO en 22c54d3, parto de 24f29af) · index.html de este
   portal, SOLO el visor «Ver dictado y solución» de la campana del alumno. Iago: «la suya, la de su dictado, no se la deja
   girar. Me gustaría que tuviesen la opción de girar y aumentar, al igual que tengo yo en la parte del profesor».
   abrirVisorDictado(dj) se reescribe y gana una ayudante, dvGiroZoom(fig): cada foto (la del alumno y las de la
