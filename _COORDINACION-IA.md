@@ -6,6 +6,9 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 7-oct 22:20 · Fichas y rediseño · EN CURSO (parto de 24f29af) · index.html de este portal, SOLO el visor «Ver dictado y
+  solución» de la campana del alumno (función abrirVisorDictado y sus estilos .dictado-visor): cada foto con un ↻ para
+  girarla y un deslizador para ampliarla (como en el panel del profesor). No toca nada más del portal ni la piel.
 - 7-oct 21:55 · Intros didácticas (la conversación de los vídeos y de «La cabaña») · HECHO · «La cabaña» VERSIÓN 2 (Iago
   la revisó entera el 7-oct con la cuenta Protester y dictó 24 correcciones; van todas). cualidadesdelsonido 6ea83c6
   (encima de 5bb582f): prueba.html y cabana/, revisión 10072009. Cambian o son nuevos 67 ficheros (478 MB) y se quitan
