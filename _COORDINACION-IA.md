@@ -6,9 +6,18 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
-- 7-oct 22:20 · Fichas y rediseño · EN CURSO (parto de 24f29af) · index.html de este portal, SOLO el visor «Ver dictado y
-  solución» de la campana del alumno (función abrirVisorDictado y sus estilos .dictado-visor): cada foto con un ↻ para
-  girarla y un deslizador para ampliarla (como en el panel del profesor). No toca nada más del portal ni la piel.
+- 7-oct 22:30 · Fichas y rediseño · HECHO · commit 8be265c (EN CURSO en 22c54d3, parto de 24f29af) · index.html de este
+  portal, SOLO el visor «Ver dictado y solución» de la campana del alumno. Iago: «la suya, la de su dictado, no se la deja
+  girar. Me gustaría que tuviesen la opción de girar y aumentar, al igual que tengo yo en la parte del profesor».
+  abrirVisorDictado(dj) se reescribe y gana una ayudante, dvGiroZoom(fig): cada foto (la del alumno y las de la
+  solución) lleva en su rótulo un ↻ (.dv-girar, 90° por toque) y, a la derecha, un deslizador vertical de 1× a 3×
+  (.dv-side/.dv-rail; también pellizco, Ctrl + rueda y teclas + − 0); ampliada, se arrastra sin poder «perderla»; la
+  cifra vuelve a 1×. La foto va ENTERA en su marco (.dv-lz; en el móvil salía recortada) y sin ampliar sigue abriéndose
+  en otra pestaña al tocarla. NO se gira sola (sale como llega, igual que antes): el colocador automático se añadirá
+  más adelante, a la vez que en el panel del profesor. Estilos nuevos tras `.dictado-visor .dv-tip`; además
+  `.dictado-visor .dv-body{grid-auto-rows:max-content}`. No toca nada más del portal, ni la piel, ni la base de datos.
+  Para volver: git revert 8be265c, o subir el index.html de APPs/_PARA BORRAR/7-oct-2026-noche-portal-gp-antes-del-
+  visor-con-giro/. Espejo de Dropbox igual que GitHub. Sin probar en Safari/iPad real (45 comprobaciones en Chromium).
 - 7-oct 21:55 · Intros didácticas (la conversación de los vídeos y de «La cabaña») · HECHO · «La cabaña» VERSIÓN 2 (Iago
   la revisó entera el 7-oct con la cuenta Protester y dictó 24 correcciones; van todas). cualidadesdelsonido 6ea83c6
   (encima de 5bb582f): prueba.html y cabana/, revisión 10072009. Cambian o son nuevos 67 ficheros (478 MB) y se quitan
