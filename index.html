@@ -2919,16 +2919,46 @@ function showEnig(kind){
   /* (7-oct-2026, Iago: «la suya, la de su dictado, no se la deja girar. Me gustaría que tuviesen la opción de girar y
      aumentar, al igual que tengo yo en la parte del profesor») · GIRAR Y AMPLIAR cada foto del visor, como en el panel
      del profesor de Dictados Gp:
-       · ↻ en el rótulo de la foto: 90° cada vez. La foto sale como llega (como hasta hoy), pero ENTERA dentro de su
-         marco; no se gira sola (en el panel del profesor el giro automático acierta poco: pendiente el colocador).
+       · ↻ en el rótulo de la foto: 90° cada vez. La foto se ve ENTERA dentro de su marco.
        · a la derecha de la foto, un deslizador vertical de 1× a 3× (también pellizcando con dos dedos, o Ctrl + rueda);
          ampliada, se arrastra con el dedo o el ratón; la cifra (o doble clic en el deslizador) vuelve a 1×.
        · sin ampliar, tocar la foto sigue abriéndola a tamaño completo en otra pestaña.
-     Todo es local (no se guarda nada). Devuelve la función que retira sus escuchas al cerrar el visor. */
-  function dvGiroZoom(fig){
+     Todo es local (no se guarda nada). Devuelve la función que retira sus escuchas al cerrar el visor.
+
+     (7-oct-2026, noche · Iago: «lo del visor del alumno de los dictados… que tenga también el sistema mejorado de
+     colocar la imagen bien… con las claves de sol bien colocadas») · COLOCADOR en la foto DEL ALUMNO (la de la solución
+     llega bien y no se toca). Es el mismo detector del panel del profesor (coloca-foto.js → LMColoca): se pide SOLO al
+     abrir el visor, mira la foto y aplica su política prudente (LMColoca.decide):
+       · seguro → la gira, la endereza y la encuadra en lo escrito (con un poco de aire). Sale la pastilla
+         «✓ Colocada sola», que alterna entre el encuadre y la foto entera;
+       · la foto está tumbada pero no sabe hacia qué lado → solo la gira hacia el más probable;
+       · en cualquier otro caso → no toca nada: la foto sale como llega, igual que antes.
+     Si el alumno ya ha girado o ampliado la foto, o pulsa ↻ después, manda él: el colocador se aparta. Si el fichero
+     no carga o la foto no se puede leer, el visor queda como estaba.
+     MANDOS · DV_COLOCA=false lo apaga · DV_AIRE = aire alrededor de lo escrito (fracción de su tamaño, por cada lado) ·
+     DV_FRANJA = píxeles de la derecha que tapa el deslizador (encuadrado, lo escrito no se mete debajo) ·
+     DV_RUEDA / DV_PELLIZCO / DV_TOPE = sensibilidad de la rueda (los mismos del panel del profesor: proporcional al
+     gesto; antes, un salto fijo por cada aviso de la rueda). */
+  var DV_COLOCA=true, DV_AIRE=0.06, DV_FRANJA=46, DV_RUEDA=0.0008, DV_PELLIZCO=0.01, DV_TOPE=60, dvColocaP=null;
+  function dvColocador(){
+    if(window.LMColoca) return Promise.resolve(window.LMColoca);
+    if(!dvColocaP) dvColocaP=new Promise(function(ok,ko){
+      var sc=document.createElement('script'); sc.src='coloca-foto.js?v=c1'; sc.async=true;
+      sc.onload=function(){ if(window.LMColoca) ok(window.LMColoca); else { dvColocaP=null; ko(new Error('sin LMColoca')); } };
+      sc.onerror=function(){ dvColocaP=null; ko(new Error('no carga')); };
+      document.head.appendChild(sc);
+    });
+    return dvColocaP;
+  }
+  function dvGiroZoom(fig,coloca){
     var a=fig.querySelector('a.dv-img'), img=a&&a.querySelector('img'), btn=fig.querySelector('.dv-girar');
     if(!a || !img) return null;
     var MIN=1, MAX=3, rot=0, s=1, tx=0, ty=0, nw=0, nh=0, listo=false, W=0, cw=0, ch=0;
+    /* colocador · incl = grados finos que endereza · auto = lo que decidió (o null) · vista = 'entera' | 'caja' ·
+       ox,oy = lo que hay que correr la foto para que el centro de lo que se enseña caiga en el centro del marco ·
+       fx = lo que se corre a la izquierda para no meter lo escrito debajo del deslizador · PW,PH = la foto girada,
+       en pantalla, a 1× · tocada = el alumno ya la ha girado o ampliado (manda él) */
+    var incl=0, auto=null, vista='entera', ox=0, oy=0, fx=0, PW=0, PH=0, tocada=false, cerrado=false;
     var lz=document.createElement('div'); lz.className='dv-lz';
     var side=document.createElement('div'); side.className='dv-side';
     side.innerHTML='<span class="dv-rail"><span class="dv-pm" aria-hidden="true">＋</span>'
@@ -2936,58 +2966,130 @@ function showEnig(kind){
       +'<span class="dv-pm" aria-hidden="true">－</span></span>'
       +'<button type="button" class="dv-x" title="Volver a 1×" aria-label="Quitar la ampliación">1,0×</button>';
     var rango=side.querySelector('.dv-rango'), range=side.querySelector('input'), lbl=side.querySelector('.dv-x');
-    function limita(){   /* ampliada, la foto no deja hueco dentro de su marco: no se puede «perder» arrastrando */
-      var mx=Math.max(0,(cw*s-W)/2), my=Math.max(0,(ch*s-ch)/2);
-      tx=Math.max(-mx,Math.min(mx,tx)); ty=Math.max(-my,Math.min(my,ty));
+    /* la pastilla va en una barrita DEBAJO de la foto: encima taparía el principio del primer pentagrama (la clave) */
+    var chip=document.createElement('button'); chip.type='button'; chip.className='dv-auto';
+    var barra=document.createElement('div'); barra.className='dv-autobar'; barra.appendChild(chip);
+    /* la parte de la foto —ya girada y enderezada— que enseña el marco, en fracciones de la foto girada (mismo centro):
+       lo escrito con su aire o, si no, la foto entera (enderezada, sus esquinas piden un poco más de sitio) */
+    function ventana(){
+      if(auto && auto.seguro && vista==='caja'){
+        var c=auto.caja, ax=c.w*DV_AIRE, ay=c.h*DV_AIRE, x0=Math.max(0,c.x-ax), y0=Math.max(0,c.y-ay), x1=Math.min(1,c.x+c.w+ax), y1=Math.min(1,c.y+c.h+ay);
+        if(x1-x0>0.02 && y1-y0>0.02) return {x:x0,y:y0,w:x1-x0,h:y1-y0};
+      }
+      if(!incl) return {x:0,y:0,w:1,h:1};
+      var tum=(rot%180!==0), aw=tum?nh:nw, ah=tum?nw:nh, g=Math.abs(incl)*Math.PI/180, c2=Math.cos(g), s2=Math.sin(g);
+      var bw=(aw*c2+ah*s2)/aw, bh=(aw*s2+ah*c2)/ah;
+      return {x:(1-bw)/2,y:(1-bh)/2,w:bw,h:bh};
+    }
+    function limita(){   /* ampliada, la foto no deja hueco dentro de su marco: no se puede «perder» arrastrando (y, encuadrada, se llega arrastrando al resto de la foto) */
+      var hx=(PW*s-W)/2, hy=(PH*s-ch)/2, cx=ox*s+fx, cy=oy*s;
+      tx=Math.max(Math.min(0,-hx-cx),Math.min(Math.max(0,hx-cx),tx)); ty=Math.max(Math.min(0,-hy-cy),Math.min(Math.max(0,hy-cy),ty));
+    }
+    function pintaChip(){
+      var on=!!(auto && auto.seguro); barra.classList.toggle('on',on); if(!on) return;
+      var caja=(vista==='caja');
+      chip.classList.toggle('entera',auto.hayCaja && !caja); chip.classList.toggle('fija',!auto.hayCaja);
+      chip.textContent=auto.hayCaja?(caja?'✓ Colocada sola · ver entera':'✓ Colocada sola · encuadrar'):'✓ Colocada sola';
+      chip.title=auto.hayCaja?'La foto se ha girado, enderezado y encuadrado sola. Toca para alternar entre el encuadre y la foto entera. Si no está bien, gírala con ↻.':'La foto se ha colocado sola. Si no está bien, gírala con ↻.';
     }
     function pinta(){
       if(!listo) return;
       if(s<=1.001){ s=1; tx=0; ty=0; }
       limita();
-      img.style.transform='translate(calc(-50% + '+tx.toFixed(1)+'px),calc(-50% + '+ty.toFixed(1)+'px)) rotate('+rot+'deg) scale('+s.toFixed(3)+')';
+      img.style.transform='translate(calc(-50% + '+(tx+ox*s+fx).toFixed(1)+'px),calc(-50% + '+(ty+oy*s).toFixed(1)+'px)) rotate('+(+(rot+incl).toFixed(2))+'deg) scale('+s.toFixed(3)+')';
       lz.classList.toggle('dv-on',s>1); lbl.classList.toggle('on',s>1);
       lbl.textContent=s.toFixed(1).replace('.',',')+'×';
       if(Number(range.value)!==s) range.value=String(s);
+      pintaChip();
     }
-    /* el marco toma la forma de la foto YA girada (como hasta ahora: todo el ancho y, como mucho, el 64 % del alto de
-       la pantalla); la imagen va centrada dentro, con su caja de antes de girar */
+    /* el marco toma la forma de lo que se enseña (la foto YA girada o, encuadrada, lo escrito): todo el ancho y, como
+       mucho, el 64 % del alto de la pantalla; la imagen va dentro, con su caja de antes de girar */
     function ajusta(){
       if(!listo) return;
       W=lz.clientWidth||fig.clientWidth||300;
       var maxH=Math.max(170,Math.round((window.innerHeight||700)*0.64));
-      var tumbada=(rot%180!==0), aw=tumbada?nh:nw, ah=tumbada?nw:nh;
-      cw=W; ch=W*ah/aw;
-      if(ch>maxH){ ch=maxH; cw=ch*aw/ah; }
+      var tumbada=(rot%180!==0), aw=tumbada?nh:nw, ah=tumbada?nw:nh, v=ventana(), vw=aw*v.w, vh=ah*v.h;
+      var enCaja=!!(auto && auto.seguro && vista==='caja'), Wu=enCaja?Math.max(60,W-DV_FRANJA):W;   /* encuadrado, lo escrito no se mete debajo del deslizador */
+      cw=Wu; ch=Wu*vh/vw;
+      if(ch>maxH){ ch=maxH; cw=ch*vw/vh; }
+      var k=cw/vw;                                    /* píxeles de pantalla por píxel de foto */
+      PW=aw*k; PH=ah*k; ox=-(v.x+v.w/2-0.5)*PW; oy=-(v.y+v.h/2-0.5)*PH; fx=-(W-Wu)/2;
       lz.style.height=Math.round(ch)+'px';
-      img.style.width=Math.round(tumbada?ch:cw)+'px'; img.style.height=Math.round(tumbada?cw:ch)+'px';
+      img.style.width=Math.round(nw*k)+'px'; img.style.height=Math.round(nh*k)+'px';
       /* el deslizador, a la medida del marco: en un marco bajo se acorta y pierde el ＋ y el － */
       var corta=(ch<210), hd=Math.round(Math.max(44,Math.min(150,ch-(corta?62:98))));
       side.classList.toggle('dv-corta',corta);
       rango.style.height=hd+'px'; range.style.width=hd+'px';
       pinta();
     }
-    function fija(z){ s=Math.max(MIN,Math.min(MAX,Number(z)||1)); pinta(); }
+    function fija(z){ tocada=true; s=Math.max(MIN,Math.min(MAX,Number(z)||1)); pinta(); }
     function a1(){ s=1; tx=0; ty=0; pinta(); }
+    /* COLOCADOR · solo números: nada de la foto sale de este navegador */
+    function colocaSola(){
+      var url=img.currentSrc||img.src;
+      if(!url || !window.fetch || !window.Promise || !window.createImageBitmap) return;
+      dvColocador().then(function(LM){
+        var pide=function(o){ return fetch(url,o).then(function(r){ if(!r.ok) throw new Error('http '+r.status); return r.blob(); }); };
+        /* por fetch (CORS), para poder leer los píxeles; si el navegador quiere aprovechar la copia que guardó al pintar
+           la <img> (pedida sin CORS) y por eso falla, se pide otra vez saltándose esa copia */
+        return pide({mode:'cors'}).catch(function(){ return pide({mode:'cors',cache:'reload'}); })
+          .then(function(b){ return createImageBitmap(b,{imageOrientation:'from-image'}).catch(function(){ return createImageBitmap(b); }); })
+          .then(function(bmp){
+            /* tiene que ser la misma foto que pinta la <img> (misma forma); si no, no se toca */
+            if(!bmp.width || !bmp.height || Math.abs(bmp.width/bmp.height-nw/nh)>0.02) throw new Error('otra forma');
+            return LM.analizaImagen(bmp).then(function(r){ try{ bmp.close(); }catch(x){} return r; });
+          })
+          .then(function(r){ return new Promise(function(ok){ setTimeout(function(){ ok(r); },0); }); })   /* que un toque que estuviera en cola entre antes */
+          .then(function(r){
+            try{ if(LM.libera) LM.libera(); }catch(x){}
+            if(cerrado || tocada) return;                       /* visor cerrado, o el alumno ya la ha girado o ampliado: manda él */
+            var d=LM.decide(r);
+            if(!d || (!d.giro && !d.seguro)) return;            /* duda: la foto se queda como llega */
+            rot=(d.giro===90 || d.giro===180 || d.giro===270)?d.giro:0;
+            if(d.seguro){
+              incl=Number(d.inclinacion)||0;
+              auto={seguro:true,caja:d.caja||{x:0,y:0,w:1,h:1}};
+              auto.hayCaja=(auto.caja.w<0.985 || auto.caja.h<0.985);
+              vista=auto.hayCaja?'caja':'entera';
+            }
+            s=1; tx=0; ty=0; ajusta();
+          });
+      }).catch(function(){ /* sin colocador, o sin poder leer la foto: se queda como llega */ });
+    }
     function arranca(){
       if(listo) return;
       nw=img.naturalWidth; nh=img.naturalHeight; if(!nw || !nh) return;
       a.parentNode.insertBefore(lz,a); lz.appendChild(a); lz.appendChild(side);
+      if(lz.nextSibling) lz.parentNode.insertBefore(barra,lz.nextSibling); else lz.parentNode.appendChild(barra);
       listo=true;
       ajusta();
+      if(coloca && DV_COLOCA) setTimeout(function(){ if(!cerrado && !tocada){ try{ colocaSola(); }catch(e){} } },80);
     }
     if(img.complete && img.naturalWidth) arranca(); else img.addEventListener('load',arranca);
 
-    if(btn) btn.addEventListener('click',function(e){ e.preventDefault(); e.stopPropagation(); if(!listo) return; rot=(rot+90)%360; tx=0; ty=0; ajusta(); });
+    if(btn) btn.addEventListener('click',function(e){ e.preventDefault(); e.stopPropagation(); if(!listo) return;
+      tocada=true;
+      if(auto && auto.seguro){ auto.seguro=false; s=1; }        /* el alumno manda: fuera el enderezado y el encuadre */
+      incl=0; vista='entera';
+      rot=(rot+90)%360; tx=0; ty=0; ajusta(); });
+    chip.addEventListener('click',function(e){ e.preventDefault(); e.stopPropagation();
+      if(!listo || !auto || !auto.seguro || !auto.hayCaja) return;
+      vista=(vista==='caja')?'entera':'caja'; s=1; tx=0; ty=0; ajusta(); });
+    chip.addEventListener('pointerdown',function(e){ e.stopPropagation(); });
     range.addEventListener('input',function(){ fija(range.value); });
     range.addEventListener('dblclick',function(e){ e.preventDefault(); a1(); });
     lbl.addEventListener('click',function(e){ e.preventDefault(); e.stopPropagation(); a1(); });
     side.addEventListener('pointerdown',function(e){ e.stopPropagation(); });
 
-    /* rueda: solo amplía con Ctrl (o el pellizco del panel táctil) o si ya está ampliada; si no, la lista sigue bajando */
+    /* rueda: solo amplía con Ctrl (o el pellizco del panel táctil) o si ya está ampliada; si no, la lista sigue bajando.
+       (7-oct, noche) En proporción al gesto y con tope por aviso, como en el panel del profesor. */
     lz.addEventListener('wheel',function(e){
       if(!listo || !(e.ctrlKey || s>1)) return;
       e.preventDefault();
-      fija(Math.round((s+(e.deltaY>0?-1:1)*(e.ctrlKey?0.2:0.1))*20)/20);
+      var dy=e.deltaY*(e.deltaMode===1?16:(e.deltaMode===2?400:1));
+      var pellizco=(e.ctrlKey && Math.abs(dy)<50);              /* el pellizco manda avisos pequeños; Ctrl + rueda de ratón, saltos de 100 */
+      dy=Math.max(-DV_TOPE,Math.min(DV_TOPE,dy)); if(!dy) return;
+      fija(s*Math.exp(-dy*(pellizco?DV_PELLIZCO:DV_RUEDA)));
     },{passive:false});
 
     /* ampliada, se arrastra */
@@ -3037,7 +3139,7 @@ function showEnig(kind){
 
     var alGirarElAparato=function(){ ajusta(); };
     window.addEventListener('resize',alGirarElAparato);
-    return function(){ window.removeEventListener('resize',alGirarElAparato); };
+    return function(){ cerrado=true; window.removeEventListener('resize',alGirarElAparato); };
   }
   function abrirVisorDictado(dj){
     var old=document.getElementById('dictado-visor'); if(old) old.remove();
@@ -3051,7 +3153,8 @@ function showEnig(kind){
       figs='<div class="alu-vacio" style="grid-column:1/-1">🕐 Las fotos de este dictado ya no están disponibles: se guardan 7 días desde la revisión. Tu nota y el comentario siguen en la notificación.</div>';
     } else {
       if(dj.foto_alumno){
-        figs+='<figure><figcaption><span class="dv-cap">📸 Tu dictado (la foto que enviaste)</span>'+girar('de tu dictado')+'</figcaption>'
+        // (7-oct-2026, noche) dv-mia = la foto del alumno: la única que mira el colocador
+        figs+='<figure class="dv-mia"><figcaption><span class="dv-cap">📸 Tu dictado (la foto que enviaste)</span>'+girar('de tu dictado')+'</figcaption>'
           +'<a class="dv-img" href="'+esc(dj.foto_alumno)+'" target="_blank" rel="noopener"><img src="'+esc(dj.foto_alumno)+'" alt="Tu dictado" loading="lazy"></a></figure>';
       }
       var sols=(dj.fotos_solucion||[]).filter(Boolean);
@@ -3076,9 +3179,9 @@ function showEnig(kind){
         f.innerHTML=capHTML+'<div style="padding:26px 18px;color:#8ba3c7;font-size:13px;text-align:center">🕐 Esta imagen ya no está disponible (se guarda 7 días desde la revisión).</div>';
       };
     });
-    // (7-oct-2026, Iago) girar y ampliar cada foto
+    // (7-oct-2026, Iago) girar y ampliar cada foto · (noche) y colocar sola la del alumno
     var retiradas=[];
-    Array.prototype.forEach.call(v.querySelectorAll('figure'),function(f){ try{ var q=dvGiroZoom(f); if(q) retiradas.push(q); }catch(e){} });
+    Array.prototype.forEach.call(v.querySelectorAll('figure'),function(f){ try{ var q=dvGiroZoom(f,f.classList.contains('dv-mia')); if(q) retiradas.push(q); }catch(e){} });
     var onEsc=function(e){ if(e.key==='Escape'){ e.stopPropagation(); cierra(); } };
     var cierra=function(){ retiradas.forEach(function(q){ try{ q(); }catch(e){} }); try{ v.remove(); }catch(e){} document.removeEventListener('keydown',onEsc,true); };
     v.querySelector('.dv-close').addEventListener('click',cierra);
@@ -3843,6 +3946,12 @@ function showEnig(kind){
       '.dictado-visor .dv-x.on{color:#0b1424;background:#7ab8ff;border-color:#7ab8ff}'+
       '.dictado-visor .dv-pm{flex:none;font:800 12px/1 system-ui,sans-serif;color:#cfe3ff;opacity:.9;pointer-events:none}'+
       '.dictado-visor .dv-side.dv-corta .dv-pm{display:none}'+
+      /* (7-oct-2026, noche) pastilla del colocador: en una barrita debajo de la foto del alumno (no tapa nada) */
+      '.dictado-visor .dv-autobar{display:none;align-items:center;padding:8px 10px;background:#060b14}'+
+      '.dictado-visor .dv-autobar.on{display:flex}'+
+      '.dictado-visor .dv-auto{display:inline-flex;align-items:center;max-width:100%;margin:0;padding:8px 11px;border:0;border-radius:10px;background:#86efac;color:#0b1424;font:800 12px/1.15 system-ui,sans-serif;text-align:left;cursor:pointer;-webkit-tap-highlight-color:transparent}'+
+      '.dictado-visor .dv-auto.entera{background:transparent;color:#bbf7d0;box-shadow:inset 0 0 0 1px rgba(134,239,172,.65)}'+
+      '.dictado-visor .dv-auto.fija{cursor:default}'+
       '@media (prefers-reduced-motion:reduce){.alu-item.dictado .neb-mini i{animation:none!important}}';
     document.head.appendChild(s);
   }
