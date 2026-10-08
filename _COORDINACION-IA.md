@@ -6,6 +6,23 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 8-oct 22:44 · Fichas y rediseño · EN CURSO (mañana 9-oct, desde las 9:30) · CUENTAS DE PRÁCTICAS en los portales
+  (tres usuarias que no son alumnas: entran como alumnas pero no cuentan en notas, listas, Diario, informes ni
+  morosos). Tocará: Supabase (una marca central en suite_cuentas y las funciones que listan o puntúan; el SQL lo pega
+  Iago), piel/apps/portal.js de LMEAVathome y, si hace falta, el Diario. Si vas a tocar el alta/validación de cuentas,
+  las funciones de morosos o el envío semanal, avisa aquí antes.
+- 8-oct 22:44 · Fichas y rediseño · HECHO · (1) DIARIO (Netlify diariodeiagocmus) deploy 6ac7f9f8 encima de 6ac5429a:
+  Intervalia Pro de 2.º GP automática: cada jueves con clase, la sesión siguiente (s1 → s2 → s1 de la lección
+  siguiente), una sola cuenta para los dos grupos; regla única en diario-intervalia-pro.js (nuevo), usada por
+  diario-progresion.js?v=r21, diario-semana-siguiente.js?v=s2 e ipad.html; app.js?v=d81. Solo escribe filas de
+  intervalia_uso de la semana de HOY. (2) LMEAVathome · piel/apps/portal.js (los dos portales) · commit f59dba4 ·
+  versión 8-oct-n15: lista de morosos de Tester/Protester con cuenta atrás (d h min s, hasta el fin del periodo extra
+  de cada uno) y una fila por alumno según alumno_canon_id (había alumnos con dos cuentas validadas). (3)
+  PreDictPROCarrusel · index.html · commit 375e918: melódico que puntúa notas + intervalos y espera a las respuestas
+  (hasta 2,5 s); armónico con cuenta atrás «CORRECCIÓN» y corrección de la 1.ª parte antes de la 2.ª. Sin cambios en
+  la base de datos. Comprobado antes: últimos commits LMEAVathome 1535a6a, PreDictPROCarrusel cd0a954, lmpro 4ecfde3;
+  Diario vivo 6ac5429a. Comprobado después: los tres sirven la versión nueva. OJO: en LMEAVathome sigue EN COLA el run
+  216 (commit aedee0f, del 6-oct); si arrancara, publicaría lo del 6-oct encima de todo: que lo cancele Iago.
 - 8-oct 22:02 · Intros didácticas (la conversación de los vídeos y de «La cabaña») · HECHO · «La cabaña» OFICIAL (EN CURSO en
   3cc99b8; Iago: «la única forma para acceder por parte de los alumnos al portal de acústica será pulsando la medalla una
   vez que esté desbloqueada»). (1) ESTE REPO, commit e22af28, index.html, solo @MEDALLERO: la medalla u2 abre «La cabaña»
