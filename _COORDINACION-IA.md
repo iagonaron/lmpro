@@ -6,6 +6,16 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 8-oct 23:33 · Fichas y rediseño · HECHO (parte de las CUENTAS DE PRÁCTICAS) · DIARIO (Netlify diariodeiagocmus)
+  deploy 6ac80b00 encima de 6ac7f9f8: la campana enseña los avisos de las cuentas de prácticas (alta, ficha con su
+  nota, quiz), que vendrán en una lista nueva «practicas» de suite_listar_pendientes_v3. suite-campana.js?v=s35;
+  index.html, ipad.html e iphone.html solo cambian esa versión. Mientras no esté el SQL, la lista llega vacía y no
+  cambia nada (probado). SIGUE EN CURSO: el SQL lo pega Iago el 9-oct a las 9:30. Cambiará: suite_cuentas (columna
+  practicas), 3 tablas nuevas suite_practicas*, 14 funciones del alumno (se renombran tal cual a _<nombre>_alumnos y
+  queda una «puerta» con el mismo nombre y parámetros: registrar_v4, ficha_entregar, ficha_revision_alumno,
+  fichas_entregadas, semana_hechos_de, quiz_hechos_de, quiz_completar, formato_leer, alumno_notif_listar,
+  alumno_notif_contador, uso_ping, tiempo_ping, pass_reset_v2, mis_resultados) y 2 del profesor
+  (suite_listar_pendientes_v3 y suite_morosos). Si tocas alguna, parte de la versión que haya después de las 9:30.
 - 8-oct 22:44 · Fichas y rediseño · EN CURSO (mañana 9-oct, desde las 9:30) · CUENTAS DE PRÁCTICAS en los portales
   (tres usuarias que no son alumnas: entran como alumnas pero no cuentan en notas, listas, Diario, informes ni
   morosos). Tocará: Supabase (una marca central en suite_cuentas y las funciones que listan o puntúan; el SQL lo pega
