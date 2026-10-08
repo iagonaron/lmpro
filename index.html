@@ -2918,7 +2918,7 @@ function showEnig(kind){
   // que sacó el alumno de su dictado y la(s) foto(s) de la solución.
   /* (7-oct-2026, Iago: «la suya, la de su dictado, no se la deja girar. Me gustaría que tuviesen la opción de girar y
      aumentar, al igual que tengo yo en la parte del profesor») · GIRAR Y AMPLIAR cada foto del visor, como en el panel
-     del profesor de Dictados Gp:
+     del profesor de Dictados Gp. (8-oct-2026) Solo la foto DEL ALUMNO: la de la solución va sin mandos.
        · ↻ en el rótulo de la foto: 90° cada vez. La foto se ve ENTERA dentro de su marco.
        · a la derecha de la foto, un deslizador vertical de 1× a 3× (también pellizcando con dos dedos, o Ctrl + rueda);
          ampliada, se arrastra con el dedo o el ratón; la cifra (o doble clic en el deslizador) vuelve a 1×.
@@ -3159,7 +3159,9 @@ function showEnig(kind){
       }
       var sols=(dj.fotos_solucion||[]).filter(Boolean);
       sols.forEach(function(u,k){
-        figs+='<figure><figcaption><span class="dv-cap">✅ Solución'+(sols.length>1?(' '+(k+1)+' de '+sols.length):'')+' (la pizarra del profesor)</span>'+girar('de la solución')+'</figcaption>'
+        // (8-oct-2026, Iago: «no es necesario que el alumno tenga lo de solución editable. esa siempre estará bien
+        // colocada») la pizarra del profesor, sin ↻ ni deslizador: entera y, al tocarla, a tamaño completo
+        figs+='<figure><figcaption><span class="dv-cap">✅ Solución'+(sols.length>1?(' '+(k+1)+' de '+sols.length):'')+' (la pizarra del profesor)</span></figcaption>'
           +'<a class="dv-img" href="'+esc(u)+'" target="_blank" rel="noopener"><img src="'+esc(u)+'" alt="Solución del dictado" loading="lazy"></a></figure>';
       });
     }
@@ -3167,7 +3169,7 @@ function showEnig(kind){
     v.innerHTML='<div class="dv-head"><div class="dv-tit">🎧 '+(dj.numero!=null?('Dictado nº '+esc(dj.numero)):'Dictado')+' · tu foto y la solución</div>'
       +'<button class="dv-close" aria-label="Cerrar" title="Cerrar">✕</button></div>'
       +'<div class="dv-body">'+figs+'</div>'
-      +'<div class="dv-tip">↻ gira la foto · el deslizador (o pellizcar) la amplía y, ampliada, se arrastra · sin ampliar, tócala para abrirla a tamaño completo en otra pestaña.</div>';
+      +'<div class="dv-tip">↻ gira tu foto · el deslizador (o pellizcar) la amplía y, ampliada, se arrastra · toca una foto sin ampliar para abrirla a tamaño completo en otra pestaña.</div>';
     document.body.appendChild(v);
     // si un archivo ya fue borrado (limpieza de 7 días), sustituir la imagen
     // rota por una nota amable en su propia tarjeta
@@ -3179,9 +3181,9 @@ function showEnig(kind){
         f.innerHTML=capHTML+'<div style="padding:26px 18px;color:#8ba3c7;font-size:13px;text-align:center">🕐 Esta imagen ya no está disponible (se guarda 7 días desde la revisión).</div>';
       };
     });
-    // (7-oct-2026, Iago) girar y ampliar cada foto · (noche) y colocar sola la del alumno
+    // (7-oct-2026, Iago) girar, ampliar y colocar sola la foto del alumno · (8-oct) la de la solución ya no lleva mandos
     var retiradas=[];
-    Array.prototype.forEach.call(v.querySelectorAll('figure'),function(f){ try{ var q=dvGiroZoom(f,f.classList.contains('dv-mia')); if(q) retiradas.push(q); }catch(e){} });
+    Array.prototype.forEach.call(v.querySelectorAll('figure.dv-mia'),function(f){ try{ var q=dvGiroZoom(f,true); if(q) retiradas.push(q); }catch(e){} });
     var onEsc=function(e){ if(e.key==='Escape'){ e.stopPropagation(); cierra(); } };
     var cierra=function(){ retiradas.forEach(function(q){ try{ q(); }catch(e){} }); try{ v.remove(); }catch(e){} document.removeEventListener('keydown',onEsc,true); };
     v.querySelector('.dv-close').addEventListener('click',cierra);

@@ -6,6 +6,12 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 8-oct 09:52 · Fichas y rediseño · HECHO · en este mismo commit, junto a index.html (sin EN CURSO previo: un solo
+  fichero, publicado en un minuto; comprobado antes que el último commit seguía siendo c306744 y el vivo, 84089193).
+  Iago: «no es necesario que el alumno tenga lo de solución (la pizarra del profesor) editable. esa siempre estará
+  bien colocada». En «Ver dictado y solución», la foto de la SOLUCIÓN ya no lleva ↻ ni deslizador: se ve entera, como
+  antes del 7-oct, y al tocarla se abre a tamaño completo. La foto del alumno sigue igual (↻, deslizador y colocador).
+  Solo index.html: el rótulo de la solución, la llamada a dvGiroZoom (solo figure.dv-mia) y la línea de ayuda.
 - 7-oct 23:25 · Fichas y rediseño · HECHO · colocador automático de la foto del dictado + zoom calibrado (EN CURSO en
   440f1ae). Iago: «casi nunca me aparece bien colocada y tengo que andar rotando y ampliando… como coger de referencia
   claves de sol… también es demasiado sensible el zoom» y «que el visor del alumno tenga también el sistema mejorado
