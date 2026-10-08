@@ -6,11 +6,19 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
-- 8-oct 10:19 · Intros didácticas (la conversación de los vídeos y de «La cabaña») · EN CURSO · «La cabaña» VERSIÓN 3: el
-  oboe sin vibrato e igual de fuerte que el clarinete (Iago, 8-oct: «prefiero que no vibren. Eso se lo dejamos a la
-  flauta»). Se sube a cualidadesdelsonido, encima de 6ea83c6: prueba.html y 6 ficheros de cabana/ (el vídeo del Día 3,
-  tramo 2, a 60 y a 30 fotogramas; el sonido del oboe; los dos manifiestos y el LEEME; 18 MB). Sigue siendo la página EN
-  PRUEBA (solo Tester/Protester). NO se toca el index.html de Acústica ni nada de este portal (lmpro).
+- 8-oct 10:29 · Intros didácticas (la conversación de los vídeos y de «La cabaña») · HECHO · «La cabaña» VERSIÓN 3 (Iago,
+  8-oct: «prefiero que no vibren. Eso se lo dejamos a la flauta»). cualidadesdelsonido 43a705d (encima de 6ea83c6),
+  revisión 10081005: el oboe sin vibrato (su grabación: el ataque real y luego la nota quieta en 440 Hz) e igual de
+  fuerte que el clarinete (sonios, ISO 532-1), en el vídeo del Día 3 (tramo 2, a 60 y a 30 fotogramas) y en la parada
+  «De oboe a clarinete» (el botón pasa a ser «Oír la grabación del oboe»). Cambian 7 ficheros (18 MB): prueba.html,
+  cabana/LEEME.txt, cabana/a/oboe_A4.mp3, cabana/manifest.json, cabana/manifest30.json, cabana/v/d3_2.mp4 y
+  cabana/v30/d3_2.mp4. QUIEN TOQUE prueba.html O cabana/, QUE PARTA DE 43a705d. Comprobado antes de subir (sitio real
+  H.264, 1080p60 y 720p30) y después, en la web real a las 10:28: los 7 ficheros, idénticos byte a byte a los del commit
+  y a los del espejo. Los 3 de sonido y vídeo llevan la marca de procedencia (C2PA) de la entrega; descontándola, son
+  idénticos a los montados. index.html de Acústica y este portal (lmpro), SIN TOCAR. Deshacer: «Revert» de 43a705d.
+  Espejo de Dropbox al día; los 7 ficheros de la versión 2, en APPs/_PARA BORRAR/
+  8-oct-2026-la-cabana-v2-antes-del-oboe-sin-vibrato/. Nota: APPs/LMATHOME GP (github lmpro)/
+  LEEME-8-oct-2026-acustica-la-cabana-version-3.txt.
 - 8-oct 09:52 · Fichas y rediseño · HECHO · en este mismo commit, junto a index.html (sin EN CURSO previo: un solo
   fichero, publicado en un minuto; comprobado antes que el último commit seguía siendo c306744 y el vivo, 84089193).
   Iago: «no es necesario que el alumno tenga lo de solución (la pizarra del profesor) editable. esa siempre estará
