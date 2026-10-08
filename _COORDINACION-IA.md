@@ -6,6 +6,11 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 8-oct 10:19 · Intros didácticas (la conversación de los vídeos y de «La cabaña») · EN CURSO · «La cabaña» VERSIÓN 3: el
+  oboe sin vibrato e igual de fuerte que el clarinete (Iago, 8-oct: «prefiero que no vibren. Eso se lo dejamos a la
+  flauta»). Se sube a cualidadesdelsonido, encima de 6ea83c6: prueba.html y 6 ficheros de cabana/ (el vídeo del Día 3,
+  tramo 2, a 60 y a 30 fotogramas; el sonido del oboe; los dos manifiestos y el LEEME; 18 MB). Sigue siendo la página EN
+  PRUEBA (solo Tester/Protester). NO se toca el index.html de Acústica ni nada de este portal (lmpro).
 - 8-oct 09:52 · Fichas y rediseño · HECHO · en este mismo commit, junto a index.html (sin EN CURSO previo: un solo
   fichero, publicado en un minuto; comprobado antes que el último commit seguía siendo c306744 y el vivo, 84089193).
   Iago: «no es necesario que el alumno tenga lo de solución (la pizarra del profesor) editable. esa siempre estará
