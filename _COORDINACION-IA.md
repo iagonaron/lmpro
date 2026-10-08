@@ -6,14 +6,19 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
-- 8-oct 21:52 · Intros didácticas (la conversación de los vídeos y de «La cabaña») · EN CURSO · «La cabaña» OFICIAL (Iago, 8-oct
-  noche: «lo podemos dar por bueno… a los alumnos no les puede salir todavía»; «la única forma para acceder por parte de
-  los alumnos al portal de acústica será pulsando la medalla una vez que esté desbloqueada»; del laboratorio antiguo: «el
-  otro es obsoleto ya»). (1) ESTE REPO, index.html, SOLO el bloque @MEDALLERO, partiendo de dde1bf8: la medalla u2 abre
-  «La cabaña» para todos (https://acustica.gp.lmathome.es/prueba.html) con el icono nuevo al abrirse; cerrada, la sombra
-  de siempre; a los alumnos se les abre como todas (el viernes a las 19:00 de la semana en que Iago guarda la unidad 2;
-  previsto el viernes 16-oct); Tester/Protester la siguen teniendo abierta. (2) cualidadesdelsonido, partiendo de
-  43a705d: index.html (el laboratorio antiguo) pasa a ser un aviso de que se abre desde la medalla.
+- 8-oct 22:02 · Intros didácticas (la conversación de los vídeos y de «La cabaña») · HECHO · «La cabaña» OFICIAL (EN CURSO en
+  3cc99b8; Iago: «la única forma para acceder por parte de los alumnos al portal de acústica será pulsando la medalla una
+  vez que esté desbloqueada»). (1) ESTE REPO, commit e22af28, index.html, solo @MEDALLERO: la medalla u2 abre «La cabaña»
+  para todos (https://acustica.gp.lmathome.es/prueba.html), con el icono nuevo al abrirse y, cerrada, la sombra de
+  siempre (probado en local con sesiones simuladas: el medallero cerrado de un alumno sale idéntico, píxel a píxel). A
+  los alumnos se les abre como todas: el viernes a las 19:00 de la semana en que Iago guarda la unidad 2 (previsto el
+  viernes 16-oct). Tester/Protester ya la tienen abierta (PRUEBA queda como anticipo). (2) cualidadesdelsonido, commit
+  af38999: index.html deja de ser el laboratorio antiguo y pasa a ser un aviso («Este laboratorio se abre desde su
+  medalla, en el portal de 2.º GP» y un enlace a gp.lmathome.es); el antiguo, en APPs/_PARA BORRAR/
+  8-oct-2026-acustica-laboratorio-antiguo/. Comprobado en vivo a las 22:01: gp.lmathome.es/index.html y
+  acustica.gp.lmathome.es/index.html, idénticos a los subidos. QUIEN TOQUE EL MEDALLERO, QUE PARTA DE e22af28.
+  Deshacer: «Revert» de e22af28 (medalla) y de af38999 (laboratorio antiguo). Nota: APPs/LMATHOME GP (github lmpro)/
+  LEEME-8-oct-2026-acustica-la-cabana-oficial.txt.
 - 8-oct 10:29 · Intros didácticas (la conversación de los vídeos y de «La cabaña») · HECHO · «La cabaña» VERSIÓN 3 (Iago,
   8-oct: «prefiero que no vibren. Eso se lo dejamos a la flauta»). cualidadesdelsonido 43a705d (encima de 6ea83c6),
   revisión 10081005: el oboe sin vibrato (su grabación: el ataque real y luego la nota quieta en 440 Hz) e igual de
