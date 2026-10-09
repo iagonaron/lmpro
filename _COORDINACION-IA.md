@@ -6,17 +6,19 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
-- 9-oct 20:44 · Fichas y rediseño · EN CURSO · (1) DIARIO (Netlify diariodeiagocmus), encima de 6ac89f57: ipad.html
-  (el ojo de la escaleta y el «Revelar» del dictado agrupaban mal la corchea con puntillo: beamsPorPulso),
-  suite-campana.js + suite-campana.css (los ceros automáticos de la campana, en negro con calavera; la lista del botón
-  de morosos, igual que la del portal de Tester/Protester: rojos con cuenta atrás y calaveras, con «Ya entregó» por
-  suite_morosos_ya_entrego_token) e index.html / iphone.html, que solo cambian ?v (s36 / d56). (2) CORRECCIÓN DE
-  DICTADOS ELEMENTAL (Netlify dictadoselemental), encima de 6ac61a17: pantalla-7oct.js (la pantalla del aula solo
-  enseña las notas del día de la última corrección: no sale la nota de otra semana a quien no se corrigió hoy) y
-  pantalla.html (?v=3). (3) SUPABASE, lo pegará Iago: cuentas de prácticas con acceso hasta el 15-jun-2027
-  (suite_practicas.hasta y cerrada_en; puerta nueva en suite_login_alumno_v2, con la original intacta en
-  _suite_login_alumno_v2_alumnos; la puerta suite_registrar_alumno_v4 con la fecha; trabajo pg_cron
-  lm_practicas_cerrar cada hora). Si vas a tocar algo de esto, espera al HECHO.
+- 9-oct 20:52 · Fichas y rediseño · HECHO · (1) DIARIO (Netlify diariodeiagocmus) deploy 6ac936ad encima de 6ac89f57
+  (75 ficheros; solo cambian 5): ipad.html (beamsPorPulso: la corchea con puntillo y los tresillos con su duración; el
+  ojo de la escaleta y el «Revelar» del dictado agrupan por pulsos como la solución del generador), suite-campana.css
+  + suite-campana.js (los ceros automáticos de la campana, en negro con calavera; la lista del botón de morosos es la
+  del portal de Tester/Protester: rojos con cuenta atrás y calaveras abajo, «Ya entregó» por
+  suite_morosos_ya_entrego_token con la llave lm-morosos-v1; datos de suite_pendientes_fichas, sin cambios en la base)
+  e index.html / iphone.html, que solo cambian ?v (s36 / d56). (2) CORRECCIÓN DE DICTADOS ELEMENTAL (Netlify
+  dictadoselemental) deploy 6ac93722 encima de 6ac61a17: pantalla-7oct.js (la pantalla del aula solo enseña las notas
+  del día de la última corrección del grupo) y pantalla.html (?v=3). (3) SUPABASE: preparado y SIN PEGAR (lo pega
+  Iago): cuentas de prácticas con acceso hasta el 15-jun-2027 (suite_practicas.hasta y cerrada_en; puerta en
+  suite_login_alumno_v2 con la original intacta en _suite_login_alumno_v2_alumnos; la puerta suite_registrar_alumno_v4
+  con la fecha; pg_cron lm_practicas_cerrar cada hora). El SQL comprueba antes que esas dos funciones siguen como hoy:
+  si las cambias, se parará sin tocar nada; apúntalo aquí.
 - 9-oct 10:02 · Fichas y rediseño · HECHO · (1) CUENTAS DE PRÁCTICAS en Supabase: el SQL lo pegó Iago esta mañana;
   comprobado solo leyendo (las 23 funciones nuevas, idénticas a las ensayadas; copia de las 16 de antes en
   _bak_funciones_20261009_practicas). OJO A PARTIR DE AHORA: estas 14 funciones son «puertas» y la original está tal
