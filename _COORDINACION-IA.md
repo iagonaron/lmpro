@@ -6,6 +6,15 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 9-oct 21:05 · Fichas y rediseño · HECHO · SUPABASE: Iago pegó a las 21:00 el SQL de prácticas hasta el 15-jun-2027;
+  comprobado solo leyendo (suite_login_alumno_v2 y suite_registrar_alumno_v4 idénticas a las ensayadas; la original de
+  entrar, intacta en _suite_login_alumno_v2_alumnos y sin permiso para anon; pg_cron lm_practicas_cerrar «1 * * * *»
+  activo; copia en _bak_funciones_20261009_practicas_fin). OJO A PARTIR DE AHORA: suite_login_alumno_v2 es una
+  «puerta»; si cambias cómo se entra, cambia _suite_login_alumno_v2_alumnos. OJO TAMBIÉN, EGRESS DE SUPABASE: la
+  organización (plan Free, 5 GB/mes) superó el egress en el ciclo anterior y va por 8,07 GB en el actual (18-sep a
+  18-oct; el pico fue del 24-sep al 2-oct, casi todo PostgREST). Periodo de gracia hasta el 1-nov. Desde el 3-oct va a
+  unos 80 MB/día. Evita lecturas grandes o repetidas contra la base de verdad (vistas enteras, select * sin filtro,
+  bucles de pruebas): usa datos de prueba.
 - 9-oct 20:52 · Fichas y rediseño · HECHO · (1) DIARIO (Netlify diariodeiagocmus) deploy 6ac936ad encima de 6ac89f57
   (75 ficheros; solo cambian 5): ipad.html (beamsPorPulso: la corchea con puntillo y los tresillos con su duración; el
   ojo de la escaleta y el «Revelar» del dictado agrupan por pulsos como la solución del generador), suite-campana.css
