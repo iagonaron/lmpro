@@ -6,6 +6,19 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 9-oct 10:02 · Fichas y rediseño · HECHO · (1) CUENTAS DE PRÁCTICAS en Supabase: el SQL lo pegó Iago esta mañana;
+  comprobado solo leyendo (las 23 funciones nuevas, idénticas a las ensayadas; copia de las 16 de antes en
+  _bak_funciones_20261009_practicas). OJO A PARTIR DE AHORA: estas 14 funciones son «puertas» y la original está tal
+  cual en _<nombre>_alumnos: suite_registrar_alumno_v4, suite_ficha_entregar, suite_ficha_revision_alumno,
+  suite_fichas_entregadas, suite_semana_hechos_de, suite_quiz_hechos_de, suite_quiz_completar, suite_formato_leer,
+  suite_alumno_notif_listar, suite_alumno_notif_contador, suite_uso_ping, suite_tiempo_ping, suite_pass_reset_v2 y
+  suite_mis_resultados. Si cambias una, cambia la _…_alumnos (o la puerta, si es para prácticas): NO pegues encima una
+  copia vieja con el nombre de la puerta. También cambiaron suite_listar_pendientes_v3 (lista «practicas») y
+  suite_morosos (sin prácticas; una fila por alumno). (2) DIARIO deploy 6ac89f57 encima de 6ac80b00: «Tienes que
+  volver a entrar» solo sale si hay versión nueva. Cada publicación del Diario la avisa Netlify (hook «Deploy
+  succeeded») a la función de Supabase diario-publicado, que apunta la hora en app_config «diario_publicado»; no hay
+  que hacer nada al publicar. (3) LMEAVathome: cancelada, con permiso de Iago, la publicación #216 (aedee0f, del
+  6-oct) que seguía en cola; no queda nada en cola.
 - 8-oct 23:33 · Fichas y rediseño · HECHO (parte de las CUENTAS DE PRÁCTICAS) · DIARIO (Netlify diariodeiagocmus)
   deploy 6ac80b00 encima de 6ac7f9f8: la campana enseña los avisos de las cuentas de prácticas (alta, ficha con su
   nota, quiz), que vendrán en una lista nueva «practicas» de suite_listar_pendientes_v3. suite-campana.js?v=s35;
