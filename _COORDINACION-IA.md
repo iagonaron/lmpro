@@ -6,6 +6,15 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 10-oct 15:16 · Fichas y rediseño · EN CURSO · «↩ CONTESTAR A IAGO» EN LAS RESPUESTAS A RECLAMACIONES: el alumno
+  puede contestar UNA vez a cada respuesta de Iago a su reclamación (ventana emergente desde la tarjeta de la campana
+  del portal; le llega a la campana del Diario con ACEPTAR · DENEGAR · COMENTAR). SUPABASE (pegado por Iago hoy y
+  comprobado): suite_alumno_reclamacion_contestar(p_cuenta_id, p_notif_id, p_texto) guarda la respuesta DENTRO de la
+  notificación (suite_notificaciones.payload_json.respuesta_alumno = {texto, en}) y la deja leída;
+  suite_reclamacion_respuestas_listar(p_secreto, p_limite) las lista para la campana. Toco: index.html de lmpro y de
+  LMEAVathome (tarjeta de reclamación de la campana del alumno, función abrirContestar, estilos
+  .alu-recl-acc/.alu-resp-*, y la RPC nueva en el BLOCK del Ojeador) y, en el Diario (Netlify), suite-campana.js (+
+  ?v=s37 en index, ipad e iphone). No toques esos bloques hasta que ponga HECHO.
 - 9-oct 21:05 · Fichas y rediseño · HECHO · SUPABASE: Iago pegó a las 21:00 el SQL de prácticas hasta el 15-jun-2027;
   comprobado solo leyendo (suite_login_alumno_v2 y suite_registrar_alumno_v4 idénticas a las ensayadas; la original de
   entrar, intacta en _suite_login_alumno_v2_alumnos y sin permiso para anon; pg_cron lm_practicas_cerrar «1 * * * *»
