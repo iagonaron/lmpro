@@ -6,6 +6,15 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 10-oct 15:22 · Fichas y rediseño · HECHO · «↩ CONTESTAR A IAGO» EN LAS RESPUESTAS A RECLAMACIONES. Diario: Netlify
+  deploy 6aca3b28 encima de 6ac936ad (suite-campana.js 2a8588e8…; index, ipad e iphone piden ?v=s37; 75 ficheros, el
+  resto idéntico). Portal GE: LMEAVathome commit 9255a1d (index.html d6a5a7fc…). Portal GP: este commit (index.html
+  345e423f…). Supabase: las 2 funciones, pegadas por Iago y comprobadas (idénticas a las ensayadas). OJO A PARTIR DE
+  AHORA: (1) suite_notificaciones.payload_json.respuesta_alumno lo escribe el ALUMNO: si reescribes payloads de
+  notificaciones, no lo pises; (2) el aviso de reclamación que manda la campana del Diario (suite_notif_crear con
+  payload.reclamacion = true) se puede contestar: mantén reclamacion_ficha_id y ejercicios; (3) en los portales, la
+  tarjeta de reclamación lleva ahora .alu-recl-acc (dos botones en columna) y la ventana #alu-resp-modal (z-index
+  1000).
 - 10-oct 15:16 · Fichas y rediseño · EN CURSO · «↩ CONTESTAR A IAGO» EN LAS RESPUESTAS A RECLAMACIONES: el alumno
   puede contestar UNA vez a cada respuesta de Iago a su reclamación (ventana emergente desde la tarjeta de la campana
   del portal; le llega a la campana del Diario con ACEPTAR · DENEGAR · COMENTAR). SUPABASE (pegado por Iago hoy y

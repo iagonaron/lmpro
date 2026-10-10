@@ -362,6 +362,33 @@ if(window.Sentry && !/^(localhost|127\.0\.0\.1)$/.test(location.hostname)){
   .alu-recl-nota{font-size:13px;margin-top:6px;color:#c9d2e6}.alu-recl-nota b{color:#7ee7b6;font-size:14px}.alu-recl-nota s{opacity:.6}
   .alu-recl-ver{display:inline-block;margin-top:8px;font-size:13px;font-weight:700;color:#5b9dff;text-decoration:none;border:1px solid rgba(91,157,255,.5);border-radius:8px;padding:6px 10px}
   .alu-recl-ver:hover{background:rgba(91,157,255,.14)}
+  /* (10-oct-2026, Iago) «↩ Contestar a Iago»: debajo de «Marcar como leído»; abre una ventana para escribirle */
+  .alu-recl-acc{flex:0 0 auto;align-self:center;display:flex;flex-direction:column;align-items:stretch;gap:6px;margin-left:6px}
+  .alu-recl-acc .alu-recl-leido{margin-left:0;align-self:stretch}
+  .alu-recl-contestar{background:rgba(245,185,66,.12);border:1px solid rgba(245,185,66,.75);color:#ffd98a;border-radius:10px;padding:8px 12px;font:700 12.5px/1.15 "Helvetica Neue",Arial,sans-serif;cursor:pointer;white-space:nowrap}
+  .alu-recl-contestar:hover,.alu-recl-contestar:focus-visible{background:rgba(245,185,66,.22);border-color:#f5b942;outline:none}
+  @media (max-width:560px){.alu-recl-contestar{padding:7px 9px;font-size:12px;white-space:normal;max-width:96px;text-align:center}}
+  .alu-recl-tuya{margin-top:8px;padding:8px 10px;border-radius:10px;border:1px solid rgba(245,185,66,.45);background:rgba(245,185,66,.07)}
+  .alu-recl-tuya-tit{font-size:11.5px;font-weight:800;color:#ffd98a}
+  .alu-recl-tuya-txt{white-space:pre-wrap;margin-top:4px;color:#e6ecf7;font-size:13px}
+  .alu-resp-modal{position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(5,8,20,.66);backdrop-filter:blur(3px)}
+  .alu-resp-caja{width:100%;max-width:520px;max-height:calc(100vh - 32px);overflow:auto;box-sizing:border-box;background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid rgba(245,185,66,.55);border-radius:14px;box-shadow:0 24px 80px rgba(0,0,0,.55);padding:16px;color:var(--ink)}
+  .alu-resp-cab{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
+  .alu-resp-cab b{font-size:16px;font-weight:800;color:#ffd98a}
+  .alu-resp-x{background:none;border:none;color:var(--muted);font-size:22px;line-height:1;cursor:pointer;padding:0 4px}
+  .alu-resp-cita{border-left:3px solid #f5b942;padding:6px 10px;margin-bottom:10px;background:rgba(255,255,255,.04);border-radius:0 8px 8px 0;max-height:140px;overflow:auto}
+  .alu-resp-cita-tit{font-size:12px;font-weight:800;color:#c9d2e6}
+  .alu-resp-cita-txt{white-space:pre-wrap;font-size:13px;color:#e6ecf7;margin-top:4px}
+  .alu-resp-txt{display:block;width:100%;box-sizing:border-box;min-height:120px;resize:vertical;border-radius:10px;border:1px solid var(--line);background:rgba(0,0,0,.28);color:var(--ink);padding:10px 12px;font-family:inherit;font-size:16px;line-height:1.4}
+  .alu-resp-txt:focus{outline:none;border-color:#f5b942}
+  .alu-resp-pie{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;margin-top:10px}
+  .alu-resp-info{font-size:12px;color:var(--muted)}
+  .alu-resp-btns{display:flex;gap:8px;margin-left:auto}
+  .alu-resp-btns button{border-radius:10px;padding:9px 14px;font:700 13px/1.1 "Helvetica Neue",Arial,sans-serif;cursor:pointer}
+  .alu-resp-cancelar{background:transparent;border:1px solid rgba(255,255,255,.38);color:#fff}
+  .alu-resp-enviar{background:#f5b942;border:1px solid #f5b942;color:#1a1200}
+  .alu-resp-enviar:disabled{opacity:.45;cursor:default}
+  .alu-resp-estado{min-height:16px;margin-top:8px;font-size:12.5px;font-weight:700;color:#ff9a9e}
   .portal-welcome{position:absolute;left:0;top:50%;transform:translateY(-50%);display:inline-flex;flex-direction:column;align-items:flex-start;gap:6px;font-size:13px;color:var(--muted);white-space:nowrap}
   .portal-welcome .pw-linea{display:inline-flex;align-items:center;gap:6px}
   .portal-welcome .pw-nombre{color:var(--ink);font-weight:800}
@@ -620,7 +647,7 @@ body.tester-sin-by .topbar-right .by{display:none}
     var VID=m[1];
     window.__VISOR={ id:VID, session:{ id:VID, estado:'validado', recordar:true, nombre:'' } };
     var SES={ lmeav_session:1, lmpro_session:1 };
-    var BLOCK={ suite_alumno_marcar_leido:1, suite_alumno_marcar_todo:1, suite_msj_enviar_alumno:1,
+    var BLOCK={ suite_alumno_marcar_leido:1, suite_alumno_marcar_todo:1, suite_msj_enviar_alumno:1, suite_alumno_reclamacion_contestar:1,
                 suite_quiz_barrer:1, suite_semana_marcar:1, suite_login_alumno:1, suite_pass_reset:1,
                 suite_registrar_alumno:1, suite_registrar_alumno_v3:1 };
     var WRE=/(_marcar|marcar_|_enviar|registrar|_reset|barrer|_guardar|_crear|_borrar|_upsert|_insert|_update|_delete)/;
@@ -3568,10 +3595,20 @@ function showEnig(kind){
           +(o.cuerpo?'<div class="alu-item-cuerpo alu-recl-msg">'+esc(o.cuerpo)+'</div>':'')
           +notaR
           +(pr.url?'<a class="alu-recl-ver" href="'+esc(pr.url)+'" target="_blank" rel="noopener">🔍 Ver mi ficha corregida →</a>':'')
+          /* (10-oct-2026, Iago) lo que el alumno le contestó (una vez por cada mensaje de Iago) */
+          +((pr.respuesta_alumno&&pr.respuesta_alumno.texto)?'<div class="alu-recl-tuya"><div class="alu-recl-tuya-tit">↩ Tu respuesta a Iago'+(pr.respuesta_alumno.en?' · '+fecha(pr.respuesta_alumno.en):'')+'</div><div class="alu-recl-tuya-txt">'+esc(pr.respuesta_alumno.texto)+'</div></div>':'')
           +'<div class="alu-item-fecha">'+fecha(o.creado_en)+'</div>'
           +'</div>'
-          /* (29-sep-2026, Iago) botón a la derecha para darla por leída */
-          +(o.leido?'':'<button type="button" class="alu-recl-leido" data-recl-leido="'+esc(o.id)+'">Marcar como leído</button>')
+          /* (29-sep-2026, Iago) botón a la derecha para darla por leída.
+             (10-oct-2026, Iago) y debajo, «↩ Contestar a Iago»: abre una ventana para escribirle (en el Ojeador, no) */
+          +(function(){
+            var puede=!pr.respuesta_alumno && !window.__VISOR;
+            if(o.leido && !puede) return '';
+            return '<div class="alu-recl-acc">'
+              +(o.leido?'':'<button type="button" class="alu-recl-leido" data-recl-leido="'+esc(o.id)+'">Marcar como leído</button>')
+              +(puede?'<button type="button" class="alu-recl-contestar" data-recl-contestar="'+esc(o.id)+'">↩ Contestar a Iago</button>':'')
+              +'</div>';
+          })()
           +'</div>';
       }
       var fid=(o.payload_json && o.payload_json.ficha_id) ? o.payload_json.ficha_id : '';
@@ -3750,11 +3787,60 @@ function showEnig(kind){
         marcar(b.getAttribute('data-recl-leido'), it);
       });
     });
+    /* (10-oct-2026, Iago) «↩ Contestar a Iago» → ventana para escribirle (no marca leída la tarjeta al tocarlo) */
+    Array.prototype.forEach.call(body.querySelectorAll('.alu-recl-contestar'),function(b){
+      b.addEventListener('click',function(ev){
+        ev.stopPropagation(); ev.preventDefault();
+        abrirContestar(b.getAttribute('data-recl-contestar'), b.closest('.alu-item'));
+      });
+    });
     // Clic en una notificación sin acción: solo marcar leído.
     Array.prototype.forEach.call(body.querySelectorAll('.alu-item.no-leido'),function(el){
       el.addEventListener('click',function(){ marcar(el.getAttribute('data-id'),el); });
     });
     tickCuentas();
+  }
+  /* (10-oct-2026, Iago) VENTANA «↩ Contestar a Iago»: el alumno contesta a la respuesta de Iago a su reclamación.
+     Una respuesta por cada mensaje de Iago (lo controla la base de datos: suite_alumno_reclamacion_contestar) y le
+     llega a la campana del Diario. Esc, ✕ o «Cancelar» cierran; tocar fuera también, si no ha escrito nada. */
+  function abrirContestar(nid, it){
+    if(!nid || window.__VISOR) return;
+    var viejo=document.getElementById('alu-resp-modal'); if(viejo && viejo.parentNode) viejo.parentNode.removeChild(viejo);
+    var titEl=it&&it.querySelector('.alu-item-tit'), msgEl=it&&it.querySelector('.alu-recl-msg'), titTxt='Sobre tu reclamación';
+    if(titEl){ var cl=titEl.cloneNode(true); Array.prototype.forEach.call(cl.querySelectorAll('.alu-recl-chip'),function(x){ x.parentNode.removeChild(x); }); titTxt=cl.textContent.replace(/\s+/g,' ').trim()||titTxt; }
+    var m=document.createElement('div'); m.id='alu-resp-modal'; m.className='alu-resp-modal';
+    m.setAttribute('role','dialog'); m.setAttribute('aria-modal','true'); m.setAttribute('aria-label','Contestar a Iago');
+    m.innerHTML='<div class="alu-resp-caja">'
+      +'<div class="alu-resp-cab"><b>↩ Contestar a Iago</b><button type="button" class="alu-resp-x" aria-label="Cerrar">&times;</button></div>'
+      +'<div class="alu-resp-cita"><div class="alu-resp-cita-tit">'+esc(titTxt)+'</div>'
+      +(msgEl?'<div class="alu-resp-cita-txt">'+esc(msgEl.textContent)+'</div>':'')+'</div>'
+      +'<textarea class="alu-resp-txt" maxlength="1000" placeholder="Escribe aquí tu respuesta…"></textarea>'
+      +'<div class="alu-resp-pie"><span class="alu-resp-info">Solo puedes contestar una vez a cada mensaje · <span class="alu-resp-n">0</span>/1000</span>'
+      +'<span class="alu-resp-btns"><button type="button" class="alu-resp-cancelar">Cancelar</button><button type="button" class="alu-resp-enviar" disabled>Enviar a Iago</button></span></div>'
+      +'<div class="alu-resp-estado" aria-live="polite"></div>'
+      +'</div>';
+    document.body.appendChild(m);
+    var ta=m.querySelector('.alu-resp-txt'), env=m.querySelector('.alu-resp-enviar'), cu=m.querySelector('.alu-resp-n'), st=m.querySelector('.alu-resp-estado');
+    function cerrarC(){ document.removeEventListener('keydown',tecla,true); if(m.parentNode) m.parentNode.removeChild(m); }
+    function tecla(e){ if(e.key==='Escape'){ e.stopPropagation(); e.preventDefault(); cerrarC(); } }
+    document.addEventListener('keydown',tecla,true);
+    m.addEventListener('click',function(e){ if(e.target===m && !ta.value.trim()) cerrarC(); });
+    m.querySelector('.alu-resp-x').addEventListener('click',cerrarC);
+    m.querySelector('.alu-resp-cancelar').addEventListener('click',cerrarC);
+    ta.addEventListener('input',function(){ cu.textContent=String(ta.value.length); env.disabled=!ta.value.trim(); st.textContent=''; });
+    env.addEventListener('click',async function(){
+      var txt=ta.value.trim(); if(!txt) return;
+      var id=cuentaId(); if(!id){ st.textContent='Vuelve a entrar en el portal y prueba otra vez.'; return; }
+      env.disabled=true; env.textContent='Enviando…';
+      var r=await rpc('suite_alumno_reclamacion_contestar',{p_cuenta_id:id,p_notif_id:nid,p_texto:txt});
+      if(r && r.ok){ cerrarC(); render(); refrescar(); return; }
+      var er=(r&&r.error)||'';
+      env.textContent='Enviar a Iago';
+      if(er==='ya_contestada'){ st.textContent='Ya le habías contestado a este mensaje.'; render(); return; }
+      env.disabled=false;
+      st.textContent = er==='largo' ? 'Como mucho, 1000 caracteres.' : (er==='vacio' ? 'Escribe algo antes de enviar.' : 'No se ha podido enviar. Prueba otra vez.');
+    });
+    setTimeout(function(){ try{ ta.focus(); }catch(e){} },30);
   }
   async function marcar(nid,el){
     var id=cuentaId(); if(!id||!nid) return;
