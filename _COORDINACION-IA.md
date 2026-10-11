@@ -6,6 +6,9 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 11-oct 12:14 · Fichas y rediseño · HECHO (retoque) · DIARIO, deploy 6acb6139 encima de 6acb6028: en la ventana
+  «Semana guardada», los botones de clase del selector de unidad pasan a «C1 · C2» (regla de Iago para controles:
+  nunca «Clase 1 / Clase 2»). Solo app.js (d83) e index.html.
 - 11-oct 12:09 · Fichas y rediseño · HECHO (retoque, sin EN CURSO aparte) · DIARIO, deploy 6acb6028 encima de
   6acb5a11: DICTADO «+1» CON SALTOS. En la biblioteca de 2º GP, 3.mxl y 4.mxl empiezan igual; Iago eligió saltarse el
   4 también en los cursos que vienen. diario-dictado-clase.js: _dictTablaSaltos ({2gp: {4}}),
