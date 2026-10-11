@@ -6,6 +6,12 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 11-oct 12:09 · Fichas y rediseño · HECHO (retoque, sin EN CURSO aparte) · DIARIO, deploy 6acb6028 encima de
+  6acb5a11: DICTADO «+1» CON SALTOS. En la biblioteca de 2º GP, 3.mxl y 4.mxl empiezan igual; Iago eligió saltarse el
+  4 también en los cursos que vienen. diario-dictado-clase.js: _dictTablaSaltos ({2gp: {4}}),
+  DictadoBiblioteca.siguiente/saltado y «· se salta» en el desplegable; diario-progresion.js (progDictado GE/GP) y
+  diario-semana-siguiente.js (dictObjetivo) usan ese siguiente en vez de +1; index.html r19/r22/s3. Datos (desde el
+  Diario, con su permiso): 2º GP semana 42 → nº 5 y semana 43 → nº 6, «a mano». 4º GE sin cambios.
 - 11-oct 11:46 · Fichas y rediseño · HECHO (retoque, sin EN CURSO aparte) · DIARIO (Netlify diariodeiagocmus), deploy
   6acb5a11 encima de 6aca3b28: ventana «Semana guardada» de 2º GP (solo ordenador). La unidad activa se pinta en CADA
   apertura (el modal se reutiliza y se quedaba con la unidad de la primera vez) y lleva debajo las unidades como la
