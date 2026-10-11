@@ -389,6 +389,7 @@ if(window.Sentry && !/^(localhost|127\.0\.0\.1)$/.test(location.hostname)){
   .alu-resp-enviar{background:#f5b942;border:1px solid #f5b942;color:#1a1200}
   .alu-resp-enviar:disabled{opacity:.45;cursor:default}
   .alu-resp-estado{min-height:16px;margin-top:8px;font-size:12.5px;font-weight:700;color:#ff9a9e}
+  .alu-resp-visor{margin:-2px 0 10px;padding:7px 10px;border-radius:8px;border:1px dashed rgba(91,157,255,.65);background:rgba(91,157,255,.08);color:#a9c8ff;font-size:12.5px;font-weight:700}
   .portal-welcome{position:absolute;left:0;top:50%;transform:translateY(-50%);display:inline-flex;flex-direction:column;align-items:flex-start;gap:6px;font-size:13px;color:var(--muted);white-space:nowrap}
   .portal-welcome .pw-linea{display:inline-flex;align-items:center;gap:6px}
   .portal-welcome .pw-nombre{color:var(--ink);font-weight:800}
@@ -3600,9 +3601,10 @@ function showEnig(kind){
           +'<div class="alu-item-fecha">'+fecha(o.creado_en)+'</div>'
           +'</div>'
           /* (29-sep-2026, Iago) botón a la derecha para darla por leída.
-             (10-oct-2026, Iago) y debajo, «↩ Contestar a Iago»: abre una ventana para escribirle (en el Ojeador, no) */
+             (10-oct-2026, Iago) y debajo, «↩ Contestar a Iago»: abre una ventana para escribirle.
+             (11-oct-2026, Iago) en el Ojeador también sale, como lo ve el alumno (ahí la ventana no envía nada) */
           +(function(){
-            var puede=!pr.respuesta_alumno && !window.__VISOR;
+            var puede=!pr.respuesta_alumno;
             if(o.leido && !puede) return '';
             return '<div class="alu-recl-acc">'
               +(o.leido?'':'<button type="button" class="alu-recl-leido" data-recl-leido="'+esc(o.id)+'">Marcar como leído</button>')
@@ -3804,7 +3806,8 @@ function showEnig(kind){
      Una respuesta por cada mensaje de Iago (lo controla la base de datos: suite_alumno_reclamacion_contestar) y le
      llega a la campana del Diario. Esc, ✕ o «Cancelar» cierran; tocar fuera también, si no ha escrito nada. */
   function abrirContestar(nid, it){
-    if(!nid || window.__VISOR) return;
+    if(!nid) return;
+    var visor=!!window.__VISOR;   /* (11-oct-2026) Ojeador del profesor: la misma ventana, pero sin enviar */
     var viejo=document.getElementById('alu-resp-modal'); if(viejo && viejo.parentNode) viejo.parentNode.removeChild(viejo);
     var titEl=it&&it.querySelector('.alu-item-tit'), msgEl=it&&it.querySelector('.alu-recl-msg'), titTxt='Sobre tu reclamación';
     if(titEl){ var cl=titEl.cloneNode(true); Array.prototype.forEach.call(cl.querySelectorAll('.alu-recl-chip'),function(x){ x.parentNode.removeChild(x); }); titTxt=cl.textContent.replace(/\s+/g,' ').trim()||titTxt; }
@@ -3812,6 +3815,7 @@ function showEnig(kind){
     m.setAttribute('role','dialog'); m.setAttribute('aria-modal','true'); m.setAttribute('aria-label','Contestar a Iago');
     m.innerHTML='<div class="alu-resp-caja">'
       +'<div class="alu-resp-cab"><b>↩ Contestar a Iago</b><button type="button" class="alu-resp-x" aria-label="Cerrar">&times;</button></div>'
+      +(visor?'<div class="alu-resp-visor">Ojeador: así lo ve el alumno. Desde aquí no se envía nada.</div>':'')
       +'<div class="alu-resp-cita"><div class="alu-resp-cita-tit">'+esc(titTxt)+'</div>'
       +(msgEl?'<div class="alu-resp-cita-txt">'+esc(msgEl.textContent)+'</div>':'')+'</div>'
       +'<textarea class="alu-resp-txt" maxlength="1000" placeholder="Escribe aquí tu respuesta…"></textarea>'
@@ -3827,9 +3831,9 @@ function showEnig(kind){
     m.addEventListener('click',function(e){ if(e.target===m && !ta.value.trim()) cerrarC(); });
     m.querySelector('.alu-resp-x').addEventListener('click',cerrarC);
     m.querySelector('.alu-resp-cancelar').addEventListener('click',cerrarC);
-    ta.addEventListener('input',function(){ cu.textContent=String(ta.value.length); env.disabled=!ta.value.trim(); st.textContent=''; });
+    ta.addEventListener('input',function(){ cu.textContent=String(ta.value.length); env.disabled=visor||!ta.value.trim(); st.textContent=''; });
     env.addEventListener('click',async function(){
-      var txt=ta.value.trim(); if(!txt) return;
+      var txt=ta.value.trim(); if(!txt||visor) return;
       var id=cuentaId(); if(!id){ st.textContent='Vuelve a entrar en el portal y prueba otra vez.'; return; }
       env.disabled=true; env.textContent='Enviando…';
       var r=await rpc('suite_alumno_reclamacion_contestar',{p_cuenta_id:id,p_notif_id:nid,p_texto:txt});

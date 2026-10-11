@@ -6,6 +6,11 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 11-oct 11:00 · Fichas y rediseño · HECHO (retoque, sin EN CURSO aparte: mismos bloques que el 10-oct) · OJEADOR Y «↩
+  CONTESTAR A IAGO»: en el Ojeador del profesor (#visor=) la tarjeta de reclamación enseña el botón como lo ve el
+  alumno; la ventana avisa «Ojeador: así lo ve el alumno. Desde aquí no se envía nada.» y «Enviar» va siempre apagado
+  (abrirContestar corta el envío con window.__VISOR; la RPC sigue en el BLOCK del Ojeador). Portal GE: LMEAVathome
+  commit 5807414 (index.html 3f2c4f65…). Portal GP: este commit (index.html 8cc7e133…). Para el alumno no cambia nada.
 - 10-oct 15:22 · Fichas y rediseño · HECHO · «↩ CONTESTAR A IAGO» EN LAS RESPUESTAS A RECLAMACIONES. Diario: Netlify
   deploy 6aca3b28 encima de 6ac936ad (suite-campana.js 2a8588e8…; index, ipad e iphone piden ?v=s37; 75 ficheros, el
   resto idéntico). Portal GE: LMEAVathome commit 9255a1d (index.html d6a5a7fc…). Portal GP: este commit (index.html
