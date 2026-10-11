@@ -6,6 +6,12 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 11-oct 11:16 · Fichas y rediseño · HECHO (retoque, mismos bloques) · TARJETA DE RECLAMACIÓN EN LA CAMPANA DEL
+  ALUMNO, OPCIÓN 2 elegida por Iago: «Ver mi ficha corregida» a la izquierda y «Marcar como leído» · «↩ Contestar a
+  Iago» a la derecha en UNA fila al pie (.alu-recl-pie, con el grupo derecho .alu-recl-acc), todo a la misma altura;
+  el mensaje ocupa todo el ancho; en el móvil, «Ver mi ficha» a lo ancho y debajo los dos botones. Igual en la tarjeta
+  «Ficha N en papel ¡Corregida!». «Ficha N» con espacio duro en los títulos. Portal GE: LMEAVathome commit 1a46268
+  (index.html ac703d4c…). Portal GP: este commit (index.html 87cfbba2…).
 - 11-oct 11:00 · Fichas y rediseño · HECHO (retoque, sin EN CURSO aparte: mismos bloques que el 10-oct) · OJEADOR Y «↩
   CONTESTAR A IAGO»: en el Ojeador del profesor (#visor=) la tarjeta de reclamación enseña el botón como lo ve el
   alumno; la ventana avisa «Ojeador: así lo ve el alumno. Desde aquí no se envía nada.» y «Enviar» va siempre apagado

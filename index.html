@@ -363,8 +363,13 @@ if(window.Sentry && !/^(localhost|127\.0\.0\.1)$/.test(location.hostname)){
   .alu-recl-ver{display:inline-block;margin-top:8px;font-size:13px;font-weight:700;color:#5b9dff;text-decoration:none;border:1px solid rgba(91,157,255,.5);border-radius:8px;padding:6px 10px}
   .alu-recl-ver:hover{background:rgba(91,157,255,.14)}
   /* (10-oct-2026, Iago) «↩ Contestar a Iago»: debajo de «Marcar como leído»; abre una ventana para escribirle */
-  .alu-recl-acc{flex:0 0 auto;align-self:center;display:flex;flex-direction:column;align-items:stretch;gap:6px;margin-left:6px}
-  .alu-recl-acc .alu-recl-leido{margin-left:0;align-self:stretch}
+  /* (11-oct-2026, Iago) OPCIÓN 2: una fila al pie — «Ver mi ficha corregida» a la izquierda y los botones a la derecha */
+  .alu-recl-pie{display:flex;flex-wrap:wrap;align-items:stretch;gap:8px;margin-top:8px}
+  .alu-recl-pie .alu-recl-ver{margin-top:0;display:inline-flex;align-items:center}
+  .alu-item .alu-recl-pie .alu-recl-ver.ts-papel-ver{margin-top:0;align-self:stretch;display:inline-flex;align-items:center}
+  .alu-recl-acc{display:flex;gap:8px;margin-left:auto}
+  .alu-recl-acc .alu-recl-leido,.alu-recl-acc .alu-recl-contestar{margin:0;align-self:stretch;max-width:none}
+  @media (max-width:560px){.alu-recl-pie .alu-recl-ver{flex:1 1 100%;justify-content:center;text-align:center}.alu-recl-acc{flex:1 1 100%;margin-left:0}.alu-recl-acc .alu-recl-leido,.alu-recl-acc .alu-recl-contestar{flex:1 1 0;min-height:38px}}
   .alu-recl-contestar{background:rgba(245,185,66,.12);border:1px solid rgba(245,185,66,.75);color:#ffd98a;border-radius:10px;padding:8px 12px;font:700 12.5px/1.15 "Helvetica Neue",Arial,sans-serif;cursor:pointer;white-space:nowrap}
   .alu-recl-contestar:hover,.alu-recl-contestar:focus-visible{background:rgba(245,185,66,.22);border-color:#f5b942;outline:none}
   @media (max-width:560px){.alu-recl-contestar{padding:7px 9px;font-size:12px;white-space:normal;max-width:96px;text-align:center}}
@@ -3575,13 +3580,16 @@ function showEnig(kind){
         var pcN=(pc.nota_despues!=null&&isFinite(Number(pc.nota_despues)))?Number(pc.nota_despues).toFixed(2).replace('.',','):'';
         return '<div class="alu-item alu-recl alu-papel-corr'+(o.leido?'':' no-leido')+'" data-id="'+esc(o.id)+'">'
           +'<span class="alu-dot"></span>'
-          +'<div class="alu-item-main"><div class="alu-item-tit">📝 '+esc(pcF)+' en papel <span class="ts-papel-chip">¡Corregida!</span></div>'
+          +'<div class="alu-item-main"><div class="alu-item-tit">📝 '+esc(pcF).replace(/Ficha (\d+)/g,'Ficha&nbsp;$1')+' en papel <span class="ts-papel-chip">¡Corregida!</span></div>'
           +'<div class="alu-item-cuerpo">Tu '+esc(pcF)+' ya ha sido corregida.</div>'
           +(pcN?'<div class="ts-papel-notaL">Nota <b class="ts-papel-nota">'+pcN+'</b></div>':'')
-          +(pc.url?'<a class="alu-recl-ver ts-papel-ver" href="'+esc(pc.url)+'" target="_blank" rel="noopener">Ver ficha con las soluciones →</a>':'')
+          /* (11-oct-2026, Iago) como la de las reclamaciones: el enlace y «Marcar como leído» en una fila al pie */
+          +((pc.url||!o.leido)?'<div class="alu-recl-pie">'
+            +(pc.url?'<a class="alu-recl-ver ts-papel-ver" href="'+esc(pc.url)+'" target="_blank" rel="noopener">Ver ficha con las soluciones →</a>':'')
+            +(o.leido?'':'<span class="alu-recl-acc"><button type="button" class="alu-recl-leido" data-recl-leido="'+esc(o.id)+'">Marcar como leído</button></span>')
+            +'</div>':'')
           +'<div class="alu-item-fecha">'+fecha(o.creado_en)+'</div>'
           +'</div>'
-          +(o.leido?'':'<button type="button" class="alu-recl-leido" data-recl-leido="'+esc(o.id)+'">Marcar como leído</button>')
           +'</div>';
       }
       if(o.payload_json && o.payload_json.reclamacion){
@@ -3591,26 +3599,26 @@ function showEnig(kind){
         var ejR=(pr.ejercicios&&pr.ejercicios.length)?('<div class="alu-recl-ej">Ejercicio'+(pr.ejercicios.length>1?'s':'')+' '+pr.ejercicios.join(', ')+(est==='aceptada'?' · anulado'+(pr.ejercicios.length>1?'s':'')+' para ti, no te resta'+(pr.ejercicios.length>1?'n':''):'')+'</div>'):'';
         return '<div class="alu-item alu-recl'+(o.leido?'':' no-leido')+'" data-id="'+esc(o.id)+'">'
           +'<span class="alu-dot"></span>'
-          +'<div class="alu-item-main"><div class="alu-item-tit">'+chipR+' '+esc(String(o.titulo||'Sobre tu reclamación').replace(/^(✅|❌|📝)\s*/,''))+'</div>'
+          +'<div class="alu-item-main"><div class="alu-item-tit">'+chipR+' '+esc(String(o.titulo||'Sobre tu reclamación').replace(/^(✅|❌|📝)\s*/,'')).replace(/Ficha (\d+)/g,'Ficha&nbsp;$1')+'</div>'
           +ejR
           +(o.cuerpo?'<div class="alu-item-cuerpo alu-recl-msg">'+esc(o.cuerpo)+'</div>':'')
           +notaR
-          +(pr.url?'<a class="alu-recl-ver" href="'+esc(pr.url)+'" target="_blank" rel="noopener">🔍 Ver mi ficha corregida →</a>':'')
+          /* (29-sep-2026, Iago) botón para darla por leída. (10-oct-2026, Iago) y «↩ Contestar a Iago»: abre una ventana para
+             escribirle. (11-oct-2026, Iago) en el Ojeador también sale, como lo ve el alumno (ahí la ventana no envía nada).
+             (11-oct-2026, Iago, «me da bastante toc ver esto así» → OPCIÓN 2) todo en UNA fila al pie: «Ver mi ficha corregida»
+             a la izquierda y los botones a la derecha, a la misma altura (antes iban en columna a la derecha de la tarjeta). */
+          +(function(){
+            var puede=!pr.respuesta_alumno;
+            var ver=pr.url?'<a class="alu-recl-ver" href="'+esc(pr.url)+'" target="_blank" rel="noopener">🔍 Ver mi ficha corregida →</a>':'';
+            var bot=(o.leido?'':'<button type="button" class="alu-recl-leido" data-recl-leido="'+esc(o.id)+'">Marcar como leído</button>')
+              +(puede?'<button type="button" class="alu-recl-contestar" data-recl-contestar="'+esc(o.id)+'">↩ Contestar a Iago</button>':'');
+            if(!ver && !bot) return '';
+            return '<div class="alu-recl-pie">'+ver+(bot?'<span class="alu-recl-acc">'+bot+'</span>':'')+'</div>';
+          })()
           /* (10-oct-2026, Iago) lo que el alumno le contestó (una vez por cada mensaje de Iago) */
           +((pr.respuesta_alumno&&pr.respuesta_alumno.texto)?'<div class="alu-recl-tuya"><div class="alu-recl-tuya-tit">↩ Tu respuesta a Iago'+(pr.respuesta_alumno.en?' · '+fecha(pr.respuesta_alumno.en):'')+'</div><div class="alu-recl-tuya-txt">'+esc(pr.respuesta_alumno.texto)+'</div></div>':'')
           +'<div class="alu-item-fecha">'+fecha(o.creado_en)+'</div>'
           +'</div>'
-          /* (29-sep-2026, Iago) botón a la derecha para darla por leída.
-             (10-oct-2026, Iago) y debajo, «↩ Contestar a Iago»: abre una ventana para escribirle.
-             (11-oct-2026, Iago) en el Ojeador también sale, como lo ve el alumno (ahí la ventana no envía nada) */
-          +(function(){
-            var puede=!pr.respuesta_alumno;
-            if(o.leido && !puede) return '';
-            return '<div class="alu-recl-acc">'
-              +(o.leido?'':'<button type="button" class="alu-recl-leido" data-recl-leido="'+esc(o.id)+'">Marcar como leído</button>')
-              +(puede?'<button type="button" class="alu-recl-contestar" data-recl-contestar="'+esc(o.id)+'">↩ Contestar a Iago</button>':'')
-              +'</div>';
-          })()
           +'</div>';
       }
       var fid=(o.payload_json && o.payload_json.ficha_id) ? o.payload_json.ficha_id : '';
