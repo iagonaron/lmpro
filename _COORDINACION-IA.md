@@ -6,6 +6,12 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 11-oct 11:46 · Fichas y rediseño · HECHO (retoque, sin EN CURSO aparte) · DIARIO (Netlify diariodeiagocmus), deploy
+  6acb5a11 encima de 6aca3b28: ventana «Semana guardada» de 2º GP (solo ordenador). La unidad activa se pinta en CADA
+  apertura (el modal se reutiliza y se quedaba con la unidad de la primera vez) y lleva debajo las unidades como la
+  cabecera: tocar otra → «Clase 1 · Clase 2 · Cancelar» → u2gpCambiarUnidad (la misma de la cabecera). Panel con tope
+  de alto y scroll dentro. Solo app.js (bkpPintarUnidad, nueva) e index.html (app.js?v=d82); 75 ficheros antes y
+  después. Sin cambios en Supabase.
 - 11-oct 11:16 · Fichas y rediseño · HECHO (retoque, mismos bloques) · TARJETA DE RECLAMACIÓN EN LA CAMPANA DEL
   ALUMNO, OPCIÓN 2 elegida por Iago: «Ver mi ficha corregida» a la izquierda y «Marcar como leído» · «↩ Contestar a
   Iago» a la derecha en UNA fila al pie (.alu-recl-pie, con el grupo derecho .alu-recl-acc), todo a la misma altura;
