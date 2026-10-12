@@ -6,6 +6,10 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 12-oct 17:34 · Fichas y rediseño · HECHO (retoque, sin EN CURSO aparte) · LISTA DE MOROSOS: la etiqueta «EN PAPEL»
+  pasa a «PAPEL» (lo pidió Iago). DIARIO: deploy 6accfd83 encima de 6accf43d (suite-campana.js 2ccac4ae…; index, ipad
+  e iphone piden ?v=s40; 75 ficheros antes y después). PORTALES: LMEAVathome commit 939055f, piel/apps/portal.js
+  4bb1a136… (CN_V 12-oct-n17).
 - 12-oct 17:07 · Fichas y rediseño · HECHO (sin EN CURSO aparte: solo el bloque de morosos, que llevo yo) · LISTA DE
   MOROSOS, «PROPUESTA B» elegida por Iago, igual en el Diario y en los dos portales: tarjetas de contorno rojo (ya no
   rojo opaco), todas de 58 px; 7 casillas, una por día, que acaban en SU final (con prórroga): días pasados en rojo,
