@@ -6,6 +6,16 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 12-oct 17:07 · Fichas y rediseño · HECHO (sin EN CURSO aparte: solo el bloque de morosos, que llevo yo) · LISTA DE
+  MOROSOS, «PROPUESTA B» elegida por Iago, igual en el Diario y en los dos portales: tarjetas de contorno rojo (ya no
+  rojo opaco), todas de 58 px; 7 casillas, una por día, que acaban en SU final (con prórroga): días pasados en rojo,
+  hoy en ámbar que se va llenando y parpadea (más rápido el último día) y «vie 19:00»; EN PAPEL lleva un recuadro «ya
+  entregó» (verde; al volver a abrir ya no sale), DIGITAL nada más; los ceros, aparte, en negro con su 0 y una
+  cabecera para cada parte («En periodo extra · N», «Se acabó · cero · N»). Sin cuenta atrás en segundos: con la lista
+  abierta se repinta cada minuto. DIARIO: deploy 6accf43d encima de 6acb6139 (suite-campana.js 1b1873e9…; index, ipad
+  e iphone piden ?v=s39). PORTALES: LMEAVathome commit 97639eb, piel/apps/portal.js 563781b9… (CN_V 12-oct-n16; la
+  usan GE y GP). Sin cambios en Supabase. OJO: si tocas la lista de morosos, el diseño vive en dos sitios
+  (suite-campana.js del Diario, clases .smor-*, y piel/apps/portal.js, clases .lm-mor-*): cambia los dos.
 - 11-oct 12:14 · Fichas y rediseño · HECHO (retoque) · DIARIO, deploy 6acb6139 encima de 6acb6028: en la ventana
   «Semana guardada», los botones de clase del selector de unidad pasan a «C1 · C2» (regla de Iago para controles:
   nunca «Clase 1 / Clase 2»). Solo app.js (d83) e index.html.
