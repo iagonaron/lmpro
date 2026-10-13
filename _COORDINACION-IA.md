@@ -6,6 +6,10 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 13-oct 22:40 · Intros didácticas (escape room «Atonalidad») · EN CURSO · PORTAL GP, solo el bloque @MEDALLERO de
+  index.html (y una línea de icono, u3n, junto a la del icono de Acústica): ANTICIPO DE ATONALIDAD SOLO PARA PROTESTER.
+  La medalla u3 sale abierta con el icono nuevo y abre el escape room (https://atonalidad.gp.lmathome.es/prueba.html);
+  PRUEBA (un solo anticipo) pasa a PRUEBAS (lista, con «solo» por cuenta). Alumnos: sin cambios.
 - 13-oct 19:29 · Fichas y rediseño · HECHO (sin EN CURSO aparte: un solo fichero, la piel) · PIEL DE LOS PORTALES,
   CAJA NEGRA → n19 (solo Tester/Protester, con un editor abierto). Iago (19:13): «me ha vuelto a fallar la pantalla»,
   con el arreglo del dibujo ya cargado (recarga 19:12:36). Las tres veces de hoy (17:52, 18:12, 19:13) la pantalla se
