@@ -6,6 +6,17 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 13-oct 17:28 · Fichas y rediseño · HECHO (sin EN CURSO aparte: solo la caja negra, que es mía) · PIEL DE LOS
+  PORTALES, CAJA NEGRA DEL EDITOR (solo Tester/Protester). Iago (13-oct): el editor de ritmo se volvió a enganchar hoy
+  en el aula (16:10–16:19, 5 recargas; cerró la ventana a las 16:30) con su teclado Bluetooth prestado en otra aula, y
+  Sentry no recibe nada desde la red del centro. (1) Con un editor abierto se apunta lo que llega del TECLADO, el
+  RATÓN/PANEL TÁCTIL y la RUEDA (cuándo y de qué clase; nunca qué tecla) y cada parte lleva el resumen «teclado». (2)
+  Cada parte va también a la base: rpc lm_caja_negra_guardar(p_token, p_portal, p_version, p_tipo, p_datos) → tabla
+  lm_caja_negra (RLS sin políticas, tope 300/día, se borra a los 45 días), firmado con la llave de los morosos; 8 por
+  carga como mucho y el perfil del aparato uno cada 6 h; si la función no existe o falla, se calla. SQL pendiente de
+  que lo pegue Iago (hasta entonces la piel se calla) (DIARIO PROFESOR
+  (…)/SQL-BD/13-oct-2026-caja-negra-a-la-base.sql). LMEAVathome commit 548b5c6, piel/apps/portal.js 21cc160c… (CN_V
+  13-oct-n18). OJO: si tocas la caja negra (sección 19 de portal.js), mantén cnBase y la línea «teclado» de cnEstado.
 - 12-oct 17:34 · Fichas y rediseño · HECHO (retoque, sin EN CURSO aparte) · LISTA DE MOROSOS: la etiqueta «EN PAPEL»
   pasa a «PAPEL» (lo pidió Iago). DIARIO: deploy 6accfd83 encima de 6accf43d (suite-campana.js 2ccac4ae…; index, ipad
   e iphone piden ?v=s40; 75 ficheros antes y después). PORTALES: LMEAVathome commit 939055f, piel/apps/portal.js
