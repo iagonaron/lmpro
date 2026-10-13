@@ -1992,6 +1992,29 @@ function showEnig(kind){
     out.push(m+' min');
     return out.join(' ');
   }
+  /* (13-oct-2026, Iago: «que lo del tiempo extra sea como en lo de morosos, con la barra de tiempo por día y el segmento
+     de ese día en amarillo») 7 casillas, una por día, que acaban en el final del periodo extra (viernes 19:00, o el de su
+     prórroga): rojo lo que ya pasó, ámbar el día de hoy (se va llenando y parpadea; el último día, más deprisa) y gris lo
+     que queda; al final, «vie 19:00». Lo mismo que la lista de morosos del aula (piel, morCasillas/morHasta). */
+  var DIA_MS=86400000;
+  function hastaCorto(iso){   /* «vie 19:00» en hora de Galicia; con la fecha si aún falta más de una semana */
+    try{ var q={}; new Intl.DateTimeFormat('es-ES',{timeZone:'Europe/Madrid',weekday:'short',day:'numeric',month:'numeric',hour:'2-digit',minute:'2-digit',hour12:false})
+        .formatToParts(new Date(iso)).forEach(function(x){ q[x.type]=x.value; });
+      if(!q.hour) return '';
+      return String(q.weekday||'').replace('.','').toLowerCase().slice(0,3)+(Date.parse(iso)-Date.now()>7*DIA_MS?' '+q.day+'/'+q.month:'')+' '+q.hour+':'+q.minute;
+    }catch(e){ return ''; }
+  }
+  function barraExtraHTML(finIso){
+    var fin=Date.parse(finIso); if(!isFinite(fin)) return '';
+    var t=Date.now(), ini=fin-7*DIA_MS, h='';
+    for(var k=0;k<7;k++){
+      var a=ini+k*DIA_MS, b=a+DIA_MS;
+      if(t>=b) h+='<i class="pasado"></i>';
+      else if(t>=a) h+='<i class="hoy"><b style="width:'+Math.max(2,Math.min(100,(t-a)/DIA_MS*100)).toFixed(1)+'%"></b></i>';
+      else h+='<i></i>';
+    }
+    return '<span class="alu-dias'+(fin-t<DIA_MS?' urg':'')+'" aria-hidden="true">'+h+'</span><span class="alu-hasta">'+esc(hastaCorto(finIso))+'</span>';
+  }
   function estadoPlazo(fnIso,fgIso){
     if(!fnIso) return null;
     var ahora=Date.now(), fn=new Date(fnIso).getTime(), fg=fgIso?new Date(fgIso).getTime():null;
@@ -2004,9 +2027,14 @@ function showEnig(kind){
     var st=estadoPlazo(el.getAttribute('data-fin'), el.getAttribute('data-gracia'));
     if(!st){ el.textContent=''; return; }
     if(st.fase==='normal'){ el.style.color='#e9c96a'; el.textContent='Te quedan '+fmtCuenta(st.restante); }
-    else if(st.fase==='gracia'){ el.style.color='#ff5c80'; el.textContent=(el.closest&&el.closest('.alu-extra-pin')?'Te quedan ':'⏰ Periodo extra · te quedan ')+fmtCuentaExtra(st.restante);   /* (29-sep-2026, Iago) bajo el recuadro TIEMPO EXTRA, solo «te quedan» */
+    else if(st.fase==='gracia' && el.closest && el.closest('.alu-extra-pin')){   /* (13-oct-2026, Iago: «como en lo de morosos») en el aviso de TIEMPO EXTRA, la barra de 7 días */
+      var hx=barraExtraHTML(el.getAttribute('data-gracia'));
+      if(el._barraX!==hx){ el.innerHTML=hx; el._barraX=hx; }   /* solo si cambia (cada minuto y pico): si no, el parpadeo de hoy volvería a empezar cada segundo */
+      el.style.color=''; el.classList.add('alu-barra-extra'); el.classList.remove('alu-ultima-hora');
+      var tq='Te quedan '+fmtCuentaExtra(st.restante); if(el.title!==tq) el.title=tq; }
+    else if(st.fase==='gracia'){ el.style.color='#ff5c80'; el.textContent='⏰ Periodo extra · te quedan '+fmtCuentaExtra(st.restante);
       if(el.classList) el.classList.toggle('alu-ultima-hora', st.restante<3600000); }   /* (13-oct-2026) la última hora, bien a la vista */
-    else { el.style.color='#ef4444'; el.textContent='Plazo terminado'; if(el.classList) el.classList.remove('alu-ultima-hora'); }
+    else { el.style.color='#ef4444'; el.textContent='Plazo terminado'; el._barraX=null; if(el.classList){ el.classList.remove('alu-ultima-hora'); el.classList.remove('alu-barra-extra'); } }
   }
   function tickCuentas(){
     Array.prototype.forEach.call(document.querySelectorAll('.alu-item-plazo[data-fin]'), pintarCuenta);
@@ -4001,6 +4029,15 @@ function showEnig(kind){
       '.alu-item.alu-extra-pin .alu-item-cuerpo b{color:#fff;font-weight:900}'+   /* (13-oct-2026) hora de cierre clarísima */
       '.alu-item.alu-extra-pin .alu-extra-hora{background:rgba(255,45,106,.34);border-radius:5px;padding:0 4px;-webkit-box-decoration-break:clone;box-decoration-break:clone}'+
       '.alu-item-plazo.alu-ultima-hora{font-size:14px!important;color:#fff!important;background:#ff2d6a;border-radius:7px;padding:2px 9px;display:inline-block}'+
+      '.alu-item.alu-extra-pin .alu-item-plazo.alu-barra-extra{flex:1 1 230px;display:flex;align-items:center;gap:8px;min-width:0;margin:2px 0 0!important}'+   /* (13-oct-2026) barra de 7 días, como en morosos */
+      '.alu-barra-extra .alu-dias{flex:1 1 auto;display:flex;gap:3px;min-width:0}'+
+      '.alu-barra-extra .alu-dias i{position:relative;flex:1 1 0;height:9px;border-radius:2px;background:rgba(255,255,255,.13);overflow:hidden}'+
+      '.alu-barra-extra .alu-dias i.pasado{background:#ef4444}'+
+      '.alu-barra-extra .alu-dias i.hoy b{position:absolute;left:0;top:0;bottom:0;background:#f59e0b;animation:aluDiaLatido 1.4s ease-in-out infinite}'+
+      '.alu-barra-extra .alu-dias.urg i.hoy b{animation-duration:.55s}'+
+      '.alu-barra-extra .alu-hasta{font-size:11px;font-weight:800;color:rgba(255,255,255,.85);white-space:nowrap}'+
+      '@keyframes aluDiaLatido{0%,100%{opacity:1}50%{opacity:.3}}'+
+      '@media (prefers-reduced-motion:reduce){.alu-barra-extra .alu-dias i.hoy b{animation:none}}'+
       '@keyframes pinLatido{0%,100%{opacity:1}50%{opacity:.55}}'+
       '@media (prefers-reduced-motion:reduce){.alu-item.alu-extra-pin,.alu-extra-chip{animation:none!important}}'+
       // FASE 7 · notificación de QUIZ DE RITMO: piel psicodélica de RITMO at

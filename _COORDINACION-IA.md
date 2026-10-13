@@ -6,6 +6,17 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 13-oct 23:31 · Fichas y rediseño · HECHO (sin EN CURSO aparte: va en este mismo commit con el index.html de lmpro) ·
+  PORTALES GE/GP (index.html), CAMPANA DEL ALUMNO, aviso en TIEMPO EXTRA, 2.ª vuelta (Iago: «quiero que lo del tiempo
+  extra sea como en lo de morosos, con la barra de tiempo por día y el segmento de ese día en amarillo»). En el aviso,
+  la cuenta atrás «Te quedan 2 d 21 h 30 min» se cambia por la barra de la lista de morosos del aula: 7 casillas, una
+  por día, que acaban en el final del periodo extra; rojo lo que ya pasó, ámbar el día de hoy (se va llenando y
+  parpadea; el último día, más deprisa), gris lo que queda y «vie 19:00» al final (mismos colores, alto y parpadeo
+  que morCasillas/morHasta de la piel). Al pasar el ratón, «Te quedan …». El texto («Última oportunidad… EN PUNTO…
+  ENVIADA…») no cambia; en la tarjeta «Tareas de la semana» sigue el texto. Funciones barraExtraHTML/hastaCorto y la
+  rama del aviso en pintarCuenta (solo rehace la barra si cambia, para no reiniciar el parpadeo). Banco 28/28 (GE y
+  GP, 1280 y 390). LMEAVathome commit 745cd9a (index.html 95fcec6d…), lmpro este commit (index.html 841b1a7d…).
+  Deshacer: APPs/_PARA BORRAR/13-oct-2026-portales-antes-de-la-barra-de-dias/{ge,gp}/. OJO: mismo código en GE y GP.
 - 13-oct 23:01 · Fichas y rediseño · HECHO (sin EN CURSO aparte: va en este mismo commit con el index.html de lmpro) ·
   PORTALES GE/GP (index.html), CAMPANA DEL ALUMNO, aviso en TIEMPO EXTRA (Iago: «actualiza el aspecto de tiempo extra
   en notificación» → eligió «Hora de cierre clarísima»). El aviso dice ahora: «Última oportunidad: tienes hasta el
