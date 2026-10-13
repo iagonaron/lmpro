@@ -1977,6 +1977,21 @@ function showEnig(kind){
     out.push(m+'m'); out.push(s+'s');
     return out.join(' ');
   }
+  /* (13-oct-2026, Iago: «Hora de cierre clarísima») en TIEMPO EXTRA la cuenta atrás va sin segundos («2 d 21 h 30 min»)
+     y, en la ÚLTIMA HORA, en minutos y segundos («12:34»), que es cuando cada segundo cuenta. */
+  function fmtCuentaExtra(ms){
+    if(ms<=0) return '0:00';
+    var s=Math.floor(ms/1000);
+    if(s<3600){ var mm=Math.floor(s/60), ss=s%60; return mm+':'+(ss<10?'0':'')+ss; }
+    var d=Math.floor(s/86400); s-=d*86400;
+    var h=Math.floor(s/3600);  s-=h*3600;
+    var m=Math.floor(s/60);
+    var out=[];
+    if(d) out.push(d+' d');
+    if(d||h) out.push(h+' h');
+    out.push(m+' min');
+    return out.join(' ');
+  }
   function estadoPlazo(fnIso,fgIso){
     if(!fnIso) return null;
     var ahora=Date.now(), fn=new Date(fnIso).getTime(), fg=fgIso?new Date(fgIso).getTime():null;
@@ -1989,8 +2004,9 @@ function showEnig(kind){
     var st=estadoPlazo(el.getAttribute('data-fin'), el.getAttribute('data-gracia'));
     if(!st){ el.textContent=''; return; }
     if(st.fase==='normal'){ el.style.color='#e9c96a'; el.textContent='Te quedan '+fmtCuenta(st.restante); }
-    else if(st.fase==='gracia'){ el.style.color='#ff5c80'; el.textContent=(el.closest&&el.closest('.alu-extra-pin')?'Te quedan ':'⏰ Periodo extra · te quedan ')+fmtCuenta(st.restante);   /* (29-sep-2026, Iago) bajo el recuadro TIEMPO EXTRA, solo «te quedan» */ }
-    else { el.style.color='#ef4444'; el.textContent='Plazo terminado'; }
+    else if(st.fase==='gracia'){ el.style.color='#ff5c80'; el.textContent=(el.closest&&el.closest('.alu-extra-pin')?'Te quedan ':'⏰ Periodo extra · te quedan ')+fmtCuentaExtra(st.restante);   /* (29-sep-2026, Iago) bajo el recuadro TIEMPO EXTRA, solo «te quedan» */
+      if(el.classList) el.classList.toggle('alu-ultima-hora', st.restante<3600000); }   /* (13-oct-2026) la última hora, bien a la vista */
+    else { el.style.color='#ef4444'; el.textContent='Plazo terminado'; if(el.classList) el.classList.remove('alu-ultima-hora'); }
   }
   function tickCuentas(){
     Array.prototype.forEach.call(document.querySelectorAll('.alu-item-plazo[data-fin]'), pintarCuenta);
@@ -3663,12 +3679,17 @@ function showEnig(kind){
       }
       var cuerpoTxt=hecha ? 'Ya la entregaste. ¡Buen trabajo!' : (o.cuerpo||'');
       // FASE 8 · TIEMPO EXTRA (para el alumno, sin jerga): mensaje claro + pin rojo
-      var extra=enTiempoExtra(o);
+      var extra=enTiempoExtra(o), cuerpoHTMLX=null;
       if(extra){
         /* (29-sep-2026, Iago) «que no diga que ha sacado un cero: que diga que está en periodo extra» */
         var fgX=pj.fin_gracia?new Date(pj.fin_gracia):null, cuandoX='';
         try{ if(fgX && !isNaN(fgX)) cuandoX=fgX.toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long'}).replace(',','')+' a las '+fgX.toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'}); }catch(eX){}
         cuerpoTxt='Estás en el periodo extra: 7 días más para entregarla'+(cuandoX?', hasta el '+cuandoX:'')+'. Si para entonces no la has entregado, ahí sí que la liaste';
+        /* (13-oct-2026, Iago: «Hora de cierre clarísima») la hora límite EN PUNTO y que tiene que estar ENVIADA: un segundo
+           después ya no entra y se queda el 0 (la calavera va detrás, como antes) */
+        if(cuandoX){ var unSegX=''; try{ unSegX=new Date(fgX.getTime()+1000).toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit',second:'2-digit'}); }catch(eX2){}
+          cuerpoTxt='Última oportunidad: tienes hasta el '+cuandoX+' EN PUNTO. Tiene que estar ENVIADA antes de esa hora (pulsar «Entregar»)'+(unSegX?': a las '+unSegX+' ya no entra':': un segundo después ya no entra')+' y se queda el 0.';
+          cuerpoHTMLX='<b>Última oportunidad:</b> tienes hasta el <b class="alu-extra-hora">'+esc(cuandoX)+' EN PUNTO.</b><br>Tiene que estar <b>ENVIADA</b> antes de esa hora (pulsar «Entregar»)'+(unSegX?': a las '+esc(unSegX)+' ya no entra':': un segundo después ya no entra')+' y se queda el 0.'; }
       }
       var accionHTML='';
       if(fid){
@@ -3683,7 +3704,7 @@ function showEnig(kind){
         /* (29-sep-2026, Iago) el recuadro TIEMPO EXTRA va aparte (a la izquierda, con «te quedan…» debajo); la calavera, delante del 0 */
         +'<div class="alu-item-main">'+(extra?'<span class="alu-extra-chip">⏰ TIEMPO EXTRA</span>':'')+'<div class="alu-item-tit">'+(pj.cero_ficha?'<svg class="lm-calavera lm-calavera-t" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-label="calavera" role="img" style="display:inline-block;width:1.15em;height:1.15em;vertical-align:-.22em;margin-right:.35em"><path d="M12 2.8c-4.6 0-8.3 3.4-8.3 8 0 2.6 1.2 4.6 3.2 5.9v2.4c0 1 .8 1.8 1.8 1.8h6.6c1 0 1.8-.8 1.8-1.8v-2.4c2-1.3 3.2-3.3 3.2-5.9 0-4.6-3.7-8-8.3-8z"/><circle cx="8.9" cy="11.2" r="1.9" fill="currentColor" stroke="none"/><circle cx="15.1" cy="11.2" r="1.9" fill="currentColor" stroke="none"/><path d="M12 13.9l-1 1.9h2z" fill="currentColor" stroke-width="1.2"/><path d="M10.3 18.4v2.4M13.7 18.4v2.4"/></svg>':'')+esc(o.titulo||'Aviso')+(hecha?' <span class="alu-hecha-check" aria-label="Entregada">✓</span>':'')+'</div>'
         /* (29-sep-2026, Iago) «donde dice ya sí que la liaste, la misma calavera, icono sencillo» (la de los morosos) */
-        +(cuerpoTxt?'<div class="alu-item-cuerpo'+((pj.bienvenida||pj.mensaje_prof)?' alu-prewrap':'')+'">'+esc(cuerpoTxt)+(extra?'<svg class="lm-calavera" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-label="calavera" role="img" style="display:inline-block;width:1.15em;height:1.15em;vertical-align:-.22em;margin-left:.15em"><path d="M12 2.8c-4.6 0-8.3 3.4-8.3 8 0 2.6 1.2 4.6 3.2 5.9v2.4c0 1 .8 1.8 1.8 1.8h6.6c1 0 1.8-.8 1.8-1.8v-2.4c2-1.3 3.2-3.3 3.2-5.9 0-4.6-3.7-8-8.3-8z"/><circle cx="8.9" cy="11.2" r="1.9" fill="currentColor" stroke="none"/><circle cx="15.1" cy="11.2" r="1.9" fill="currentColor" stroke="none"/><path d="M12 13.9l-1 1.9h2z" fill="currentColor" stroke-width="1.2"/><path d="M10.3 18.4v2.4M13.7 18.4v2.4"/></svg>':'')+'</div>':'')
+        +(cuerpoTxt?'<div class="alu-item-cuerpo'+((pj.bienvenida||pj.mensaje_prof)?' alu-prewrap':'')+'">'+(cuerpoHTMLX!=null?cuerpoHTMLX:esc(cuerpoTxt))+(extra?'<svg class="lm-calavera" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-label="calavera" role="img" style="display:inline-block;width:1.15em;height:1.15em;vertical-align:-.22em;margin-left:.15em"><path d="M12 2.8c-4.6 0-8.3 3.4-8.3 8 0 2.6 1.2 4.6 3.2 5.9v2.4c0 1 .8 1.8 1.8 1.8h6.6c1 0 1.8-.8 1.8-1.8v-2.4c2-1.3 3.2-3.3 3.2-5.9 0-4.6-3.7-8-8.3-8z"/><circle cx="8.9" cy="11.2" r="1.9" fill="currentColor" stroke="none"/><circle cx="15.1" cy="11.2" r="1.9" fill="currentColor" stroke="none"/><path d="M12 13.9l-1 1.9h2z" fill="currentColor" stroke-width="1.2"/><path d="M10.3 18.4v2.4M13.7 18.4v2.4"/></svg>':'')+'</div>':'')
         +((fid&&pj.fin_normal&&!hecha)?'<div class="alu-item-plazo" data-fin="'+esc(pj.fin_normal)+'" data-gracia="'+esc(pj.fin_gracia||'')+'" style="font-size:12px;font-weight:700;margin-top:4px;font-variant-numeric:tabular-nums"></div>':'')
         +progHTML
         +'<div class="alu-item-fecha">'+fecha(o.creado_en)+'</div>'
@@ -3977,6 +3998,9 @@ function showEnig(kind){
       '.alu-item-tareas.hecha{opacity:.72;border-color:rgba(148,163,184,.3)}'+
       '.alu-item.alu-extra-pin{border:1px solid #ff2d6a;border-radius:12px;margin:8px 0;padding:10px 12px;box-shadow:0 0 0 1px rgba(255,45,106,.45),0 8px 26px rgba(255,45,106,.25);animation:pinLatido 1.5s ease-in-out infinite;background:linear-gradient(100deg,#4a0d24 0%,#2e0817 55%,#1a0510 100%)!important;align-items:center}'+'.alu-item.alu-extra-pin .alu-item-main{display:flex;flex-wrap:wrap;align-items:center;gap:4px 14px}'+'.alu-item.alu-extra-pin .alu-item-tit{flex:0 0 auto}'+'.alu-item.alu-extra-pin .alu-item-cuerpo{flex:1 1 260px;font-size:12px;line-height:1.4;margin:0}'+'.alu-item.alu-extra-pin .alu-item-plazo{flex:0 0 auto;margin:0!important}'+'.alu-item.alu-extra-pin .alu-item-fecha{display:none}'+'.alu-item.alu-extra-pin .alu-hacer{flex:0 0 auto;margin:0}'+'.alu-item.alu-extra-pin .neb-mini{display:none}'+'.alu-item.alu-extra-pin .alu-item-cuerpo{color:#ffd6e2;font-weight:700}'+
       '.alu-extra-chip{font-size:10.5px;font-weight:900;letter-spacing:.1em;color:#fff;background:linear-gradient(90deg,#ff2d6a,#ff6a3c);border-radius:7px;padding:3px 8px;vertical-align:1px;animation:pinLatido 1.5s ease-in-out infinite;display:inline-block}'+
+      '.alu-item.alu-extra-pin .alu-item-cuerpo b{color:#fff;font-weight:900}'+   /* (13-oct-2026) hora de cierre clarísima */
+      '.alu-item.alu-extra-pin .alu-extra-hora{background:rgba(255,45,106,.34);border-radius:5px;padding:0 4px;-webkit-box-decoration-break:clone;box-decoration-break:clone}'+
+      '.alu-item-plazo.alu-ultima-hora{font-size:14px!important;color:#fff!important;background:#ff2d6a;border-radius:7px;padding:2px 9px;display:inline-block}'+
       '@keyframes pinLatido{0%,100%{opacity:1}50%{opacity:.55}}'+
       '@media (prefers-reduced-motion:reduce){.alu-item.alu-extra-pin,.alu-extra-chip{animation:none!important}}'+
       // FASE 7 · notificación de QUIZ DE RITMO: piel psicodélica de RITMO at

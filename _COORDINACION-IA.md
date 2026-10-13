@@ -6,6 +6,17 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 13-oct 23:01 · Fichas y rediseño · HECHO (sin EN CURSO aparte: va en este mismo commit con el index.html de lmpro) ·
+  PORTALES GE/GP (index.html), CAMPANA DEL ALUMNO, aviso en TIEMPO EXTRA (Iago: «actualiza el aspecto de tiempo extra
+  en notificación» → eligió «Hora de cierre clarísima»). El aviso dice ahora: «Última oportunidad: tienes hasta el
+  viernes 16 de octubre a las 19:00 EN PUNTO. Tiene que estar ENVIADA antes de esa hora (pulsar «Entregar»): a las
+  19:00:01 ya no entra y se queda el 0.» (la hora y «ENVIADA», resaltadas; la calavera detrás, como antes). La cuenta
+  atrás del tiempo extra va sin segundos («Te quedan 2 d 21 h 30 min») y en la última hora «Te quedan 12:34», corriendo
+  y destacada. Solo cambia el aviso en tiempo extra (fmtCuentaExtra, pintarCuenta en fase «gracia», cuerpoHTMLX y tres
+  reglas de estilo); lo demás, igual (banco 20/20, GE y GP, 1280 y 390). En GP, hecho sobre la versión con Atonalidad
+  en prueba (311951e9…). LMEAVathome commit 2acb53c (index.html c6b39c73…), lmpro este commit (index.html 1418c835…).
+  Deshacer: APPs/_PARA BORRAR/13-oct-2026-portales-antes-del-tiempo-extra-claro/{ge,gp}/. OJO: es el mismo código en
+  GE y GP (solo cambia el color de «en plazo»): si tocas uno, toca el otro.
 - 13-oct 22:42 · Intros didácticas (escape room «Atonalidad») · HECHO · PORTAL GP, bloque @MEDALLERO: ANTICIPO DE
   ATONALIDAD SOLO PARA PROTESTER (Iago: «¿puedes activarme solo en Protester ya el portal con todo? Incluyendo el logotipo
   nuevo»). Con la cuenta Protester la medalla u3 sale ABIERTA, con el icono nuevo (u3n: la mansión de neón y grafiti con
