@@ -2403,15 +2403,18 @@ function showEnig(kind){
       if(!d||typeof d!=='object') d={strokes:[],notes:[]};
       if(!Array.isArray(d.strokes)) d.strokes=[]; if(!Array.isArray(d.notes)) d.notes=[]; if(!Array.isArray(d.alertas)) d.alertas=[];   /* (1-oct-2026) + alertas */
       return d; }
-    function redraw(pg){
-      var cv=pg.canvas, ctx=cv.getContext('2d');
-      ctx.clearRect(0,0,cv.width,cv.height);
-      ctx.globalCompositeOperation='source-over';
-      alPinta(ctx,pg,cv.width,cv.height,'zonas');   /* (1-oct-2026) las zonas de alerta, debajo de los trazos */
+    /* (13-oct-2026, Iago) LA PANTALLA DEL AULA SE QUEDABA «PILLADA» ESCRIBIENDO. La caja negra lo vio dos veces: tras muchos
+       trazos seguidos, 0 imágenes por segundo y ningún toque más. Antes, CADA movimiento del dedo volvía a pintar TODOS los
+       trazos de la página con el efecto «multiplicar», y con muchos trazos eso ahoga a la tarjeta gráfica. Ahora:
+       (1) los trazos ya terminados quedan pintados en una capa aparte (pg.base) y solo se rehacen cuando cambian
+           (trazo nuevo, deshacer, goma, borrar todo, △/U, alertas, cambio de tamaño);
+       (2) mientras se escribe se pinta esa capa + el trazo en marcha, y como mucho una vez por imagen de pantalla.
+       El orden y el efecto son los mismos: se ve EXACTAMENTE igual. Antes: redraw(pg) lo pintaba todo y el movimiento lo
+       llamaba en cada punto. Para volver: copia en APPs/_PARA BORRAR/13-oct-2026-portales-antes-de-anotaciones-ligeras/. */
+    function anotTrazos(ctx,lista,W,H){
       ctx.globalCompositeOperation='multiply';
       ctx.lineCap='round'; ctx.lineJoin='round';
-      var W=cv.width, H=cv.height;
-      pg.data.strokes.forEach(function(sk){
+      lista.forEach(function(sk){
         ctx.strokeStyle=sk.c; ctx.lineWidth=sk.f?Math.max(2,sk.w*W):Math.max(3,sk.w*W);   /* (26-sep-2026, Iago) sk.f = punta fina */
         ctx.beginPath();
         sk.p.forEach(function(pt,i){ var x=pt[0]*W,y=pt[1]*H; if(i===0)ctx.moveTo(x,y); else ctx.lineTo(x,y); });
@@ -2419,7 +2422,34 @@ function showEnig(kind){
         ctx.stroke();
       });
       ctx.globalCompositeOperation='source-over';
+    }
+    function anotPinta(pg){
+      var cv=pg.canvas, ctx=cv.getContext('2d'), W=cv.width, H=cv.height;
+      if(!W||!H) return;
+      var L=pg.data.strokes, k=pg.cur?L.indexOf(pg.cur):-1;   /* lo que va encima: el trazo en marcha (y lo que venga detrás) */
+      if(k<0) k=L.length;
+      if(!pg.base||pg.base.width!==W||pg.base.height!==H){ pg.base=document.createElement('canvas'); pg.base.width=W; pg.base.height=H; pg.baseOk=false; }
+      if(!pg.baseOk||pg.baseK!==k){
+        var b=pg.base.getContext('2d');
+        b.globalCompositeOperation='source-over'; b.clearRect(0,0,W,H);
+        alPinta(b,pg,W,H,'zonas');   /* (1-oct-2026) las zonas de alerta, debajo de los trazos */
+        anotTrazos(b,L.slice(0,k),W,H);
+        pg.baseOk=true; pg.baseK=k;
+      }
+      ctx.globalCompositeOperation='source-over';
+      ctx.clearRect(0,0,W,H);
+      ctx.drawImage(pg.base,0,0);
+      if(k<L.length) anotTrazos(ctx,L.slice(k),W,H);
       alPinta(ctx,pg,W,H,'iconos');                  /* (1-oct-2026) y los iconos de alerta, encima */
+    }
+    function redraw(pg){   /* todo de nuevo, ya */
+      pg.baseOk=false;
+      if(pg._raf){ cancelAnimationFrame(pg._raf); pg._raf=0; }
+      anotPinta(pg);
+    }
+    function anotPide(pg){   /* mientras se escribe: como mucho una vez por imagen de pantalla */
+      if(pg._raf) return;
+      pg._raf=requestAnimationFrame(function(){ pg._raf=0; anotPinta(pg); });
     }
     function placeNotes(pg){
       Array.prototype.forEach.call(pg.wrap.querySelectorAll('.anot-nota'),function(e){ e.remove(); });
@@ -2511,13 +2541,13 @@ function showEnig(kind){
           var ddx=ev.clientX-pg.al.sx, ddy=ev.clientY-pg.al.sy;
           if(!pg.al.zona && ddx*ddx+ddy*ddy>64) pg.al.zona=true;
           if(pg.al.zona){ var qx=Math.max(0,Math.min(1,nx)), qy=Math.max(0,Math.min(1,ny));
-            pg.alPrev={c:pg.al.c, z:[Math.min(pg.al.x,qx),Math.min(pg.al.y,qy),Math.max(pg.al.x,qx),Math.max(pg.al.y,qy)]}; redraw(pg); }
+            pg.alPrev={c:pg.al.c, z:[Math.min(pg.al.x,qx),Math.min(pg.al.y,qy),Math.max(pg.al.x,qx),Math.max(pg.al.y,qy)]}; pg.baseOk=false; anotPide(pg); }   /* (13-oct-2026) */
           return;
         }
         if(!pg.cur) return;
         ev.preventDefault();
         var p=pg.cur.p, u=p[p.length-1], th=pg.cur.f?0.0012:0.003;   /* (26-sep-2026, Iago) la punta fina toma más puntos: letra pequeña más limpia */
-        if(Math.abs(nx-u[0])>th||Math.abs(ny-u[1])>th){ p.push([nx,ny]); redraw(pg); }
+        if(Math.abs(nx-u[0])>th||Math.abs(ny-u[1])>th){ p.push([nx,ny]); anotPide(pg); }   /* (13-oct-2026) antes: redraw(pg) en cada punto */
       });
       var fin=function(ev){
         if(pg.al){   /* (1-oct-2026) al soltar: el icono (toque) o la zona (arrastre); si se cancela el gesto, nada */
@@ -2529,7 +2559,7 @@ function showEnig(kind){
           }
           redraw(pg);
         }
-        if(pg.cur){ var skF=pg.cur; hist.push({pg:pg,t:'trazo',sk:skF}); save(pg); pg.cur=null;
+        if(pg.cur){ var skF=pg.cur; hist.push({pg:pg,t:'trazo',sk:skF}); save(pg); pg.cur=null; pg.baseOk=false;   /* (13-oct-2026) el trazo pasa a la capa */
           if(tool==='pt' && !(ev && ev.type==='pointercancel')) ptSuelta(pg,skF); }   /* (1-oct-2026) △/U: al segundo, bonito */
         if(pg.borrando){ pg.borrando=false; save(pg); }
       };
@@ -5531,11 +5561,14 @@ window.DictadoClase = (function(){
       var sn=new VF.StaveNote({clef:clef, keys:[n.k], duration:'q'});
       try{ sn.setStemStyle({fillStyle:'rgba(0,0,0,0)', strokeStyle:'rgba(0,0,0,0)'}); }catch(e){}
       var accChar=(''+n.k).split('/')[0].slice(1);
-      if(accChar==='#'||accChar==='b'||accChar==='n'||accChar==='##'||accChar==='bb'){
-        try{ sn.addModifier(new VF.Accidental(accChar),0); }catch(e){}
-      }
       var v=new VF.Voice({num_beats:1, beat_value:4}).setMode(VF.Voice.Mode.SOFT);
       v.addTickables([sn]);
+      /* (13-oct-2026, Iago) con la armadura a la vista, la alteración solo si hace falta (el si bemol de fa mayor, no) */
+      var conAlt=true;
+      if(conArmadura){ try{ VF.Accidental.applyAccidentals([v], D.keySig||(''+D.key).replace(/m$/,'')); conAlt=false; }catch(e){} }
+      if(conAlt && (accChar==='#'||accChar==='b'||accChar==='n'||accChar==='##'||accChar==='bb')){
+        try{ sn.addModifier(new VF.Accidental(accChar),0); }catch(e){}
+      }
       new VF.Formatter().joinVoices([v]).format([v], 44);
       sn.setStave(stave);
       v.draw(vctx, stave);
@@ -5656,10 +5689,11 @@ window.DictadoClase = (function(){
           sn=new VF.StaveNote({clef:clef, keys:[restKey], duration:durVF+'r'});
         } else {
           sn=new VF.StaveNote({clef:clef, keys:[n.k], duration:durVF});
+          /* (13-oct-2026, Iago) «al corregir el dictado 5 salían TODOS los si bemol con su ♭, y ya está en la armadura».
+             Antes cada nota alterada llevaba siempre su alteración; ahora las pone VexFlow mirando la armadura y lo que
+             ya va en el compás (applyAccidentals, al montar la voz), como en el dictado de una voz. Si eso fallara, se
+             ponen como antes (o.acc). */
           var acc=(''+n.k).split('/')[0].slice(1);
-          if(acc==='#'||acc==='b'||acc==='n'||acc==='##'||acc==='bb'){
-            try{ sn.addModifier(new VF.Accidental(acc),0); }catch(e){}
-          }
         }
         if(conP){ try{ VF.Dot.buildAndAttach([sn],{all:true}); }catch(e){} }
         if(n.rest || !n.k){ tiePrevGP[clef]=null; }
@@ -5667,7 +5701,7 @@ window.DictadoClase = (function(){
           if(n.lig && tiePrevGP[clef] && tiePrevGP[clef].L===_LActualGP) tiesGP.push({a:tiePrevGP[clef].sn, b:sn});
           tiePrevGP[clef]={sn:sn, L:_LActualGP};
         }
-        return { sn:sn, d:(n.d||'q'), rest:(n.rest||!n.k) };
+        return { sn:sn, d:(n.d||'q'), rest:(n.rest||!n.k), acc:(n.rest||!n.k)?'':acc };
       });
     }
     for(var L=0;L<sistemas;L++){
@@ -5707,6 +5741,8 @@ window.DictadoClase = (function(){
           var sns=pares.map(function(o){return o.sn;});
           var v=new VF.Voice({num_beats:num, beat_value:den}).setMode(VF.Voice.Mode.SOFT);
           v.addTickables(sns);
+          try{ VF.Accidental.applyAccidentals([v], keySpec); }   /* (13-oct-2026) las alteraciones, según la armadura */
+          catch(e){ pares.forEach(function(o){ if(/^(#|b|n|##|bb)$/.test(o.acc||'')){ try{ o.sn.addModifier(new VF.Accidental(o.acc),0); }catch(x){} } }); }
           var bs=beamsPorPulso(pares, num, den, clef);   // fija plicas + crea beams (antes de draw)
           voces.push(v);
           datos.push({stave:stave, voice:v, beams:bs});

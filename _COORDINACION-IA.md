@@ -6,6 +6,19 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 13-oct 18:57 · Fichas y rediseño · HECHO (sin EN CURSO aparte: va en este mismo commit con el index.html de lmpro) ·
+  PORTALES GE/GP (index.html) y DICTADO AT HOME / DICTADOS PRO (index.html). (1) EDITOR DE ANOTACIONES de las
+  lecciones (tsAnotar): la pantalla del aula se quedaba «pillada» escribiendo. La caja negra (lm_caja_negra) lo vio
+  dos veces: tras muchos trazos, 0 imágenes por segundo y ninguna tecla (no era el teclado). Cada movimiento del dedo
+  volvía a pintar TODOS los trazos de la página con «multiplicar». Ahora: capa con los trazos terminados (pg.base, se
+  rehace solo cuando cambian) + el trazo en marcha, como mucho una vez por imagen (requestAnimationFrame). Se ve igual
+  píxel a píxel (banco); mientras se escribe, −93 % de puntos trazados. (2) DICTADO DE CLASE A DOS VOCES
+  (dibujaDictadoGP y la cabeza «regalo»): al corregir salía la alteración en toda nota alterada (en fa mayor, un bemol
+  en cada si bemol). Ahora la pone VexFlow según la armadura y el compás (Accidental.applyAccidentals), como el de una
+  voz. LMEAVathome commit dbbc55b (index.html aa5a2f4b…), lmpro este commit (index.html a00be2a4…), dictadoathome
+  248330e (b4e3142d…), dictadospro f8aa574 (bdc8efe6…). OJO: el editor de anotaciones y DictadoClase son el mismo
+  código en GE y GP (solo cambia ANOT_MODO): si tocas uno, toca el otro. La aceleración por hardware de Chrome del
+  ordenador del aula se queda ACTIVADA (sin ella todo iba lento): no propongas quitarla.
 - 13-oct 17:28 · Fichas y rediseño · HECHO (sin EN CURSO aparte: solo la caja negra, que es mía) · PIEL DE LOS
   PORTALES, CAJA NEGRA DEL EDITOR (solo Tester/Protester). Iago (13-oct): el editor de ritmo se volvió a enganchar hoy
   en el aula (16:10–16:19, 5 recargas; cerró la ventana a las 16:30) con su teclado Bluetooth prestado en otra aula, y
