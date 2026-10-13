@@ -6,10 +6,16 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
-- 13-oct 22:40 · Intros didácticas (escape room «Atonalidad») · EN CURSO · PORTAL GP, solo el bloque @MEDALLERO de
-  index.html (y una línea de icono, u3n, junto a la del icono de Acústica): ANTICIPO DE ATONALIDAD SOLO PARA PROTESTER.
-  La medalla u3 sale abierta con el icono nuevo y abre el escape room (https://atonalidad.gp.lmathome.es/prueba.html);
-  PRUEBA (un solo anticipo) pasa a PRUEBAS (lista, con «solo» por cuenta). Alumnos: sin cambios.
+- 13-oct 22:42 · Intros didácticas (escape room «Atonalidad») · HECHO · PORTAL GP, bloque @MEDALLERO: ANTICIPO DE
+  ATONALIDAD SOLO PARA PROTESTER (Iago: «¿puedes activarme solo en Protester ya el portal con todo? Incluyendo el logotipo
+  nuevo»). Con la cuenta Protester la medalla u3 sale ABIERTA, con el icono nuevo (u3n: la mansión de neón y grafiti con
+  «ATONALIDAD»), y abre el escape room, https://atonalidad.gp.lmathome.es/prueba.html (repo atonalidad, commit 8d9b071:
+  prueba.html + atonalidad/, ficheros NUEVOS; el Taller, index.html, sin tocar). Tester y alumnos: como antes, píxel a píxel
+  (probado en local). PRUEBA pasa a PRUEBAS (lista) con pruebaDe(m) y «solo» por cuenta (la de Atonalidad: /protester/i).
+  lmpro este commit (index.html 311951e9…). Deshacer: borrar la entrada u3 de PRUEBAS (y la línea del icono u3n), o
+  subir APPs/_PARA BORRAR/13-oct-2026-portal-gp-antes-de-atonalidad-en-prueba/lmpro/index.html. OJO: si tocas el
+  medallero, mantén pruebaDe() en el clic y en el pintado. Historia: APPs/LMATHOME GP (github lmpro)/
+  LEEME-13-oct-2026-atonalidad-escape-room-en-prueba.txt
 - 13-oct 19:29 · Fichas y rediseño · HECHO (sin EN CURSO aparte: un solo fichero, la piel) · PIEL DE LOS PORTALES,
   CAJA NEGRA → n19 (solo Tester/Protester, con un editor abierto). Iago (19:13): «me ha vuelto a fallar la pantalla»,
   con el arreglo del dibujo ya cargado (recarga 19:12:36). Las tres veces de hoy (17:52, 18:12, 19:13) la pantalla se
