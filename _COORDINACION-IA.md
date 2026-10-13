@@ -6,6 +6,16 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 13-oct 19:29 · Fichas y rediseño · HECHO (sin EN CURSO aparte: un solo fichero, la piel) · PIEL DE LOS PORTALES,
+  CAJA NEGRA → n19 (solo Tester/Protester, con un editor abierto). Iago (19:13): «me ha vuelto a fallar la pantalla»,
+  con el arreglo del dibujo ya cargado (recarga 19:12:36). Las tres veces de hoy (17:52, 18:12, 19:13) la pantalla se
+  paró 30–40 s DESPUÉS del último toque, no escribiendo; la página seguía viva (recibía toques) y solo cerrar Chrome
+  lo arreglaba; sin aceleración por hardware no pasó. Ahora: VELA (Screen Wake Lock: que la pantalla no se atenúe ni
+  se apague), un PUNTO de 1 px casi transparente que late cada segundo, colgado de <html> (la gráfica nunca del todo
+  quieta; fuera de <body> para no despertar a los vigilantes de la piel), y la caja negra apunta «fps0» (segundos sin
+  tocar, vela, foco, animaciones) y «fps-vuelve»; el estado de los partes lleva vela, punto, quieto_s y
+  sin_fotogramas_s. LMEAVathome commit 9e6ec69, piel/apps/portal.js 760d7dd0… (CN_V 13-oct-n19). OJO: si tocas la
+  sección 19, mantén cnVela/cnPunto/cnQuieto y sus llamadas en cnLatido.
 - 13-oct 18:57 · Fichas y rediseño · HECHO (sin EN CURSO aparte: va en este mismo commit con el index.html de lmpro) ·
   PORTALES GE/GP (index.html) y DICTADO AT HOME / DICTADOS PRO (index.html). (1) EDITOR DE ANOTACIONES de las
   lecciones (tsAnotar): la pantalla del aula se quedaba «pillada» escribiendo. La caja negra (lm_caja_negra) lo vio
