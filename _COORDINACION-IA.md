@@ -6,6 +6,17 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 14-oct 14:25 · Fichas y rediseño · HECHO (sin EN CURSO aparte: aquí solo va este registro; lo demás ya está publicado y
+  comprobado) · CORRECCIÓN DE DICTADOS (Netlify dictadoselemental, correcciondictado.lmathome.es): deploy 6acf7424 encima
+  de 6ac93722. «Corrección manual GP»: al escribir en «Nombre» sale una lista propia con nombre + apellidos + grupo
+  (vw_dictados_gp_canon; sin tildes; cada palabra casa con el principio de cualquier palabra del nombre o apellidos;
+  tocar abre ya la corrección; ↑ ↓ Intro; los ya corregidos con su nota; testers fuera). Fichero NUEVO
+  nombres-gp-14oct.js (app-7oct.js sin tocar) + una línea en index.html. Banco 21/21. Deshacer: Netlify → 6ac93722 →
+  Publish deploy. · SUPABASE: el SQL de la entrada de las 13:55 (alta flexible + formato en espera) YA ESTÁ PEGADO (Iago,
+  14:20) y comprobado: las 5 funciones con la huella del banco. Se pegó en 4 trozos (SQL-BD/…-PARTE-1, 2A, 2B y 3): el
+  editor de Supabase NO guarda una consulta con _suite_registrar_alumno_v4_alumnos en claro, así que en la 2B va en
+  base64 dentro de un execute (misma función). OJO quien pase SQL a Iago por enlace (…/sql/new?content=): por encima de
+  ~9.000 caracteres no carga, y alguna consulta creada así no se guarda: mejor botones que abran el editor al momento.
 - 14-oct 13:55 · Fichas y rediseño · HECHO (sin EN CURSO aparte: va en este mismo commit con el index.html de lmpro) ·
   PORTALES GE/GP (index.html): DIGITAL O PAPEL CON LA CUENTA PENDIENTE + «Podrás cambiar el formato siempre que quieras»
   (Iago: «que el alumno que todavía está pendiente de validar sí tenga la opción ya de escoger si papel o digital… un
