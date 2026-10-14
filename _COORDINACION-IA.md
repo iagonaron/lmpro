@@ -6,6 +6,22 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 14-oct 08:30 · Fichas y rediseño · HECHO (sin EN CURSO aparte: aquí solo va este registro; lo demás ya está publicado y
+  comprobado) · RECLAMACIONES POR EJERCICIO Y POR APARTADO (Iago: «quiero que vaya apartado por apartado o reclamación por
+  reclamación… sea lo que sea que se corrige, si se acepta, que suba la nota»; opciones: dar por bueno, dar por buenos
+  apartados, anular y % a mano, «que las opciones se desplieguen»). SUPABASE (lo pegó Iago a las 08:25): SQL-BD/
+  14-oct-2026-reclamaciones-por-apartado.sql → tabla suite_ficha_ajustes (ficha, cuenta, n, tipo, pct 0-1…; RLS sin
+  políticas), _suite_ajustes_de, _suite_nota_con (la media de la app, 1 decimal), _suite_apartados_total,
+  suite_reclamacion_opciones y suite_reclamacion_decidir (comprueba todo antes de escribir: aceptar NUNCA baja la nota);
+  el trigger suite_ficha_entrega_aplica_anulados y suite_ficha_recalcular aplican también los ajustes; y se ARREGLA
+  suite_ficha_anular (anular a toda la clase daba error: «on conflict (ficha_id,n)» ya no casaba con el índice). Comprobado
+  después: 89/89 entregas con la misma nota. DIARIO: Netlify deploy 6acf1cef (campana ?v=s41: ACEPTAR despliega ✓ Bien ·
+  ＋ Apartado · % A mano · Ø Anular por ejercicio, con la nota que saldría; sin las funciones nuevas, lo de antes).
+  TEORÍA: teoriaathome b3a3f11 y teoriapro 499c6d7 (marca «✔ Reclamación aceptada…» en la ficha corregida). VIGÍA de
+  Chrome: ritmoathome d17dd47 (la fase 2 del quiz avisa a Sentry si las cartas no se ven; lo revisa la tarea Incidencias).
+  OJO quien toque reclamaciones: el detalle va en payload.reclamacion.decisiones y los % nuevos en payload.ajustes (los
+  pone el trigger); el aviso al alumno (suite_notif_crear) mantiene reclamacion_ficha_id y ejercicios (+ decisiones).
+  Para volver: …-DESHACER.sql (en SQL-BD), Netlify → 6ace64db → Publish, y git revert de b3a3f11, 499c6d7 y d17dd47.
 - 14-oct 07:53 · Intros didácticas · HECHO (sin EN CURSO aparte: va en este mismo commit con el index.html de lmpro) ·
   MEDALLERO GP, CUÁNDO SE ABRE CADA MEDALLA A LOS ALUMNOS (lo decide Supabase, no la web). Iago: «en general lo que quiero
   por defecto es que a los alumnos les salga no el viernes de la semana en la que activo la unidad, sino el viernes
