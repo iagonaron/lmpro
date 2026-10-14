@@ -6,6 +6,12 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 14-oct 17:10 · Escape room «Atonalidad» (Cowork) · HECHO (sin EN CURSO aparte: va en este mismo commit, junto a index.html; comprobado
+  justo antes que main seguía en fd8f561). ICONO MÁS LIMPIO DE ATONALIDAD en la medalla u3n (la que ve la cuenta Protester): Iago pidió
+  un icono más limpio; ChatGPT lo rehízo (la misma casa de noche, en penumbra y casi sin color, sin manchas ni hojas de colores, y la O
+  y la I de ATONALIDAD en celeste). En index.html solo cambia la línea del icono u3n (la imagen, 208 px, con el mismo marco que la
+  anterior, y su comentario). Lo mismo en el escape room (atonalidad.gp.lmathome.es/prueba.html, su icono de pestaña). Deshacer:
+  volver a subir el index.html del commit fd8f561.
 - 14-oct 14:29 · Escape room «Atonalidad» (Cowork) · HECHO (sin EN CURSO aparte: va en este mismo commit con el index.html de lmpro) ·
   SELECCIONADOR DE VOLUNTARIOS, SOLO PARA LA CUENTA PROTESTER (Iago: «un botón… seleccionador de voluntarios… solo activo en los
   horarios de los grupos… una ruleta de alumnos de ese grupo… que puedas darlo otra vez»; «que dure como 5 segundos, que dé algo
