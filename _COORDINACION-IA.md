@@ -6,6 +6,22 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 14-oct 13:55 · Fichas y rediseño · HECHO (sin EN CURSO aparte: va en este mismo commit con el index.html de lmpro) ·
+  PORTALES GE/GP (index.html): DIGITAL O PAPEL CON LA CUENTA PENDIENTE + «Podrás cambiar el formato siempre que quieras»
+  (Iago: «que el alumno que todavía está pendiente de validar sí tenga la opción ya de escoger si papel o digital… un
+  texto destacado, quizá medio tintineante»). Al quedar pendiente (alta, o entrada con la cuenta aún pendiente) se abre
+  la ventana de digital/papel de siempre con la entradilla «Mientras Iago revisa tu cuenta», SOLO si suite_formato_leer
+  devuelve «pendiente» (SQL nuevo) y aún no eligió; se guarda con suite_formato_elegir (sin expediente) y Supabase lo
+  aplica al validar. El pie gris pasa a píldora que late (lmfSiempre; quieta con «reducir movimiento»). En @FORMATO:
+  decidir(op) y decidirPendiente(id); en la puerta: formatoEnEspera(id). Sin el SQL, el portal hace lo de antes.
+  SUPABASE (lo pega Iago, en 3 partes): SQL-BD/14-oct-2026-alta-flexible-y-formato-en-espera.sql → el ALTA acepta solo
+  el nombre de pila si en alumnos_canon no hay otro activo que pueda llamarse así, y «Mª» pegado al nombre
+  (_suite_alta_nombre_casa; el expediente sigue EXACTO); tabla suite_formato_pendiente + _suite_formato_pendiente_aplicar;
+  cambian _suite_registrar_alumno_v4_alumnos, suite_formato_elegir, _suite_formato_leer_alumnos, suite_validar_alumno y
+  suite_listar_pendientes_v3 (trozos marcados «14-oct-2026»: mantenerlos si alguien las toca). El login no cambia.
+  Bancos: portal 30/30 (GE y GP), SQL 100/100. LMEAVathome bdfe810 (index.html c8bee8c5…), lmpro este commit
+  (index.html 22f6df66…). Deshacer: APPs/_PARA BORRAR/14-oct-2026-portales-antes-del-formato-en-espera/{ge,gp}/ y
+  SQL-BD/14-oct-2026-alta-flexible-y-formato-en-espera-DESHACER.sql. OJO: mismo código en GE y GP.
 - 14-oct 08:30 · Fichas y rediseño · HECHO (sin EN CURSO aparte: aquí solo va este registro; lo demás ya está publicado y
   comprobado) · RECLAMACIONES POR EJERCICIO Y POR APARTADO (Iago: «quiero que vaya apartado por apartado o reclamación por
   reclamación… sea lo que sea que se corrige, si se acepta, que suba la nota»; opciones: dar por bueno, dar por buenos

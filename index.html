@@ -1478,6 +1478,12 @@ function abrirRegistro(){
   setTimeout(()=>{ try{ document.getElementById('regNombre').focus(); }catch(e){} }, 60);
 }
 function continuarComoInvitadoPend(){ marcarDentro(); unlockGate(); }   // (30-sep-2026) marca de «ya dentro»
+// (14-oct-2026, Iago: «que el alumno que todavía está pendiente de validar sí tenga la opción ya de escoger si papel o digital»)
+// Con la cuenta pendiente se le pregunta el formato (la misma ventana; solo si aún no lo eligió y la base ya lo admite).
+function formatoEnEspera(id){
+  if(!id) return;
+  setTimeout(function(){ try{ if(window.__LM_FMT__ && window.__LM_FMT__.decidirPendiente) window.__LM_FMT__.decidirPendiente(id); }catch(e){} }, 450);
+}
 // 10-sep-2026: primera vez = continuación de «Entrar» (nombre y contraseña ya escritos)
 function abrirPrimeraVez(nombre, pass){
   const n=document.getElementById('regNombre'), p=document.getElementById('regPass'), rc=document.getElementById('regRecordar');
@@ -1663,6 +1669,7 @@ async function alumnoRegistrar(){
   }
   setSession({ id:r.id, nombre, estado:'pendiente', recordar });   // FP5: la contraseña ya no se guarda en el dispositivo
   mostrarPanel('alumnoPendiente');
+  formatoEnEspera(r.id);   // (14-oct-2026) digital o papel ya, mientras espera
 }
 
 async function alumnoEntrar(){
@@ -1697,7 +1704,7 @@ async function alumnoEntrar(){
   setSession({ id:r.id, nombre:r.nombre, estado:r.estado, alumno_canon_id:r.alumno_canon_id, grupo_id:r.grupo_id, recordar });   // FP5: la contraseña ya no se guarda en el dispositivo
   if(r.estado==='validado'){ unlockGateAlumno(reciénValidado ? ()=>mostrarBienvenidaValidada(r.nombre) : null); }
   else if(r.estado==='rechazado'){ err.textContent='Tu solicitud no fue aceptada. Habla con Iago en clase.'; }
-  else { mostrarPanel('alumnoPendiente'); }   // pendiente
+  else { mostrarPanel('alumnoPendiente'); formatoEnEspera(r.id); }   // pendiente (14-oct-2026: + digital o papel si aún no lo eligió)
 }
 function alumnoCerrarSesion(){
   if(!confirm('¿Cerrar sesión en este dispositivo?\n\nPodrás volver a entrar con tu nombre y contraseña (o con otra cuenta).')) return;
@@ -7690,6 +7697,15 @@ window.DictadoClase = (function(){
   .lmf-btn.sec{background:transparent;border:1px solid var(--line);color:var(--ink)}
   .lmf-btn[disabled]{opacity:.55;cursor:default}
   .lmf-pie{font:400 13px/1.5 inherit;color:var(--muted);margin:18px 0 0;padding-top:14px;border-top:1px solid var(--line)}
+  /* (14-oct-2026, Iago: «un texto destacado, quizá medio tintineante») «Podrás cambiar el formato siempre que quieras» */
+  .lmf-pie.lmf-pie-siempre{text-align:center}
+  .lmf-siempre{display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border-radius:999px;border:1px solid var(--accent);
+    background:rgba(255,255,255,.07);background:color-mix(in srgb, var(--accent) 16%, transparent);color:var(--ink);
+    font:800 14px/1.35 "Helvetica Neue",Arial,sans-serif;animation:lmfSiempre 2.4s ease-in-out infinite}
+  .lmf-siempre .ic{font-size:16px;line-height:1}
+  @keyframes lmfSiempre{0%,100%{box-shadow:0 0 0 0 rgba(0,0,0,0);background-color:color-mix(in srgb, var(--accent) 14%, transparent)}
+    50%{box-shadow:0 0 16px 3px color-mix(in srgb, var(--accent) 50%, transparent);background-color:color-mix(in srgb, var(--accent) 30%, transparent)}}
+  @media (prefers-reduced-motion: reduce){ .lmf-siempre{animation:none} }
   .lmf-exp{margin-top:12px;padding:13px 14px;border:1px dashed var(--line);border-radius:12px}
   .lmf-exp p{margin:0 0 9px;font:400 13px/1.5 inherit;color:var(--muted)}
   .lmf-exp input{width:100%;box-sizing:border-box;padding:10px 12px;border-radius:10px;border:1px solid var(--line);
@@ -7864,10 +7880,12 @@ window.DictadoClase = (function(){
   var TXT_DIGITAL='Las fichas te llegan aqu&iacute;, son interactivas y ves tus resultados al momento. Adem&aacute;s, lo que m&aacute;s te cueste vuelve en la ficha siguiente con un ejercicio extra hecho solo para ti.';
   var TXT_PAPEL='Tu profesor te da el material en clase, como siempre.';
 
-  function decidir(){
+  /* (14-oct-2026) decidir({pendiente:true, id}) = la misma ventana para una cuenta que aún espera a Iago */
+  function decidir(op){
+    op=op||{};
     return new Promise(function(res){
       var v=velo(
-        '<p class="lmf-eyebrow">&Uacute;ltimo paso para entrar</p>'+
+        '<p class="lmf-eyebrow">'+(op.pendiente?'Mientras Iago revisa tu cuenta':'&Uacute;ltimo paso para entrar')+'</p>'+
         '<h3>Antes de empezar, una decisi&oacute;n</h3>'+
         '<p class="lmf-sub">Las fichas y las tareas obligatorias se pueden hacer de dos maneras. Elige la que prefieras.</p>'+
         '<div class="lmf-ops">'+
@@ -7877,7 +7895,7 @@ window.DictadoClase = (function(){
           '<div class="lmf-op"><h4>Formato papel</h4><p>'+TXT_PAPEL+'</p>'+
             '<button type="button" class="lmf-btn sec" data-f="papel">Elegir papel</button></div>'+
         '</div>'+
-        '<p class="lmf-pie">Puedes cambiar de formato cuando quieras.</p>'+
+        '<p class="lmf-pie lmf-pie-siempre"><span class="lmf-siempre"><span class="ic" aria-hidden="true">&#8635;</span>Podr&aacute;s cambiar el formato siempre que quieras</span></p>'+   /* (14-oct-2026) antes: «Puedes cambiar de formato cuando quieras.», gris */
         '<p class="lmf-err" id="lmf-err1"></p>');
       v.querySelectorAll('.lmf-btn').forEach(function(b){
         b.onclick=async function(){
@@ -7885,8 +7903,9 @@ window.DictadoClase = (function(){
           v.querySelectorAll('.lmf-btn').forEach(function(x){ x.disabled=true; });
           b.textContent='Guardando…';
           try{
-            var d=await rpc('suite_formato_elegir',{p_cuenta_id:cuenta(), p_formato:f});
+            var d=await rpc('suite_formato_elegir',{p_cuenta_id:(op.id||cuenta()), p_formato:f});
             if(!d || !d.ok) throw new Error((d&&d.error)||'error');
+            if(op.pendiente){ cerrar(v); res(f); return; }   /* (14-oct-2026) cuenta pendiente: se guarda en la base y ya */
             _estado={formato:f, elegido:true};
             try{ var cid=cuenta(); if(cid){ if(f==='papel') localStorage.setItem('lmpro_fmt_'+cid,'papel'); else localStorage.removeItem('lmpro_fmt_'+cid); } }catch(e2){}   /* (28-sep-2026) R1: la marca de papel del formato de reserva sigue al formato elegido */
             pintarPastilla();
@@ -7987,6 +8006,20 @@ window.DictadoClase = (function(){
     };
   }
 
+  /* (14-oct-2026, Iago) cuenta PENDIENTE de validar: si aún no eligió digital o papel, se le pregunta ya. Solo si la base
+     lo admite (suite_formato_leer devuelve «pendiente»: SQL del 14-oct); si no, o si falla la red, no se le pregunta nada. */
+  var _preguntandoPend=false;
+  async function decidirPendiente(id){
+    if(!id || _preguntandoPend) return null;
+    _preguntandoPend=true;
+    try{
+      var d=await rpc('suite_formato_leer',{p_cuenta_id:id});
+      if(!d || !d.ok || d.pendiente!==true || d.elegido) return null;
+      return await decidir({pendiente:true, id:id});
+    }catch(e){ return null; }
+    finally{ _preguntandoPend=false; }
+  }
+
   function pintarPastilla(){
     var b=document.getElementById('lm-fmt-pill');
     if(!b){
@@ -8020,7 +8053,7 @@ window.DictadoClase = (function(){
   else setTimeout(arranque,700);
 
   window.__LM_FMT__={ cargar:cargar, esPapel:esPapel, filtrar:filtrar, papelCorregidas:papelCorregidas,
-                      decidir:decidir, cambiar:cambiar, pintarPastilla:pintarPastilla,
+                      decidir:decidir, cambiar:cambiar, pintarPastilla:pintarPastilla, decidirPendiente:decidirPendiente,
                       estado:function(){ return _estado; } };
 })();
 </script>
