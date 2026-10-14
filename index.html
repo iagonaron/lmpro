@@ -3566,9 +3566,13 @@ function showEnig(kind){
           +qAccion
           +'</div></div>';
       }
-      // DICTADO REVISADO (Iago jul-2026) · el profesor revisó la autocorrección
-      // en Dictados Profesional: verde ✓ si la dio por buena, morado si ajustó
-      // la nota (con su comentario), y botón para ver el dictado y la solución.
+      // DICTADO REVISADO (Iago jul-2026) · el profesor revisó la autocorrección en Dictados Profesional: la dio por buena
+      // (✓ Verificada) o ajustó la nota (con su comentario), y botón para ver el dictado y la solución.
+      // (14-oct-2026, Iago: «la estética de notas revisadas de dictados no me convence… no minimalista… no aprovecha el
+      // espacio… el color de destacado debería ser naranja» → eligió la propuesta A) TARJETA EN DOS LÍNEAS con el contorno
+      // NARANJA del dictado: 1) cascos, «Dictado nº N · nota revisada», pastilla «Corregida por Iago» / «✓ Verificada» y las
+      // fechas a la derecha; 2) las notas, el comentario y «Ver dictado y solución» (o el aviso de los 7 días). Antes: tres
+      // párrafos, nebulosa azul, pastilla morada y el comentario en una caja aparte.
       if(o.payload_json && o.payload_json.dictado_revision){
         var dj=o.payload_json;
         var esCorr=(dj.resultado==='corregida');
@@ -3577,41 +3581,37 @@ function showEnig(kind){
           var s=(+v).toFixed(2).replace(/\.?0+$/,'').replace('.',',');
           return s===''?'0':s;
         };
-        var cabTit=(dj.numero!=null?('Dictado nº '+esc(dj.numero)):'Tu último dictado')+' · nota revisada';
-        var badge=esCorr
-          ? '<span class="dictado-badge corr">✎ CORREGIDA POR EL PROFESOR</span>'
-          : '<span class="dictado-badge ok">✓ VERIFICADA</span>';
-        var cuerpoD=esCorr
-          ? 'Iago ha revisado tu autocorrección y ha ajustado la nota.'
-          : 'Iago ha revisado tu autocorrección y la ha dado por buena. ¡Bien corregido!';
-        var notasHTML='<div class="dictado-notas">'
+        var dSvg=function(d){ return '<svg viewBox="0 0 24 24" aria-hidden="true">'+d+'</svg>'; };
+        var icCascos=dSvg('<path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1v-6h3zM3 19a2 2 0 0 0 2 2h1v-6H3z"/>');
+        var icOjo=dSvg('<path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/>');
+        var icReloj=dSvg('<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>');
+        var cabTit=(dj.numero!=null?('Dictado nº '+esc(dj.numero)):'Tu último dictado');
+        var chipD=esCorr ? '<span class="dct-chip corr">Corregida por Iago</span>' : '<span class="dct-chip ok">✓ Verificada</span>';
+        var fDict=''; if(dj.fecha_dictado){ var pfd=String(dj.fecha_dictado).split('-'); fDict=' · dictado del '+esc(pfd.length===3?(pfd[2]+'/'+pfd[1]):dj.fecha_dictado); }
+        var notasHTML='<span class="dct-notas">'
           +(esCorr
-            ? '<span class="dictado-nota-alumno">Tu corrección: <s>'+fmtN(dj.nota_alumno)+'</s></span>'
-              +'<span class="dictado-flecha">→</span>'
-              +'<span class="dictado-nota-final">Nota de Iago <b>'+fmtN(dj.nota_final)+'</b></span>'
-            : '<span class="dictado-nota-final ok">Tu nota <b>'+fmtN(dj.nota_final)+'</b><span style="color:#4ade80;font-weight:900">✓</span></span>')
-          +'</div>';
+            ? '<span class="dct-mia">Tu corrección <s>'+fmtN(dj.nota_alumno)+'</s></span><span class="dct-flecha">→</span>'
+              +'<span class="dct-final">Nota de Iago <b>'+fmtN(dj.nota_final)+'</b></span>'
+            : '<span class="dct-final">Tu nota <b>'+fmtN(dj.nota_final)+'</b></span>')
+          +'</span>';
         var comentHTML=(esCorr && dj.comentario && String(dj.comentario).trim())
-          ? '<div class="dictado-coment"><b>💬 Comentario de Iago:</b> '+esc(dj.comentario)+'</div>'
-          : '';
+          ? '<span class="dct-coment">«'+esc(String(dj.comentario).trim())+'»</span>'
+          : (esCorr ? '' : '<span class="dct-bien">¡Bien corregido!</span>');
         // (Iago 23-jul) TODAS las fotos (la del alumno y la solución) se
         // guardan 7 días desde la revisión; después el visor se retira y
         // quedan la nota y el comentario, que no caducan.
         var fotosCaducadas=!!(dj.fotos_caducan && (Date.parse(dj.fotos_caducan)||0)<=Date.now());
         var hayFotos=!fotosCaducadas && !!(dj.foto_alumno || (dj.fotos_solucion && dj.fotos_solucion.length));
         var verHTML=hayFotos
-          ? '<button class="alu-dictado-ver" data-id-notif="'+esc(o.id)+'">👀 Ver dictado y solución</button>'
-          : (dj.fotos_caducan?'<div style="margin-top:8px;font-size:11.5px;color:#6d84ab">🕐 Las fotos del dictado se guardan 7 días.</div>':'');
+          ? '<button class="alu-dictado-ver" data-id-notif="'+esc(o.id)+'">'+icOjo+'Ver dictado y solución</button>'
+          : (dj.fotos_caducan?'<span class="dct-caduca">'+icReloj+'Las fotos del dictado se guardan 7 días</span>':'');
         return '<div class="alu-item dictado'+(o.leido?'':' no-leido')+'" data-id="'+esc(o.id)+'">'
-          +'<div class="neb-mini" aria-hidden="true"><i class="n1"></i><i class="n2"></i><i class="n3"></i></div>'
           +'<span class="alu-dot"></span>'
           +'<div class="alu-item-main">'
-          +'<div class="alu-item-tit">🎧 '+cabTit+' '+badge+'</div>'
-          +'<div class="alu-item-cuerpo">'+esc(cuerpoD)+'</div>'
-          +notasHTML
-          +comentHTML
-          +verHTML
-          +'<div class="alu-item-fecha">'+fecha(o.creado_en)+(dj.fecha_dictado?(' · dictado del '+esc(dj.fecha_dictado.split('-').reverse().join('/'))):'')+'</div>'
+          +'<div class="dct-r1"><span class="dct-ico">'+icCascos+'</span>'
+          +'<span class="alu-item-tit dct-tit"><b>'+cabTit+'</b> <span class="dct-sub">· nota revisada</span></span>'+chipD
+          +'<span class="alu-item-fecha dct-fecha">'+fecha(o.creado_en)+fDict+'</span></div>'
+          +'<div class="dct-r2">'+notasHTML+comentHTML+verHTML+'</div>'
           +'</div></div>';
       }
       // @RECO · RECOMENDADO PARA TI (17-sep-2026, Iago) · si lleva media < 4 en
@@ -4078,35 +4078,35 @@ function showEnig(kind){
       '.alu-item-quiz.hecha .alu-item-cuerpo{color:#7d86a6}'+
       '.alu-item-quiz.hecha .alu-dot{visibility:hidden}'+
       '@media (prefers-reduced-motion:reduce){.alu-item.ficha .neb-mini i,.alu-item.ficha .alu-hacer,.alu-item-quiz .quiz-blobs i,.alu-quiz-go{animation:none!important}.portal-bell.ficha-pendiente::before,.portal-bell.ficha-pendiente::after,.portal-bell.ficha-pendiente .pb-bell,.portal-bell-prog,.alu-item-prog .aip-bar i{animation:none!important}}'+
-      /* DICTADO REVISADO (Iago jul-2026) · tarjeta de la campana cuando el
-         profesor revisa la autocorrección de Dictados Profesional. Paleta
-         azul de la app de dictados (#4a9eff) sobre el fondo del portal;
-         verde = verificada tal cual, morado = corregida por el profesor. */
-      '.alu-item.dictado{position:relative;overflow:hidden;border:1px solid rgba(74,158,255,.45);border-radius:12px;margin:8px 0;padding:10px 12px;background:linear-gradient(160deg,#0d1e35 0%,#0a1626 45%,#070f1c 100%)}'+
-      '.alu-item.dictado .neb-mini{position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none;filter:blur(26px);opacity:.5}'+
-      '.alu-item.dictado .neb-mini i{position:absolute;border-radius:50%;display:block}'+
-      '.alu-item.dictado .neb-mini .n1{width:120px;height:120px;left:-24px;top:-34px;background:#4a9eff;animation:pnDrift1 21s ease-in-out infinite}'+
-      '.alu-item.dictado .neb-mini .n2{width:110px;height:110px;right:-28px;top:-18px;background:#2563eb;animation:pnDrift2 25s ease-in-out infinite}'+
-      '.alu-item.dictado .neb-mini .n3{width:130px;height:120px;right:14%;bottom:-44px;background:#38bdf8;animation:pnDrift3 23s ease-in-out infinite}'+
-      '.alu-item.dictado .alu-dot,.alu-item.dictado .alu-item-main{position:relative;z-index:1}'+
-      '.alu-item.dictado .alu-item-tit{color:#e3efff}'+
-      '.alu-item.dictado .alu-item-cuerpo{color:#b7cdea}'+
-      '.alu-item.dictado .alu-item-fecha{color:#6d84ab}'+
-      '.dictado-badge{display:inline-flex;align-items:center;gap:6px;font-size:10.5px;font-weight:900;letter-spacing:.08em;border-radius:7px;padding:3px 9px;vertical-align:1px}'+
-      '.dictado-badge.ok{color:#062b1a;background:linear-gradient(90deg,#4ade80,#22c98a)}'+
-      '.dictado-badge.corr{color:#fff;background:linear-gradient(90deg,#c084fc,#8b5cf6)}'+
-      '.dictado-notas{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:9px}'+
-      '.dictado-nota-final{display:inline-flex;align-items:baseline;gap:6px;background:rgba(74,158,255,.12);border:1px solid rgba(74,158,255,.5);border-radius:10px;padding:7px 13px;color:#dcecff;font-weight:800;font-size:13px}'+
-      '.dictado-nota-final b{font-size:21px;color:#fff;font-variant-numeric:tabular-nums}'+
-      '.dictado-nota-final.ok{background:rgba(74,222,128,.10);border-color:rgba(74,222,128,.5)}'+
-      '.dictado-nota-final.ok b{color:#8ff5b8}'+
-      '.dictado-nota-alumno{font-size:12.5px;font-weight:700;color:#8ba3c7}'+
-      '.dictado-nota-alumno s{opacity:.85}'+
-      '.dictado-flecha{color:#c084fc;font-weight:900}'+
-      '.dictado-coment{margin-top:9px;background:rgba(192,132,252,.10);border:1px solid rgba(192,132,252,.45);border-left:4px solid #c084fc;border-radius:10px;padding:9px 12px;color:#ead9ff;font-size:12.5px;line-height:1.55;white-space:pre-wrap}'+
-      '.dictado-coment b{color:#d8b4fe}'+
-      '.alu-dictado-ver{margin-top:9px;display:inline-flex;align-items:center;gap:7px;border:1px solid rgba(74,158,255,.55);background:rgba(74,158,255,.12);color:#bcd9ff;border-radius:8px;padding:8px 13px;font-weight:800;font-size:12.5px;cursor:pointer}'+
-      '.alu-dictado-ver:hover{background:rgba(74,158,255,.22)}'+
+      /* DICTADO REVISADO (Iago jul-2026) · tarjeta de la campana cuando el profesor revisa la autocorrección de Dictados
+         Profesional. (14-oct-2026, propuesta A elegida por Iago) DOS LÍNEAS con el contorno NARANJA del dictado (el color de
+         audición/dictados), fondo de cristal y nada de degradados ni nebulosa; las notas en una caja con contorno naranja,
+         «Corregida por Iago» en pastilla naranja lisa y «✓ Verificada» con contorno verde; «Ver dictado y solución», naranja. */
+      '.alu-item.dictado{position:relative;border:1.5px solid #f97316;border-radius:14px;margin:8px 0;padding:10px 14px 11px;background:rgba(255,255,255,.035);align-items:flex-start}'+
+      '.alu-item.dictado:not(.no-leido){border-color:rgba(249,115,22,.55)}'+
+      '.alu-item.dictado .alu-dot{background:#f97316;margin-top:8px}'+
+      '.alu-item.dictado .alu-item-main{display:flex;flex-direction:column;gap:8px}'+
+      '.dct-r1{display:flex;align-items:center;gap:6px 9px;flex-wrap:wrap}'+
+      '.dct-ico{display:inline-flex;color:#fff}'+
+      '.dct-ico svg,.alu-item.dictado .alu-dictado-ver svg,.dct-caduca svg{width:17px;height:17px;flex:none;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}'+
+      '.alu-item.dictado .dct-tit{font-size:14.5px;font-weight:400;color:#fff}'+
+      '.alu-item.dictado .dct-tit b{font-weight:800}'+
+      '.dct-sub{color:rgba(255,255,255,.74)}'+
+      '.dct-chip{display:inline-flex;align-items:center;gap:5px;height:22px;padding:0 9px;border-radius:6px;font-size:11.5px;font-weight:800;letter-spacing:.02em;white-space:nowrap}'+
+      '.dct-chip.corr{background:#ea580c;color:#fff}'+
+      '.dct-chip.ok{border:1.5px solid #22c55e;color:#86efac}'+
+      '.alu-item.dictado .dct-fecha{margin:0 0 0 auto;font-size:11.5px;color:rgba(255,255,255,.52)}'+
+      '.dct-r2{display:flex;align-items:center;gap:8px 14px;flex-wrap:wrap;font-size:13.5px;color:rgba(255,255,255,.74)}'+
+      '.dct-notas{display:inline-flex;align-items:center;gap:9px;white-space:nowrap}'+
+      '.dct-mia s{color:rgba(255,255,255,.52)}'+
+      '.dct-flecha{color:rgba(255,255,255,.52)}'+
+      '.dct-final{display:inline-flex;align-items:baseline;gap:7px;border:1.5px solid #f97316;border-radius:9px;padding:2px 10px;color:#fff}'+
+      '.dct-final b{font-size:18px;font-weight:800;font-variant-numeric:tabular-nums}'+
+      '.dct-coment{flex:1 1 240px;min-width:0;color:rgba(255,255,255,.9);font-style:italic;white-space:pre-wrap;overflow-wrap:anywhere}'+
+      '.dct-bien{color:rgba(255,255,255,.74)}'+
+      '.alu-item.dictado .alu-dictado-ver{margin:0 0 0 auto;display:inline-flex;align-items:center;gap:8px;height:34px;padding:0 14px;border:0;border-radius:10px;background:#ea580c;color:#fff;font-family:inherit;font-size:13px;font-weight:700;white-space:nowrap;cursor:pointer}'+
+      '.alu-item.dictado .alu-dictado-ver:hover{filter:brightness(1.1)}'+
+      '.dct-caduca{margin-left:auto;display:inline-flex;align-items:center;gap:6px;font-size:11.5px;color:rgba(255,255,255,.52)}'+
       '.alu-item.dictado.hecha-vista{opacity:.85}'+
       /* visor de dictado + solución (pantalla completa, por encima de la campana) */
       '.dictado-visor{position:fixed;inset:0;z-index:120;display:flex;flex-direction:column;background:rgba(4,8,18,.94);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}'+

@@ -6,6 +6,18 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 14-oct 20:40 · Fichas y rediseño · HECHO (sin EN CURSO aparte: va en este mismo commit, junto a index.html; comprobado justo
+  antes que main seguía en e595b01) · CAMPANA DEL ALUMNO: TARJETA «DICTADO Nº N · NOTA REVISADA» EN DOS LÍNEAS (Iago: «la
+  estética de notas revisadas de dictados no me convence… no minimalista… no aprovecha el espacio… al ser dictado el color de
+  destacado debería ser naranja»; de tres propuestas eligió la A). En index.html solo cambian dos trozos, marcados
+  «14-oct-2026»: lo que pinta la tarjeta (bloque «DICTADO REVISADO (Iago jul-2026)», justo antes de @RECO) y su CSS. Línea 1:
+  cascos, «Dictado nº N · nota revisada», pastilla «Corregida por Iago» (naranja) o «✓ Verificada» (verde) y las fechas;
+  línea 2: «Tu corrección x → Nota de Iago y» (o «Tu nota y»), el comentario y «Ver dictado y solución» (mismo data-id-notif,
+  mismo visor) o, pasados los 7 días, el aviso de que las fotos se guardan 7 días. Contorno naranja (#f97316; ya leída, más
+  tenue). Mismos datos (suite_alumno_notif_listar): sin SQL. Banco 18/18 (escritorio, iPad 820 px y móvil 390 px; el visor
+  abre). Deshacer: volver a subir el index.html del commit e595b01 (copia en
+  APPs/_PARA BORRAR/14-oct-2026-portal-gp-antes-de-dictado-revisado-A/). OJO quien toque la campana: las clases dct-* son de
+  esta tarjeta.
 - 14-oct 17:10 · Escape room «Atonalidad» (Cowork) · HECHO (sin EN CURSO aparte: va en este mismo commit, junto a index.html; comprobado
   justo antes que main seguía en fd8f561). ICONO MÁS LIMPIO DE ATONALIDAD en la medalla u3n (la que ve la cuenta Protester): Iago pidió
   un icono más limpio; ChatGPT lo rehízo (la misma casa de noche, en penumbra y casi sin color, sin manchas ni hojas de colores, y la O
