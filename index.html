@@ -6736,8 +6736,10 @@ window.DictadoClase = (function(){
 <script>
 /* ═══════════════════════════════════════════════════════════════════════
    PORTALES INTERACTIVOS · portada GP
-   Ocho portales en una fila, como primera tarjeta de la parrilla. Se abren solas el viernes a las 19:00 de la
-   semana en que Iago marcó la unidad en el Diario del profesor, y cuando
+   Ocho portales en una fila, como primera tarjeta de la parrilla. Se abren solas a las 19:00 del viernes SIGUIENTE
+   a la semana en que Iago marcó la unidad en el Diario del profesor (desde el 14-oct-2026; antes, el viernes de esa
+   misma semana. Iago: «así desde que activo la unidad todavía tengo 4 clases antes de que a ellos les aparezca; así no
+   se hacen spoilers». Lo decide Supabase, suite_medallas_gp: suite_viernes_19(fecha + 7)), y cuando
    una se abre el portal se oscurece, suena, y la insignia se revela.
    La hora la pone el servidor (RPC suite_medallas_gp): adelantar el reloj
    del ordenador no abre nada.
@@ -6762,8 +6764,8 @@ window.DictadoClase = (function(){
 
   var IMG = window.__MED_IMG__ || {on:{},off:{}};
   /* (8-oct-2026) Acústica OFICIAL: abierta, la medalla lleva el icono nuevo (el abeto de «La cabaña»); cerrada, la sombra
-     de siempre, así que el alumno no ve nada nuevo hasta que se le abre (el viernes a las 19:00 de la semana en que Iago
-     guarda la unidad 2). Volver al icono antiguo: borrar la línea siguiente. */
+     de siempre, así que el alumno no ve nada nuevo hasta que se le abre (a las 19:00 del viernes siguiente a la semana en
+     que Iago guarda la unidad 2: el viernes 23-oct-2026). Volver al icono antiguo: borrar la línea siguiente. */
   if((IMG.on||{}).u2n) IMG.on.u2 = IMG.on.u2n;
   var CLAVE_VISTAS = 'lmpro_medallas_vistas';
 

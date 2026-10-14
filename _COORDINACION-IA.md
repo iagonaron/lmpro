@@ -6,6 +6,19 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 14-oct 07:53 · Intros didácticas · HECHO (sin EN CURSO aparte: va en este mismo commit con el index.html de lmpro) ·
+  MEDALLERO GP, CUÁNDO SE ABRE CADA MEDALLA A LOS ALUMNOS (lo decide Supabase, no la web). Iago: «en general lo que quiero
+  por defecto es que a los alumnos les salga no el viernes de la semana en la que activo la unidad, sino el viernes
+  siguiente… así desde que yo activo la unidad todavía tengo 4 clases antes de que a ellos les aparezca. así no se hacen
+  spoilers». Supabase, migración medallas_gp_viernes_siguiente_20261014: en suite_medallas_gp solo cambia una línea,
+  v_apertura := suite_viernes_19(v_fecha + 7) (antes, suite_viernes_19(v_fecha)); sábado y domingo siguen contando como
+  la semana que empieza. Hamilton, Tester/Protester (lo ven todo al momento), permisos y lo demás, igual. Efecto: Acústica
+  (u2, marcada el domingo 11) pasa del viernes 16 al VIERNES 23-oct a las 19:00; Fonógrafo (u1) sigue abierta. La web no
+  cambia de comportamiento (usa abierta/desde de la RPC): en index.html solo se ponen al día dos comentarios del
+  @MEDALLERO. lmpro este commit (index.html 0ce4b3ca…). Deshacer: APPs/DIARIO PROFESOR (netlify diariodeiagocmus)/SQL-BD/
+  14-oct-2026-medallas-viernes-siguiente-DESHACER.sql (pegarlo en el editor SQL de Supabase). OJO: quien toque
+  suite_medallas_gp, que mantenga el «+ 7». Historia: APPs/LMATHOME GP (github lmpro)/
+  LEEME-14-oct-2026-portales-gp-el-viernes-siguiente.txt
 - 13-oct 23:31 · Fichas y rediseño · HECHO (sin EN CURSO aparte: va en este mismo commit con el index.html de lmpro) ·
   PORTALES GE/GP (index.html), CAMPANA DEL ALUMNO, aviso en TIEMPO EXTRA, 2.ª vuelta (Iago: «quiero que lo del tiempo
   extra sea como en lo de morosos, con la barra de tiempo por día y el segmento de ese día en amarillo»). En el aviso,
