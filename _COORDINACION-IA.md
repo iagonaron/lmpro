@@ -6,6 +6,18 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 14-oct 14:29 · Escape room «Atonalidad» (Cowork) · HECHO (sin EN CURSO aparte: va en este mismo commit con el index.html de lmpro) ·
+  SELECCIONADOR DE VOLUNTARIOS, SOLO PARA LA CUENTA PROTESTER (Iago: «un botón… seleccionador de voluntarios… solo activo en los
+  horarios de los grupos… una ruleta de alumnos de ese grupo… que puedas darlo otra vez»; «que dure como 5 segundos, que dé algo
+  hype… en todos los portales, incluidos los futuros… con la misma estética que el propio portal»; «cada vez que la ruleta
+  aleatoriza, el nombre que sale se banea» hasta que salgan todos). En index.html, bloque @MEDALLERO: conCuentaVol(u) — con
+  sesión validada y esTester(), el portal se abre con «#c=<cuenta>»; a los alumnos, igual que siempre. Nueva carpeta
+  voluntarios/ (lm-voluntarios.js, el módulo con los temas museo/radio/disco; LEEME.md: cómo añadirlo a un portal nuevo).
+  SUPABASE (migración voluntarios_gp_20261014): tabla suite_voluntarios (RLS sin políticas) y suite_voluntarios_estado /
+  suite_voluntarios_tira (solo responden a la cuenta tester; hora exacta de clase según horario_clases, hora de Madrid).
+  Portales con el cargador: atonalidad 75d7ce0, cualidadesdelsonido y fon-grafo (commits de hoy). Deshacer: que
+  conCuentaVol devuelva u; SQL-BD/14-oct-2026-voluntarios-DESHACER.sql. OJO quien toque @MEDALLERO: mantener conCuentaVol
+  en el window.open de las medallas.
 - 14-oct 14:25 · Fichas y rediseño · HECHO (sin EN CURSO aparte: aquí solo va este registro; lo demás ya está publicado y
   comprobado) · CORRECCIÓN DE DICTADOS (Netlify dictadoselemental, correcciondictado.lmathome.es): deploy 6acf7424 encima
   de 6ac93722. «Corrección manual GP»: al escribir en «Nombre» sale una lista propia con nombre + apellidos + grupo

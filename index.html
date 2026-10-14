@@ -6806,6 +6806,14 @@ window.DictadoClase = (function(){
     return null;
   }
   function enPrueba(m){ return !!pruebaDe(m); }
+  /* (14-oct-2026, Iago) SELECCIONADOR DE VOLUNTARIOS: con la cuenta de pruebas (Protester), cada portal del medallero se abre
+     con su cuenta en «#c=» (lo que va tras «#» no viaja a ningún servidor); el portal la quita de la dirección, la guarda y
+     enseña el botón «Voluntarios» (voluntarios/lm-voluntarios.js de este mismo sitio; Supabase: suite_voluntarios_*).
+     A los alumnos se les abre todo como siempre. Quitarlo: que conCuentaVol devuelva u tal cual. */
+  function conCuentaVol(u){
+    try{ var s = ses(); if(s && s.id && s.estado==='validado' && esTester()) return String(u).split('#')[0] + '#c=' + s.id; }catch(e){}
+    return u;
+  }
   var _abiertas = {};      // u -> true
   var _cola = [], _paso = 0, _foco = null, _card = null, _clic = null, _ctx = null, _demo = false;
   var _hamDesde = null, _el = null, _sigue = 0;
@@ -6891,7 +6899,7 @@ window.DictadoClase = (function(){
       host.addEventListener('click', function(ev){
         var b = ev.target.closest('.med'); if(!b) return;
         var m = MEDALLAS.filter(function(x){ return x.u===b.dataset.u; })[0];
-        if(b.classList.contains('open')){ if(m){ var pq = pruebaDe(m); window.open(pq ? pq.url : m.url, '_blank', 'noopener'); } return; }
+        if(b.classList.contains('open')){ if(m){ var pq = pruebaDe(m); window.open(conCuentaVol(pq ? pq.url : m.url), '_blank', 'noopener'); } return; }
         avisar(b);                       // bloqueado: se lo decimos con suavidad
       });
     }
