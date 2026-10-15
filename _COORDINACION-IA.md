@@ -6,6 +6,21 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 15-oct 10:28 · Fichas y rediseño · HECHO (el EN CURSO de las 09:34; comprobado justo antes que main seguía en el commit de las
+  10:07 de Atonalidad, sobre el que va este cambio) · CAMPANA DEL ALUMNO EN GE Y GP, «COLUMNA DE BOTONES» (Iago: «mira este caos
+  de notificaciones… que sean más parecidos entre todos, que las cosas estén en los mismos lugares»; de tres propuestas eligió
+  la 2 y la afinó en varias rondas). Todas las tarjetas: cuadro con el icono del color del apartado y el punto de «nuevo» · lo
+  que pasa (título = qué es · en gris qué ha pasado; pastilla del estado; la nota en su caja, verde si aprueba y roja si no) ·
+  columna fija a la derecha: arriba «visto» (✓ verde) y «contestar» (sobre amarillo), en medio el botón, abajo la fecha. Misma
+  altura salvo si trae mensaje de Iago; «Tareas de la semana» en filas iguales y el número de pendientes en el punto del cuadro;
+  lo hecho y lo ya visto, en gris. Fichas con 14 casillas (7 rosas + 7 de «Tiempo extra», con sus dos fechas «vie 16/10 · 19h»),
+  también la de papel (botón rosa «Entregada en clase»); «Lecciones de ritmo · Intro N» en verde; TIEMPO EXTRA con menos texto;
+  el dictado corregido igual que el verificado; «Contestar a Iago» y el visor del dictado, con las mismas piezas. En index.html:
+  el cuerpo del list.map del render de AluCampana, piezas cv2* (cv2Tarjeta, cv2Estilo, cv2Nota, cv2Barra14, cv2Plazo) y su CSS
+  (#cv2-campana-css), pintarCuenta → cv2Plazo dentro de .cv2, el texto del botón «visto» y los rótulos de esas dos ventanas.
+  Manejadores y data-* iguales. Banco 89/89 (GE y GP; 1280, 1024, 820 y 390). LMEAVathome 9cc6139 (index.html 177883f8…), lmpro
+  este commit (index.html f31cc292…). Deshacer: APPs/_PARA BORRAR/15-oct-2026-portales-antes-de-la-campana-columna/{ge,gp}/. OJO
+  quien toque la campana: todo pasa por cv2Tarjeta/cv2Estilo/cv2CSS (si cambias un tipo de aviso, usa esas piezas).
 - 15-oct 10:07 · Escape room «Atonalidad» (Cowork) · HECHO (sin EN CURSO aparte: va en este mismo commit, junto a index.html;
   comprobado justo antes que main seguía en cef3a6e) · MEDALLAS DEL MEDALLERO «A SANGRE» (Iago: «los botones de los portales…
   la imagen de ChatGPT… no se adecúa exactamente al tipo de curvatura de esquinas de los botones… que las esquinas coincidan
@@ -17,7 +32,7 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   Llevan su marca C2PA (por eso el index.html crece unos 165 KB). Fuentes y guiones: APPs/LMATHOME GP (github lmpro)/MEDALLAS A
   SANGRE (fuentes)/. Deshacer: volver a subir el index.html del commit cef3a6e (copia en APPs/_PARA BORRAR/15-oct-2026-portal-gp-
   antes-de-medallas-a-sangre/). A «Fichas y rediseño» (EN CURSO 09:34): no toco la campana; tu parche entra encima sin choque.
-- 15-oct 09:34 · Fichas y rediseño · EN CURSO · CAMPANA DEL ALUMNO EN GE Y GP (index.html de lmpro y de LMEAVathome). Iago
+- 15-oct 09:34 · Fichas y rediseño · EN CURSO → HECHO a las 10:28 (ver arriba) · CAMPANA DEL ALUMNO EN GE Y GP (index.html de lmpro y de LMEAVathome). Iago
   eligió armonizar todos los avisos con la «columna de botones»: cuadro con el icono del color del apartado · lo que pasa ·
   fecha y botones en una columna fija a la derecha. Toco solo el pintado de la campana (render() de AluCampana: tareas de la
   semana, quiz, dictado revisado, recomendado, ficha en papel corregida, reclamaciones, fichas y avisos) y su CSS; los

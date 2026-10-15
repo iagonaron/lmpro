@@ -2030,7 +2030,281 @@ function showEnig(kind){
     if(fg && isFinite(fg) && ahora<=fg) return {fase:'gracia', restante:fg-ahora};
     return {fase:'fin', restante:0};
   }
+  /* ===== (15-oct-2026, Iago: «mira este caos de notificaciones… que sean más parecidos entre todos, que las cosas estén en
+     los mismos lugares») CAMPANA EN «COLUMNA DE BOTONES» (propuesta 2, con sus cambios: «visto» verde y «contestar» con un
+     sobre amarillo arriba a la derecha, la fecha abajo a la derecha, 14 casillas en las fichas, el dictado corregido igual
+     que el verificado, la ficha en papel con «Entregada en clase», la misma altura para todas salvo las que llevan un
+     mensaje suyo y las tareas, todas igual de altas). Piezas comunes de todas las tarjetas; el reparto, en el render. ===== */
+  var CV2_COL={rosa:['#ec4899','#db2777','236,72,153','#fff'],naranja:['#f97316','#ea580c','249,115,22','#fff'],verde:['#22c55e','#16a34a','34,197,94','#fff'],
+    azul:['#3b82f6','#2563eb','59,130,246','#fff'],amarillo:['#facc15','#facc15','250,204,21','#1c1400'],rojo:['#ef4444','#dc2626','239,68,68','#fff'],
+    blanco:['rgba(255,255,255,.62)','rgba(255,255,255,.16)','255,255,255','#fff']};
+  var CV2_IC={
+    lapiz:'<path d="M17 3l4 4L8 20H4v-4z"/>',
+    reloj:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+    hoja:'<path d="M6 2h9l5 5v15H6z"/><path d="M15 2v5h5"/><path d="M9 13h7M9 17h5"/>',
+    ojo:'<path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/>',
+    cascos:'<path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1v-6h3zM3 19a2 2 0 0 0 2 2h1v-6H3z"/>',
+    lupa:'<circle cx="11" cy="11" r="7"/><path d="M21 21l-4.6-4.6"/>',
+    estrella:'<path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/>',
+    check:'<path d="M5 12.5l4.5 4.5L19 7.5"/>',
+    caja:'<path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/>',
+    corchea:'<path d="M9 18V5l11-2v13"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="17.5" cy="16" r="2.5"/>',
+    libro:'<path d="M2 5h7a3 3 0 0 1 3 3v12a2 2 0 0 0-2-2H2z"/><path d="M22 5h-7a3 3 0 0 0-3 3v12a2 2 0 0 1 2-2h8z"/>',
+    play:'<path d="M7 4l13 8-13 8z"/>',
+    bocadillo:'<path d="M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
+    sobre:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3.5 7l8.5 6 8.5-6"/>',
+    tarea:'<rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8.5 12.5l2.5 2.5 4.5-5"/>',
+    cuadro:'<rect x="5" y="5" width="14" height="14" rx="3"/>',
+    calavera:'<path d="M12 2.8c-4.6 0-8.3 3.4-8.3 8 0 2.6 1.2 4.6 3.2 5.9v2.4c0 1 .8 1.8 1.8 1.8h6.6c1 0 1.8-.8 1.8-1.8v-2.4c2-1.3 3.2-3.3 3.2-5.9 0-4.6-3.7-8-8.3-8z"/><circle cx="8.9" cy="11.2" r="1.9" fill="currentColor" stroke="none"/><circle cx="15.1" cy="11.2" r="1.9" fill="currentColor" stroke="none"/><path d="M12 13.9l-1 1.9h2z" fill="currentColor" stroke-width="1.2"/><path d="M10.3 18.4v2.4M13.7 18.4v2.4"/>'
+  };
+  function cv2Svg(k,cl){ return '<svg class="cv2-ico'+(cl?' '+cl:'')+'" viewBox="0 0 24 24" aria-hidden="true">'+(CV2_IC[k]||'')+'</svg>'; }
+  function cv2Rgb(h){ h=String(h||'').replace('#',''); if(h.length===3) h=h[0]+h[0]+h[1]+h[1]+h[2]+h[2]; var n=parseInt(h,16); if(h.length!==6||!isFinite(n)) return '74,158,255'; return [(n>>16)&255,(n>>8)&255,n&255].join(','); }
+  function cv2Estilo(col,hex){
+    var c=hex?[hex,hex,cv2Rgb(hex),'#fff']:(CV2_COL[col]||CV2_COL.blanco);
+    return ' style="--cc:'+c[0]+';--ccf:'+c[1]+';--ccr:'+c[2]+';--cct:'+c[3]+'"';
+  }
+  /* la nota, siempre en la misma caja: verde si aprueba, roja si no; la de antes, tachada */
+  function cv2Nota(lbl,antes,v){
+    var n=parseFloat(String(v).replace(',','.'));
+    return '<span class="cv2-nota">'+(lbl?'<span class="cv2-nl">'+esc(lbl)+'</span>':'')
+      +((antes!=null && antes!=='')?'<s>'+esc(antes)+'</s><span class="cv2-fl">→</span>':'')
+      +'<b class="'+((isFinite(n)&&n>=5)?'cv2-ok':'cv2-mal')+'">'+esc(v)+'</b></span>';
+  }
+  function cv2Titulo(t){ return String(t||'').replace(/^[^0-9A-Za-zÀ-ÿ¿¡«"(]+/,'').trim(); }
+  function cv2Visto(id){ return '<button type="button" class="alu-recl-leido cv2-cuad cv2-visto" data-recl-leido="'+esc(id)+'" title="Marcar como leído" aria-label="Marcar como leído">'+cv2Svg('check')+'</button>'; }
+  function cv2Hecho(t){ return '<span class="cv2-chip ok cv2-hecho">✓ '+(t||'Hecho')+'</span>'; }
+  /* la tarjeta: cuadro con el icono (y el punto de «nuevo») · lo que pasa · columna fija: iconos arriba, botón, fecha abajo */
+  function cv2Tarjeta(c){
+    return '<div class="alu-item cv2 '+(c.cls||'')+'" data-id="'+esc(c.id)+'"'+(c.attrs||'')+cv2Estilo(c.col,c.colHex)+'>'
+      +'<span class="cv2-tile" aria-hidden="true">'+cv2Svg(c.ic)+'<span class="alu-dot"></span></span>'
+      +'<div class="alu-item-main cv2-mid">'
+      +'<div class="cv2-cont"><div class="cv2-l1"><span class="alu-item-tit">'+c.tit+(c.sub?'<span class="cv2-sub"> · '+c.sub+'</span>':'')+'</span>'+(c.chip||'')+'</div>'
+      +(c.datos?'<div class="cv2-datos">'+c.datos+'</div>':'')+(c.cuerpo||'')+'</div>'
+      +'<div class="cv2-der"><div class="cv2-sec">'+(c.sec||'')+'</div>'+(c.btn?'<div class="cv2-bot">'+c.btn+'</div>':'')
+      +'<span class="alu-item-fecha cv2-fecha">'+esc(c.fecha||'')+'</span></div>'
+      +'</div></div>';
+  }
+  function cv2CSS(){
+    if(document.getElementById('cv2-campana-css')) return;
+    var P='#alu-body .alu-item.cv2', C='#alu-body .cv2 ';
+    var s=document.createElement('style'); s.id='cv2-campana-css';
+    s.textContent=[
+      P+'{display:grid!important;grid-template-columns:44px minmax(0,1fr)!important;grid-template-areas:none!important;column-gap:16px!important;row-gap:0!important;align-items:start!important;position:relative!important;margin:0 0 12px!important;padding:14px 16px!important;border:1px solid rgba(255,255,255,.22)!important;border-radius:14px!important;background:rgba(255,255,255,.035)!important;background-image:none!important;box-shadow:none!important;opacity:1!important;filter:none!important;overflow:visible!important;animation:none!important;color:#fff;cursor:default}',
+      P+':last-child{margin-bottom:0!important}',
+      P+'::before,'+P+'::after{display:none!important}',
+      P+'.no-leido{cursor:pointer}',
+      /* (15-oct-2026, Iago: «cuando has pulsado entendido o marcar estudiado o has terminado la ficha… que se vuelva todo gris,
+         como en segundo plano, que ya no moleste») lo hecho y lo ya visto, en gris; al pasar por encima se lee bien */
+      P+'.hecha,'+P+'.cv2-info:not(.no-leido){filter:grayscale(1)!important;opacity:.55!important}',
+      P+'.hecha:hover,'+P+'.cv2-info:not(.no-leido):hover,'+P+'.hecha:focus-within,'+P+'.cv2-info:not(.no-leido):focus-within{opacity:.9!important}',
+      C+'.cv2-ico{width:16px;height:16px;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}',
+      C+'.cv2-tile{position:relative;box-sizing:border-box;width:44px;height:44px;border-radius:12px;border:1.5px solid var(--cc);color:var(--cc);display:flex;align-items:center;justify-content:center}',
+      '#alu-body .cv2:not(.no-leido) .cv2-tile{opacity:.5}',
+      C+'.cv2-tile .cv2-ico{width:20px;height:20px}',
+      C+'.cv2-tile .alu-dot{position:absolute!important;top:-5px!important;right:-5px!important;left:auto!important;width:11px!important;height:11px!important;margin:0!important;border-radius:50%!important;background:var(--cc)!important;box-shadow:0 0 0 3px #0d1522!important;visibility:hidden!important;flex:none!important}',
+      '#alu-body .cv2.no-leido .cv2-tile .alu-dot{visibility:visible!important}',
+      C+'.cv2-tile .alu-dot.cv2-num{visibility:visible!important;width:19px!important;height:19px!important;top:-8px!important;right:-8px!important;background:#fff!important;color:#0b1320!important;font-size:11px!important;font-weight:800!important;line-height:19px!important;text-align:center!important}',
+      C+'.cv2-mid{display:grid!important;grid-template-columns:minmax(0,1fr) 214px!important;grid-template-rows:auto!important;grid-template-areas:none!important;column-gap:16px!important;row-gap:0!important;align-items:stretch!important;min-width:0;margin:0!important;padding:0!important;position:static!important}',
+      C+'.cv2-mid>*{margin:0!important}',
+      C+'.cv2-cont{grid-column:1!important;grid-row:1!important;display:flex;flex-direction:column;gap:6px;min-width:0;min-height:90px}',
+      C+'.cv2-l1{display:flex;align-items:center;flex-wrap:wrap;gap:4px 8px;min-height:26px}',
+      C+'.alu-item-tit{font-size:15px!important;font-weight:800!important;line-height:1.3!important;color:#fff!important;margin:0!important}',
+      C+'.cv2-sub{font-weight:400;color:rgba(255,255,255,.74)}',
+      C+'.cv2-datos{display:flex;align-items:center;flex-wrap:wrap;gap:8px 14px;min-height:32px;font-size:14px;color:rgba(255,255,255,.78)}',
+      C+'.alu-item-cuerpo{flex:none!important;font-size:14px!important;line-height:1.42!important;color:rgba(255,255,255,.86)!important;margin:0!important;padding:0!important;background:none!important;border:0!important;border-radius:0!important;max-height:none!important}',
+      C+'.cv2-cita{font-style:italic!important;color:rgba(255,255,255,.9)!important;white-space:pre-wrap;overflow-wrap:anywhere}',
+      C+'.cv2-cita::before{content:"«"}',
+      C+'.cv2-cita::after{content:"»"}',
+      C+'.cv2-der{grid-column:2!important;grid-row:1!important;display:grid;grid-template-rows:26px 34px minmax(14px,1fr);row-gap:6px;min-width:0}',
+      C+'.cv2-sec{grid-row:1;display:flex;justify-content:flex-end;gap:8px}',
+      C+'.cv2-bot{grid-row:2;display:flex;justify-content:flex-end;align-items:center;min-width:0}',
+      C+'.cv2-fecha{display:block!important;grid-row:3;align-self:end;justify-self:end;margin:0!important;font-size:12px!important;line-height:14px!important;color:rgba(255,255,255,.52)!important;white-space:nowrap}',
+      C+'.cv2-btn{box-sizing:border-box!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:7px!important;width:100%!important;height:34px!important;margin:0!important;padding:0 12px!important;border:0!important;border-radius:10px!important;background:var(--ccf)!important;background-image:none!important;box-shadow:none!important;color:var(--cct)!important;font-family:inherit!important;font-size:13.5px!important;font-weight:700!important;line-height:1!important;letter-spacing:0!important;white-space:nowrap!important;text-decoration:none!important;text-transform:none!important;cursor:pointer;animation:none!important;filter:none}',
+      C+'.cv2-btn:hover{filter:brightness(1.1)}',
+      C+'.cv2-btn[disabled]{opacity:.6;cursor:default}',
+      C+'.cv2-cuad{box-sizing:border-box!important;width:26px!important;height:26px!important;padding:0!important;margin:0!important;border-radius:8px!important;background:transparent!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;cursor:pointer;box-shadow:none!important;font-size:0!important}',
+      C+'.cv2-cuad .cv2-ico{width:14px;height:14px}',
+      C+'.cv2-visto{border:1.5px solid #22c55e!important;color:#4ade80!important}',
+      C+'.cv2-visto:hover{background:rgba(34,197,94,.16)!important}',
+      C+'.cv2-sobre{border:1.5px solid #facc15!important;color:#facc15!important}',
+      C+'.cv2-sobre:hover{background:rgba(250,204,21,.14)!important}',
+      C+'.cv2-cuad[disabled]{opacity:.45;cursor:default}',
+      C+'.cv2-chip{box-sizing:border-box;display:inline-flex!important;align-items:center;gap:4px;height:22px;padding:0 8px!important;margin:0!important;border-radius:6px!important;border:1.5px solid transparent!important;background:transparent!important;font-size:11.5px!important;font-weight:800!important;letter-spacing:.02em!important;white-space:nowrap;line-height:1!important;box-shadow:none!important;text-transform:none!important;vertical-align:middle}',
+      C+'.cv2-chip.ok{border-color:#22c55e!important;color:#86efac!important}',
+      C+'.cv2-chip.no{border-color:#ef4444!important;color:#fca5a5!important}',
+      C+'.cv2-chip.neu{border-color:rgba(255,255,255,.4)!important;color:rgba(255,255,255,.74)!important}',
+      C+'.cv2-chip.cor{border-color:#f97316!important;color:#fdba74!important}',
+      C+'.cv2-chip.sec{background:var(--ccf)!important;color:#fff!important}',
+      C+'.cv2-chip.urg{border-color:#fff!important;color:#fff!important}',
+      C+'.cv2-chip.pend{border-color:#f59e0b!important;color:#fcd34d!important}',
+      C+'.cv2-nota{box-sizing:border-box;display:inline-flex;align-items:center;gap:7px;height:32px;padding:0 11px;border:1.5px solid var(--cc);border-radius:9px;white-space:nowrap;font-size:13px;color:rgba(255,255,255,.74)}',
+      C+'.cv2-nota s,'+C+'.cv2-nota .cv2-fl{color:rgba(255,255,255,.52)}',
+      C+'.cv2-nota b{font-size:18px;font-weight:800;font-variant-numeric:tabular-nums}',
+      C+'.cv2-nota b.cv2-ok{color:#4ade80}',
+      C+'.cv2-nota b.cv2-mal{color:#f87171}',
+      C+'.dct-coment{flex:1 1 220px;min-width:0}',
+      C+'.dct-bien{color:rgba(255,255,255,.78)}',
+      C+'.cv2-nota-pie{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:rgba(255,255,255,.52)}',
+      C+'.alu-recl-ej{font-size:13px!important;color:rgba(255,255,255,.74)!important;margin:0!important}',
+      C+'.cv2-tuya{border:0!important;border-left:2px solid rgba(255,255,255,.35)!important;padding:2px 0 2px 10px!important;font-size:13px;color:rgba(255,255,255,.74);background:none!important;border-radius:0!important;margin:0!important}',
+      C+'.cv2-tuya b{color:#fff;font-weight:700}',
+      C+'.reco-lnk{color:var(--cc)!important;font-weight:700!important;text-decoration:underline!important;text-underline-offset:2px;border:0!important;background:none!important;padding:0!important}',
+      C+'.cv2-nowrap{white-space:nowrap}',
+      C+'.cv2-calavera{width:1.1em!important;height:1.1em!important;vertical-align:-.2em;margin-left:.25em}',
+      C+'.alu-item-plazo{flex:1 1 100%!important;width:100%;max-width:100%;min-width:0;display:flex!important;flex-wrap:wrap;align-items:center;gap:4px 18px;margin:0!important;padding:13px 0 0!important;background:none!important;font-size:12px!important;font-weight:800!important;color:rgba(255,255,255,.9)!important;white-space:nowrap;border-radius:0!important;box-sizing:border-box}',
+      C+'.cv2-tramo{display:flex;align-items:center;gap:8px;flex:1 1 196px;min-width:0;max-width:252px}',
+      C+'.cv2-hasta{flex:none;font-size:12px;font-weight:800;color:rgba(255,255,255,.9)}',
+      C+'.cv2-dias{position:relative;display:flex;align-items:center;justify-content:space-between;flex:1 1 auto;min-width:96px;max-width:150px}',
+      C+'.cv2-dias i{position:relative;display:block;flex:none;width:12px;height:12px;border-radius:3px;background:rgba(255,255,255,.16);overflow:hidden}',
+      C+'.cv2-dias i.pasado.n{background:#ec4899}',
+      C+'.cv2-dias i.pasado.x{background:#ef4444}',
+      C+'.cv2-dias i.hoy b{position:absolute;left:0;top:0;bottom:0;background:#f59e0b;animation:cv2Latido 1.4s ease-in-out infinite}',
+      C+'.cv2-dias.urg i.hoy b{animation-duration:.55s}',
+      C+'.cv2-extra{position:absolute;bottom:100%;left:0;right:0;width:max-content;margin:0 auto 2px;padding:0 4px;border-radius:3px;font-size:9.5px;line-height:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.36);white-space:nowrap;pointer-events:none}',
+      C+'.cv2-tramo.en .cv2-extra{color:#fca5a5;box-shadow:inset 0 0 0 1px #f87171}',
+      C+'.cv2-fin{color:#f87171}',
+      '@keyframes cv2Latido{0%,100%{opacity:1}50%{opacity:.3}}',
+      P+'.alu-extra-pin{background:#991b1b!important;border:1px solid #f87171!important}',
+      '#alu-body .cv2.alu-extra-pin .cv2-tile{border-color:#fff;color:#fff;background:rgba(255,255,255,.08);opacity:1}',
+      '#alu-body .cv2.alu-extra-pin .cv2-tile .alu-dot{background:#fff!important;box-shadow:0 0 0 3px #991b1b!important}',
+      '#alu-body .cv2.alu-extra-pin .alu-item-tit,#alu-body .cv2.alu-extra-pin .alu-item-cuerpo{color:#fff!important}',
+      '#alu-body .cv2.alu-extra-pin .alu-item-cuerpo b{color:#fff!important;font-weight:800!important;background:none!important;padding:0!important}',
+      '#alu-body .cv2.alu-extra-pin .cv2-btn{background:#fff!important;color:#991b1b!important}',
+      '#alu-body .cv2.alu-extra-pin .cv2-fecha{color:rgba(255,255,255,.75)!important}',
+      '#alu-body .cv2.alu-extra-pin .cv2-dias{background:rgba(0,0,0,.38);padding:3px 6px;border-radius:6px}',
+      '#alu-body .cv2.alu-extra-pin .cv2-tramo.en .cv2-extra{color:#fff;box-shadow:inset 0 0 0 1px #fff}',
+      '#alu-body .cv2.alu-extra-pin .cv2-extra{margin-bottom:1px}',
+      '#alu-body .cv2.alu-extra-pin .cv2-dias i{background:rgba(255,255,255,.2)}',
+      '#alu-body .cv2.alu-extra-pin .cv2-dias i.pasado.n{background:#f472b6}',
+      '#alu-body .cv2.alu-extra-pin .cv2-dias i.pasado.x{background:#ef4444}',
+      P+'.alu-cero{background:#000!important;border:1.5px solid #fff!important}',
+      '#alu-body .cv2.alu-cero .cv2-tile{border-color:#fff;color:#fff;opacity:1}',
+      '#alu-body .cv2.cv2-tareas .cv2-mid{grid-template-columns:minmax(0,1fr)!important}',
+      '#alu-body .cv2.cv2-tareas .cv2-cont{min-height:44px;justify-content:center}',
+      C+'.cv2-partes{grid-column:1/-1!important;display:flex!important;flex-direction:column!important;gap:0!important;margin:0!important;padding:0!important}',
+      C+'.ts-parte.cv2-parte{box-sizing:border-box;display:grid!important;grid-template-columns:44px minmax(0,1fr) 214px!important;column-gap:16px!important;row-gap:0!important;align-items:center!important;min-height:66px;margin:11px 0 0!important;padding:11px 0 0!important;border:0!important;border-top:1px solid rgba(255,255,255,.10)!important;border-radius:0!important;background:none!important;background-image:none!important;box-shadow:none!important;filter:none!important;opacity:1!important;position:relative!important;overflow:visible!important}',
+      C+'.ts-parte.cv2-parte::before,'+C+'.ts-parte.cv2-parte::after{display:none!important}',
+      C+'.ts-parte.cv2-parte.ts-hecha{filter:grayscale(1)!important;opacity:.5!important}',
+      '#alu-body .cv2.hecha .ts-parte.cv2-parte.ts-hecha{opacity:1!important}',
+      C+'.cv2-mini{position:relative;box-sizing:border-box;justify-self:center;width:30px;height:30px;border-radius:9px;border:1.5px solid var(--cc);color:var(--cc);display:flex;align-items:center;justify-content:center}',
+      C+'.cv2-mini .cv2-ico{width:15px;height:15px}',
+      C+'.cv2-mini .ts-dot{position:absolute!important;top:-4px!important;right:-4px!important;left:auto!important;width:9px!important;height:9px!important;margin:0!important;border-radius:50%!important;background:var(--cc)!important;box-shadow:0 0 0 2px #0d1522!important;animation:cv2Pulso 1.6s ease-in-out infinite}',
+      '@keyframes cv2Pulso{0%,100%{transform:scale(1)}50%{transform:scale(1.35)}}',
+      C+'.cv2-pcont{display:flex;flex-direction:column;gap:6px;min-width:0}',
+      C+'.cv2-pt{font-size:14px!important;font-weight:800!important;color:#fff!important;margin:0!important;line-height:1.3!important}',
+      C+'.cv2-pt .cv2-chip{margin-left:6px!important}',
+      C+'.cv2-fila{display:flex;align-items:center;flex-wrap:wrap;gap:6px 10px;font-size:13.5px}',
+      C+'.cv2-fila .ts-parte-sub{font-size:13.5px!important;color:rgba(255,255,255,.7)!important;max-height:none!important;overflow:visible!important;white-space:normal!important;margin:0!important}',
+      C+'.ts-lec-chips{display:flex;flex-wrap:wrap;gap:6px;margin:0!important}',
+      C+'.ts-lec-chip.cv2-lec{box-sizing:border-box;display:inline-flex!important;align-items:center;gap:6px;height:28px!important;padding:0 10px!important;margin:0!important;border-radius:8px!important;border:1.5px solid #22c55e!important;background:transparent!important;box-shadow:none!important;color:#bbf7d0!important;font-family:inherit!important;font-size:13px!important;font-weight:700!important;cursor:pointer;white-space:nowrap;filter:none!important}',
+      C+'.ts-lec-chip.cv2-lec .cv2-ico{width:14px;height:14px}',
+      C+'.ts-lec-chip.cv2-lec:hover{background:rgba(34,197,94,.14)!important}',
+      C+'.ts-lec-chip.cv2-lec.hecha{border-color:rgba(34,197,94,.55)!important;color:#86efac!important}',
+      C+'.cv2-pder{display:flex;flex-direction:column;align-items:stretch;gap:4px;min-width:0}',
+      C+'.cv2-pder .cv2-hecho{align-self:flex-end}',
+      C+'.cv2-intro{font-size:inherit!important;line-height:inherit!important;display:inline!important;opacity:1!important;font-family:inherit!important;color:#4ade80!important;font-weight:800!important;text-decoration:none!important;border:0!important;background:none!important;padding:0!important;margin:0!important;cursor:pointer}',
+      C+'.cv2-intro:hover{text-decoration:underline!important;text-underline-offset:2px}',
+      C+'.cv2-pie{grid-column:1/-1!important;display:grid;grid-template-columns:44px minmax(0,1fr) 214px;column-gap:16px;margin-top:10px!important}',
+      C+'.cv2-pie .cv2-fecha{grid-column:3}',
+      /* Hamilton (lo pinta otro bloque dentro de la tarjeta): su botón, en el sitio de los botones */
+      C+'.cv2-mid>.ham-ir{grid-column:2!important;grid-row:1!important;align-self:start;margin:32px 0 0!important;box-sizing:border-box;display:inline-flex!important;align-items:center;justify-content:center;width:100%;height:34px;padding:0 12px!important;border-radius:10px!important;background:var(--ccf)!important;background-image:none!important;color:var(--cct)!important;font-size:13.5px!important;font-weight:700!important;text-decoration:none!important;white-space:nowrap;box-shadow:none!important}',
+      C+'.ham-cita{color:#fff!important}',
+      /* (15-oct-2026, Iago: «si alguna de esas tarjetas te lleva a alguna ventana… que lo que abra mantenga esta estética») */
+      '#alu-resp-modal.alu-resp-modal{background:rgba(4,10,20,.6)!important;-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}',
+      '#alu-resp-modal .alu-resp-caja{background:rgba(11,19,32,.97)!important;background-image:none!important;border:1px solid rgba(255,255,255,.22)!important;border-radius:16px!important;padding:18px!important;box-shadow:0 24px 60px rgba(0,0,0,.5)!important;color:#fff}',
+      '#alu-resp-modal .alu-resp-cab{margin-bottom:14px!important}',
+      '#alu-resp-modal .alu-resp-cab b{display:inline-flex;align-items:center;gap:10px;font-size:17px!important;font-weight:800!important;color:#fff!important}',
+      '#alu-resp-modal .cv2-rtile{box-sizing:border-box;width:34px;height:34px;border-radius:10px;border:1.5px solid #facc15;color:#facc15;display:inline-flex;align-items:center;justify-content:center}',
+      '#alu-resp-modal .cv2-ico{width:16px;height:16px;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}',
+      '#alu-resp-modal .alu-resp-x{box-sizing:border-box;width:34px!important;height:34px!important;padding:0!important;border-radius:10px!important;border:1px solid rgba(255,255,255,.35)!important;background:transparent!important;color:#fff!important;font-size:18px!important;line-height:1!important;display:inline-flex;align-items:center;justify-content:center}',
+      '#alu-resp-modal .alu-resp-cita{border-left:2px solid rgba(255,255,255,.35)!important;border-radius:0!important;background:none!important;padding:2px 0 2px 12px!important;margin-bottom:14px!important}',
+      '#alu-resp-modal .alu-resp-cita-tit{font-size:13.5px!important;font-weight:800!important;color:#fff!important}',
+      '#alu-resp-modal .alu-resp-cita-txt{font-size:13.5px!important;font-style:italic;color:rgba(255,255,255,.86)!important}',
+      '#alu-resp-modal .alu-resp-cita-txt::before{content:"\u00ab"}',
+      '#alu-resp-modal .alu-resp-cita-txt::after{content:"\u00bb"}',
+      '#alu-resp-modal .alu-resp-txt{border:1.5px solid rgba(250,204,21,.45)!important;border-radius:10px!important;background:rgba(0,0,0,.25)!important;color:#fff!important;font-size:14px!important}',
+      '#alu-resp-modal .alu-resp-txt:focus{border-color:#facc15!important}',
+      '#alu-resp-modal .alu-resp-info{color:rgba(255,255,255,.52)!important}',
+      '#alu-resp-modal .alu-resp-btns button{box-sizing:border-box;height:34px!important;padding:0 14px!important;border-radius:10px!important;font-family:inherit!important;font-size:13.5px!important;font-weight:700!important;display:inline-flex;align-items:center;gap:7px}',
+      '#alu-resp-modal .alu-resp-cancelar{background:transparent!important;border:1px solid rgba(255,255,255,.35)!important;color:#fff!important}',
+      '#alu-resp-modal .alu-resp-enviar{background:#facc15!important;border:0!important;color:#1c1400!important}',
+      '.dictado-visor.cv2-visor{background:rgba(4,10,20,.94)!important}',
+      '.dictado-visor.cv2-visor .dv-head{padding:16px 20px!important}',
+      '.dictado-visor.cv2-visor .dv-tit{display:inline-flex;align-items:center;gap:10px;font-size:17px!important;font-weight:800!important;color:#fff!important}',
+      '.dictado-visor.cv2-visor .dv-sub{font-weight:400;color:rgba(255,255,255,.74)}',
+      '.dictado-visor.cv2-visor .dv-ico{box-sizing:border-box;width:34px;height:34px;border-radius:10px;border:1.5px solid #f97316;color:#f97316;display:inline-flex;align-items:center;justify-content:center}',
+      '.dictado-visor.cv2-visor .cv2-ico{width:16px;height:16px;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}',
+      '.dictado-visor.cv2-visor .dv-close{width:34px!important;height:34px!important;border-radius:10px!important;background:transparent!important;border:1px solid rgba(255,255,255,.35)!important}',
+      '.dictado-visor.cv2-visor figure{border:1.5px solid #f97316!important;background:rgba(255,255,255,.035)!important}',
+      '.dictado-visor.cv2-visor figcaption{padding:10px 12px!important;font-size:14px!important;font-weight:800!important;color:#fff!important;border-bottom:1px solid rgba(255,255,255,.10)}',
+      '.dictado-visor.cv2-visor .dv-cap{display:inline-flex;align-items:center;gap:8px}',
+      '.dictado-visor.cv2-visor .dv-cap .cv2-ico{color:#f97316}',
+      '.dictado-visor.cv2-visor .dv-girar{width:30px!important;height:30px!important;border-radius:8px!important;background:transparent!important;border:1.5px solid rgba(249,115,22,.7)!important;color:#fdba74!important}',
+      '.dictado-visor.cv2-visor .dv-girar:hover{background:rgba(249,115,22,.16)!important}',
+      '.dictado-visor.cv2-visor .dv-rail,.dictado-visor.cv2-visor .dv-x{border-color:rgba(249,115,22,.6)!important}',
+      '.dictado-visor.cv2-visor .dv-rail input[type=range]::-webkit-slider-thumb{background:#f97316!important}',
+      '.dictado-visor.cv2-visor .dv-rail input[type=range]::-moz-range-thumb{background:#f97316!important}',
+      '.dictado-visor.cv2-visor .dv-x.on{background:#f97316!important;border-color:#f97316!important;color:#fff!important}',
+      '.dictado-visor.cv2-visor .dv-x,.dictado-visor.cv2-visor .dv-pm{color:#fed7aa!important}',
+      '.dictado-visor.cv2-visor .dv-tip{color:rgba(255,255,255,.52)!important;font-size:12px!important}',
+      '@media (max-width:640px){'
+        +P+'{grid-template-columns:36px minmax(0,1fr)!important;column-gap:12px!important;padding:12px!important}'
+        +C+'.cv2-tile{width:36px;height:36px;border-radius:10px}'
+        +C+'.cv2-mid{grid-template-columns:minmax(0,1fr)!important;row-gap:10px!important}'
+        +C+'.cv2-cont{min-height:0}'
+        +C+'.cv2-der{grid-column:1!important;grid-row:2!important;display:flex;flex-wrap:wrap;align-items:center;gap:8px}'
+        +C+'.cv2-sec{order:2}'+C+'.cv2-bot{order:1;flex:1 1 180px}'+C+'.cv2-fecha{order:3;align-self:center}'
+        +C+'.ts-parte.cv2-parte{grid-template-columns:30px minmax(0,1fr)!important;row-gap:8px!important}'
+        +C+'.cv2-pder{grid-column:2}'
+        +C+'.cv2-pie{grid-template-columns:1fr}'+C+'.cv2-pie .cv2-fecha{grid-column:1}'
+        +C+'.cv2-mid>.ham-ir{grid-column:1!important;grid-row:2!important;margin:0!important}'
+      +'}',
+      '@media (prefers-reduced-motion:reduce){#alu-body .cv2 .cv2-dias i.hoy b,#alu-body .cv2 .cv2-mini .ts-dot{animation:none}}'
+    ].join('');
+    document.head.appendChild(s);
+  }
+  /* (15-oct-2026, Iago: «en vez de tener siete cuadraditos, que tengan 14 y que los primeros siete sean de color rosa… a
+     partir del octavo es cuando se pone rojo… en vez de que ponga queda un día nueve horas») LAS FICHAS DE LA CAMPANA, CON 14
+     CASILLAS: 7 de la semana normal (rosa) y 7 del tiempo extra (rojo). Lo que ya pasó, relleno; hoy, en ámbar, se va
+     llenando y parpadea (el último día, más deprisa); lo que queda, en gris. Tras cada tramo, su fecha («vie 16/10 · 19:00»).
+     El «Te quedan…» pasa al globo de ayuda. Solo dentro de la campana nueva (.cv2); fuera, como antes. */
+  function cv2FechaCorta(iso){   /* «vie 16/10 · 19h», en hora de Galicia (15-oct-2026, Iago: «en vez de 19.00, 19h») */
+    try{ var q={}; new Intl.DateTimeFormat('es-ES',{timeZone:'Europe/Madrid',weekday:'short',day:'numeric',month:'numeric',hour:'2-digit',minute:'2-digit',hour12:false})
+        .formatToParts(new Date(iso)).forEach(function(x){ q[x.type]=x.value; });
+      if(!q.hour) return '';
+      return String(q.weekday||'').replace('.','').toLowerCase().slice(0,3)+' '+q.day+'/'+q.month+' · '+(+q.hour)+(q.minute==='00'?'':':'+q.minute)+'h';
+    }catch(e){ return ''; }
+  }
+  /* (15-oct-2026, Iago: «entre los puntitos rosas y los que luego serían rojos, que aparezcan dos fechas… que se vean las dos
+     temporalidades») 7 rosas · la fecha de entrega · 7 rojas · la fecha del final del tiempo extra */
+  function cv2Barra14(fnIso,fgIso){
+    var fn=Date.parse(fnIso); if(!isFinite(fn)) return '';
+    var fg=Date.parse(fgIso||''), t=Date.now();
+    var grupo=function(ini,fin,cl,lab){
+      var d=(fin-ini)/7, h='', urg=false;
+      for(var k=0;k<7;k++){ var a=ini+k*d, b=a+d;
+        if(t>=b) h+='<i class="pasado '+cl+'"></i>';
+        else if(t>=a){ h+='<i class="hoy '+cl+'"><b style="width:'+Math.max(4,Math.min(100,(t-a)/d*100)).toFixed(0)+'%"></b></i>'; urg=(fin-t<DIA_MS); }
+        else h+='<i class="'+cl+'"></i>'; }
+      return '<span class="cv2-dias '+cl+(urg?' urg':'')+'" aria-hidden="true">'+(lab||'')+h+'</span>';
+    };
+    var h='<span class="cv2-tramo n">'+grupo(fn-7*DIA_MS, fn, 'n')+'<span class="cv2-hasta">'+esc(cv2FechaCorta(fnIso))+'</span></span>';
+    /* (15-oct-2026, Iago) «encima de los siete extra, que ponga tiempo extra, de forma medio discreta… en gris sutil, y cuando
+       está en modo rojo, con el contorno… encima de los puntitos, no en el título» */
+    if(isFinite(fg) && fg>fn) h+='<span class="cv2-tramo x'+(t>fn?' en':'')+'">'+grupo(fn, fg, 'x', '<span class="cv2-extra">Tiempo extra</span>')+'<span class="cv2-hasta">'+esc(cv2FechaCorta(fgIso))+'</span></span>';
+    return h;
+  }
+  function cv2Plazo(el){
+    var st=estadoPlazo(el.getAttribute('data-fin'), el.getAttribute('data-gracia'));
+    if(!st){ el.textContent=''; return; }
+    el.style.color='';
+    if(st.fase==='fin'){ if(el._cv2!=='fin'){ el.innerHTML='<span class="cv2-fin">Plazo terminado</span>'; el._cv2='fin'; } el.title=''; return; }
+    var hx=cv2Barra14(el.getAttribute('data-fin'), el.getAttribute('data-gracia'));
+    if(el._cv2!==hx){ el.innerHTML=hx; el._cv2=hx; }   /* solo si cambia: si no, el parpadeo de hoy volvería a empezar cada segundo */
+    var tq='Te quedan '+(st.fase==='normal'?fmtCuenta(st.restante):fmtCuentaExtra(st.restante)); if(el.title!==tq) el.title=tq;
+  }
   function pintarCuenta(el){
+    if(el.closest && el.closest('.cv2')){ cv2Plazo(el); return; }   /* (15-oct-2026) campana nueva: 14 casillas */
     var st=estadoPlazo(el.getAttribute('data-fin'), el.getAttribute('data-gracia'));
     if(!st){ el.textContent=''; return; }
     if(st.fase==='normal'){ el.style.color='#e9c96a'; el.textContent='Te quedan '+fmtCuenta(st.restante); }
@@ -3257,7 +3531,7 @@ function showEnig(kind){
   }
   function abrirVisorDictado(dj){
     var old=document.getElementById('dictado-visor'); if(old) old.remove();
-    var v=document.createElement('div'); v.className='dictado-visor'; v.id='dictado-visor';
+    var v=document.createElement('div'); v.className='dictado-visor cv2-visor'; v.id='dictado-visor'; try{ cv2CSS(); }catch(eC){}
     var figs='';
     // (7-oct-2026, Iago) cada foto lleva su ↻ en el rótulo
     var girar=function(de){ return '<button type="button" class="dv-girar" title="Girar 90°" aria-label="Girar la foto '+de+'">↻</button>'; };
@@ -3268,19 +3542,19 @@ function showEnig(kind){
     } else {
       if(dj.foto_alumno){
         // (7-oct-2026, noche) dv-mia = la foto del alumno: la única que mira el colocador
-        figs+='<figure class="dv-mia"><figcaption><span class="dv-cap">📸 Tu dictado (la foto que enviaste)</span>'+girar('de tu dictado')+'</figcaption>'
+        figs+='<figure class="dv-mia"><figcaption><span class="dv-cap">'+cv2Svg('cascos')+'Tu dictado<span class="dv-sub"> · la foto que enviaste</span></span>'+girar('de tu dictado')+'</figcaption>'
           +'<a class="dv-img" href="'+esc(dj.foto_alumno)+'" target="_blank" rel="noopener"><img src="'+esc(dj.foto_alumno)+'" alt="Tu dictado" loading="lazy"></a></figure>';
       }
       var sols=(dj.fotos_solucion||[]).filter(Boolean);
       sols.forEach(function(u,k){
         // (8-oct-2026, Iago: «no es necesario que el alumno tenga lo de solución editable. esa siempre estará bien
         // colocada») la pizarra del profesor, sin ↻ ni deslizador: entera y, al tocarla, a tamaño completo
-        figs+='<figure><figcaption><span class="dv-cap">✅ Solución'+(sols.length>1?(' '+(k+1)+' de '+sols.length):'')+' (la pizarra del profesor)</span></figcaption>'
+        figs+='<figure><figcaption><span class="dv-cap">'+cv2Svg('check')+'Solución'+(sols.length>1?(' '+(k+1)+' de '+sols.length):'')+'<span class="dv-sub"> · la pizarra del profesor</span></span></figcaption>'
           +'<a class="dv-img" href="'+esc(u)+'" target="_blank" rel="noopener"><img src="'+esc(u)+'" alt="Solución del dictado" loading="lazy"></a></figure>';
       });
     }
     if(!figs) figs='<div class="alu-vacio" style="grid-column:1/-1">No hay imágenes disponibles de este dictado.</div>';
-    v.innerHTML='<div class="dv-head"><div class="dv-tit">🎧 '+(dj.numero!=null?('Dictado nº '+esc(dj.numero)):'Dictado')+' · tu foto y la solución</div>'
+    v.innerHTML='<div class="dv-head"><div class="dv-tit"><span class="dv-ico">'+cv2Svg('cascos')+'</span>'+(dj.numero!=null?('Dictado nº '+esc(dj.numero)):'Dictado')+'<span class="dv-sub"> · tu foto y la solución</span></div>'
       +'<button class="dv-close" aria-label="Cerrar" title="Cerrar">✕</button></div>'
       +'<div class="dv-body">'+figs+'</div>'
       +'<div class="dv-tip">↻ gira tu foto · el deslizador (o pellizcar) la amplía y, ampliada, se arrastra · toca una foto sin ampliar para abrirla a tamaño completo en otra pestaña.</div>';
@@ -3317,6 +3591,7 @@ function showEnig(kind){
   async function render(){
     var body=document.getElementById('alu-body'); if(!body) return;
     body.innerHTML='<div class="alu-vacio">Cargando…</div>';
+    try{ cv2CSS(); }catch(eC){}   /* (15-oct-2026) campana en «columna de botones» */
     var id=cuentaId(); if(!id){ body.innerHTML='<div class="alu-vacio">Inicia sesión para ver tus notificaciones.</div>'; return; }
     var r=await rpc('suite_alumno_notif_listar',{p_cuenta_id:id});
     // (Iago 15-sep-2026) Antes un fallo de red se pintaba igual que «no hay
@@ -3440,311 +3715,222 @@ function showEnig(kind){
       return (pa-pb) || (_cuandoAviso(b)-_cuandoAviso(a));
     });
     body.innerHTML=(list.length?list.map(function(o){
-      // FASE 8 · TARJETA AGRUPADA "Tareas de la semana": quiz → lecciones → otras.
+      /* (15-oct-2026, Iago: «mira este caos de notificaciones… que sean más parecidos entre todos, que las cosas estén en los
+         mismos lugares» → eligió la propuesta 2, «COLUMNA DE BOTONES», con sus cambios). Todas las tarjetas igual: cuadro con
+         el icono del color del apartado (rosa teoría, naranja dictado, verde ritmo, el suyo en lo recomendado, amarillo lo de
+         Iago, rojo el TIEMPO EXTRA) con el punto de «nuevo» en la esquina · lo que pasa (el título dice QUÉ es y, en gris, qué
+         ha pasado; la pastilla del estado; la nota en su caja, verde si aprueba y roja si no; el texto) · y una columna fija a
+         la derecha: arriba «visto» (✓ verde) y «contestar» (sobre amarillo), en medio el botón y abajo la fecha. Las fichas,
+         con 14 casillas. Los botones conservan sus clases y data-* de siempre (los manejadores de abajo no cambian). Antes:
+         cada aviso con su colocación (botones a la izquierda o a la derecha, la fecha arriba o abajo, nebulosas, degradados);
+         para volver, el index.html de antes del 15-oct-2026. */
+      var _f=fecha(o.creado_en);
+      // ---------- TAREAS DE LA SEMANA: quiz → lecciones → otras (y la ficha en papel) → la ficha; todas las filas igual de altas
       if(esTareas(o)){
         var tj=o.payload_json, se=tj.semana_envio_id;
         var hechaT=tareasHecha(o);
-        var caduSem=tareaCaducada(o);   // (6-ago) semana cerrada: sin bolitas
-        var partes='';
-        // 1º · QUIZ
+        var caduSem=tareaCaducada(o);
+        var partes=[], pend=0;
+        var parte=function(p){
+          return '<div class="ts-parte cv2-parte '+p.cls+'"'+(p.attrs||'')+cv2Estilo(p.col)+'>'
+            +'<span class="cv2-mini">'+cv2Svg(p.ic)+(p.dot?'<span class="ts-dot" aria-hidden="true"></span>':'')+'</span>'
+            +'<div class="cv2-pcont"><div class="ts-parte-tit cv2-pt">'+p.tit+'</div>'+(p.fila?'<div class="cv2-fila">'+p.fila+'</div>':'')+'</div>'
+            +'<div class="cv2-pder">'+(p.der||'')+(p.bajo||'')+'</div></div>';
+        };
         if(tj.quiz && tj.quiz.envio_id){
           var qh=!!_quizHechos[tj.quiz.envio_id];
-          partes+='<div class="ts-parte ts-quiz'+(qh?' ts-hecha':'')+'">'
-            +((qh||caduSem)?'':'<span class="ts-dot" aria-hidden="true"></span>')
-            +'<div class="ts-parte-tit">🥁 Quiz de ritmo · Carta '+esc(tj.quiz.carta||'')+(qh?' <b class="ts-check">✓</b>':'')+'</div>'
-            +(qh?'<div class="ts-parte-sub">Ya lo completaste. ¡Buen trabajo!</div>'
-                :'<button class="alu-quiz-go" data-envio="'+esc(tj.quiz.envio_id)+'" data-carta="'+esc(tj.quiz.carta||'')+'">▶ Empezar el quiz</button>')
-            +'</div>';
+          if(!qh && !caduSem) pend++;
+          partes.push(parte({cls:'ts-quiz'+(qh?' ts-hecha':''), col:'verde', ic:'corchea', tit:'Quiz de ritmo · Carta '+esc(tj.quiz.carta||''),
+            der: qh?cv2Hecho():'<button class="alu-quiz-go cv2-btn" data-envio="'+esc(tj.quiz.envio_id)+'" data-carta="'+esc(tj.quiz.carta||'')+'">'+cv2Svg('play')+'Empezar el quiz</button>'}));
         }
-        // 2º · LECCIONES DE RITMO — FASE 8.3: cada lección es un CHIP con su
-        // propio estado. Con capturas: el chip abre el visor de ESA lección
-        // (imagen limpia, sin distracciones) con «✓ Ya la estudié» al final.
-        // Sin capturas: el chip se marca directamente.
         var lecList=(tj.lecciones||[]).filter(function(l){ return l && l.n!=null; });
-        if(!lecList.length && (tj.lecciones_imgs||[]).length){
-          lecList=[{n:null, imgs:tj.lecciones_imgs}];   // compat con envíos viejos
-        }
+        if(!lecList.length && (tj.lecciones_imgs||[]).length) lecList=[{n:null, imgs:tj.lecciones_imgs}];   // compat con envíos viejos
         if(lecList.length){
-          // (6-ago Iago) las lecciones son RECORDATORIO: abrirlas las marca (queda
-          // el ✓ en su chip), pero no pesan en la campana ni en el «hecha» de la
-          // tarjeta, y el único texto de ayuda es «Pulsa la lección para verla.»
           var chips=lecList.map(function(l){
-            var parte=(l.n!=null)?('leccion_'+l.n):'lecciones';
-            var hechaL=parteHecha(se,parte);
+            var parteL=(l.n!=null)?('leccion_'+l.n):'lecciones';
+            var hechaL=parteHecha(se,parteL);
             var lbl=(l.n!=null)?('Lección '+esc(l.n)):'Lecciones';
             if(hechaL && l.imgs && l.imgs.length)
-              return '<button class="ts-lec-chip abre hecha" title="Reabrir para repasar" data-envio="'+esc(se)+'" data-parte="'+esc(parte)+'" data-lbl="'+esc(lbl)+'" data-imgs="'+esc(JSON.stringify(l.imgs))+'">✓ '+lbl+'</button>';
-            if(hechaL) return '<span class="ts-lec-chip hecha">✓ '+lbl+'</span>';
+              return '<button class="ts-lec-chip cv2-lec abre hecha" title="Reabrir para repasar" data-envio="'+esc(se)+'" data-parte="'+esc(parteL)+'" data-lbl="'+esc(lbl)+'" data-imgs="'+esc(JSON.stringify(l.imgs))+'">'+cv2Svg('check')+lbl+'</button>';
+            if(hechaL) return '<span class="ts-lec-chip cv2-lec hecha">'+cv2Svg('check')+lbl+'</span>';
             if(l.imgs && l.imgs.length)
-              return '<button class="ts-lec-chip abre" data-envio="'+esc(se)+'" data-parte="'+esc(parte)+'" data-lbl="'+esc(lbl)+'" data-imgs="'+esc(JSON.stringify(l.imgs))+'">📖 '+lbl+'</button>';
-            return '<button class="ts-lec-chip marca" data-envio="'+esc(se)+'" data-parte="'+esc(parte)+'">☐ '+lbl+'</button>';
+              return '<button class="ts-lec-chip cv2-lec abre" data-envio="'+esc(se)+'" data-parte="'+esc(parteL)+'" data-lbl="'+esc(lbl)+'" data-imgs="'+esc(JSON.stringify(l.imgs))+'">'+cv2Svg('libro')+lbl+'</button>';
+            return '<button class="ts-lec-chip cv2-lec marca" data-envio="'+esc(se)+'" data-parte="'+esc(parteL)+'">'+cv2Svg('cuadro')+lbl+'</button>';
           }).join('');
-          // (15-sep) igual que en elemental: con todas estudiadas el bloque entero se atenúa con su ✓
           var lecTodas=lecList.every(function(l){ return parteHecha(se,(l.n!=null)?('leccion_'+l.n):'lecciones'); });
           var lecPend=!caduSem && !lecTodas;
+          if(lecPend) pend++;
           var lecPartes=lecList.map(function(l){ return (l.n!=null)?('leccion_'+l.n):'lecciones'; });
-          partes+='<div class="ts-parte ts-lecciones'+(lecTodas?' ts-hecha':'')+'">'
-            +(lecPend?'<span class="ts-dot" aria-hidden="true"></span>':'')
-            +'<div class="ts-parte-tit">📚 Lecciones de ritmo'+((tj.carta_ritmo&&tj.carta_ritmo.id)?' · Carta '+esc(tj.carta_ritmo.id):'')+(lecTodas?' <b class="ts-check">✓</b>':'')+'</div>'
-            +'<div class="ts-lec-chips">'+chips+'</div>'
-            // (Iago 15-sep-2026) Tarjeta simplificada: la carta va en el título, sin fila «Lecciones de la carta…» ni «Pulsa la lección…»; la intro queda como enlace discreto abajo a la derecha.
-            +'<div class="ts-pie">'+(lecPend?'<button class="ts-marcar ts-lec-todas" data-envio="'+esc(se)+'" data-partes="'+esc(JSON.stringify(lecPartes))+'">✓ Marcar como estudiadas</button>':'')
-            +((tj.carta_ritmo&&tj.carta_ritmo.id)?'<a class="ts-intro-link" target="_blank" rel="noopener" href="https://iagonaron.github.io/ritmopro/?introCarta='+encodeURIComponent(tj.carta_ritmo.id)+'">¿Necesitas ver la explicación del ritmo?</a>':'')+'</div>'
-            +'</div>';
+          var cartaR=(tj.carta_ritmo&&tj.carta_ritmo.id)?String(tj.carta_ritmo.id):'';
+          /* (15-oct-2026, Iago: «sustituyes la palabra carta por intro 1.3… de color verde, sin que sea un botón… que al pulsar
+             sí que abra») la explicación de la carta va en el propio título, como enlace verde; ya no hay «¿Necesitas ver…?» */
+          partes.push(parte({cls:'ts-lecciones'+(lecTodas?' ts-hecha':''), col:'verde', ic:'libro',
+            tit:'Lecciones de ritmo'+(cartaR?' · <a class="ts-intro-link cv2-intro" target="_blank" rel="noopener" href="https://iagonaron.github.io/ritmopro/?introCarta='+encodeURIComponent(cartaR)+'">Intro '+esc(cartaR)+'</a>':''),
+            fila:'<span class="ts-lec-chips">'+chips+'</span>',
+            der: lecTodas?cv2Hecho():(lecPend?'<button class="ts-marcar ts-lec-todas cv2-btn" data-envio="'+esc(se)+'" data-partes="'+esc(JSON.stringify(lecPartes))+'">'+cv2Svg('check')+'Marcar estudiadas</button>':'')}));
         }
-        // 3º-bis se pinta después; primero preparar OTRAS
         otrasLista(tj).forEach(function(ot,oi){
           var oParte=otraParte(oi), oh=parteHecha(se,oParte);
-          /* (3-oct-2026, Iago) la ficha en papel YA CORREGIDA: la parte recupera el color (aunque estuviera en gris
-             por el «Entendido») y enseña la nota y la ficha con las soluciones. Sin abrir («nueva») llama la
-             atención: rellena, con latido y punto rojo; al abrirla se queda en color, tranquila. */
+          /* (3-oct-2026) la ficha en papel YA CORREGIDA, dentro de su semana: la nota y la ficha con las soluciones */
           if(ot.corregida){
             var oc=ot.corregida, ocN=(oc.nota!=null && isFinite(Number(oc.nota)))?Number(oc.nota).toFixed(2).replace('.',','):'';
-            partes+='<div class="ts-parte ts-otras ts-papel-corr'+(oc.leido?'':' nueva')+'" data-papel-nid="'+esc(oc.id)+'"'+(oc.leido?' data-leido="1"':'')+'>'
-              +(oc.leido?'':'<span class="ts-dot" aria-hidden="true"></span>')
-              +'<div class="ts-parte-tit">📝 Ficha '+esc(ot.papel_n)+' en papel <span class="ts-papel-chip">¡Corregida!</span></div>'
-              +'<div class="ts-parte-sub">Tu Ficha '+esc(ot.papel_n)+' ya ha sido corregida.</div>'
-              +(ocN?'<div class="ts-papel-notaL">Nota <b class="ts-papel-nota">'+ocN+'</b></div>':'')
-              +(oc.url?'<a class="ts-papel-ver" href="'+esc(oc.url)+'" target="_blank" rel="noopener">Ver ficha con las soluciones →</a>':'')
-              +'</div>';
+            partes.push(parte({cls:'ts-otras ts-papel-corr'+(oc.leido?'':' nueva'), attrs:' data-papel-nid="'+esc(oc.id)+'"'+(oc.leido?' data-leido="1"':''),
+              col:'rosa', ic:'hoja', dot:!oc.leido, tit:'Ficha '+esc(ot.papel_n)+' en papel <span class="cv2-chip sec ts-papel-chip">¡Corregida!</span>',
+              fila: ocN?cv2Nota('Nota',null,ocN):'<span class="ts-parte-sub">Ya está corregida.</span>',
+              der: oc.url?'<a class="ts-papel-ver cv2-btn" href="'+esc(oc.url)+'" target="_blank" rel="noopener">'+cv2Svg('ojo')+'Ver con soluciones</a>':''}));
             return;
           }
-          partes+='<div class="ts-parte ts-otras'+(oh?' ts-hecha':'')+'">'
-            +((oh||caduSem)?'':'<span class="ts-dot" aria-hidden="true"></span>')
-            +'<div class="ts-parte-tit">📝 '+esc(ot.titulo||'Otras tareas')+(oh?' <b class="ts-check">✓</b>':'')+'</div>'
-            +(ot.sub?'<div class="ts-parte-sub ts-otras-txt">'+esc(ot.sub)+'</div>':'')
-            +(oh?'':'<button class="ts-marcar" data-envio="'+esc(se)+'" data-parte="'+esc(oParte)+'">☐ '+esc(ot.boton||'Hecho')+'</button>')
-            +'</div>';
+          if(!oh && !caduSem) pend++;
+          /* (15-oct-2026, Iago) la ficha EN PAPEL: el mismo botón rosa que «Hacer la ficha» de las digitales, «Entregada en clase»;
+             al pulsarlo, la fila se queda en gris como hecha */
+          if(ot.papel_n!=null){
+            /* (15-oct-2026, Iago) «también quiero que tenga la temporalidad… los 14 recuadros»: los plazos de su ficha (la
+               notificación de la ficha, que al de papel no se le enseña); si no está, los de la semana (+7 y +14 días) */
+            var fP=null; (listTodas||[]).forEach(function(x){ var xp=(x&&x.payload_json)||{}; if(xp.ficha_id && String(xp.numero)===String(ot.papel_n) && xp.fin_normal) fP=xp; });
+            var fnP=fP?fP.fin_normal:'', fgP=fP?(fP.fin_gracia||''):'';
+            if(!fnP){ var t0=Date.parse(o.creado_en||''); if(isFinite(t0)){ fnP=new Date(t0+7*DIA_MS).toISOString(); fgP=new Date(t0+14*DIA_MS).toISOString(); } }
+            partes.push(parte({cls:'ts-otras ts-papel'+(oh?' ts-hecha':''), col:'rosa', ic:'hoja', tit:'Ficha '+esc(ot.papel_n)+' de teoría<span class="cv2-sub"> · en papel</span>',
+              fila: (!oh && fnP)?'<span class="alu-item-plazo" data-fin="'+esc(fnP)+'" data-gracia="'+esc(fgP)+'"></span>':'',
+              der: oh?cv2Hecho('Entregada'):'<button class="ts-marcar cv2-btn" data-envio="'+esc(se)+'" data-parte="'+esc(oParte)+'">'+cv2Svg('check')+'Entregada en clase</button>'}));
+            return;
+          }
+          partes.push(parte({cls:'ts-otras'+(oh?' ts-hecha':''), col:'blanco', ic:'tarea', tit:esc(ot.titulo||'Otras tareas'),
+            fila: ot.sub?'<span class="ts-parte-sub ts-otras-txt">'+esc(ot.sub)+'</span>':'',
+            der: oh?cv2Hecho():'<button class="ts-marcar cv2-btn" data-envio="'+esc(se)+'" data-parte="'+esc(oParte)+'">'+cv2Svg('check')+esc(ot.boton||'Hecho')+'</button>'}));
         });
-        // 4º · LA FICHA DE LA SEMANA, dentro del marco (por número)
         if(tj.ficha && tj.ficha.numero!=null){
           var fN=_fichaPorNumero[String(tj.ficha.numero)];
           if(fN){
             var fpj=fN.payload_json||{}, fHecha=!!(fpj.ficha_id && _entregadas[fpj.ficha_id]);
-            var fCad=!fHecha && fichaCaducada(fN);   // (5-ago) caducada: texto en gris, sin botón muerto
-            // (6-ago Iago, v2) la ficha A MEDIAS enseña su avance AQUÍ, en su
-            // propia parcela: «⏸ X de Y ejercicios hechos» + barra + Continuar.
+            var fCad=!fHecha && fichaCaducada(fN);   // (5-ago) caducada: sin botón muerto
             var fProg=(!fHecha && !fCad && fpj.ficha_id && _progresos[fpj.ficha_id])?_progresos[fpj.ficha_id]:null;
-            var fPct=fProg?Math.max(0,Math.min(100,Math.round(fProg.hechos*100/Math.max(1,fProg.total)))):0;
-            partes+='<div class="ts-parte ts-ficha'+((fHecha||fCad)?' ts-hecha':'')+'">'
-              +((fHecha||fCad)?'':'<span class="ts-dot" aria-hidden="true"></span>')
-              +'<div class="ts-parte-tit">🖊 Ficha '+esc(tj.ficha.numero)+' de teoría'+(fHecha?' <b class="ts-check">✓</b>':'')+'</div>'
-              +(fHecha
-                ? '<div class="ts-parte-sub">Entregada. ¡Buen trabajo!</div>'
-                : fCad
-                ? '<div class="ts-parte-sub">🕐 El plazo de esta ficha ya venció.</div>'
-                : ((fpj.fin_normal)?'<div class="alu-item-plazo" data-fin="'+esc(fpj.fin_normal)+'" data-gracia="'+esc(fpj.fin_gracia||'')+'" style="font-size:11.5px;font-weight:700;font-variant-numeric:tabular-nums"></div>':'')
-                  +(fProg?'<div class="alu-item-prog"><span class="aip-txt">⏸ Ficha a medias · '+fProg.hechos+' de '+fProg.total+' ejercicios hechos</span><span class="aip-bar"><i style="width:'+fPct+'%"></i></span></div>':'')
-                  +'<button class="alu-hacer ts-ficha-go" data-ficha="'+esc(fpj.ficha_id||'')+'" data-n="'+esc(fpj.numero||'')+'" data-fin="'+esc(fpj.fin_normal||'')+'" data-gracia="'+esc(fpj.fin_gracia||'')+'" data-nid="'+esc(fN.id)+'">'+(fProg?('Continuar la ficha ('+fProg.hechos+'/'+fProg.total+') →'):'Hacer la ficha →')+'</button>')
-              +'</div>';
+            if(!fHecha && !fCad) pend++;
+            partes.push(parte({cls:'ts-ficha'+((fHecha||fCad)?' ts-hecha':''), col:'rosa', ic:'lapiz', tit:'Ficha '+esc(tj.ficha.numero)+' de teoría',
+              fila: fHecha?'' : fCad?'<span class="ts-parte-sub">El plazo de esta ficha ya venció.</span>'
+                : (fpj.fin_normal?'<span class="alu-item-plazo" data-fin="'+esc(fpj.fin_normal)+'" data-gracia="'+esc(fpj.fin_gracia||'')+'"></span>':''),
+              der: fHecha?cv2Hecho('Entregada') : fCad?''
+                : '<button class="alu-hacer ts-ficha-go cv2-btn" data-ficha="'+esc(fpj.ficha_id||'')+'" data-n="'+esc(fpj.numero||'')+'" data-fin="'+esc(fpj.fin_normal||'')+'" data-gracia="'+esc(fpj.fin_gracia||'')+'" data-nid="'+esc(fN.id)+'">'+cv2Svg('lapiz')+(fProg?('Continuar ('+fProg.hechos+'/'+fProg.total+')'):'Hacer la ficha')+'</button>'}));
           } else {
-            partes+='<div class="ts-parte ts-ficha"><div class="ts-parte-tit">🖊 Ficha '+esc(tj.ficha.numero)+' de teoría</div>'
-              +'<div class="ts-parte-sub">🕐 Se activa el viernes a las 19:00.</div></div>';
+            partes.push(parte({cls:'ts-ficha', col:'rosa', ic:'lapiz', tit:'Ficha '+esc(tj.ficha.numero)+' de teoría', fila:'<span class="ts-parte-sub">Se activa el viernes a las 19:00.</span>'}));
           }
         }
-        return '<div class="alu-item alu-item-tareas'+((o.leido||hechaT)?'':' no-leido')+((hechaT && !papelNueva(o))?' hecha':'')+'" data-id="'+esc(o.id)+'">'
-          +'<span class="alu-dot"></span>'
-          +'<div class="alu-item-main">'
-          +'<div class="alu-item-tit">📦 Tareas de la semana'+(hechaT?' <span class="alu-hecha-check" aria-label="Hechas">✓</span>':'')+'</div>'
-          +'<div class="alu-item-fecha">'+fecha(o.creado_en)+'</div>'
-          +'<div class="ts-partes">'+partes+'</div>'
-          +'</div></div>';
+        /* (15-oct-2026, Iago: «en vez de escribir cuatro por hacer… en el puntito blanco de la esquina, pon ahí el número») */
+        var numT=(!caduSem && pend)?pend:0;
+        return '<div class="alu-item cv2 cv2-tareas alu-item-tareas'+((o.leido||hechaT)?'':' no-leido')+((hechaT && !papelNueva(o))?' hecha':'')+'" data-id="'+esc(o.id)+'"'+cv2Estilo('blanco')+'>'
+          +'<span class="cv2-tile" aria-hidden="true">'+cv2Svg('caja')+'<span class="alu-dot'+(numT?' cv2-num':'')+'">'+(numT||'')+'</span></span>'
+          +'<div class="alu-item-main cv2-mid"><div class="cv2-cont"><div class="cv2-l1"><span class="alu-item-tit">Tareas de la semana</span></div></div></div>'
+          +'<div class="ts-partes cv2-partes">'+partes.join('')+'</div>'
+          +'<div class="cv2-pie"><span class="alu-item-fecha cv2-fecha">'+esc(_f)+'</span></div>'
+          +'</div>';
       }
-      // FASE 7 · notificación de QUIZ DE RITMO: tarjeta propia con la
-      // estética psicodélica de RITMO at home (blobs amarillo/rosa/verde/azul).
+      // ---------- QUIZ DE RITMO suelto
       if(esQuiz(o)){
         var qj=o.payload_json, qHecho=esQuizHecho(o);
-        var qAccion=qHecho
-          ? '<span class="alu-hecha-badge">✓ Hecho</span>'
-          : '<button class="alu-quiz-go" data-envio="'+esc(qj.envio_id)+'" data-carta="'+esc(qj.carta||'')+'">▶ Empezar el quiz</button>';
-        return '<div class="alu-item alu-item-quiz'+((o.leido||qHecho)?'':' no-leido')+(qHecho?' hecha':'')+'" data-id="'+esc(o.id)+'">'
-          +'<div class="quiz-blobs" aria-hidden="true"><i class="q1"></i><i class="q2"></i><i class="q3"></i><i class="q4"></i></div>'
-          +'<span class="alu-dot"></span>'
-          +'<div class="alu-item-main"><div class="alu-item-tit">'+esc(o.titulo||'Quiz de ritmo')+(qHecho?' <span class="alu-hecha-check" aria-label="Hecho">✓</span>':'')+'</div>'
-          +'<div class="alu-item-cuerpo">'+esc(qHecho?'Ya lo completaste. ¡Buen trabajo!':(o.cuerpo||''))+'</div>'
-          +'<div class="alu-item-fecha">'+fecha(o.creado_en)+'</div>'
-          +qAccion
-          +'</div></div>';
+        var qTarde=!qHecho && (typeof quizFuera==='function') && quizFuera(o);   // @LM-QUIZ7 (solo GE)
+        return cv2Tarjeta({cls:'alu-item-quiz'+((o.leido||qHecho||qTarde)?'':' no-leido')+(qHecho?' hecha':'')+(qTarde?' alu-tarde':''), id:o.id, col:'verde', ic:'corchea',
+          tit:esc(cv2Titulo(o.titulo)||'Quiz de ritmo'), chip:qTarde?'<span class="cv2-chip pend">Pendiente</span>':'',
+          cuerpo:'<div class="alu-item-cuerpo">'+esc(qHecho?'Ya lo completaste. ¡Buen trabajo!':(qTarde?'Se te pasó la semana, pero lo puedes hacer igual cuando quieras.':(o.cuerpo||'')))+'</div>',
+          btn: qHecho?cv2Hecho():'<button class="alu-quiz-go cv2-btn" data-envio="'+esc(qj.envio_id)+'" data-carta="'+esc(qj.carta||'')+'">'+cv2Svg('play')+(qTarde?'Hacerlo ahora':'Empezar el quiz')+'</button>',
+          fecha:_f});
       }
-      // DICTADO REVISADO (Iago jul-2026) · el profesor revisó la autocorrección en Dictados Profesional: la dio por buena
-      // (✓ Verificada) o ajustó la nota (con su comentario), y botón para ver el dictado y la solución.
-      // (14-oct-2026, Iago: «la estética de notas revisadas de dictados no me convence… no minimalista… no aprovecha el
-      // espacio… el color de destacado debería ser naranja» → eligió la propuesta A) TARJETA EN DOS LÍNEAS con el contorno
-      // NARANJA del dictado: 1) cascos, «Dictado nº N · nota revisada», pastilla «Corregida por Iago» / «✓ Verificada» y las
-      // fechas a la derecha; 2) las notas, el comentario y «Ver dictado y solución» (o el aviso de los 7 días). Antes: tres
-      // párrafos, nebulosa azul, pastilla morada y el comentario en una caja aparte.
+      // ---------- DICTADO REVISADO (Iago jul-2026; 14-oct-2026 en dos líneas): (15-oct-2026, Iago) el CORREGIDO igual que el
+      // verificado: «✎ Corregida» con contorno, «Tu nota 7,4 → 5» con la suya tachada, su comentario y «Ver dictado y solución»
       if(o.payload_json && o.payload_json.dictado_revision){
-        var dj=o.payload_json;
-        var esCorr=(dj.resultado==='corregida');
-        var fmtN=function(v){
-          if(v==null || !isFinite(+v)) return '—';
-          var s=(+v).toFixed(2).replace(/\.?0+$/,'').replace('.',',');
-          return s===''?'0':s;
-        };
-        var dSvg=function(d){ return '<svg viewBox="0 0 24 24" aria-hidden="true">'+d+'</svg>'; };
-        var icCascos=dSvg('<path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1v-6h3zM3 19a2 2 0 0 0 2 2h1v-6H3z"/>');
-        var icOjo=dSvg('<path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/>');
-        var icReloj=dSvg('<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>');
-        var cabTit=(dj.numero!=null?('Dictado nº '+esc(dj.numero)):'Tu último dictado');
-        var chipD=esCorr ? '<span class="dct-chip corr">Corregida por Iago</span>' : '<span class="dct-chip ok">✓ Verificada</span>';
-        var fDict=''; if(dj.fecha_dictado){ var pfd=String(dj.fecha_dictado).split('-'); fDict=' · dictado del '+esc(pfd.length===3?(pfd[2]+'/'+pfd[1]):dj.fecha_dictado); }
-        var notasHTML='<span class="dct-notas">'
-          +(esCorr
-            ? '<span class="dct-mia">Tu corrección <s>'+fmtN(dj.nota_alumno)+'</s></span><span class="dct-flecha">→</span>'
-              +'<span class="dct-final">Nota de Iago <b>'+fmtN(dj.nota_final)+'</b></span>'
-            : '<span class="dct-final">Tu nota <b>'+fmtN(dj.nota_final)+'</b></span>')
-          +'</span>';
-        var comentHTML=(esCorr && dj.comentario && String(dj.comentario).trim())
-          ? '<span class="dct-coment">«'+esc(String(dj.comentario).trim())+'»</span>'
-          : (esCorr ? '' : '<span class="dct-bien">¡Bien corregido!</span>');
-        // (Iago 23-jul) TODAS las fotos (la del alumno y la solución) se
-        // guardan 7 días desde la revisión; después el visor se retira y
-        // quedan la nota y el comentario, que no caducan.
+        var dj=o.payload_json, esCorr=(dj.resultado==='corregida');
+        var fmtN=function(v){ if(v==null || !isFinite(+v)) return '—'; var s=(+v).toFixed(2).replace(/\.?0+$/,'').replace('.',','); return s===''?'0':s; };
+        // (Iago 23-jul) las fotos se guardan 7 días desde la revisión; la nota y el comentario no caducan
         var fotosCaducadas=!!(dj.fotos_caducan && (Date.parse(dj.fotos_caducan)||0)<=Date.now());
         var hayFotos=!fotosCaducadas && !!(dj.foto_alumno || (dj.fotos_solucion && dj.fotos_solucion.length));
-        var verHTML=hayFotos
-          ? '<button class="alu-dictado-ver" data-id-notif="'+esc(o.id)+'">'+icOjo+'Ver dictado y solución</button>'
-          : (dj.fotos_caducan?'<span class="dct-caduca">'+icReloj+'Las fotos del dictado se guardan 7 días</span>':'');
-        return '<div class="alu-item dictado'+(o.leido?'':' no-leido')+'" data-id="'+esc(o.id)+'">'
-          +'<span class="alu-dot"></span>'
-          +'<div class="alu-item-main">'
-          +'<div class="dct-r1"><span class="dct-ico">'+icCascos+'</span>'
-          +'<span class="alu-item-tit dct-tit"><b>'+cabTit+'</b> <span class="dct-sub">· nota revisada</span></span>'+chipD
-          +'<span class="alu-item-fecha dct-fecha">'+fecha(o.creado_en)+fDict+'</span></div>'
-          +'<div class="dct-r2">'+notasHTML+comentHTML+verHTML+'</div>'
-          +'</div></div>';
+        var dCom=(esCorr && dj.comentario && String(dj.comentario).trim())?String(dj.comentario).trim():'';
+        return cv2Tarjeta({cls:'dictado cv2-info'+(o.leido?'':' no-leido'), id:o.id, col:'naranja', ic:'cascos',
+          tit:(dj.numero!=null?('Dictado nº '+esc(dj.numero)):'Tu último dictado'), sub:'nota revisada',
+          chip: esCorr?'<span class="cv2-chip cor">✎ Corregida</span>':'<span class="cv2-chip ok">✓ Verificada</span>',
+          datos: cv2Nota('Tu nota', esCorr?fmtN(dj.nota_alumno):null, fmtN(dj.nota_final))
+            +(dCom?'<span class="cv2-cita dct-coment">'+esc(dCom)+'</span>':(esCorr?'':'<span class="dct-bien">¡Bien corregido!</span>')),
+          cuerpo: (!hayFotos && dj.fotos_caducan)?'<div class="cv2-nota-pie">'+cv2Svg('reloj')+'Las fotos del dictado se guardan 7 días</div>':'',
+          btn: hayFotos?'<button class="alu-dictado-ver cv2-btn" data-id-notif="'+esc(o.id)+'">'+cv2Svg('ojo')+'Ver dictado y solución</button>':'',
+          fecha:_f});
       }
-      // @RECO · RECOMENDADO PARA TI (17-sep-2026, Iago) · si lleva media < 4 en
-      // un apartado con al menos 4 notas de clase, una vez por semana le sale
-      // esta tarjeta. Lleva el COLOR del apartado (rompe el dorado a propósito),
-      // las apps como ENLACES dentro del propio texto y un ☐ Entendido igual que
-      // las tareas de la semana. No cuenta como tarea pendiente: es consejo.
+      // ---------- @RECO · RECOMENDADO PARA TI (17-sep-2026): el color de su apartado y las apps enlazadas dentro del texto
       if(o.payload_json && o.payload_json.recomendacion){
-        var rj=o.payload_json;
-        var rc=String(rj.color||'#4a9eff');
-        var rgbTxt=(function(h){
-          h=String(h).replace('#','');
-          if(h.length===3) h=h[0]+h[0]+h[1]+h[1]+h[2]+h[2];
-          var n=parseInt(h,16);
-          if(!isFinite(n)) return '74,158,255';
-          return [(n>>16)&255,(n>>8)&255,n&255].join(',');
-        })(rc);
-        // el nombre de cada app, resaltado y enlazado DENTRO del texto (más compacto
-        // que un botón por app). Se sustituye el más largo primero, por si uno
-        // contuviese al otro.
+        var rj=o.payload_json, rc=String(rj.color||'#4a9eff');
         var cuerpoR=esc(o.cuerpo||'');
-        (rj.apps||[]).slice().sort(function(a,b){
-          return String((b&&b.nombre)||'').length - String((a&&a.nombre)||'').length;
-        }).forEach(function(a){
+        (rj.apps||[]).slice().sort(function(a,b){ return String((b&&b.nombre)||'').length - String((a&&a.nombre)||'').length; }).forEach(function(a){
           var nm=esc((a&&a.nombre)||''); if(!nm) return;
           cuerpoR=cuerpoR.split(nm).join('<a class="reco-lnk" href="'+esc(a.url)+'" target="_blank" rel="noopener">'+nm+'</a>');
         });
-        return '<div class="alu-item reco'+(o.leido?'':' no-leido')+'" data-id="'+esc(o.id)+'"'
-          +' style="--rc:'+esc(rc)+';--rc06:rgba('+rgbTxt+',.06);--rc10:rgba('+rgbTxt+',.10);--rc18:rgba('+rgbTxt+',.18);--rc22:rgba('+rgbTxt+',.22)">'
-          +'<span class="alu-dot"></span>'
-          +'<div class="alu-item-main">'
-          +'<div class="alu-item-tit"><span class="reco-chip">★ Recomendado para ti</span>'
-          +(rj.etiqueta?('<span class="reco-area">'+esc(rj.etiqueta)+'</span>'):'')+'</div>'
-          +'<div class="alu-item-cuerpo">'+cuerpoR+'</div>'
-          +'<div class="alu-item-fecha">'+fecha(o.creado_en)+'</div>'
-          +'<button type="button" class="reco-ok" data-reco-ok="'+esc(o.id)+'">☐ Entendido</button>'
-          +'</div></div>';
+        var etq=String(rj.etiqueta||'');
+        return cv2Tarjeta({cls:'reco cv2-info'+(o.leido?'':' no-leido'), id:o.id, colHex:rc, ic:'estrella',
+          tit:'Recomendado para ti', sub:etq?esc(etq.charAt(0).toLowerCase()+etq.slice(1)):'',
+          cuerpo:'<div class="alu-item-cuerpo">'+cuerpoR+'</div>',
+          btn:'<button type="button" class="reco-ok cv2-btn" data-reco-ok="'+esc(o.id)+'">'+cv2Svg('check')+'Entendido</button>',
+          fecha:_f});
       }
-      /* (24-sep-2026, Iago) RESPUESTA DEL PROFE A UNA RECLAMACIÓN (o un comentario suyo sobre
-         tu ficha): llega por la campana, no por ningún sobre. Se pinta aparte: el veredicto,
-         su mensaje tal cual (con saltos de línea), tu nota nueva y el enlace a la ficha corregida. */
-      /* (3-oct-2026, Iago) FICHA EN PAPEL YA CORREGIDA, suelta (la tarjeta de su semana ya no está a la vista): al
-         grano y que se note — «Tu Ficha N ya ha sido corregida», la nota en grande y la ficha con las soluciones.
-         Va antes que las reclamaciones porque su aviso viaja con la misma marca (reclamacion:true). */
+      // ---------- FICHA EN PAPEL CORREGIDA, suelta (3-oct-2026): va antes que las reclamaciones (viaja con la misma marca)
       if(o.payload_json && o.payload_json.papel_corregida){
         var pc=o.payload_json, pcF=(pc.numero!=null)?('Ficha '+pc.numero):'Ficha';
         var pcN=(pc.nota_despues!=null&&isFinite(Number(pc.nota_despues)))?Number(pc.nota_despues).toFixed(2).replace('.',','):'';
-        return '<div class="alu-item alu-recl alu-papel-corr'+(o.leido?'':' no-leido')+'" data-id="'+esc(o.id)+'">'
-          +'<span class="alu-dot"></span>'
-          +'<div class="alu-item-main"><div class="alu-item-tit">📝 '+esc(pcF).replace(/Ficha (\d+)/g,'Ficha&nbsp;$1')+' en papel <span class="ts-papel-chip">¡Corregida!</span></div>'
-          +'<div class="alu-item-cuerpo">Tu '+esc(pcF)+' ya ha sido corregida.</div>'
-          +(pcN?'<div class="ts-papel-notaL">Nota <b class="ts-papel-nota">'+pcN+'</b></div>':'')
-          /* (11-oct-2026, Iago) como la de las reclamaciones: el enlace y «Marcar como leído» en una fila al pie */
-          +((pc.url||!o.leido)?'<div class="alu-recl-pie">'
-            +(pc.url?'<a class="alu-recl-ver ts-papel-ver" href="'+esc(pc.url)+'" target="_blank" rel="noopener">Ver ficha con las soluciones →</a>':'')
-            +(o.leido?'':'<span class="alu-recl-acc"><button type="button" class="alu-recl-leido" data-recl-leido="'+esc(o.id)+'">Marcar como leído</button></span>')
-            +'</div>':'')
-          +'<div class="alu-item-fecha">'+fecha(o.creado_en)+'</div>'
-          +'</div>'
-          +'</div>';
+        return cv2Tarjeta({cls:'alu-recl alu-papel-corr cv2-info'+(o.leido?'':' no-leido'), id:o.id, col:'rosa', ic:'hoja',
+          tit:esc(pcF).replace(/Ficha (\d+)/g,'Ficha&nbsp;$1')+' en papel', chip:'<span class="cv2-chip sec ts-papel-chip">¡Corregida!</span>',
+          datos:(pcN?cv2Nota('Nota',null,pcN):'')+'<span>'+(pc.url?'Ya puedes ver tu ficha con las soluciones.':('Tu '+esc(pcF)+' ya ha sido corregida.'))+'</span>',
+          sec: o.leido?'':cv2Visto(o.id),
+          btn: pc.url?'<a class="alu-recl-ver ts-papel-ver cv2-btn" href="'+esc(pc.url)+'" target="_blank" rel="noopener">'+cv2Svg('ojo')+'Ver con soluciones</a>':'',
+          fecha:_f});
       }
+      // ---------- RESPUESTA DE IAGO A UNA RECLAMACIÓN o COMENTARIO SOBRE UNA FICHA (24-sep-2026): el título dice la ficha y,
+      // en gris, qué ha pasado; su mensaje, en cursiva (con sus saltos de línea); «visto» y «contestar» arriba a la derecha
       if(o.payload_json && o.payload_json.reclamacion){
         var pr=o.payload_json, est=pr.estado||'';
-        var chipR=est==='aceptada'?'<span class="alu-recl-chip ok">✅ Aceptada</span>':est==='denegada'?'<span class="alu-recl-chip no">❌ Denegada</span>':'<span class="alu-recl-chip">📝 Comentario</span>';
-        var notaR=(pr.nota_despues!=null&&isFinite(Number(pr.nota_despues)))?('<div class="alu-recl-nota">Tu nota de la ficha: '+(pr.nota_antes!=null&&isFinite(Number(pr.nota_antes))&&Number(pr.nota_antes)!==Number(pr.nota_despues)?('<s>'+Number(pr.nota_antes).toFixed(2).replace('.',',')+'</s> → '):'')+'<b>'+Number(pr.nota_despues).toFixed(2).replace('.',',')+'</b></div>'):'';
-        var ejR=(pr.ejercicios&&pr.ejercicios.length)?('<div class="alu-recl-ej">Ejercicio'+(pr.ejercicios.length>1?'s':'')+' '+pr.ejercicios.join(', ')+(est==='aceptada'?' · anulado'+(pr.ejercicios.length>1?'s':'')+' para ti, no te resta'+(pr.ejercicios.length>1?'n':''):'')+'</div>'):'';
-        return '<div class="alu-item alu-recl'+(o.leido?'':' no-leido')+'" data-id="'+esc(o.id)+'">'
-          +'<span class="alu-dot"></span>'
-          +'<div class="alu-item-main"><div class="alu-item-tit">'+chipR+' '+esc(String(o.titulo||'Sobre tu reclamación').replace(/^(✅|❌|📝)\s*/,'')).replace(/Ficha (\d+)/g,'Ficha&nbsp;$1')+'</div>'
-          +ejR
-          +(o.cuerpo?'<div class="alu-item-cuerpo alu-recl-msg">'+esc(o.cuerpo)+'</div>':'')
-          +notaR
-          /* (29-sep-2026, Iago) botón para darla por leída. (10-oct-2026, Iago) y «↩ Contestar a Iago»: abre una ventana para
-             escribirle. (11-oct-2026, Iago) en el Ojeador también sale, como lo ve el alumno (ahí la ventana no envía nada).
-             (11-oct-2026, Iago, «me da bastante toc ver esto así» → OPCIÓN 2) todo en UNA fila al pie: «Ver mi ficha corregida»
-             a la izquierda y los botones a la derecha, a la misma altura (antes iban en columna a la derecha de la tarjeta). */
-          +(function(){
-            var puede=!pr.respuesta_alumno;
-            var ver=pr.url?'<a class="alu-recl-ver" href="'+esc(pr.url)+'" target="_blank" rel="noopener">🔍 Ver mi ficha corregida →</a>':'';
-            var bot=(o.leido?'':'<button type="button" class="alu-recl-leido" data-recl-leido="'+esc(o.id)+'">Marcar como leído</button>')
-              +(puede?'<button type="button" class="alu-recl-contestar" data-recl-contestar="'+esc(o.id)+'">↩ Contestar a Iago</button>':'');
-            if(!ver && !bot) return '';
-            return '<div class="alu-recl-pie">'+ver+(bot?'<span class="alu-recl-acc">'+bot+'</span>':'')+'</div>';
-          })()
-          /* (10-oct-2026, Iago) lo que el alumno le contestó (una vez por cada mensaje de Iago) */
-          +((pr.respuesta_alumno&&pr.respuesta_alumno.texto)?'<div class="alu-recl-tuya"><div class="alu-recl-tuya-tit">↩ Tu respuesta a Iago'+(pr.respuesta_alumno.en?' · '+fecha(pr.respuesta_alumno.en):'')+'</div><div class="alu-recl-tuya-txt">'+esc(pr.respuesta_alumno.texto)+'</div></div>':'')
-          +'<div class="alu-item-fecha">'+fecha(o.creado_en)+'</div>'
-          +'</div>'
-          +'</div>';
+        var tRaw=String(o.titulo||'Sobre tu reclamación').replace(/^(✅|❌|📝)\s*/,'');
+        var mF=/Ficha\s*(\d+)/i.exec(tRaw);
+        var nA=(pr.nota_antes!=null&&isFinite(Number(pr.nota_antes)))?Number(pr.nota_antes):null;
+        var nD=(pr.nota_despues!=null&&isFinite(Number(pr.nota_despues)))?Number(pr.nota_despues):null;
+        var cambia=(nD!=null && nA!=null && nA!==nD);
+        var subR=cambia?'tu nota ha cambiado':(est==='aceptada'?'reclamación aceptada':(est==='denegada'?'reclamación denegada':'comentario de Iago'));
+        var chipR=est==='aceptada'?'<span class="cv2-chip ok alu-recl-chip">✓ Aceptada</span>':(est==='denegada'?'<span class="cv2-chip no alu-recl-chip">✕ Denegada</span>':'<span class="cv2-chip neu alu-recl-chip">Comentario</span>');
+        var nEj=(pr.ejercicios&&pr.ejercicios.length)?pr.ejercicios.length:0;
+        var ejR=nEj?('<span class="alu-recl-ej">Ejercicio'+(nEj>1?'s':'')+' '+esc(pr.ejercicios.join(', '))+(est==='aceptada'?' · anulado'+(nEj>1?'s':'')+' para ti, no te resta'+(nEj>1?'n':''):'')+'</span>'):'';
+        var puede=!pr.respuesta_alumno;
+        var tuyaR=(pr.respuesta_alumno&&pr.respuesta_alumno.texto)?('<div class="alu-recl-tuya cv2-tuya"><b>↩ Tu respuesta</b>'+(pr.respuesta_alumno.en?' · '+fecha(pr.respuesta_alumno.en):'')+' — '+esc(pr.respuesta_alumno.texto)+'</div>'):'';
+        return cv2Tarjeta({cls:'alu-recl cv2-info'+(o.leido?'':' no-leido'), id:o.id, col:'rosa', ic:'lapiz',
+          tit: mF?('Ficha&nbsp;'+mF[1]):esc(tRaw), sub: mF?subR:'', chip:chipR,
+          datos:(nD!=null?cv2Nota('Nota', cambia?nA.toFixed(2).replace('.',','):null, nD.toFixed(2).replace('.',',')):'')+ejR,
+          cuerpo:(o.cuerpo?'<div class="alu-item-cuerpo alu-recl-msg cv2-cita">'+esc(o.cuerpo)+'</div>':'')+tuyaR,
+          sec:(o.leido?'':cv2Visto(o.id))+(puede?'<button type="button" class="alu-recl-contestar cv2-cuad cv2-sobre" data-recl-contestar="'+esc(o.id)+'" title="Contestar a Iago" aria-label="Contestar a Iago">'+cv2Svg('sobre')+'</button>':''),
+          btn: pr.url?'<a class="alu-recl-ver cv2-btn" href="'+esc(pr.url)+'" target="_blank" rel="noopener">'+cv2Svg('lupa')+'Ver mi ficha corregida</a>':'',
+          fecha:_f});
       }
+      // ---------- FICHA DE TEORÍA suelta (con sus 14 casillas), en TIEMPO EXTRA (roja), EL 0 (negra) y AVISOS de Iago (amarillos)
       var fid=(o.payload_json && o.payload_json.ficha_id) ? o.payload_json.ficha_id : '';
       var pj=o.payload_json||{};
       var hecha=esHecha(o);
       var prog=(!hecha && fid && _progresos[fid]) ? _progresos[fid] : null;
-      var progHTML='';
-      if(prog){
-        var pct=Math.max(0,Math.min(100,Math.round(prog.hechos*100/Math.max(1,prog.total))));
-        progHTML='<div class="alu-item-prog"><span class="aip-txt">⏸ Ficha a medias · '+prog.hechos+' de '+prog.total+' ejercicios hechos</span>'
-          +'<span class="aip-bar"><i style="width:'+pct+'%"></i></span></div>';
-      }
-      var cuerpoTxt=hecha ? 'Ya la entregaste. ¡Buen trabajo!' : (o.cuerpo||'');
-      // FASE 8 · TIEMPO EXTRA (para el alumno, sin jerga): mensaje claro + pin rojo
-      var extra=enTiempoExtra(o), cuerpoHTMLX=null;
+      var extra=enTiempoExtra(o);
+      var cuerpoH='';
       if(extra){
-        /* (29-sep-2026, Iago) «que no diga que ha sacado un cero: que diga que está en periodo extra» */
-        var fgX=pj.fin_gracia?new Date(pj.fin_gracia):null, cuandoX='';
-        try{ if(fgX && !isNaN(fgX)) cuandoX=fgX.toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long'}).replace(',','')+' a las '+fgX.toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'}); }catch(eX){}
-        cuerpoTxt='Estás en el periodo extra: 7 días más para entregarla'+(cuandoX?', hasta el '+cuandoX:'')+'. Si para entonces no la has entregado, ahí sí que la liaste';
-        /* (13-oct-2026, Iago: «Hora de cierre clarísima») la hora límite EN PUNTO y que tiene que estar ENVIADA: un segundo
-           después ya no entra y se queda el 0 (la calavera va detrás, como antes) */
-        if(cuandoX){ var unSegX=''; try{ unSegX=new Date(fgX.getTime()+1000).toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit',second:'2-digit'}); }catch(eX2){}
-          cuerpoTxt='Última oportunidad: tienes hasta el '+cuandoX+' EN PUNTO. Tiene que estar ENVIADA antes de esa hora (pulsar «Entregar»)'+(unSegX?': a las '+unSegX+' ya no entra':': un segundo después ya no entra')+' y se queda el 0.';
-          cuerpoHTMLX='<b>Última oportunidad:</b> tienes hasta el <b class="alu-extra-hora">'+esc(cuandoX)+' EN PUNTO.</b><br>Tiene que estar <b>ENVIADA</b> antes de esa hora (pulsar «Entregar»)'+(unSegX?': a las '+esc(unSegX)+' ya no entra':': un segundo después ya no entra')+' y se queda el 0.'; }
+        /* (13-oct-2026, Iago: «hora de cierre clarísima») + (15-oct-2026, Iago: «tiene demasiado texto, simplifícalo»): el día y
+           la hora ya van al final de las casillas; aquí, solo que tiene que estar ENVIADA a esa hora EN PUNTO o se queda el 0 */
+        var fgX=pj.fin_gracia?new Date(pj.fin_gracia):null, horaX='';
+        try{ if(fgX && !isNaN(fgX)){ var hhX=fgX.getHours(), mmX=fgX.getMinutes(); horaX=hhX+(mmX?':'+(mmX<10?'0':'')+mmX:'')+'h'; } }catch(eX){}
+        cuerpoH='<b>ENVIADA</b> antes de las <b>'+esc(horaX||'19h')+' EN PUNTO</b> o <span class="cv2-nowrap">se queda el 0.'+cv2Svg('calavera','cv2-calavera')+'</span>';
+      } else if(fid && hecha){
+        cuerpoH='Ya la entregaste. ¡Buen trabajo!';
+      } else if(!fid || pj.cero_ficha){
+        cuerpoH=esc(o.cuerpo||'');   // avisos (bienvenida, mensajes de Iago…) y el del 0; la ficha normal ya lo dice con las casillas
       }
-      var accionHTML='';
+      var colF=extra?'rojo':(pj.cero_ficha?'blanco':(fid?'rosa':'amarillo'));
+      var icF=extra?'reloj':(pj.cero_ficha?'calavera':(fid?'lapiz':'bocadillo'));
+      var btnF='';
       if(fid){
-        accionHTML=hecha
-          ? '<span class="alu-hecha-badge">✓ Entregada</span>'
-          : '<button class="alu-hacer'+(prog?' alu-continuar':'')+'" data-ficha="'+esc(fid)+'" data-n="'+esc(pj.numero!=null?pj.numero:'')+'" data-fin="'+esc(pj.fin_normal||'')+'" data-gracia="'+esc(pj.fin_gracia||'')+'" style="margin-top:8px;background:linear-gradient(90deg,#e9c96a,#c8862b);color:#1a1305;border:0;border-radius:8px;padding:8px 12px;font-weight:700;font-size:13px;cursor:pointer">'+(prog?'Continuar la ficha ('+prog.hechos+'/'+prog.total+') →':'Hacer la ficha →')+'</button>';
+        btnF=hecha?cv2Hecho('Entregada')
+          :'<button class="alu-hacer cv2-btn'+(prog?' alu-continuar':'')+'" data-ficha="'+esc(fid)+'" data-n="'+esc(pj.numero!=null?pj.numero:'')+'" data-fin="'+esc(pj.fin_normal||'')+'" data-gracia="'+esc(pj.fin_gracia||'')+'">'+cv2Svg('lapiz')+(prog?('Continuar ('+prog.hechos+'/'+prog.total+')'):'Hacer la ficha')+'</button>';
       }
-      return '<div class="alu-item'+((o.leido||hecha)?'':' no-leido')+(fid?' ficha':'')+(hecha?' hecha':'')+(extra?' alu-extra-pin':'')+(pj.cero_ficha?' alu-cero':'')+'" data-id="'+esc(o.id)+'"'+(fid?(' data-ficha="'+esc(fid)+'"'):'')+'>'
-        
-        +(fid?'<div class="neb-mini" aria-hidden="true"><i class="n1"></i><i class="n2"></i><i class="n3"></i></div>':'')
-        +'<span class="alu-dot"></span>'
-        /* (29-sep-2026, Iago) el recuadro TIEMPO EXTRA va aparte (a la izquierda, con «te quedan…» debajo); la calavera, delante del 0 */
-        +'<div class="alu-item-main">'+(extra?'<span class="alu-extra-chip">⏰ TIEMPO EXTRA</span>':'')+'<div class="alu-item-tit">'+(pj.cero_ficha?'<svg class="lm-calavera lm-calavera-t" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-label="calavera" role="img" style="display:inline-block;width:1.15em;height:1.15em;vertical-align:-.22em;margin-right:.35em"><path d="M12 2.8c-4.6 0-8.3 3.4-8.3 8 0 2.6 1.2 4.6 3.2 5.9v2.4c0 1 .8 1.8 1.8 1.8h6.6c1 0 1.8-.8 1.8-1.8v-2.4c2-1.3 3.2-3.3 3.2-5.9 0-4.6-3.7-8-8.3-8z"/><circle cx="8.9" cy="11.2" r="1.9" fill="currentColor" stroke="none"/><circle cx="15.1" cy="11.2" r="1.9" fill="currentColor" stroke="none"/><path d="M12 13.9l-1 1.9h2z" fill="currentColor" stroke-width="1.2"/><path d="M10.3 18.4v2.4M13.7 18.4v2.4"/></svg>':'')+esc(o.titulo||'Aviso')+(hecha?' <span class="alu-hecha-check" aria-label="Entregada">✓</span>':'')+'</div>'
-        /* (29-sep-2026, Iago) «donde dice ya sí que la liaste, la misma calavera, icono sencillo» (la de los morosos) */
-        +(cuerpoTxt?'<div class="alu-item-cuerpo'+((pj.bienvenida||pj.mensaje_prof)?' alu-prewrap':'')+'">'+(cuerpoHTMLX!=null?cuerpoHTMLX:esc(cuerpoTxt))+(extra?'<svg class="lm-calavera" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-label="calavera" role="img" style="display:inline-block;width:1.15em;height:1.15em;vertical-align:-.22em;margin-left:.15em"><path d="M12 2.8c-4.6 0-8.3 3.4-8.3 8 0 2.6 1.2 4.6 3.2 5.9v2.4c0 1 .8 1.8 1.8 1.8h6.6c1 0 1.8-.8 1.8-1.8v-2.4c2-1.3 3.2-3.3 3.2-5.9 0-4.6-3.7-8-8.3-8z"/><circle cx="8.9" cy="11.2" r="1.9" fill="currentColor" stroke="none"/><circle cx="15.1" cy="11.2" r="1.9" fill="currentColor" stroke="none"/><path d="M12 13.9l-1 1.9h2z" fill="currentColor" stroke-width="1.2"/><path d="M10.3 18.4v2.4M13.7 18.4v2.4"/></svg>':'')+'</div>':'')
-        +((fid&&pj.fin_normal&&!hecha)?'<div class="alu-item-plazo" data-fin="'+esc(pj.fin_normal)+'" data-gracia="'+esc(pj.fin_gracia||'')+'" style="font-size:12px;font-weight:700;margin-top:4px;font-variant-numeric:tabular-nums"></div>':'')
-        +progHTML
-        +'<div class="alu-item-fecha">'+fecha(o.creado_en)+'</div>'
-        +accionHTML
-        +'</div></div>';
+      return cv2Tarjeta({cls:((o.leido||hecha)?'':'no-leido')+(fid?' ficha':' cv2-info')+(hecha?' hecha':'')+(extra?' alu-extra-pin':'')+(pj.cero_ficha?' alu-cero':''),
+        id:o.id, attrs:fid?(' data-ficha="'+esc(fid)+'"'):'', col:colF, ic:icF,
+        tit:esc(cv2Titulo(o.titulo)||'Aviso'), chip:'',   /* «Tiempo extra» va encima de sus 7 casillas, no en el título */
+        datos:(fid && pj.fin_normal && !hecha && !pj.cero_ficha)?'<span class="alu-item-plazo" data-fin="'+esc(pj.fin_normal)+'" data-gracia="'+esc(pj.fin_gracia||'')+'"></span>':'',
+        cuerpo:cuerpoH?'<div class="alu-item-cuerpo'+((pj.bienvenida||pj.mensaje_prof)?' alu-prewrap':'')+'">'+cuerpoH+'</div>':'',
+        btn:btnF, fecha:_f});
     }).join(''):'<div class="alu-vacio">Todavía no tienes notificaciones.</div>');
     try{ if(window.__LM_HAM__) window.__LM_HAM__.decorar(body); }catch(e){}
     // FASE 6.9 · las entregadas no leídas se marcan LEÍDAS solas (el alumno
@@ -3879,7 +4065,7 @@ function showEnig(kind){
       b.addEventListener('click',function(ev){
         ev.stopPropagation(); ev.preventDefault();
         var it=b.closest('.alu-item');
-        b.disabled=true; b.textContent='Leído';
+        b.disabled=true; if(b.classList && b.classList.contains('cv2-cuad')){ b.title='Leído'; b.setAttribute('aria-label','Leído'); } else b.textContent='Leído';
         marcar(b.getAttribute('data-recl-leido'), it);
       });
     });
@@ -3905,16 +4091,16 @@ function showEnig(kind){
     var viejo=document.getElementById('alu-resp-modal'); if(viejo && viejo.parentNode) viejo.parentNode.removeChild(viejo);
     var titEl=it&&it.querySelector('.alu-item-tit'), msgEl=it&&it.querySelector('.alu-recl-msg'), titTxt='Sobre tu reclamación';
     if(titEl){ var cl=titEl.cloneNode(true); Array.prototype.forEach.call(cl.querySelectorAll('.alu-recl-chip'),function(x){ x.parentNode.removeChild(x); }); titTxt=cl.textContent.replace(/\s+/g,' ').trim()||titTxt; }
-    var m=document.createElement('div'); m.id='alu-resp-modal'; m.className='alu-resp-modal';
+    var m=document.createElement('div'); m.id='alu-resp-modal'; m.className='alu-resp-modal'; try{ cv2CSS(); }catch(eC){}
     m.setAttribute('role','dialog'); m.setAttribute('aria-modal','true'); m.setAttribute('aria-label','Contestar a Iago');
     m.innerHTML='<div class="alu-resp-caja">'
-      +'<div class="alu-resp-cab"><b>↩ Contestar a Iago</b><button type="button" class="alu-resp-x" aria-label="Cerrar">&times;</button></div>'
+      +'<div class="alu-resp-cab"><b><span class="cv2-rtile">'+cv2Svg('sobre')+'</span>Contestar a Iago</b><button type="button" class="alu-resp-x" aria-label="Cerrar">&times;</button></div>'
       +(visor?'<div class="alu-resp-visor">Ojeador: así lo ve el alumno. Desde aquí no se envía nada.</div>':'')
       +'<div class="alu-resp-cita"><div class="alu-resp-cita-tit">'+esc(titTxt)+'</div>'
       +(msgEl?'<div class="alu-resp-cita-txt">'+esc(msgEl.textContent)+'</div>':'')+'</div>'
       +'<textarea class="alu-resp-txt" maxlength="1000" placeholder="Escribe aquí tu respuesta…"></textarea>'
       +'<div class="alu-resp-pie"><span class="alu-resp-info">Solo puedes contestar una vez a cada mensaje · <span class="alu-resp-n">0</span>/1000</span>'
-      +'<span class="alu-resp-btns"><button type="button" class="alu-resp-cancelar">Cancelar</button><button type="button" class="alu-resp-enviar" disabled>Enviar a Iago</button></span></div>'
+      +'<span class="alu-resp-btns"><button type="button" class="alu-resp-cancelar">Cancelar</button><button type="button" class="alu-resp-enviar" disabled>'+cv2Svg('sobre')+'Enviar a Iago</button></span></div>'
       +'<div class="alu-resp-estado" aria-live="polite"></div>'
       +'</div>';
     document.body.appendChild(m);
