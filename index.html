@@ -2034,7 +2034,11 @@ function showEnig(kind){
      los mismos lugares») CAMPANA EN «COLUMNA DE BOTONES» (propuesta 2, con sus cambios: «visto» verde y «contestar» con un
      sobre amarillo arriba a la derecha, la fecha abajo a la derecha, 14 casillas en las fichas, el dictado corregido igual
      que el verificado, la ficha en papel con «Entregada en clase», la misma altura para todas salvo las que llevan un
-     mensaje suyo y las tareas, todas igual de altas). Piezas comunes de todas las tarjetas; el reparto, en el render. ===== */
+     mensaje suyo y las tareas, todas igual de altas). Piezas comunes de todas las tarjetas; el reparto, en el render.
+     (15-oct-2026, mediodía, Iago: «que todas las notificaciones tuviesen la misma altura. Todas») TODAS LAS TARJETAS IGUAL
+     DE ALTAS (y cada fila de las tareas, igual): lo que no cabe se corta con «…» y sale «Leer mensaje completo», que la
+     despliega; la FECHA, en la esquinita de arriba a la derecha; los días de las fichas, segmentos rectangulares casi
+     pegados; el renglón de «Tareas de la semana», más fino (es la cabecera). ===== */
   var CV2_COL={rosa:['#ec4899','#db2777','236,72,153','#fff'],naranja:['#f97316','#ea580c','249,115,22','#fff'],verde:['#22c55e','#16a34a','34,197,94','#fff'],
     azul:['#3b82f6','#2563eb','59,130,246','#fff'],amarillo:['#facc15','#facc15','250,204,21','#1c1400'],rojo:['#ef4444','#dc2626','239,68,68','#fff'],
     blanco:['rgba(255,255,255,.62)','rgba(255,255,255,.16)','255,255,255','#fff']};
@@ -2080,10 +2084,34 @@ function showEnig(kind){
       +'<div class="alu-item-main cv2-mid">'
       +'<div class="cv2-cont"><div class="cv2-l1"><span class="alu-item-tit">'+c.tit+(c.sub?'<span class="cv2-sub"> · '+c.sub+'</span>':'')+'</span>'+(c.chip||'')+'</div>'
       +(c.datos?'<div class="cv2-datos">'+c.datos+'</div>':'')+(c.cuerpo||'')+'</div>'
-      +'<div class="cv2-der"><div class="cv2-sec">'+(c.sec||'')+'</div>'+(c.btn?'<div class="cv2-bot">'+c.btn+'</div>':'')
-      +'<span class="alu-item-fecha cv2-fecha">'+esc(c.fecha||'')+'</span></div>'
+      +'<div class="cv2-der"><div class="cv2-sec">'+(c.sec||'')+'<span class="alu-item-fecha cv2-fecha">'+esc(c.fecha||'')+'</span></div>'+(c.btn?'<div class="cv2-bot">'+c.btn+'</div>':'')+'</div>'
       +'</div></div>';
   }
+  /* (15-oct-2026, mediodía, Iago: «si tiene texto largo, que apure todos los caracteres y… que aparezca punto suspensivo o leer
+     mensaje completo. Y al pulsar… se despliega hacia abajo») tras pintar la campana: donde algo no cabe en la altura de
+     siempre, «Leer mensaje completo» en su renglón del título; al pulsarlo, esa tarjeta (o esa fila de las tareas) crece. */
+  function cv2Mas(box,fila){
+    if(!box || !fila) return;
+    var parte=box.classList.contains('ts-parte'), b=fila.querySelector(':scope > .cv2-mas'), ab=box.classList.contains('cv2-abierta'), corta=false;
+    if(!ab){
+      Array.prototype.forEach.call(box.querySelectorAll('.alu-item-cuerpo, .cv2-cita, .ts-parte-sub, .alu-item-tit, .cv2-pt'),function(e){
+        if(e.scrollHeight>e.clientHeight+1 || e.scrollWidth>e.clientWidth+1) corta=true; });
+      var mid=parte?null:box.querySelector(':scope > .cv2-mid'); if(mid && mid.scrollHeight>mid.clientHeight+1) corta=true;
+      if(!parte && box.querySelector('.cv2-tuya')) corta=true;
+    }
+    if(!(ab||corta)){ if(b) b.parentNode.removeChild(b); return; }
+    if(!b){
+      b=document.createElement('button'); b.type='button'; b.className='cv2-mas'; fila.appendChild(b);
+      b.addEventListener('click',function(e){ e.preventDefault(); e.stopPropagation(); box.classList.toggle('cv2-abierta'); cv2Mas(box,fila); });
+    }
+    var t=ab?'Mostrar menos':'Leer mensaje completo'; if(b.textContent!==t) b.textContent=t;
+  }
+  function cv2Recortes(body){
+    body=body||document.getElementById('alu-body'); if(!body) return;
+    Array.prototype.forEach.call(body.querySelectorAll('.alu-item.cv2:not(.cv2-tareas)'),function(c){ cv2Mas(c, c.querySelector(':scope > .cv2-mid .cv2-l1')); });
+    Array.prototype.forEach.call(body.querySelectorAll('.ts-parte.cv2-parte'),function(p){ cv2Mas(p, p.querySelector('.cv2-pt')); });
+  }
+  var _cv2RT=0;
   function cv2CSS(){
     if(document.getElementById('cv2-campana-css')) return;
     var P='#alu-body .alu-item.cv2', C='#alu-body .cv2 ';
@@ -2105,21 +2133,34 @@ function showEnig(kind){
       C+'.cv2-tile .alu-dot{position:absolute!important;top:-5px!important;right:-5px!important;left:auto!important;width:11px!important;height:11px!important;margin:0!important;border-radius:50%!important;background:var(--cc)!important;box-shadow:0 0 0 3px #0d1522!important;visibility:hidden!important;flex:none!important}',
       '#alu-body .cv2.no-leido .cv2-tile .alu-dot{visibility:visible!important}',
       C+'.cv2-tile .alu-dot.cv2-num{visibility:visible!important;width:19px!important;height:19px!important;top:-8px!important;right:-8px!important;background:#fff!important;color:#0b1320!important;font-size:11px!important;font-weight:800!important;line-height:19px!important;text-align:center!important}',
-      C+'.cv2-mid{display:grid!important;grid-template-columns:minmax(0,1fr) 214px!important;grid-template-rows:auto!important;grid-template-areas:none!important;column-gap:16px!important;row-gap:0!important;align-items:stretch!important;min-width:0;margin:0!important;padding:0!important;position:static!important}',
+      C+'.cv2-mid{display:grid!important;grid-template-columns:minmax(0,1fr) 214px!important;grid-template-rows:auto!important;grid-template-areas:none!important;column-gap:16px!important;row-gap:0!important;align-items:stretch!important;min-width:0;margin:0!important;padding:0!important;position:static!important;height:64px;overflow:hidden}',
+      '#alu-body .cv2.cv2-abierta>.cv2-mid{height:auto;overflow:visible}',
       C+'.cv2-mid>*{margin:0!important}',
-      C+'.cv2-cont{grid-column:1!important;grid-row:1!important;display:flex;flex-direction:column;gap:6px;min-width:0;min-height:90px}',
-      C+'.cv2-l1{display:flex;align-items:center;flex-wrap:wrap;gap:4px 8px;min-height:26px}',
+      C+'.cv2-cont{grid-column:1!important;grid-row:1!important;display:flex;flex-direction:column;gap:6px;min-width:0}',
+      C+'.cv2-l1{display:flex;align-items:center;flex-wrap:nowrap;gap:4px 8px;min-height:22px;min-width:0;white-space:nowrap}',
+      '#alu-body .cv2.cv2-abierta .cv2-l1{flex-wrap:wrap;white-space:normal}',
+      C+'.cv2-l1 .alu-item-tit{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}',
+      '#alu-body .cv2.cv2-abierta .cv2-l1 .alu-item-tit{white-space:normal;overflow:visible}',
+      C+'.cv2-l1>.cv2-chip{flex:none}',
+      C+'.cv2-mas{flex:none;margin:0 0 0 auto!important;padding:0!important;border:0!important;background:none!important;box-shadow:none!important;color:rgba(255,255,255,.66)!important;font-family:inherit!important;font-size:12px!important;font-weight:700!important;line-height:22px!important;text-decoration:underline!important;text-underline-offset:2px;white-space:nowrap;cursor:pointer}',
+      C+'.cv2-mas:hover{color:#fff!important}',
       C+'.alu-item-tit{font-size:15px!important;font-weight:800!important;line-height:1.3!important;color:#fff!important;margin:0!important}',
       C+'.cv2-sub{font-weight:400;color:rgba(255,255,255,.74)}',
       C+'.cv2-datos{display:flex;align-items:center;flex-wrap:wrap;gap:8px 14px;min-height:32px;font-size:14px;color:rgba(255,255,255,.78)}',
-      C+'.alu-item-cuerpo{flex:none!important;font-size:14px!important;line-height:1.42!important;color:rgba(255,255,255,.86)!important;margin:0!important;padding:0!important;background:none!important;border:0!important;border-radius:0!important;max-height:none!important}',
+      C+'.alu-item-cuerpo{flex:none!important;font-size:13.5px!important;line-height:18px!important;color:rgba(255,255,255,.86)!important;margin:0!important;padding:0!important;background:none!important;border:0!important;border-radius:0!important;max-height:none!important;display:-webkit-box!important;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}',
+      '#alu-body .cv2.cv2-abierta .alu-item-cuerpo{display:block!important;-webkit-line-clamp:unset;overflow:visible}',
       C+'.cv2-cita{font-style:italic!important;color:rgba(255,255,255,.9)!important;white-space:pre-wrap;overflow-wrap:anywhere}',
+      C+'.cv2-datos .cv2-cita{flex:1 1 200px;min-width:0;font-size:13px;line-height:16px;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}',
+      '#alu-body .cv2.cv2-abierta .cv2-datos .cv2-cita{display:block;-webkit-line-clamp:unset;overflow:visible}',
+      C+'.cv2-datos .alu-recl-msg{margin:0!important;padding:0!important;border:0!important;border-radius:0!important;background:none!important;color:rgba(255,255,255,.9)!important;max-height:32px}',
+      '#alu-body .cv2.cv2-abierta .cv2-datos .alu-recl-msg{max-height:none}',
+      '#alu-body .cv2:not(.cv2-abierta) .cv2-tuya{display:none!important}',
       C+'.cv2-cita::before{content:"«"}',
       C+'.cv2-cita::after{content:"»"}',
-      C+'.cv2-der{grid-column:2!important;grid-row:1!important;display:grid;grid-template-rows:26px 34px minmax(14px,1fr);row-gap:6px;min-width:0}',
-      C+'.cv2-sec{grid-row:1;display:flex;justify-content:flex-end;gap:8px}',
+      C+'.cv2-der{grid-column:2!important;grid-row:1!important;display:grid;grid-template-rows:26px 34px;row-gap:4px;align-content:start;min-width:0}',
+      C+'.cv2-sec{grid-row:1;display:flex;justify-content:flex-end;align-items:center;gap:8px}',
       C+'.cv2-bot{grid-row:2;display:flex;justify-content:flex-end;align-items:center;min-width:0}',
-      C+'.cv2-fecha{display:block!important;grid-row:3;align-self:end;justify-self:end;margin:0!important;font-size:12px!important;line-height:14px!important;color:rgba(255,255,255,.52)!important;white-space:nowrap}',
+      C+'.cv2-fecha{display:inline-block!important;flex:none;margin:0 0 0 2px!important;font-size:12px!important;line-height:26px!important;color:rgba(255,255,255,.52)!important;white-space:nowrap}',
       C+'.cv2-btn{box-sizing:border-box!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:7px!important;width:100%!important;height:34px!important;margin:0!important;padding:0 12px!important;border:0!important;border-radius:10px!important;background:var(--ccf)!important;background-image:none!important;box-shadow:none!important;color:var(--cct)!important;font-family:inherit!important;font-size:13.5px!important;font-weight:700!important;line-height:1!important;letter-spacing:0!important;white-space:nowrap!important;text-decoration:none!important;text-transform:none!important;cursor:pointer;animation:none!important;filter:none}',
       C+'.cv2-btn:hover{filter:brightness(1.1)}',
       C+'.cv2-btn[disabled]{opacity:.6;cursor:default}',
@@ -2152,16 +2193,16 @@ function showEnig(kind){
       C+'.reco-lnk{color:var(--cc)!important;font-weight:700!important;text-decoration:underline!important;text-underline-offset:2px;border:0!important;background:none!important;padding:0!important}',
       C+'.cv2-nowrap{white-space:nowrap}',
       C+'.cv2-calavera{width:1.1em!important;height:1.1em!important;vertical-align:-.2em;margin-left:.25em}',
-      C+'.alu-item-plazo{flex:1 1 100%!important;width:100%;max-width:100%;min-width:0;display:flex!important;flex-wrap:wrap;align-items:center;gap:4px 18px;margin:0!important;padding:13px 0 0!important;background:none!important;font-size:12px!important;font-weight:800!important;color:rgba(255,255,255,.9)!important;white-space:nowrap;border-radius:0!important;box-sizing:border-box}',
-      C+'.cv2-tramo{display:flex;align-items:center;gap:8px;flex:1 1 196px;min-width:0;max-width:252px}',
+      C+'.alu-item-plazo{flex:1 1 100%!important;width:100%;max-width:100%;min-width:0;display:flex!important;flex-wrap:wrap;align-items:center;gap:4px 18px;margin:0!important;padding:17px 0 0!important;background:none!important;font-size:12px!important;font-weight:800!important;color:rgba(255,255,255,.9)!important;white-space:nowrap;border-radius:0!important;box-sizing:border-box}',
+      C+'.cv2-tramo{display:flex;align-items:center;gap:8px;flex:1 1 210px;min-width:0;max-width:268px}',
       C+'.cv2-hasta{flex:none;font-size:12px;font-weight:800;color:rgba(255,255,255,.9)}',
-      C+'.cv2-dias{position:relative;display:flex;align-items:center;justify-content:space-between;flex:1 1 auto;min-width:96px;max-width:150px}',
-      C+'.cv2-dias i{position:relative;display:block;flex:none;width:12px;height:12px;border-radius:3px;background:rgba(255,255,255,.16);overflow:hidden}',
+      C+'.cv2-dias{position:relative;display:flex;align-items:center;gap:2px;flex:1 1 auto;min-width:112px;max-width:166px}',
+      C+'.cv2-dias i{position:relative;display:block;flex:1 1 0;min-width:0;height:8px;border-radius:2px;background:rgba(255,255,255,.16);overflow:hidden}',
       C+'.cv2-dias i.pasado.n{background:#ec4899}',
       C+'.cv2-dias i.pasado.x{background:#ef4444}',
       C+'.cv2-dias i.hoy b{position:absolute;left:0;top:0;bottom:0;background:#f59e0b;animation:cv2Latido 1.4s ease-in-out infinite}',
       C+'.cv2-dias.urg i.hoy b{animation-duration:.55s}',
-      C+'.cv2-extra{position:absolute;bottom:100%;left:0;right:0;width:max-content;margin:0 auto 2px;padding:0 4px;border-radius:3px;font-size:9.5px;line-height:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.36);white-space:nowrap;pointer-events:none}',
+      C+'.cv2-extra{position:absolute;bottom:100%;left:0;right:0;width:max-content;margin:0 auto 3px;padding:0 6px;border-radius:4px;font-size:9.5px;line-height:14px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.36);white-space:nowrap;pointer-events:none}',
       C+'.cv2-tramo.en .cv2-extra{color:#fca5a5;box-shadow:inset 0 0 0 1px #f87171}',
       C+'.cv2-fin{color:#f87171}',
       '@keyframes cv2Latido{0%,100%{opacity:1}50%{opacity:.3}}',
@@ -2174,17 +2215,26 @@ function showEnig(kind){
       '#alu-body .cv2.alu-extra-pin .cv2-fecha{color:rgba(255,255,255,.75)!important}',
       '#alu-body .cv2.alu-extra-pin .cv2-dias{background:rgba(0,0,0,.38);padding:3px 6px;border-radius:6px}',
       '#alu-body .cv2.alu-extra-pin .cv2-tramo.en .cv2-extra{color:#fff;box-shadow:inset 0 0 0 1px #fff}',
-      '#alu-body .cv2.alu-extra-pin .cv2-extra{margin-bottom:1px}',
+      '#alu-body .cv2.alu-extra-pin .cv2-extra{margin-bottom:3px}',
       '#alu-body .cv2.alu-extra-pin .cv2-dias i{background:rgba(255,255,255,.2)}',
       '#alu-body .cv2.alu-extra-pin .cv2-dias i.pasado.n{background:#f472b6}',
       '#alu-body .cv2.alu-extra-pin .cv2-dias i.pasado.x{background:#ef4444}',
       P+'.alu-cero{background:#000!important;border:1.5px solid #fff!important}',
       '#alu-body .cv2.alu-cero .cv2-tile{border-color:#fff;color:#fff;opacity:1}',
-      '#alu-body .cv2.cv2-tareas .cv2-mid{grid-template-columns:minmax(0,1fr)!important}',
-      '#alu-body .cv2.cv2-tareas .cv2-cont{min-height:44px;justify-content:center}',
+      '#alu-body .cv2.cv2-tareas>.cv2-mid{grid-template-columns:minmax(0,1fr) 214px!important;height:32px;overflow:hidden}',
+      '#alu-body .cv2.cv2-tareas .cv2-cont{min-height:32px;justify-content:center}',
+      '#alu-body .cv2.cv2-tareas>.cv2-tile{width:32px;height:32px;border-radius:9px;justify-self:center}',
+      '#alu-body .cv2.cv2-tareas>.cv2-tile .cv2-ico{width:16px;height:16px}',
+      '#alu-body .cv2.cv2-tareas>.cv2-tile .alu-dot.cv2-num{width:17px!important;height:17px!important;line-height:17px!important;font-size:10px!important;top:-7px!important;right:-7px!important}',
+      '#alu-body .cv2.cv2-tareas .cv2-l1 .alu-item-tit{font-size:14px!important}',
+      '#alu-body .cv2.cv2-tareas .cv2-fecha{line-height:32px!important}',
+      '#alu-body .cv2.cv2-tareas .cv2-der{grid-template-rows:32px}',
       C+'.cv2-partes{grid-column:1/-1!important;display:flex!important;flex-direction:column!important;gap:0!important;margin:0!important;padding:0!important}',
-      C+'.ts-parte.cv2-parte{box-sizing:border-box;display:grid!important;grid-template-columns:44px minmax(0,1fr) 214px!important;column-gap:16px!important;row-gap:0!important;align-items:center!important;min-height:66px;margin:11px 0 0!important;padding:11px 0 0!important;border:0!important;border-top:1px solid rgba(255,255,255,.10)!important;border-radius:0!important;background:none!important;background-image:none!important;box-shadow:none!important;filter:none!important;opacity:1!important;position:relative!important;overflow:visible!important}',
+      C+'.ts-parte.cv2-parte{box-sizing:content-box;display:grid!important;grid-template-columns:44px minmax(0,1fr) 214px!important;column-gap:16px!important;row-gap:0!important;align-items:center!important;height:64px;min-height:0;margin:11px 0 0!important;padding:11px 0 0!important;border:0!important;border-top:1px solid rgba(255,255,255,.10)!important;border-radius:0!important;background:none!important;background-image:none!important;box-shadow:none!important;filter:none!important;opacity:1!important;position:relative!important;overflow:visible!important}',
       C+'.ts-parte.cv2-parte::before,'+C+'.ts-parte.cv2-parte::after{display:none!important}',
+      C+'.ts-parte.cv2-parte.cv2-abierta{height:auto;min-height:64px}',
+      C+'.cv2-pt{display:flex;align-items:center;gap:6px;min-width:0;white-space:nowrap}',
+      C+'.cv2-parte.cv2-abierta .cv2-pt{flex-wrap:wrap;white-space:normal}',
       C+'.ts-parte.cv2-parte.ts-hecha{filter:grayscale(1)!important;opacity:.5!important}',
       '#alu-body .cv2.hecha .ts-parte.cv2-parte.ts-hecha{opacity:1!important}',
       C+'.cv2-mini{position:relative;box-sizing:border-box;justify-self:center;width:30px;height:30px;border-radius:9px;border:1.5px solid var(--cc);color:var(--cc);display:flex;align-items:center;justify-content:center}',
@@ -2192,10 +2242,11 @@ function showEnig(kind){
       C+'.cv2-mini .ts-dot{position:absolute!important;top:-4px!important;right:-4px!important;left:auto!important;width:9px!important;height:9px!important;margin:0!important;border-radius:50%!important;background:var(--cc)!important;box-shadow:0 0 0 2px #0d1522!important;animation:cv2Pulso 1.6s ease-in-out infinite}',
       '@keyframes cv2Pulso{0%,100%{transform:scale(1)}50%{transform:scale(1.35)}}',
       C+'.cv2-pcont{display:flex;flex-direction:column;gap:6px;min-width:0}',
-      C+'.cv2-pt{font-size:14px!important;font-weight:800!important;color:#fff!important;margin:0!important;line-height:1.3!important}',
+      C+'.cv2-pt{font-size:14px!important;font-weight:800!important;color:#fff!important;margin:0!important;line-height:22px!important}',
       C+'.cv2-pt .cv2-chip{margin-left:6px!important}',
       C+'.cv2-fila{display:flex;align-items:center;flex-wrap:wrap;gap:6px 10px;font-size:13.5px}',
-      C+'.cv2-fila .ts-parte-sub{font-size:13.5px!important;color:rgba(255,255,255,.7)!important;max-height:none!important;overflow:visible!important;white-space:normal!important;margin:0!important}',
+      C+'.cv2-fila .ts-parte-sub{font-size:13.5px!important;line-height:18px!important;color:rgba(255,255,255,.7)!important;max-height:none!important;white-space:normal!important;margin:0!important;display:-webkit-box!important;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden!important}',
+      C+'.cv2-parte.cv2-abierta .cv2-fila .ts-parte-sub{display:block!important;-webkit-line-clamp:unset;overflow:visible!important}',
       C+'.ts-lec-chips{display:flex;flex-wrap:wrap;gap:6px;margin:0!important}',
       C+'.ts-lec-chip.cv2-lec{box-sizing:border-box;display:inline-flex!important;align-items:center;gap:6px;height:28px!important;padding:0 10px!important;margin:0!important;border-radius:8px!important;border:1.5px solid #22c55e!important;background:transparent!important;box-shadow:none!important;color:#bbf7d0!important;font-family:inherit!important;font-size:13px!important;font-weight:700!important;cursor:pointer;white-space:nowrap;filter:none!important}',
       C+'.ts-lec-chip.cv2-lec .cv2-ico{width:14px;height:14px}',
@@ -2205,10 +2256,8 @@ function showEnig(kind){
       C+'.cv2-pder .cv2-hecho{align-self:flex-end}',
       C+'.cv2-intro{font-size:inherit!important;line-height:inherit!important;display:inline!important;opacity:1!important;font-family:inherit!important;color:#4ade80!important;font-weight:800!important;text-decoration:none!important;border:0!important;background:none!important;padding:0!important;margin:0!important;cursor:pointer}',
       C+'.cv2-intro:hover{text-decoration:underline!important;text-underline-offset:2px}',
-      C+'.cv2-pie{grid-column:1/-1!important;display:grid;grid-template-columns:44px minmax(0,1fr) 214px;column-gap:16px;margin-top:10px!important}',
-      C+'.cv2-pie .cv2-fecha{grid-column:3}',
       /* Hamilton (lo pinta otro bloque dentro de la tarjeta): su botón, en el sitio de los botones */
-      C+'.cv2-mid>.ham-ir{grid-column:2!important;grid-row:1!important;align-self:start;margin:32px 0 0!important;box-sizing:border-box;display:inline-flex!important;align-items:center;justify-content:center;width:100%;height:34px;padding:0 12px!important;border-radius:10px!important;background:var(--ccf)!important;background-image:none!important;color:var(--cct)!important;font-size:13.5px!important;font-weight:700!important;text-decoration:none!important;white-space:nowrap;box-shadow:none!important}',
+      C+'.cv2-mid>.ham-ir{grid-column:2!important;grid-row:1!important;align-self:start;margin:30px 0 0!important;box-sizing:border-box;display:inline-flex!important;align-items:center;justify-content:center;width:100%;height:34px;padding:0 12px!important;border-radius:10px!important;background:var(--ccf)!important;background-image:none!important;color:var(--cct)!important;font-size:13.5px!important;font-weight:700!important;text-decoration:none!important;white-space:nowrap;box-shadow:none!important}',
       C+'.ham-cita{color:#fff!important}',
       /* (15-oct-2026, Iago: «si alguna de esas tarjetas te lleva a alguna ventana… que lo que abra mantenga esta estética») */
       '#alu-resp-modal.alu-resp-modal{background:rgba(4,10,20,.6)!important;-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}',
@@ -2254,15 +2303,24 @@ function showEnig(kind){
         +C+'.cv2-mid{grid-template-columns:minmax(0,1fr)!important;row-gap:10px!important}'
         +C+'.cv2-cont{min-height:0}'
         +C+'.cv2-der{grid-column:1!important;grid-row:2!important;display:flex;flex-wrap:wrap;align-items:center;gap:8px}'
-        +C+'.cv2-sec{order:2}'+C+'.cv2-bot{order:1;flex:1 1 180px}'+C+'.cv2-fecha{order:3;align-self:center}'
+        +C+'.cv2-sec{order:2}'+C+'.cv2-bot{order:1;flex:1 1 180px}'
+        +'#alu-body .alu-item.cv2>.cv2-mid{height:auto!important;overflow:visible!important}'
+        +C+'.cv2-fecha{position:absolute!important;top:10px!important;right:12px!important;line-height:16px!important}'
+        +C+'.cv2-l1{padding-right:48px;flex-wrap:wrap!important;white-space:normal!important}'
+        +C+'.cv2-l1 .alu-item-tit{white-space:normal!important;overflow:visible!important}'
+        +C+'.cv2-mas{margin-left:0!important}'
+        +'#alu-body .cv2.cv2-tareas>.cv2-mid{grid-template-columns:minmax(0,1fr)!important;height:auto!important}'
+        +C+'.alu-item-plazo{row-gap:16px!important}'
+        +'#alu-body .cv2.cv2-tareas .cv2-der{display:block}'
+        +C+'.ts-parte.cv2-parte{height:auto!important;min-height:64px}'
         +C+'.ts-parte.cv2-parte{grid-template-columns:30px minmax(0,1fr)!important;row-gap:8px!important}'
         +C+'.cv2-pder{grid-column:2}'
-        +C+'.cv2-pie{grid-template-columns:1fr}'+C+'.cv2-pie .cv2-fecha{grid-column:1}'
         +C+'.cv2-mid>.ham-ir{grid-column:1!important;grid-row:2!important;margin:0!important}'
       +'}',
       '@media (prefers-reduced-motion:reduce){#alu-body .cv2 .cv2-dias i.hoy b,#alu-body .cv2 .cv2-mini .ts-dot{animation:none}}'
     ].join('');
     document.head.appendChild(s);
+    window.addEventListener('resize',function(){ clearTimeout(_cv2RT); _cv2RT=setTimeout(function(){ try{ cv2Recortes(); }catch(e){} },200); });
   }
   /* (15-oct-2026, Iago: «en vez de tener siete cuadraditos, que tengan 14 y que los primeros siete sean de color rosa… a
      partir del octavo es cuando se pone rojo… en vez de que ponga queda un día nueve horas») LAS FICHAS DE LA CAMPANA, CON 14
@@ -3819,9 +3877,9 @@ function showEnig(kind){
         var numT=(!caduSem && pend)?pend:0;
         return '<div class="alu-item cv2 cv2-tareas alu-item-tareas'+((o.leido||hechaT)?'':' no-leido')+((hechaT && !papelNueva(o))?' hecha':'')+(numT?' cv2-pend':'')+'" data-id="'+esc(o.id)+'"'+cv2Estilo('blanco')+'>'
           +'<span class="cv2-tile" aria-hidden="true">'+cv2Svg('caja')+'<span class="alu-dot'+(numT?' cv2-num':'')+'">'+(numT||'')+'</span></span>'
-          +'<div class="alu-item-main cv2-mid"><div class="cv2-cont"><div class="cv2-l1"><span class="alu-item-tit">Tareas de la semana</span></div></div></div>'
+          +'<div class="alu-item-main cv2-mid"><div class="cv2-cont"><div class="cv2-l1"><span class="alu-item-tit">Tareas de la semana</span></div></div>'
+          +'<div class="cv2-der"><div class="cv2-sec"><span class="alu-item-fecha cv2-fecha">'+esc(_f)+'</span></div></div></div>'   /* (15-oct-2026, mediodía) la fecha, arriba a la derecha */
           +'<div class="ts-partes cv2-partes">'+partes.join('')+'</div>'
-          +'<div class="cv2-pie"><span class="alu-item-fecha cv2-fecha">'+esc(_f)+'</span></div>'
           +'</div>';
       }
       // ---------- QUIZ DE RITMO suelto
@@ -3847,8 +3905,9 @@ function showEnig(kind){
           tit:(dj.numero!=null?('Dictado nº '+esc(dj.numero)):'Tu último dictado'), sub:'nota revisada',
           chip: esCorr?'<span class="cv2-chip cor">✎ Corregida</span>':'<span class="cv2-chip ok">✓ Verificada</span>',
           datos: cv2Nota('Tu nota', esCorr?fmtN(dj.nota_alumno):null, fmtN(dj.nota_final))
-            +(dCom?'<span class="cv2-cita dct-coment">'+esc(dCom)+'</span>':(esCorr?'':'<span class="dct-bien">¡Bien corregido!</span>')),
-          cuerpo: (!hayFotos && dj.fotos_caducan)?'<div class="cv2-nota-pie">'+cv2Svg('reloj')+'Las fotos del dictado se guardan 7 días</div>':'',
+            +(dCom?'<span class="cv2-cita dct-coment">'+esc(dCom)+'</span>':(esCorr?'':'<span class="dct-bien">¡Bien corregido!</span>'))
+            +((!hayFotos && dj.fotos_caducan)?'<span class="cv2-nota-pie">'+cv2Svg('reloj')+'Las fotos se guardan 7 días</span>':''),
+          cuerpo:'',
           btn: hayFotos?'<button class="alu-dictado-ver cv2-btn" data-id-notif="'+esc(o.id)+'">'+cv2Svg('ojo')+'Ver dictado y solución</button>':'',
           fecha:_f});
       }
@@ -3894,9 +3953,10 @@ function showEnig(kind){
         var puede=!pr.respuesta_alumno;
         var tuyaR=(pr.respuesta_alumno&&pr.respuesta_alumno.texto)?('<div class="alu-recl-tuya cv2-tuya"><b>↩ Tu respuesta</b>'+(pr.respuesta_alumno.en?' · '+fecha(pr.respuesta_alumno.en):'')+' — '+esc(pr.respuesta_alumno.texto)+'</div>'):'';
         return cv2Tarjeta({cls:'alu-recl cv2-info'+(o.leido?'':' no-leido'), id:o.id, col:'rosa', ic:'lapiz',
-          tit: mF?('Ficha&nbsp;'+mF[1]):esc(tRaw), sub: mF?subR:'', chip:chipR,
-          datos:(nD!=null?cv2Nota('Nota', cambia?nA.toFixed(2).replace('.',','):null, nD.toFixed(2).replace('.',',')):'')+ejR,
-          cuerpo:(o.cuerpo?'<div class="alu-item-cuerpo alu-recl-msg cv2-cita">'+esc(o.cuerpo)+'</div>':'')+tuyaR,
+          tit: mF?('Ficha&nbsp;'+mF[1]):esc(tRaw), sub: (mF?subR:'')+(nEj?(mF?' · ':'')+'ejercicio'+(nEj>1?'s':'')+' '+esc(pr.ejercicios.join(', '))+(est==='aceptada'?' anulado'+(nEj>1?'s':''):''):''), chip:chipR,
+          datos:(nD!=null?cv2Nota('Nota', cambia?nA.toFixed(2).replace('.',','):null, nD.toFixed(2).replace('.',',')):'')
+            +(o.cuerpo?'<span class="alu-recl-msg cv2-cita">'+esc(o.cuerpo)+'</span>':''),
+          cuerpo:tuyaR,
           sec:(o.leido?'':cv2Visto(o.id))+(puede?'<button type="button" class="alu-recl-contestar cv2-cuad cv2-sobre" data-recl-contestar="'+esc(o.id)+'" title="Contestar a Iago" aria-label="Contestar a Iago">'+cv2Svg('sobre')+'</button>':''),
           btn: pr.url?'<a class="alu-recl-ver cv2-btn" href="'+esc(pr.url)+'" target="_blank" rel="noopener">'+cv2Svg('lupa')+'Ver mi ficha corregida</a>':'',
           fecha:_f});
@@ -3913,7 +3973,7 @@ function showEnig(kind){
            la hora ya van al final de las casillas; aquí, solo que tiene que estar ENVIADA a esa hora EN PUNTO o se queda el 0 */
         var fgX=pj.fin_gracia?new Date(pj.fin_gracia):null, horaX='';
         try{ if(fgX && !isNaN(fgX)){ var hhX=fgX.getHours(), mmX=fgX.getMinutes(); horaX=hhX+(mmX?':'+(mmX<10?'0':'')+mmX:'')+'h'; } }catch(eX){}
-        cuerpoH='<b>ENVIADA</b> antes de las <b>'+esc(horaX||'19h')+' EN PUNTO</b> o <span class="cv2-nowrap">se queda el 0.'+cv2Svg('calavera','cv2-calavera')+'</span>';
+        cuerpoH='';   /* (15-oct-2026, mediodía, Iago: «sobra el texto de enviada antes de las 19 en punto o se queda en el 0») */
       } else if(fid && hecha){
         cuerpoH='Ya la entregaste. ¡Buen trabajo!';
       } else if(!fid || pj.cero_ficha){
@@ -3933,6 +3993,7 @@ function showEnig(kind){
         cuerpo:cuerpoH?'<div class="alu-item-cuerpo'+((pj.bienvenida||pj.mensaje_prof)?' alu-prewrap':'')+'">'+cuerpoH+'</div>':'',
         btn:btnF, fecha:_f});
     }).join(''):'<div class="alu-vacio">Todavía no tienes notificaciones.</div>');
+    try{ cv2Recortes(body); }catch(eR){}   /* (15-oct-2026, mediodía) «Leer mensaje completo» donde algo no cabe */
     try{ if(window.__LM_HAM__) window.__LM_HAM__.decorar(body); }catch(e){}
     // FASE 6.9 · las entregadas no leídas se marcan LEÍDAS solas (el alumno
     // ya cumplió: que el globito rojo no le persiga). Un solo refresco al final.

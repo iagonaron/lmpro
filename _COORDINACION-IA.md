@@ -6,6 +6,22 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 15-oct 13:15 · Fichas y rediseño · HECHO (sin EN CURSO aparte: retoque de la campana de las 10:28, en los dos portales;
+  comprobado justo antes que main seguía en c0f2df0 y LMEAVathome en 0451c29) · CAMPANA v3 (Iago, mediodía: «que todas las
+  notificaciones tuviesen la misma altura. Todas»): todas las tarjetas sueltas igual de altas y cada fila de «Tareas de la
+  semana» igual (la cabecera de las tareas, más fina); la FECHA, en la esquinita de arriba a la derecha (también la de las
+  tareas, con el cuadro más pequeño); los días de las fichas, segmentos rectangulares casi pegados («Tiempo extra» con aire
+  dentro de su contorno); fuera el texto «ENVIADA antes de las 19h EN PUNTO o se
+  queda el 0» del tiempo extra; lo que no cabe se corta con «…» y sale «Leer mensaje completo», que despliega esa tarjeta (o
+  esa fila). En index.html solo cambian las piezas cv2* (cv2Tarjeta y su CSS; nuevas cv2Mas y cv2Recortes, que se llama tras
+  pintar la campana) y el render de la campana (cabecera de las tareas con la fecha; reclamación: el mensaje junto a la nota y
+  los ejercicios en el subtítulo; dictado: el aviso de las fotos junto a la nota). Manejadores y data-* iguales. Banco 101/101
+  (GE y GP; 1280, 1024, 820 y 390). LMEAVathome e5cd89a (index.html e882ac5c…), lmpro este commit (index.html 9345851b…).
+  Deshacer: APPs/_PARA BORRAR/15-oct-2026-portales-antes-de-la-campana-v3/{ge,gp}/.
+- 15-oct 13:15 · Fichas y rediseño · HECHO (apunte atrasado: es de Netlify, no toca este repo) · CORRECCIÓN DE DICTADOS DE GE
+  (dictadoselemental, 15-oct por la mañana, deploys 6ad0a258 y 6ad0a528): en el móvil, la solución del dictado arriba, en dos
+  pentagramas como la ve el alumno, con lupa a pantalla completa. Copia y deshacer: APPs/APPS CORRECCION (netlify x6)/
+  _SUBIDAS-15-OCT-solucion-del-dictado-en-la-correccion/ (o el deploy anterior en Netlify).
 - 15-oct 10:34 · Fichas y rediseño · HECHO (sin EN CURSO aparte: retoque de la entrada de las 10:28, en los dos portales;
   comprobado justo antes que main seguía en 193c527 y LMEAVathome en 9cc6139) · CAMPANA: en «Tareas de la semana» ya abierta
   pero con algo pendiente, el cuadro y su número se ven enteros (antes salían apagados como lo leído). Solo una regla de CSS
