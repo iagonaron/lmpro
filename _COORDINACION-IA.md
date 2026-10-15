@@ -6,6 +6,23 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 15-oct 18:59 · Fichas y rediseño · HECHO (sin EN CURSO aparte; Iago vio las capturas y dijo «sí, publica todo»; comprobado justo antes
+  que main seguía en 18da699) · GP · TEMAZO COMPACTO (Iago): al completar las tareas, el temazo ya no es la franja azul grande
+  encima de los portales, sino una barrita en la fila de arriba a la derecha, a la izquierda de Mis resultados y la campana,
+  a su altura (34 px) y con su radio (10): ▶, el título con su progreso, 🎲 otro género y ↗ escúchalo entero en Spotify (en
+  las unidades con botones, un ▾ los despliega). Mismo funcionamiento, mismo sonidito y destellos. De largo, 280 px como
+  mucho, sin pasar del centro de la fila (con Protester, 184). Solo cambia el bloque @TEMAZO de index.html (estilos al final,
+  seccion() y pintar(); la franja de siempre sigue ahí si no hay fila arriba). Deshacer: index.html de 18da699 (copia en
+  APPs/_PARA BORRAR/15-oct-2026-lmpro-antes-del-temazo-compacto/).
+- 15-oct 18:58 · Fichas y rediseño · HECHO (sin EN CURSO aparte: retoque de la escaleta de las 17:45, publicado a las 18:58
+  como pidió Iago, entre dos clases; comprobado justo antes que main seguía en 18da699 y LMEAVathome en d42c4e9) · ESCALETA
+  v7 (Iago): el índice dura lo que haga falta: 1,5 s de silencio tras la tensión, la carga de datos (tecleo y «computing»
+  suaves, abajo «Cargando actividades» y un circulito amarillo que gira, sin raya), una línea cada 1,5 s y, con la última,
+  se para la carga y suena alto el Scifi Touch Activation 3, cuyo último golpe cae en el 5:00. La preparación (32 s) se
+  corre según lo largo del índice. El ▶ de la escaleta, sin resplandor. En el portal, al empezar cada clase (la entrada),
+  la lista de morosos se abre sola si sale el ⚠ de ese grupo (una vez por clase). LMEAVathome b1367e7 (escaleta.js 6bb530f4…;
+  escaleta-previa-v7, -datos-v7 y -cierre-v7.mp3 nuevos en piel/). Banco 44/44, 21/21, 6/6 y 3/3 (morosos).
+  Deshacer: piel/escaleta.js de d42c4e9.
 - 15-oct 17:45 · Fichas y rediseño · HECHO (sin EN CURSO aparte: retoque de la escaleta de las 17:27, con prisa para la clase de
   las 18:00; comprobado justo antes que main seguía en 50861db y LMEAVathome en 8b05d37) · ESCALETA v6 (Iago): al final de
   la preparación, tensión (riser) y de golpe silencio; a los 1,5 s, el tecleo de datos mucho más bajo y sin más efectos;

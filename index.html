@@ -7579,6 +7579,36 @@ window.DictadoClase = (function(){
   .tz-btn{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.35);color:#fff;border-radius:999px;padding:6px 12px;font-size:13px;font-weight:700;cursor:pointer;transition:.15s}
   .tz-btn:hover{background:rgba(255,255,255,.22)} .tz-btn.on{background:#fff;color:#0b2a5a;border-color:#fff}
   @media(max-width:640px){.tz-chip{margin-left:0}}
+  /* (15-oct-2026, Iago) COMPACTO: arriba a la derecha, a la izquierda de Mis resultados y la campana, a su altura
+     (34 px) y con la estética de esos botones. Para volver a la franja: borrar este bloque y el de seccion() marcado
+     «(15-oct-2026) compacto» (la franja de siempre sigue debajo, intacta). */
+  .topbar-right > #temazo.tz-mini{max-height:none;overflow:visible;margin:0;flex:0 0 auto;display:none;position:relative;order:-10}
+  .topbar-right > #temazo.tz-mini.tz-on{display:block}
+  #temazo.tz-mini .tz-tira{width:var(--tz-w,280px);height:34px;box-sizing:border-box;border-radius:10px;padding:0 4px 0 4px;
+    display:flex;align-items:center;gap:7px;overflow:visible;background:#243044;border:1px solid rgba(123,176,255,.38);
+    box-shadow:none;color:#eaf4ff;opacity:1;transform:none;transition:none}
+  #temazo.tz-mini.tz-on .tz-tira{animation:tzMiniEntra .6s cubic-bezier(.2,.8,.25,1) both}
+  @keyframes tzMiniEntra{0%{opacity:0;transform:translateY(-8px) scale(.96)}100%{opacity:1;transform:none}}
+  #temazo.tz-mini .tz-tira::before,#temazo.tz-mini .tz-neb{display:none}
+  html #temazo.tz-mini .tz-tira{border-radius:10px !important}   /* como los botones de al lado (la piel le pone 16) */
+  #temazo.tz-mini .tz-pp{width:26px;height:26px;box-shadow:none}
+  #temazo.tz-mini .tz-pp svg{width:12px;height:12px}
+  #temazo.tz-mini .tz-eq{height:13px;gap:2px} #temazo.tz-mini .tz-eq i{width:2.5px} #temazo.tz-mini .tz-eq:not(.son){display:none}
+  #temazo.tz-mini .tz-pista{flex:1 1 auto;min-width:0;gap:4px}
+  #temazo.tz-mini .tz-nombre{font-size:12px;line-height:1.15}
+  #temazo.tz-mini .tz-nombre em{display:none}
+  #temazo.tz-mini .tz-barra{height:3px}
+  #temazo.tz-mini .tz-tiempo{display:none}
+  #temazo.tz-mini .tz-ico{flex:none;width:26px;height:26px;border-radius:8px;border:0;padding:0;cursor:pointer;
+    background:rgba(255,255,255,.16);color:#fff;display:flex;align-items:center;justify-content:center;text-decoration:none;
+    font:700 13px/1 inherit;transition:background .15s}
+  #temazo.tz-mini .tz-ico:hover{background:rgba(255,255,255,.28);color:#fff}
+  #temazo.tz-mini .tz-ico svg{width:15px;height:15px;display:block}
+  #temazo.tz-mini .tz-dado.gira svg{transform:rotate(540deg);transition:transform .5s}
+  #temazo.tz-mini .tz-pop{position:absolute;right:0;top:40px;z-index:40;width:min(360px,80vw);padding:10px;border-radius:12px;
+    background:#1b2537;border:1px solid rgba(123,176,255,.3);box-shadow:0 14px 30px rgba(0,0,0,.35)}
+  #temazo.tz-mini .tz-pop[hidden]{display:none}
+  #temazo.tz-mini .tz-pop .tz-btns{margin:0}
 </style>
 <script>
 (function(){
@@ -7600,6 +7630,14 @@ window.DictadoClase = (function(){
   var datos=null, actual=null, sec=null;
   function seccion(){
     if(sec) return sec;
+    /* (15-oct-2026) compacto: el primero de la fila de arriba a la derecha (a la izquierda de Mis resultados y la campana) */
+    var der=document.querySelector('.topbar .topbar-right');
+    if(der){
+      sec=document.createElement('section'); sec.id='temazo'; sec.className='tz-mini'; sec.setAttribute('aria-label','Temazo de la semana');
+      der.insertBefore(sec, der.firstChild);
+      window.addEventListener('resize', ancho);
+      return sec;
+    }
     var med=document.getElementById('medallero'); if(!med) return null;
     sec=document.createElement('section'); sec.id='temazo'; sec.setAttribute('aria-label','Temazo de la semana');
     med.insertAdjacentElement('beforebegin',sec);   // encima de los portales interactivos
@@ -7785,11 +7823,40 @@ window.DictadoClase = (function(){
     ['videojuegos','peliculas'].forEach(function(g){ h+='<span class="lbl">'+(g==='videojuegos'?'🎮 Videojuegos':'🎬 Películas')+'</span>'+fijos().filter(function(f){return f.grupo===g;}).map(function(f){ return '<button type="button" class="tz-btn'+(sel&&sel.t&&sel.t.track_id===f.track_id?' on':'')+'" data-g="'+esc(g)+'" data-t="'+esc(f.track_id)+'">'+esc(f.titulo)+'</button>'; }).join(''); });
     return h+'</div>';
   }
+  /* (15-oct-2026) compacto: de largo, como la hilera de botones de Protester (280 px), sin pasar del centro de la fila */
+  function ancho(){
+    var s=sec; if(!s || !s.classList.contains('tz-mini')) return;
+    try{
+      var der=s.parentNode, tb=der && der.closest('.topbar'); if(!tb) return;
+      var otros=[].filter.call(der.children, function(e){ return e!==s && e.getClientRects().length; });
+      var izq=otros.length ? Math.min.apply(null, otros.map(function(e){ return e.getBoundingClientRect().left; })) : der.getBoundingClientRect().right;
+      var r=tb.getBoundingClientRect(), centro=r.left+r.width/2;
+      var w=Math.round(Math.max(170, Math.min(280, izq-14-(centro+24))));
+      s.style.setProperty('--tz-w', w+'px');
+    }catch(e){}
+  }
+  var ICO_DADO='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3.5"/><circle cx="9" cy="9" r="1.1" fill="currentColor"/><circle cx="15" cy="15" r="1.1" fill="currentColor"/><circle cx="15" cy="9" r="1.1" fill="currentColor"/><circle cx="9" cy="15" r="1.1" fill="currentColor"/></svg>';
+  var ICO_ENTERO='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6"/><path d="M20 4l-9 9"/><path d="M19 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h5"/></svg>';
+  var ICO_MAS='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>';
   function pintar(sel, primera, sonar){
     var s=seccion(); if(!s||!sel) return;
     var M=MODOS[modo()];
     actual=sel; var t=sel.t;
     var q=encodeURIComponent((t.titulo||'')+' '+(t.artistas||''));
+    var enlace=(t.spotify_track_id?'https://open.spotify.com/track/'+esc(t.spotify_track_id):'https://open.spotify.com/search/'+q);
+    if(s.classList.contains('tz-mini')){   /* (15-oct-2026) compacto: ▶, el título que avanza, el tiempo, 🎲 y «escúchalo entero» */
+      var bt=botonesHTML(sel);
+      s.innerHTML='<div class="tz-tira" title="'+esc(M.tit.replace(/^\S+\s/,'')+' · '+(LABELS[sel.genero]||sel.genero)+' · '+M.sub)+'">'+
+        '<div class="tz-neb" aria-hidden="true"></div>'+playerHTML(t)+
+        (bt?'<button type="button" class="tz-ico" id="tz-mas" title="Elegir" aria-label="Elegir">'+ICO_MAS+'</button>':'')+
+        '<button type="button" class="tz-ico tz-dado" id="tz-dado" title="'+esc(M.dado)+'" aria-label="'+esc(M.dado)+'">'+ICO_DADO+'</button>'+
+        '<a class="tz-ico" target="_blank" rel="noopener" title="Escúchalo entero en Spotify" aria-label="Escúchalo entero en Spotify" href="'+enlace+'">'+ICO_ENTERO+'</a>'+
+        (bt?'<div class="tz-pop" id="tz-pop" hidden>'+bt+'</div>':'')+
+        '</div>';
+      ancho();
+      var mas=document.getElementById('tz-mas'), pop=document.getElementById('tz-pop');
+      if(mas && pop) mas.onclick=function(){ pop.hidden=!pop.hidden; };
+    } else
     s.innerHTML='<div class="tz-tira"><div class="tz-neb" aria-hidden="true"></div><div class="tz-neb b" aria-hidden="true"></div>'+
       '<div class="tz-head"><span class="tz-tit">'+M.tit+'</span><span class="tz-sub">'+M.sub+'</span>'+
       '<span class="tz-chip">'+esc(LABELS[sel.genero]||sel.genero)+'</span></div>'+
