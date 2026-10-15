@@ -6,6 +6,14 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 15-oct 22:52 · Fichas y rediseño · HECHO (sin EN CURSO aparte) · DIARIO, CAMPANA COMPACTA (Iago, móvil, iPad y ordenador: «no
+  necesito la fecha debajo del icono… el alto de cada notificación, el del icono y el margen mínimo… la fecha, en los grupos del
+  mismo día, aparte»; y luego: «los iconos, minimalistas, a la izquierda de la nota; la nota, lo último»): sin fecha debajo del
+  icono; en «Actividad de los alumnos» todas las tarjetas del mismo alto (64 px en ordenador e iPad, 52 en el móvil), nombre y
+  línea gris en una línea cada uno y un separador por día («Hoy», «Ayer», «Martes 13/10»; lo visto, «Vistas · Hoy»); la lupa y
+  el ⚠ del comentario, iconos de línea delante de la nota. Netlify diariodeiagocmus: deploys 6ad138ea y 6ad13afc (el vivo)
+  encima de 6ad13260; suite-campana.js 783ff3db… (antes 89ce4458…). Quien despliegue el Diario, que parta de 6ad13afc.
+  Deshacer: volver a publicar 6ad13260 (sin la versión compacta) o 6ad138ea (compacta, con los iconos de antes).
 - 15-oct 22:12 · Fichas y rediseño · HECHO (sin EN CURSO aparte; Netlify vuelve a dejar subir ficheros) · LOS DOS DESPLIEGUES DE
   NETLIFY que se habían quedado a medias por el error 500 de esta tarde: (1) DIARIO (diariodeiagocmus, deploy 6ad13260 encima de
   6ad0e9f6): suite-campana.js 89ce4458… (antes 16a93aa2…): en el móvil, tarjetas compactas e iguales (nota pequeña, sin la fecha
