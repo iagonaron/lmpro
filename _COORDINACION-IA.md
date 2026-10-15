@@ -6,6 +6,16 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 15-oct 13:58 · Fichas y rediseño · HECHO (sin EN CURSO aparte: retoque de la campana v3 de las 13:15, en los dos portales;
+  comprobado justo antes que main seguía en 42cb316 y LMEAVathome en e5cd89a) · CAMPANA v4 (Iago, tarde): la FECHA, debajo del
+  icono (las «Tareas de la semana» la siguen llevando en su franja, a la derecha) y arriba a la derecha solo los botones
+  cuadrados (✓ visto y sobre); ✓ también en el dictado revisado o corregido; en la tarjeta roja de TIEMPO EXTRA, el rótulo en
+  ámbar, sin contorno y parpadeando a la par que el día de hoy, y el triángulo amarillo de peligro en vez del punto blanco;
+  reclamaciones: «Ficha N · reclamación» + «✕ Denegada» / «✓ Aceptada» (sin «reclamación denegada · ejercicios…»), icono de
+  exclamación amarilla en el cuadro rosa y, al pasar el ratón, «Marcar como visto» / «Enviar mensaje a Iago». En index.html
+  solo cambian cv2Tarjeta, cv2Visto y el CSS cv2, y tres líneas del render (dictado, reclamación y ficha). Banco 123/123 (GE y
+  GP; 1280, 1024, 820 y 390). LMEAVathome 2c2c10d (index.html 3b3efb81…), lmpro este commit (index.html 9b8b289b…).
+  Deshacer: APPs/_PARA BORRAR/15-oct-2026-portales-antes-de-la-campana-v4/{ge,gp}/.
 - 15-oct 13:15 · Fichas y rediseño · HECHO (sin EN CURSO aparte: retoque de la campana de las 10:28, en los dos portales;
   comprobado justo antes que main seguía en c0f2df0 y LMEAVathome en 0451c29) · CAMPANA v3 (Iago, mediodía: «que todas las
   notificaciones tuviesen la misma altura. Todas»): todas las tarjetas sueltas igual de altas y cada fila de «Tareas de la
