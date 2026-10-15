@@ -6,6 +6,13 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 15-oct 17:27 · Fichas y rediseño · HECHO (sin EN CURSO aparte: retoque de la escaleta de las 16:45; comprobado justo antes
+  que main seguía en 9b50376 y LMEAVathome en a07465f) · ESCALETA, ÍNDICE DE 10 s QUE «CARGA» LAS ACTIVIDADES (Iago): la
+  preparación pasa a 4:18–4:50 (32 s, la misma pista del alligator con sus complementos) y «Hoy en clase» a 4:50–5:00, ya
+  sin base: suenan datos cargando todo el rato, abajo «Cargando actividades ••• NN %» con su barra, las líneas salen a ritmo
+  fijo (la última hacia el 4:58), cada una con su pop un pelín más agudo, y en el 5:00 un cierre sutil de los de datos, sin
+  platillo. La pista nueva es piel/escaleta-previa-v5.mp3 (la escaleta-previa.mp3 de antes se queda, sin usar). LMEAVathome
+  8b05d37 (escaleta.js af305991…). Banco 44/44, 21/21 y 6/6. Deshacer: piel/escaleta.js de a07465f.
 - 15-oct 16:45 · Fichas y rediseño · HECHO (sin EN CURSO aparte: retoque de la escaleta de las 16:20; comprobado justo antes
   que main seguía en 2bd080c y LMEAVathome en 95972e2) · ESCALETA CON LOS SONIDOS DE SPLICE DE IAGO: la previa (4:12–5:00)
   suena con una pista hecha con sus sonidos (piel/escaleta-previa.mp3, 120 por minuto: el loop «alligator» de base, un
