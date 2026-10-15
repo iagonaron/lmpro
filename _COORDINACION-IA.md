@@ -6,6 +6,15 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 15-oct 23:23 · Fichas y rediseño · HECHO (sin EN CURSO aparte; comprobado justo antes que LMEAVathome seguía en edd4fdf) ·
+  PENDIENTES DE IAGO («termina lo pendiente»): (1) MOROSOS DEL PORTAL (GE y GP), «más estrechos, primer apellido entero»: la
+  lista mide 360 px (antes 430) y, si un nombre no cabe, se abrevian los demás apellidos y nunca el primero («Margarita
+  Fernández de N. L.»; el entero, en el title). piel/apps/portal.js (morAcortar; arrancarTictac va antes de pintar, para
+  medir con su CSS) y portal.css. LMEAVathome 9bdfa93. Deshacer: esos dos de edd4fdf. El logo que baja con la escaleta ya
+  estaba (escaleta.js: .hero margin-top 64px con la tarjeta). (2) NOMBRES LARGOS en las correcciones de ritmo, entonación y
+  ritmo entonado, como en el dictado GE: nombres-cortos-15oct.js (nuevo) y una línea en index.html. Netlify ritmoelemental
+  6ad142fd, entonacionelemental 6ad14303, ritmoentonadoprofesional 6ad14309. Deshacer: borrar esa línea (o 6ac61a0a / 6ac619e1
+  / 6ac616d3).
 - 15-oct 23:02 · Fichas y rediseño · HECHO (sin EN CURSO aparte) · DIARIO: LA CAMPANA NUEVA, A LA PRIMERA. El móvil y el iPad de
   Iago seguían con la campana de la tarde: el service worker (sw.js) abre los .js desde la copia guardada y solo los renueva
   por detrás; lo que los baja a la primera es cambiar su ?v=. index.html, ipad.html e iphone.html: «suite-campana.js?v=s41» →
