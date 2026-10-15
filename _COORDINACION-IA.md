@@ -6,6 +6,11 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 15-oct 21:49 · Fichas y rediseño · HECHO (sin EN CURSO aparte) · FUERA EL BOTÓN DE REFRESCAR (Iago: «si hay alguna notificación sin
+  yo darle a refrescar no sería necesario el botón»; eligió quitarlo y que se recargue solo): al VOLVER al portal tras 1 min o
+  más fuera, si ha cambiado lo publicado (página o piel, por su tamaño) se recarga solo en ese momento; nunca con la escaleta
+  en marcha, con algo abierto o escribiendo, y como mucho una vez cada 10 min. piel/apps/portal.js = el de 7d3e186 + el bloque
+  «VERSIÓN NUEVA, SOLA»; portal.css = el de 7d3e186. LMEAVathome edd4fdf. Deshacer: esos dos de 7d3e186 (o de 9508ff9, con botón).
 - 15-oct 21:37 · Fichas y rediseño · HECHO (sin EN CURSO aparte; sigue a la entrada de las 21:26) · TRABAJO POR LIBRE en los temáticos
   que faltaban (una línea con piel/latido.js antes de </body>, parcheada sobre la versión de GitHub y comprobada por huella):
   magnetofono 68ab840, transporte 6004c74, modulacion 656d89b, blues 3f41dfd y afrolatin fb9f3d5. Deshacer: borrar esa línea
