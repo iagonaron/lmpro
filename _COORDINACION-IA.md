@@ -6,6 +6,11 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 15-oct 23:02 · Fichas y rediseño · HECHO (sin EN CURSO aparte) · DIARIO: LA CAMPANA NUEVA, A LA PRIMERA. El móvil y el iPad de
+  Iago seguían con la campana de la tarde: el service worker (sw.js) abre los .js desde la copia guardada y solo los renueva
+  por detrás; lo que los baja a la primera es cambiar su ?v=. index.html, ipad.html e iphone.html: «suite-campana.js?v=s41» →
+  «?v=s42» (nada más). Netlify diariodeiagocmus, deploy 6ad13c27 encima de 6ad13afc. OJO: quien cambie suite-campana.js, que
+  suba también ese ?v= en las tres páginas (s43…). Quien despliegue el Diario, que parta de 6ad13c27. Deshacer: 6ad13afc.
 - 15-oct 22:52 · Fichas y rediseño · HECHO (sin EN CURSO aparte) · DIARIO, CAMPANA COMPACTA (Iago, móvil, iPad y ordenador: «no
   necesito la fecha debajo del icono… el alto de cada notificación, el del icono y el margen mínimo… la fecha, en los grupos del
   mismo día, aparte»; y luego: «los iconos, minimalistas, a la izquierda de la nota; la nota, lo último»): sin fecha debajo del
