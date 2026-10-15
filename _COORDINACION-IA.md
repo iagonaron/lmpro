@@ -6,6 +6,13 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 15-oct 15:25 · Fichas y rediseño · HECHO (sin EN CURSO aparte: retoque de la escaleta de las 15:05; comprobado justo antes
+  que main seguía en d7230ee y LMEAVathome en 0a19dc3) · ESCALETA, «HOY EN CLASE» DE 15 s (Iago): de 4:00 a 4:15 (la cuenta
+  atrás de 45 s sigue de 4:15 a 5:00); cada línea entra 2 s después de la anterior, con su sonido; el descanso ya no es una
+  línea con nombre: «Descanso» sale en su turno y se deshace en una raya discontinua amarilla entre lo de antes y lo de
+  después. Solo cambia piel/escaleta.js (LMEAVathome 2eca48e, sha256 3c488ae9…). Banco 40/40 y 18/18; probado con la
+  escaleta publicada de 2Gp C2. Deshacer: piel/escaleta.js de 0a19dc3 (copia en
+  APPs/_PARA BORRAR/15-oct-2026-escaleta-antes-del-indice-15s/).
 - 15-oct 15:05 · Fichas y rediseño · HECHO (sin EN CURSO aparte; comprobado justo antes que main seguía en 5700be8,
   LMEAVathome en de34bca y el Diario en 6acf1cef) · ESCALETA EN LA PANTALLA DEL AULA (solo cuentas Tester/Protester):
   LMEAVathome 0a19dc3: piel/escaleta.js (nuevo) y piel/lm-piel.js (lo carga solo con esas cuentas y nunca en el Ojeador); Diario
