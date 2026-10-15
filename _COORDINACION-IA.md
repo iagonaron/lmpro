@@ -6,6 +6,15 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 15-oct 15:05 · Fichas y rediseño · HECHO (sin EN CURSO aparte; comprobado justo antes que main seguía en 5700be8,
+  LMEAVathome en de34bca y el Diario en 6acf1cef) · ESCALETA EN LA PANTALLA DEL AULA (solo cuentas Tester/Protester):
+  LMEAVathome 0a19dc3: piel/escaleta.js (nuevo) y piel/lm-piel.js (lo carga solo con esas cuentas y nunca en el Ojeador); Diario
+  deploy 6ad0ce25 (ipad.html publica la escaleta de cada clase en escaleta_publicada; app.js: el cuadro del bloque de teoría
+  avisa de que ese texto lo ven los alumnos). En el portal y las apps: tarjeta de tres líneas arriba en el centro; «Hoy en
+  clase» 8 s desde 4:07; cuenta atrás de 45 s con batería y recordatorios; cartel en cada cambio (se quita tocando); fin de
+  clase (con tareas en C2); editores de ritmo y entonación en modo aula; la música de los 30 temas se para sola. No toca
+  portal.js ni los index.html de los portales. Banco 39/39 y 18/18 (con el portal y la piel de verdad). Quitarla: borrar
+  sus líneas de lm-piel.js (o ?escaleta=0 en una pestaña). Deshacer el Diario: deploy 6acf1cef.
 - 15-oct 14:08 · Fichas y rediseño · HECHO (sin EN CURSO aparte: retoque de la v4 de las 13:58; comprobado justo antes que
   main seguía en 275387f y LMEAVathome en 2c2c10d) · CAMPANA v5 (Iago eligió: «Lecciones y tareas»): en «Tareas de la semana»,
   «Lecciones de ritmo» y las tareas sueltas se marcan con la ✓ verde en la esquina de su fila, como las tarjetas (globo
