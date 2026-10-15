@@ -6,6 +6,11 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 15-oct 10:34 · Fichas y rediseño · HECHO (sin EN CURSO aparte: retoque de la entrada de las 10:28, en los dos portales;
+  comprobado justo antes que main seguía en 193c527 y LMEAVathome en 9cc6139) · CAMPANA: en «Tareas de la semana» ya abierta
+  pero con algo pendiente, el cuadro y su número se ven enteros (antes salían apagados como lo leído). Solo una regla de CSS
+  (.cv2.cv2-pend) y la clase en la tarjeta. Banco 91/91. Deshacer: volver a los index.html de 193c527 (lmpro) y 9cc6139
+  (LMEAVathome).
 - 15-oct 10:28 · Fichas y rediseño · HECHO (el EN CURSO de las 09:34; comprobado justo antes que main seguía en el commit de las
   10:07 de Atonalidad, sobre el que va este cambio) · CAMPANA DEL ALUMNO EN GE Y GP, «COLUMNA DE BOTONES» (Iago: «mira este caos
   de notificaciones… que sean más parecidos entre todos, que las cosas estén en los mismos lugares»; de tres propuestas eligió

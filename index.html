@@ -2100,6 +2100,7 @@ function showEnig(kind){
       C+'.cv2-ico{width:16px;height:16px;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}',
       C+'.cv2-tile{position:relative;box-sizing:border-box;width:44px;height:44px;border-radius:12px;border:1.5px solid var(--cc);color:var(--cc);display:flex;align-items:center;justify-content:center}',
       '#alu-body .cv2:not(.no-leido) .cv2-tile{opacity:.5}',
+      '#alu-body .cv2.cv2-pend .cv2-tile{opacity:1}',
       C+'.cv2-tile .cv2-ico{width:20px;height:20px}',
       C+'.cv2-tile .alu-dot{position:absolute!important;top:-5px!important;right:-5px!important;left:auto!important;width:11px!important;height:11px!important;margin:0!important;border-radius:50%!important;background:var(--cc)!important;box-shadow:0 0 0 3px #0d1522!important;visibility:hidden!important;flex:none!important}',
       '#alu-body .cv2.no-leido .cv2-tile .alu-dot{visibility:visible!important}',
@@ -3816,7 +3817,7 @@ function showEnig(kind){
         }
         /* (15-oct-2026, Iago: «en vez de escribir cuatro por hacer… en el puntito blanco de la esquina, pon ahí el número») */
         var numT=(!caduSem && pend)?pend:0;
-        return '<div class="alu-item cv2 cv2-tareas alu-item-tareas'+((o.leido||hechaT)?'':' no-leido')+((hechaT && !papelNueva(o))?' hecha':'')+'" data-id="'+esc(o.id)+'"'+cv2Estilo('blanco')+'>'
+        return '<div class="alu-item cv2 cv2-tareas alu-item-tareas'+((o.leido||hechaT)?'':' no-leido')+((hechaT && !papelNueva(o))?' hecha':'')+(numT?' cv2-pend':'')+'" data-id="'+esc(o.id)+'"'+cv2Estilo('blanco')+'>'
           +'<span class="cv2-tile" aria-hidden="true">'+cv2Svg('caja')+'<span class="alu-dot'+(numT?' cv2-num':'')+'">'+(numT||'')+'</span></span>'
           +'<div class="alu-item-main cv2-mid"><div class="cv2-cont"><div class="cv2-l1"><span class="alu-item-tit">Tareas de la semana</span></div></div></div>'
           +'<div class="ts-partes cv2-partes">'+partes.join('')+'</div>'
