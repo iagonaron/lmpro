@@ -6,6 +6,10 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 15-oct 21:37 · Fichas y rediseño · HECHO (sin EN CURSO aparte; sigue a la entrada de las 21:26) · TRABAJO POR LIBRE en los temáticos
+  que faltaban (una línea con piel/latido.js antes de </body>, parcheada sobre la versión de GitHub y comprobada por huella):
+  magnetofono 68ab840, transporte 6004c74, modulacion 656d89b, blues 3f41dfd y afrolatin fb9f3d5. Deshacer: borrar esa línea
+  (o volver al index.html del commit anterior de cada repo).
 - 15-oct 21:26 · Fichas y rediseño · HECHO (sin EN CURSO aparte; comprobado justo antes que main seguía en df26330 y LMEAVathome
   en 7d3e186) · PORTALES (Iago, noche): (1) BOTÓN DE REFRESCAR en la portada, GE y GP («muchas veces entro y quiero ver si
   hay novedades y tengo que cerrar la ventana»): cuadrado 1×1 liso como la campana, a su derecha (antes de «Pantalla
