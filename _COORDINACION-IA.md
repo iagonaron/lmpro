@@ -6,6 +6,13 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 15-oct 16:45 · Fichas y rediseño · HECHO (sin EN CURSO aparte: retoque de la escaleta de las 16:20; comprobado justo antes
+  que main seguía en 2bd080c y LMEAVathome en 95972e2) · ESCALETA CON LOS SONIDOS DE SPLICE DE IAGO: la previa (4:12–5:00)
+  suena con una pista hecha con sus sonidos (piel/escaleta-previa.mp3, 120 por minuto: el loop «alligator» de base, un
+  complemento distinto en cada secuencia de 4 compases, platillo de transición al entrar «Hoy en clase» y break con riser
+  y golpe en el 5:00); cada línea del índice, un bubble pop (escaleta-item.mp3); cada cambio de actividad, dos «task
+  completed» alternos (escaleta-cambio-1/2.mp3). Si no cargan, la batería sintetizada. LMEAVathome a07465f (escaleta.js
+  b51f00d8… y los 4 mp3 nuevos en piel/). Banco 44/44, 21/21 y 6/6. Deshacer: piel/escaleta.js de 95972e2 (los mp3 sobran).
 - 15-oct 16:20 · Fichas y rediseño · HECHO (sin EN CURSO aparte: retoque de la escaleta de las 15:25; comprobado justo antes
   que main seguía en 49924af y LMEAVathome en 2eca48e) · ESCALETA, PREPARACIÓN PRIMERO E ÍNDICE CON LA BATERÍA (Iago): de
   4:12 a 4:44, la preparación (cuenta atrás de 32 s) con la batería a 120 por minuto, más baja y en fade-in; de 4:44 a 5:00,
