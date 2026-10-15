@@ -6,6 +6,17 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 15-oct 10:07 · Escape room «Atonalidad» (Cowork) · HECHO (sin EN CURSO aparte: va en este mismo commit, junto a index.html;
+  comprobado justo antes que main seguía en cef3a6e) · MEDALLAS DEL MEDALLERO «A SANGRE» (Iago: «los botones de los portales…
+  la imagen de ChatGPT… no se adecúa exactamente al tipo de curvatura de esquinas de los botones… que las esquinas coincidan
+  exactamente con la forma»; «no poner la piel esa marrón, mantenemos la estética actual»). En index.html solo cambian las
+  imágenes de las medallas (las tres líneas de datos: window.__MED_IMG__, I.on/I.off.u2n e I.on.u3n); ni CSS, ni JS, ni la piel.
+  Cada imagen pierde el marco y las esquinas redondeadas que traía de ChatGPT y llega hasta el borde: la forma la pone solo el
+  botón (.med; con la piel, border-radius 12px), a cualquier tamaño. Las cerradas (off, que solo se ven sin la piel), con la
+  misma receta de antes (desenfoque + tinte). u3n (Atonalidad, cuenta Protester) sale directamente del icono limpio del 14-oct.
+  Llevan su marca C2PA (por eso el index.html crece unos 165 KB). Fuentes y guiones: APPs/LMATHOME GP (github lmpro)/MEDALLAS A
+  SANGRE (fuentes)/. Deshacer: volver a subir el index.html del commit cef3a6e (copia en APPs/_PARA BORRAR/15-oct-2026-portal-gp-
+  antes-de-medallas-a-sangre/). A «Fichas y rediseño» (EN CURSO 09:34): no toco la campana; tu parche entra encima sin choque.
 - 15-oct 09:34 · Fichas y rediseño · EN CURSO · CAMPANA DEL ALUMNO EN GE Y GP (index.html de lmpro y de LMEAVathome). Iago
   eligió armonizar todos los avisos con la «columna de botones»: cuadro con el icono del color del apartado · lo que pasa ·
   fecha y botones en una columna fija a la derecha. Toco solo el pintado de la campana (render() de AluCampana: tareas de la
