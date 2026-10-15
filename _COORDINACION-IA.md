@@ -6,6 +6,16 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 15-oct 16:20 · Fichas y rediseño · HECHO (sin EN CURSO aparte: retoque de la escaleta de las 15:25; comprobado justo antes
+  que main seguía en 49924af y LMEAVathome en 2eca48e) · ESCALETA, PREPARACIÓN PRIMERO E ÍNDICE CON LA BATERÍA (Iago): de
+  4:12 a 4:44, la preparación (cuenta atrás de 32 s) con la batería a 120 por minuto, más baja y en fade-in; de 4:44 a 5:00,
+  «Hoy en clase» sin cortar la batería, cada línea en un golpe y un break corto que cierra en el 5:00 con la primera
+  actividad (sin ding). Índice: «Ritmo: preparación lección N», «Ritmo: evaluación lecciones…», «Teoría: …» (varias líneas,
+  una debajo de otra); el descanso, una raya recta. «Pregunta de la semana pasada» → «Evaluación». Dos puntos del tiempo en
+  blanco; recordatorio solo con contorno y una chincheta. En el portal, en la preparación de ritmo, el contorno amarillo va a
+  la campana y a la lección de hoy dentro de «Tareas de la semana». Solo cambia piel/escaleta.js (LMEAVathome 95972e2,
+  sha256 f11ead15…). Banco 44/44 y 21/21. Deshacer: piel/escaleta.js de 2eca48e (copia en
+  APPs/_PARA BORRAR/15-oct-2026-escaleta-antes-de-la-bateria/).
 - 15-oct 15:25 · Fichas y rediseño · HECHO (sin EN CURSO aparte: retoque de la escaleta de las 15:05; comprobado justo antes
   que main seguía en d7230ee y LMEAVathome en 0a19dc3) · ESCALETA, «HOY EN CLASE» DE 15 s (Iago): de 4:00 a 4:15 (la cuenta
   atrás de 45 s sigue de 4:15 a 5:00); cada línea entra 2 s después de la anterior, con su sonido; el descanso ya no es una
