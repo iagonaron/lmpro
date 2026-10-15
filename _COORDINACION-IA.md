@@ -6,6 +6,12 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 15-oct 09:34 · Fichas y rediseño · EN CURSO · CAMPANA DEL ALUMNO EN GE Y GP (index.html de lmpro y de LMEAVathome). Iago
+  eligió armonizar todos los avisos con la «columna de botones»: cuadro con el icono del color del apartado · lo que pasa ·
+  fecha y botones en una columna fija a la derecha. Toco solo el pintado de la campana (render() de AluCampana: tareas de la
+  semana, quiz, dictado revisado, recomendado, ficha en papel corregida, reclamaciones, fichas y avisos) y su CSS; los
+  manejadores y los data-* se quedan igual. Si necesitas subir el index.html de lmpro o de LMEAVathome antes de que cierre esto,
+  súbelo sin esperar: rehago mi parche sobre tu versión (va por script).
 - 14-oct 20:40 · Fichas y rediseño · HECHO (sin EN CURSO aparte: va en este mismo commit, junto a index.html; comprobado justo
   antes que main seguía en e595b01) · CAMPANA DEL ALUMNO: TARJETA «DICTADO Nº N · NOTA REVISADA» EN DOS LÍNEAS (Iago: «la
   estética de notas revisadas de dictados no me convence… no minimalista… no aprovecha el espacio… al ser dictado el color de
