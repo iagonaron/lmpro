@@ -6,6 +6,13 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 15-oct 17:45 · Fichas y rediseño · HECHO (sin EN CURSO aparte: retoque de la escaleta de las 17:27, con prisa para la clase de
+  las 18:00; comprobado justo antes que main seguía en 50861db y LMEAVathome en 8b05d37) · ESCALETA v6 (Iago): al final de
+  la preparación, tensión (riser) y de golpe silencio; a los 1,5 s, el tecleo de datos mucho más bajo y sin más efectos;
+  las líneas del índice cada 1,5 s con el Button Press de su Splice; fuera «Cargando actividades» y la raya amarilla de
+  abajo (también en el cartel de cada actividad). Preparación 4:16–4:48 e índice 4:48–5:00. LMEAVathome d42c4e9
+  (escaleta.js 2973109f…, piel/escaleta-previa-v6.mp3 y escaleta-item-v6.mp3 nuevos). Banco 44/44, 21/21 y 6/6.
+  Deshacer: piel/escaleta.js de 8b05d37.
 - 15-oct 17:27 · Fichas y rediseño · HECHO (sin EN CURSO aparte: retoque de la escaleta de las 16:45; comprobado justo antes
   que main seguía en 9b50376 y LMEAVathome en a07465f) · ESCALETA, ÍNDICE DE 10 s QUE «CARGA» LAS ACTIVIDADES (Iago): la
   preparación pasa a 4:18–4:50 (32 s, la misma pista del alligator con sus complementos) y «Hoy en clase» a 4:50–5:00, ya
