@@ -6,6 +6,22 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 15-oct 21:26 · Fichas y rediseño · HECHO (sin EN CURSO aparte; comprobado justo antes que main seguía en df26330 y LMEAVathome
+  en 7d3e186) · PORTALES (Iago, noche): (1) BOTÓN DE REFRESCAR en la portada, GE y GP («muchas veces entro y quiero ver si
+  hay novedades y tengo que cerrar la ventana»): cuadrado 1×1 liso como la campana, a su derecha (antes de «Pantalla
+  completa»), visible con la sesión abierta; recarga el portal. piel/apps/portal.js (botonRefrescar) y portal.css (bloque
+  «REFRESCAR»), LMEAVathome 9508ff9. (2) TRABAJO POR LIBRE (avisos en la campana del Diario: quién, en qué subportal y
+  ejercicio, cuánto rato practicando de verdad —2 min o más— y a qué hora terminó; un aviso por rato): lm-piel.js carga el
+  nuevo piel/latido.js en todas sus apps (LMEAVathome 8ee75e1). En los portales deja la cuenta del alumno en una cookie de
+  .lmathome.es (lm_cta_ge / lm_cta_gp; nunca las de Tester/Protester ni en el Ojeador); en los subportales manda un latido
+  por minuto (suite_actividad_ping) solo con la pestaña delante y algo tocado en los últimos 2 min (o un vídeo sonando).
+  No cuentan: tareas (fichaId, quizCarta, introCarta…), lo abierto desde el Diario, ritmo, entonación, dictados ni el
+  Carrusel. Los temáticos lo cargan con una línea antes de </body>: fon-grafo 3623cef, cualidadesdelsonido a2ac6e9
+  (prueba.html) y atonalidad a50a34f (index y prueba). Faltan magnetofono, transporte, modulacion, blues y afrolatin.
+  Supabase (SQL pegado por Iago): columna suite_actividad_sesiones.detalle y suite_actividad_ping / _listar nuevos.
+  La tarjeta de la campana del Diario, pendiente (Netlify da 500 al subir). Deshacer: lm-piel.js de 9508ff9 (sin él,
+  latido.js no se carga); portal.js y portal.css de 7d3e186; en los temáticos, borrar su línea (copias de todo en
+  APPs/_PARA BORRAR/15-oct-2026-portal-antes-del-refrescar/, -piel-antes-del-latido/ y -tematicos-antes-del-latido/).
 - 15-oct 20:23 · Fichas y rediseño · HECHO (sin EN CURSO aparte: retoques de la escaleta de las 18:58, publicados pasadas las 20:00;
   comprobado justo antes que main seguía en 47036eb y LMEAVathome en b1367e7) · ESCALETA v7b y MOROSOS (Iago, en clase):
   (1) «lo de los morosos, que no desaparezca si pulso el play de 30 temas… solo que se vaya al empezar la cuenta atrás»:
