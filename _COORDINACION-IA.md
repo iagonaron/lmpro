@@ -6,6 +6,16 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 15-oct 20:23 · Fichas y rediseño · HECHO (sin EN CURSO aparte: retoques de la escaleta de las 18:58, publicados pasadas las 20:00;
+  comprobado justo antes que main seguía en 47036eb y LMEAVathome en b1367e7) · ESCALETA v7b y MOROSOS (Iago, en clase):
+  (1) «lo de los morosos, que no desaparezca si pulso el play de 30 temas… solo que se vaya al empezar la cuenta atrás»:
+  piel/apps/portal.js (e311c0a8…) no cierra la lista con clics fuera mientras la escaleta está en la entrada (se sigue
+  cerrando con su icono y con Esc) y escaleta.js la cierra al empezar la cuenta atrás; (2) «en la preparación quita la barra
+  amarilla de abajo»: fuera; (3) el menú del botón de libros (y los demás de arriba) ya no queda detrás de la tarjeta de la
+  escaleta: mientras está abierto, la tarjeta se aparta; (4) la lección de ritmo de hoy, con su contorno amarillo aunque la
+  tarea esté hecha (la tarjeta gris recupera su color mientras toca). LMEAVathome 3feddd2 (escaleta.js e62714e5…) y 7d3e186
+  (portal.js). Banco 44/44, 21/21, 6/6, 4/4 (morosos), 4/4 (libro y gris), 2/2 (abrir a medias). Deshacer: piel/escaleta.js
+  y piel/apps/portal.js de b1367e7 (copias en APPs/_PARA BORRAR/15-oct-2026-escaleta-antes-de-v7b/).
 - 15-oct 18:59 · Fichas y rediseño · HECHO (sin EN CURSO aparte; Iago vio las capturas y dijo «sí, publica todo»; comprobado justo antes
   que main seguía en 18da699) · GP · TEMAZO COMPACTO (Iago): al completar las tareas, el temazo ya no es la franja azul grande
   encima de los portales, sino una barrita en la fila de arriba a la derecha, a la izquierda de Mis resultados y la campana,
