@@ -6,6 +6,13 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 15-oct 14:08 · Fichas y rediseño · HECHO (sin EN CURSO aparte: retoque de la v4 de las 13:58; comprobado justo antes que
+  main seguía en 275387f y LMEAVathome en 2c2c10d) · CAMPANA v5 (Iago eligió: «Lecciones y tareas»): en «Tareas de la semana»,
+  «Lecciones de ritmo» y las tareas sueltas se marcan con la ✓ verde en la esquina de su fila, como las tarjetas (globo
+  «Marcar como estudiadas» / «Marcar como hecho»); hechas, la fila en gris, sin «Marcar estudiadas», «Hecho» ni la pastilla
+  «✓ Hecho». Quiz, fichas y papel, igual. Mismos manejadores (ts-marcar / ts-lec-todas): mientras guarda o si falla, el
+  cuadrado conserva su ✓. Banco 141/141. LMEAVathome de34bca (index.html 45dae31b…), lmpro este commit (index.html
+  13b6e092…). Deshacer: los index.html de 275387f (lmpro) y 2c2c10d (LMEAVathome).
 - 15-oct 13:58 · Fichas y rediseño · HECHO (sin EN CURSO aparte: retoque de la campana v3 de las 13:15, en los dos portales;
   comprobado justo antes que main seguía en 42cb316 y LMEAVathome en e5cd89a) · CAMPANA v4 (Iago, tarde): la FECHA, debajo del
   icono (las «Tareas de la semana» la siguen llevando en su franja, a la derecha) y arriba a la derecha solo los botones
