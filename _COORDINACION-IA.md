@@ -6,6 +6,14 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 15-oct 22:12 · Fichas y rediseño · HECHO (sin EN CURSO aparte; Netlify vuelve a dejar subir ficheros) · LOS DOS DESPLIEGUES DE
+  NETLIFY que se habían quedado a medias por el error 500 de esta tarde: (1) DIARIO (diariodeiagocmus, deploy 6ad13260 encima de
+  6ad0e9f6): suite-campana.js 89ce4458… (antes 16a93aa2…): en el móvil, tarjetas compactas e iguales (nota pequeña, sin la fecha
+  del medio en la línea gris) y la tarjeta nueva «Por libre» en «Actividad de los alumnos», que lee suite_actividad_listar como
+  mucho cada 10 min (para no gastar Supabase). Quien despliegue el Diario, que parta de 6ad13260. (2) CORRECCIÓN DE DICTADOS GE
+  (dictadoselemental, deploy 6ad132e5 encima de 6ad0a528): en la cabecera de la rúbrica, los nombres largos se abrevian lo justo
+  en vez de cortarse con «…» (nombres-cortos-15oct.js nuevo y una línea en index.html, b2eaaf48…). Comprobado en vivo por huella.
+  Deshacer: volver a publicar 6ad0e9f6 / 6ad0a528 desde Netlify (copias de antes en el Dropbox, cada una con su LEEME).
 - 15-oct 21:49 · Fichas y rediseño · HECHO (sin EN CURSO aparte) · FUERA EL BOTÓN DE REFRESCAR (Iago: «si hay alguna notificación sin
   yo darle a refrescar no sería necesario el botón»; eligió quitarlo y que se recargue solo): al VOLVER al portal tras 1 min o
   más fuera, si ha cambiado lo publicado (página o piel, por su tamaño) se recarga solo en ese momento; nunca con la escaleta
