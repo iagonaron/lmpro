@@ -6,6 +6,16 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 16-oct 14:08 · Fichas y rediseño · HECHO (sin EN CURSO aparte; comprobado justo antes que lmpro seguía en d02a0a5,
+  index.html de bf11662) · (1) PORTAL GP · TARJETAS DE LOS PORTALES en la campana (lmpro 8d75873 + dfec80b): carpeta nueva
+  hitos/ (texturas de Acústica Día 1 y Día 2 hechas con ChatGPT a partir de las imágenes de cada día, con sus credenciales
+  C2PA, y las letras Jost y Mano) e index.html con HITO_TEMAS (un registro por portal: tema, medalla, nombre, parte, títulos
+  y texturas; Atonalidad y Fonógrafo, preparados pero sin texturas en hitos/ ni avisos). Se llama «Acústica · Día N» (no «La
+  cabaña»), «Ya disponible» discreto, arriba «Marcar como hecho» del mismo largo que «Ir a ver» (solo ese botón la marca
+  leída; «Ir a ver» y tocar la tarjeta ya no) y los días de un mismo portal van juntos y en orden, en el sitio del más
+  reciente. Deshacer: index.html de bf11662 (copia en _PARA BORRAR/16-oct-2026-antes-de-corchetes-y-portales/lmpro-3/).
+  (2) DIARIO 6ad20152 (antes 6ad1e543): en el móvil, «Ver su portal» en la ficha del alumno (iphone-app.js e iphone.html,
+  s32). Deshacer: publicar 6ad1e543.
 - 16-oct 12:32 · Fichas y rediseño · HECHO (sin EN CURSO aparte; comprobado justo antes que lmpro seguía en b65e3af,
   LMEAVathome en 5078acd y cualidadesdelsonido en a2ac6e9) · (1) ESCALETA DEL AULA (piel/escaleta.js + lm-piel.js, solo
   Tester/Protester): ▶ del vídeo del bloque de teoría (didáctico encima, con la escaleta arriba; temático a pantalla
