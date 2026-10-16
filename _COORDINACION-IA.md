@@ -24,6 +24,24 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   CabHitos o AtonHitos), sus tarjetas (HITO_TEMAS + hitos/) y sus títulos en diario-video-teoria.js del Diario.
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 16-oct 18:15 · Fichas y rediseño · HECHO (sin EN CURSO aparte; cada repo comprobado justo antes) · LO QUE PIDIÓ IAGO DESDE
+  CLASE ESTA TARDE, todo publicado y comprobado en vivo: (1) ESCALETA (LMEAVathome piel/escaleta.js + lm-piel.js): 37b8a9d
+  aviso del cambio a un 30 % (unos −10 dB) · d333971 «Poner faltas» pequeño abajo a la izquierda en «Fin de la clase» (las
+  tareas, lo grande) y la línea de la pizarra en negro · 6e44f22 en el PORTAL la tarjeta SIEMPRE arriba en el centro y la
+  fila de botones de la derecha (⚠ morosos, pizarra, libros…, campana) se aparta con un transform en .topbar-right (la
+  píldora #lm-fmt-centro, oculta mientras está la tarjeta) · 442832a el cartel del cambio y «Fin de la clase» en TODAS partes
+  (libros, pizarra, dictado animado, carruseles, vídeos; con algo a pantalla completa se meten dentro, y un vídeo a pantalla
+  completa se sale de ella) salvo en los portales interactivos de GP (*.gp.lmathome.es salvo teoria.gp y carruseles);
+  .lme-full con z-index 2147483647. Ahora: escaleta.js d3ab538b, lm-piel.js 14289d70 (?v=2026-10-16k). OJO quien toque la
+  piel: que parta de 442832a. (2) DIARIO (Netlify diariodeiagocmus 6ad2428d encima de 6ad2325a): la imagen de la solución
+  del dictado (la que enseña el iPad en la corrección) con barra final (en GP, de pentagrama a pentagrama); las imágenes ya
+  hechas con la ruta «curso-año-semana.png» se rehacen UNA vez en «…-fin.png» al abrir esa semana en el Diario;
+  diario-dictado-clase.js ?v=r20. OJO quien toque el Diario: que parta de 6ad2428d. (3) QUIZ DE RITMO (ritmoathome c3fe408):
+  el fondo de colores (manchas bajo blur 40 px) quieto en pantallas táctiles (fases 1, 2 y 4) y, en la fase 4, mientras se
+  juega (body.jugando); banco con CPU ×6: de ~11 a ~59 fps. OJO: que parta de c3fe408. Nota: en 4.º GE, semana 42, el Diario
+  tiene «sin tareas»; por eso el fin de la C2 de hoy no enseñó tareas. Deshacer: APPs/_PARA BORRAR/16-oct-2026-antes-del-aviso-
+  mas-bajo, …-antes-de-faltas-pequeno-y-linea-negra, …-antes-de-la-escaleta-centrada-en-el-portal, …-antes-del-cartel-en-todas-
+  partes y …-antes-de-la-fluidez-del-quiz; el Diario, Netlify 6ad2325a.
 - 16-oct 16:43 · Fichas y rediseño · HECHO (en este mismo commit, con index.html) · PIZARRA «Pentagrama» Y ESCALETA (Iago: «cuando
   estamos con la pizarra… que no ocupe, no me invada ni tape botones… en el medio, solo con una línea… a la izquierda los
   colores, en el centro la escaleta y a la derecha los grosores»). index.html de lmpro (este commit) y de LMEAVathome: la
