@@ -10,12 +10,24 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   Fonógrafo y los que vengan) tiene que llevar sus tarjetas para la campana, con texturas HECHAS CON CHATGPT: una por día o
   capítulo, que sea el resumen de lo que se vive dentro (Acústica Día 1, fuera y de día con el árbol caído; los demás,
   interiores con su protagonista). Mismo alto y ancho que las demás tarjetas y los botones siempre en el mismo sitio; la
-  letra, el contorno, los colores y la personalidad, los de su portal (Acústica en blanco; el dorado, solo si le va, como al
-  Fonógrafo). Se registran en HITO_TEMAS (index.html, junto a hitoCSS) y las texturas van en hitos/<portal>-<n>.webp. Cómo
+  letra, el contorno, los colores y la personalidad, los de su portal (Acústica: blanco por fuera, contorno y botones, y
+  dentro los colores de la cabaña y de cada día; el dorado, solo si le va, como al Fonógrafo). Se registran en HITO_TEMAS
+  (index.html, junto a hitoCSS) y las texturas van en hitos/<portal>-<n>.webp. Cómo
   se hacen y qué falta subir: Dropbox APPs/LMATHOME GP (github lmpro)/LEEME-16-oct-2026-tarjetas-de-los-portales.txt y la
   carpeta «TARJETAS DE LOS PORTALES (sin subir)».
+- (16-oct-2026) REVELADO DE UN PORTAL EN EL MEDALLERO: sin cartel ni nada que cerrar; solo la animación del icono (foco,
+  niebla fuera, respingo y sonido), que se apaga sola. Lo que trae el portal ya lo cuentan sus tarjetas en la campana.
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 16-oct 15:22 · Fichas y rediseño · HECHO (en este mismo commit, con index.html) · PORTAL GP, dos ajustes que pidió
+  Iago. (1) Tarjetas de Acústica «demasiado blancas»: blanco solo el contorno y los botones; «Día N» en el ámbar de la
+  cabaña, y la letra de mano y la aguja de la radio con el tono de la habitación de cada día (1 bruma azul, 2 verde del
+  osciloscopio, 3 coral de los cables): solo cambia HITO_CSS. (2) Medallero: el revelado de un portal nuevo ya NO saca
+  cartel ni capa que bloquee: foco, niebla fuera con respingo y sonido, y se apaga solo (~2,8 s); espera a que el
+  medallero se vea (en el móvil, tras «Continuar de todas formas») y se da por visto al empezar. Tocado: colocar,
+  siguiente, cerrar y ceremonia (+ aLaVista y empezar), una guarda al principio de arrancar() y el fundido de
+  .medrev-veo. Deshacer: volver a subir el index.html de c203c9a0 (copia en Dropbox, APPs/_PARA BORRAR/
+  16-oct-2026-antes-de-corchetes-y-portales/lmpro-4-c203c9a0/).
 - 16-oct 14:55 · Fichas y rediseño · HECHO (sin EN CURSO aparte; lmpro seguía en mis commits) · TARJETAS DE LOS PORTALES,
   ajustes pedidos por Iago: c30d5c6 textura del Día 3 de Acústica (hitos/cabana-3.webp, se abre el jueves); 1714fe0 «Ir a
   ver» abre el día Y lo da por hecho (además de «Marcar como hecho», para quien ya lo vio en clase), ya en gris «Ir a ver»
