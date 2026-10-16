@@ -6,6 +6,22 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 16-oct 12:32 · Fichas y rediseño · HECHO (sin EN CURSO aparte; comprobado justo antes que lmpro seguía en b65e3af,
+  LMEAVathome en 5078acd y cualidadesdelsonido en a2ac6e9) · (1) ESCALETA DEL AULA (piel/escaleta.js + lm-piel.js, solo
+  Tester/Protester): ▶ del vídeo del bloque de teoría (didáctico encima, con la escaleta arriba; temático a pantalla
+  completa), el cartel de cada actividad con «Abrir ›» y velado, y «Poner faltas» en «Fin de la clase» (C1 y C2: hay que
+  marcarlo para cerrarla). LMEAVathome 5c443ce → 19d16b1 → 5078acd → 6157691. Deshacer: la piel de 4d4d466. (2) QUIZ,
+  fase 4: ataque de la base de 50 a 10 ms (sonaba detrás del metrónomo). ritmoathome 4de62ad. Deshacer: 1b8b99d.
+  (3) DIARIO: «Vídeo» en el bloque de teoría de Preparación de clases (diario-video-teoria.js, nuevo: GE didácticos; GP
+  temáticos + didácticos) y la vista iPad lo publica en la escaleta. Netlify diariodeiagocmus 6ad1e543 encima de
+  6ad13c27. (4) PREDICT CARRUSEL en la pantalla: el del iPad solo si es de hace 30 min o menos; si no, uno nuevo
+  («Generando un carrusel nuevo…»). PredictCarrusel a9467a3. (5) HITOS DE LOS PORTALES (GP): Supabase (lo ejecutó Iago):
+  _suite_hito_de_texto, _suite_hito_meta, _suite_hitos_gp, suite_hitos_de y suite_hitos_barrer (avisos tipo «aviso» con
+  ref_tabla «portal_hito» y payload_json.portal_hito; solo La cabaña encendida); lmpro bf11662 (campana: tarjeta «La
+  cabaña · Día N» con «Ir a ver»; la medalla u2 la abren los hitos); cualidadesdelsonido 54ad90c (la cabaña: candado en
+  los días no vistos, window.CabHitos, «#cu=…&dias=…&dia=N»). Deshacer: SQL-BD/2026-10-16-hitos-portales-DESHACER.sql,
+  lmpro b65e3af, cualidadesdelsonido a2ac6e9. OJO: quien toque index.html de lmpro, que parta de bf11662; la piel de
+  LMEAVathome, de 6157691; la cabaña, de 54ad90c; el Diario, de 6ad1e543.
 - 16-oct 10:30 · Fichas y rediseño · HECHO (sin EN CURSO aparte; comprobado justo antes que ritmoathome seguía en ceec5cc,
   LMEAVathome en 9bdfa93 y lmpro en 432cddd) · (1) QUIZ DE RITMO, las 4 fases (Iago: «el corchete pase por encima del
   silencio cuando hay semicorcheas del mismo pulso antes y después»; fase 4: «silencio de semicorchea, no ese símbolo raro»
