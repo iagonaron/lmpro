@@ -25,9 +25,23 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
 - (16-oct-2026) PANTALLA DEL AULA: va con pocos fotogramas. Nada de movimientos «fluidos» en lo que se ve en clase (encoger,
   deslizar, recolocar animando): los cambios de tamaño o de sitio, DE GOLPE. La tarjeta de la escaleta mide siempre lo
   mismo (300 px) y lleva un + amarillo en su esquina que abre la escaleta entera (el − la cierra).
+- (16-oct-2026) ACORDES EN TEORÍA (GE y GP, ejercicios y fichas): al CONSTRUIR vale el bajo pedido y las demás notas por su
+  nombre en cualquier octava y orden, por encima del bajo; al IDENTIFICAR se pide también la fundamental (rueda de notas con
+  ♭/♯) y se corrige. Todo pasa por LM_ACO (arriba/bajo/raizRueda) en index.html.
 
 ## Registro (lo más reciente arriba · hora de Galicia)
-- 16-oct 19:30 · Fichas y rediseño · HECHO · «FIN DE LA CLASE» (LMEAVathome 1ee4450, piel/escaleta.js + lm-piel.js,
+- 16-oct 19:30 · Fichas y rediseño · HECHO · ACORDES EN TEORÍA GE Y GP (lo que pidió Iago), publicado y comprobado en vivo:
+  teoriaathome 10b9385 (index.html b55c9b28) y teoriapro 4fd4aa8 (index.html 70cd5b10). (1) CONSTRUIR (Inversión de acordes
+  «B · Construye», «Acordes» GE y sus fichas, «Construye» del avanzado GP y fichas GP): vale el bajo pedido (o la fundamental)
+  en su sitio y las demás notas por su NOMBRE, en cualquier octava y orden, siempre por encima del bajo (antes: la posición
+  exacta); una nota por debajo del bajo o escrita con otro nombre (Mi♯ por Fa) sigue mal. (2) IDENTIFICAR («A · Identifica»,
+  «Identifica» del avanzado GP, fichas GP de acordes y de inversión): rueda de la FUNDAMENTAL con ♭/♯, corregida (verde, o
+  roja con la buena debajo); en A · Identifica cuenta 1/3 (fundamental, tipo, inversión); en GP, 1/2 (fundamental, tipo).
+  Todo sale de LM_ACO (script justo después de <body> en los dos index.html: arriba(), bajo(), raizRueda()); en GP, además,
+  el override de ACORDES_MOTOR («grupo de 4 compases»). Lo nuevo lleva _v:2; las fichas ya repartidas (sin _v) corrigen
+  como antes. Copia de antes: Dropbox _PARA BORRAR/16-oct-2026-antes-de-los-acordes. OJO quien toque teoría: que parta de
+  10b9385 (GE) / 4fd4aa8 (GP).
+- 16-oct 19:05 · Fichas y rediseño · HECHO · «FIN DE LA CLASE» (LMEAVathome 1ee4450, piel/escaleta.js + lm-piel.js,
   escaleta.js?v=2026-10-16m): «Poner faltas» abajo en el centro y más grande y, a su lado, «No vinieron: …» (lo marcado
   como «No vino» durante la clase en dictado GE, ritmo GE, entonación GE y ritmo entonado GP; en GP, quien ni envió el
   dictado por el QR ni está corregido a mano). Lo da una función nueva, escaleta_ausentes (solo lectura; SQL dado a Iago
