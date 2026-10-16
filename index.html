@@ -10053,6 +10053,8 @@ body.tester-sin-by .topbar-right #rs-mini{order:2}
       +'#pz-borrar.pz-armado{width:auto;padding:0 12px;background:#dc2626;border-color:#dc2626;color:#fff}'
       +'#pz-borrar.pz-armado .pz-conf{display:inline}'
       +'.pz-hueco{flex:1 1 auto}'
+      /* (16-oct-2026, tarde, Iago) en el centro de la barra, el hueco de la escaleta del aula (una línea: lo que toca y cuánto queda) */
+      +'.pz-esc{flex:0 1 auto;min-width:0;display:flex;align-items:center;justify-content:center}.pz-esc:empty{display:none}'
       +'#pz-zona{position:relative;flex:1 1 auto;min-height:0;overflow:hidden;background:#fff;touch-action:none}'
       +'#pz-zona canvas{position:absolute;left:0;top:0;display:block;touch-action:none}'
       /* (29-sep-2026, Iago) selección: el brillo que tintinea, lo seleccionado encima, y el lazo, el marco y las asas */
@@ -10086,7 +10088,9 @@ body.tester-sin-by .topbar-right #rs-mini{order:2}
       +'</div>'
       +'<div class="pz-g pz-cols" role="group" aria-label="Color">';
     COLORES.forEach(function(c,i){ h+='<button type="button" class="pz-col" data-color="'+i+'" style="--c:'+c[0]+'" title="'+c[1]+'" aria-label="'+c[1]+'"></button>'; });
-    h+='</div><div class="pz-g" role="group" aria-label="Grosor">';
+    /* (16-oct-2026, tarde, Iago) «a la izquierda los colores, en el centro la escaleta y a la derecha los grosores» (y la goma,
+       la selección, deshacer y borrar; la ✕, al final) */
+    h+='</div><span class="pz-hueco"></span><div id="pz-esc" class="pz-esc"></div><span class="pz-hueco"></span><div class="pz-g" role="group" aria-label="Grosor">';
     GROSOR.forEach(function(g,i){ h+='<button type="button" class="pz-b pz-q" data-grosor="'+i+'" title="'+NOMBRE_GROSOR[i]+'" aria-label="'+NOMBRE_GROSOR[i]+'"><span class="pz-lin" style="height:'+[2,4,8][i]+'px"></span></button>'; });
     h+='<button type="button" class="pz-b pz-q" id="pz-goma" title="Goma" aria-label="Goma">'+ICO.goma+'</button></div>'
       /* (29-sep-2026, Iago) selección libre y cursor */
@@ -10097,7 +10101,7 @@ body.tester-sin-by .topbar-right #rs-mini{order:2}
       +'<div class="pz-g">'
       +'<button type="button" class="pz-b pz-q" id="pz-deshacer" title="Deshacer (Ctrl+Z)" aria-label="Deshacer">'+ICO.deshacer+'</button>'
       +'<button type="button" class="pz-b pz-q" id="pz-borrar" title="Borrar todo" aria-label="Borrar todo">'+ICO.borrar+'<span class="pz-conf">¿Borrar todo?</span></button>'
-      +'</div><span class="pz-hueco"></span>'
+      +'</div>'
       +'<button type="button" class="pz-b pz-q" id="pz-x" title="Cerrar (Esc)" aria-label="Cerrar">'+ICO.cerrar+'</button>'
       +'</div><div id="pz-zona" aria-label="Pizarra: escribe con el ratón, el lápiz o el dedo"><canvas id="pz-fondo"></canvas><canvas id="pz-tinta"></canvas>'
       +'<canvas id="pz-brillo"></canvas><canvas id="pz-flota"></canvas>'

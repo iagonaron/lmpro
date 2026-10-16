@@ -24,6 +24,13 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   CabHitos o AtonHitos), sus tarjetas (HITO_TEMAS + hitos/) y sus títulos en diario-video-teoria.js del Diario.
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 16-oct 16:43 · Fichas y rediseño · HECHO (en este mismo commit, con index.html) · PIZARRA «Pentagrama» Y ESCALETA (Iago: «cuando
+  estamos con la pizarra… que no ocupe, no me invada ni tape botones… en el medio, solo con una línea… a la izquierda los
+  colores, en el centro la escaleta y a la derecha los grosores»). index.html de lmpro (este commit) y de LMEAVathome: la
+  barra de la pizarra en tres partes (claves, compases y colores · hueco #pz-esc · grosores, goma, selección, deshacer y
+  borrar; la ✕ al final). LMEAVathome piel/escaleta.js + lm-piel.js (?v=2026-10-16g): con la pizarra abierta, la escaleta en
+  una línea dentro de #pz-esc (lo que toca y cuánto queda) y la tarjeta y el ▶ de fuera, ocultos. Deshacer: los commits
+  anteriores a estos en cada repo.
 - 16-oct 16:31 · Fichas y rediseño · HECHO · ESCALETA DEL AULA, dos retoques que pidió Iago (LMEAVathome bc2e736, piel/escaleta.js +
   lm-piel.js ?v=2026-10-16f): «durante la reproducción de un vídeo didáctico quiero que la escaleta no se vea… molesta» → con el
   vídeo abierto desde la tarjeta (didáctico o temático), la tarjeta no se ve (inmersivo() = «pantalla»); y «en FaActos e
