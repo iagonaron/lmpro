@@ -5,7 +5,23 @@ encuentro (empieza por «_» para que la web no lo publique). Antes de subir nad
 esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un commit solo con este fichero), edita
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
+## Normas fijas de Iago para los portales
+- (16-oct-2026) TARJETAS DE AVISO DE LOS PORTALES TEMÁTICOS: cada portal interactivo del medallero GP (Acústica, Atonalidad,
+  Fonógrafo y los que vengan) tiene que llevar sus tarjetas para la campana, con texturas HECHAS CON CHATGPT: una por día o
+  capítulo, que sea el resumen de lo que se vive dentro (Acústica Día 1, fuera y de día con el árbol caído; los demás,
+  interiores con su protagonista). Mismo alto y ancho que las demás tarjetas y los botones siempre en el mismo sitio; la
+  letra, el contorno, los colores y la personalidad, los de su portal (Acústica en blanco; el dorado, solo si le va, como al
+  Fonógrafo). Se registran en HITO_TEMAS (index.html, junto a hitoCSS) y las texturas van en hitos/<portal>-<n>.webp. Cómo
+  se hacen y qué falta subir: Dropbox APPs/LMATHOME GP (github lmpro)/LEEME-16-oct-2026-tarjetas-de-los-portales.txt y la
+  carpeta «TARJETAS DE LOS PORTALES (sin subir)».
+
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 16-oct 14:55 · Fichas y rediseño · HECHO (sin EN CURSO aparte; lmpro seguía en mis commits) · TARJETAS DE LOS PORTALES,
+  ajustes pedidos por Iago: c30d5c6 textura del Día 3 de Acústica (hitos/cabana-3.webp, se abre el jueves); 1714fe0 «Ir a
+  ver» abre el día Y lo da por hecho (además de «Marcar como hecho», para quien ya lo vio en clase), ya en gris «Ir a ver»
+  sigue funcionando, y los días de un portal juntos con el más reciente arriba (Día 2 y justo debajo Día 1); y ahora
+  Acústica en BLANCO (contorno, botones, radio), sin «Leer mensaje completo» en estas tarjetas y el título nunca se recorta
+  (index.html 558a928a → 2a9f419e → c203c9a0). Deshacer: index.html de dfec80b (o de bf11662 para quitar las tarjetas).
 - 16-oct 14:08 · Fichas y rediseño · HECHO (sin EN CURSO aparte; comprobado justo antes que lmpro seguía en d02a0a5,
   index.html de bf11662) · (1) PORTAL GP · TARJETAS DE LOS PORTALES en la campana (lmpro 8d75873 + dfec80b): carpeta nueva
   hitos/ (texturas de Acústica Día 1 y Día 2 hechas con ChatGPT a partir de las imágenes de cada día, con sus credenciales
