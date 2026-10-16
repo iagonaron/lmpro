@@ -27,6 +27,12 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   mismo (300 px) y lleva un + amarillo en su esquina que abre la escaleta entera (el − la cierra).
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 16-oct 19:30 · Fichas y rediseño · HECHO · «FIN DE LA CLASE» (LMEAVathome 1ee4450, piel/escaleta.js + lm-piel.js,
+  escaleta.js?v=2026-10-16m): «Poner faltas» abajo en el centro y más grande y, a su lado, «No vinieron: …» (lo marcado
+  como «No vino» durante la clase en dictado GE, ritmo GE, entonación GE y ritmo entonado GP; en GP, quien ni envió el
+  dictado por el QR ni está corregido a mano). Lo da una función nueva, escaleta_ausentes (solo lectura; SQL dado a Iago
+  con enlace, PENDIENTE de que lo pegue; sin ella no sale la línea). Las apps de corrección guardan «No vino» así:
+  corr_notas.no_vino; rit_notas / ent_notas / rep_notas .sin_evaluar.
 - 16-oct 18:50 · Fichas y rediseño · HECHO · ESCALETA Y PORTAL, lo que pidió Iago desde clase, publicado y comprobado en
   vivo: LMEAVathome 64aa7ed (piel/escaleta.js + piel/lm-piel.js, escaleta.js?v=2026-10-16l): tarjeta SIEMPRE de 300 px y
   sin animación (en el portal la fila de botones se aparta de golpe; antes se medía a medio deslizar y no paraba de
