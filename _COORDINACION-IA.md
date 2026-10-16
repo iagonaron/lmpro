@@ -22,8 +22,22 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   («#cu=<cuenta>&dias=1.2», «&dia=N» desde el aviso) y lo demás, con candado; el profe (#c=) lo ve todo. Un portal nuevo:
   _suite_hito_meta (SQL que ejecuta Iago con enlace), HITO_WEB y su medalla en index.html, el guardián en su página (como
   CabHitos o AtonHitos), sus tarjetas (HITO_TEMAS + hitos/) y sus títulos en diario-video-teoria.js del Diario.
+- (16-oct-2026) PANTALLA DEL AULA: va con pocos fotogramas. Nada de movimientos «fluidos» en lo que se ve en clase (encoger,
+  deslizar, recolocar animando): los cambios de tamaño o de sitio, DE GOLPE. La tarjeta de la escaleta mide siempre lo
+  mismo (300 px) y lleva un + amarillo en su esquina que abre la escaleta entera (el − la cierra).
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 16-oct 18:50 · Fichas y rediseño · HECHO · ESCALETA Y PORTAL, lo que pidió Iago desde clase, publicado y comprobado en
+  vivo: LMEAVathome 64aa7ed (piel/escaleta.js + piel/lm-piel.js, escaleta.js?v=2026-10-16l): tarjeta SIEMPRE de 300 px y
+  sin animación (en el portal la fila de botones se aparta de golpe; antes se medía a medio deslizar y no paraba de
+  moverse); + amarillo en la esquina de la tarjeta y de la línea (libros, pizarra, dictado) → ventana grande en el centro
+  con la escaleta entera (lo hecho tachado, lo de ahora destacado, lo que falta; − para volver); en el DICTADO ANIMADO la
+  escaleta en una línea dentro de su barra (.dc-top, antes de .dc-top-derecha); el DESCANSO a pantalla completa todo el
+  rato con cuenta atrás y «Después: …» (en la C1, la entonación sin número; tocar o Esc lo quitan). 96f525a
+  (piel/apps/portal.js, sección 20): fuera el aro rojo «La pantalla nota algo apoyado aquí» (TQ_ARO = false; lo demás
+  igual). Quien toque escaleta.js: subir su ?v= en lm-piel.js. Copia de antes: Dropbox _PARA BORRAR/16-oct-2026-antes-del-
+  mas-y-el-descanso. Sigue: los «no vino» de las apps de corrección en «Fin de la clase» (con un SQL que pega Iago) y los
+  acordes de teoría GE/GP.
 - 16-oct 18:15 · Fichas y rediseño · HECHO (sin EN CURSO aparte; cada repo comprobado justo antes) · LO QUE PIDIÓ IAGO DESDE
   CLASE ESTA TARDE, todo publicado y comprobado en vivo: (1) ESCALETA (LMEAVathome piel/escaleta.js + lm-piel.js): 37b8a9d
   aviso del cambio a un 30 % (unos −10 dB) · d333971 «Poner faltas» pequeño abajo a la izquierda en «Fin de la clase» (las
