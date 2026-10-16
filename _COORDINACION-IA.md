@@ -17,8 +17,29 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   carpeta «TARJETAS DE LOS PORTALES (sin subir)».
 - (16-oct-2026) REVELADO DE UN PORTAL EN EL MEDALLERO: sin cartel ni nada que cerrar; solo la animación del icono (foco,
   niebla fuera, respingo y sonido), que se apaga sola. Lo que trae el portal ya lo cuentan sus tarjetas en la campana.
+- (16-oct-2026) PORTALES POR HITOS: cada portal temático del medallero se abre por días o capítulos al acabar la clase en
+  que Iago lo marca en el Diario (desplegable «Vídeo» del bloque de teoría); el portal solo deja entrar en lo ya visto
+  («#cu=<cuenta>&dias=1.2», «&dia=N» desde el aviso) y lo demás, con candado; el profe (#c=) lo ve todo. Un portal nuevo:
+  _suite_hito_meta (SQL que ejecuta Iago con enlace), HITO_WEB y su medalla en index.html, el guardián en su página (como
+  CabHitos o AtonHitos), sus tarjetas (HITO_TEMAS + hitos/) y sus títulos en diario-video-teoria.js del Diario.
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 16-oct 16:20 · Fichas y rediseño · HECHO (en este mismo commit, con index.html) · ATONALIDAD POR CAPÍTULOS (Iago: «bloquear
+  cada capítulo hasta verlo en clase»), como los días de Acústica. atonalidad be96f7b: prueba.html con window.AtonHitos
+  («#cu=…&dias=…», «&dia=N»): portada con candado en el capítulo aún no visto, «Fin del capítulo N» sin pasar al siguiente si
+  está cerrado, «Seguir donde lo dejaste» y, al alumno, sin el panel «Prueba:» ni el «Página de prueba» (el profe con #c= y
+  quien llega sin nada, todo abierto). lmpro f538fa4: hitos/ con las texturas y letras de Atonalidad. lmpro (este commit):
+  index.html, la medalla u3 = el museo (atonalidad.gp.lmathome.es/prueba.html), abierta por hitos como u2 (HITO_WEB en
+  conHitos), y Escape acaba el revelado entero. Supabase (lo ejecutó Iago): _suite_hito_meta con Atonalidad encendida y sus
+  títulos, la cabaña ya «Acústica» y un emoji por portal en suite_hitos_barrer (DIARIO PROFESOR/SQL-BD/
+  2026-10-16-hitos-atonalidad*.sql). Diario (Netlify diariodeiagocmus 6ad2325a encima de 6ad20152): diario-video-teoria.js
+  con los títulos de los capítulos y «Acústica»; index.html con su ?v=v2. Y la ESCALETA DEL AULA (LMEAVathome, piel/escaleta.js
+  + lm-piel.js): eeb3b94, detrás de la campana (y de Mis resultados) mientras está abierta (z-index 80 con :has); fef9561
+  (?v=2026-10-16e), con un libro del aula abierto (FaActos, Intervalia…) va DENTRO del libro en una línea (#lme-mini: qué toca,
+  «quedan N min», qué viene), en su barra entre el título y el cambio de página o, con «Ampliar», flotando arriba en el
+  centro; la tarjeta y el ▶ de fuera se apartan mientras. Deshacer: copias en Dropbox _PARA BORRAR/
+  16-oct-2026-antes-de-atonalidad-por-capitulos/ (lo de esta tarde; la escaleta, también el commit anterior a cada uno); del
+  Diario, _SUBIDA-16-OCT-tarde-titulos-de-atonalidad (deploy 6ad2325a)/antes; el SQL, con su -DESHACER.
 - 16-oct 15:22 · Fichas y rediseño · HECHO (en este mismo commit, con index.html) · PORTAL GP, dos ajustes que pidió
   Iago. (1) Tarjetas de Acústica «demasiado blancas»: blanco solo el contorno y los botones; «Día N» en el ámbar de la
   cabaña, y la letra de mano y la aguja de la radio con el tono de la habitación de cada día (1 bruma azul, 2 verde del

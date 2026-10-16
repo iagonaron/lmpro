@@ -7187,7 +7187,10 @@ window.DictadoClase = (function(){
     /* (8-oct-2026) Acústica = «La cabaña», OFICIAL. Antes: 'Cualidades del sonido' · 'Laboratorio de acústica' ·
        https://iagonaron.github.io/cualidadesdelsonido/ (el laboratorio antiguo, retirado). */
     { u:'u2', n:'Acústica · La cabaña', sub:'Cualidades del sonido', url:'https://acustica.gp.lmathome.es/prueba.html' },
-    { u:'u3', n:'Atonalidad',           sub:'Atonalidad y series',      url:'https://iagonaron.github.io/atonalidad/' },
+    /* (16-oct-2026, Iago: «bloquear cada capítulo hasta verlo en clase») Atonalidad = el escape room «Atonalidad · El museo», por
+       capítulos: se destapa con el primero que se ve en clase y entra con los ya vistos. Antes: 'Atonalidad' · 'Atonalidad y series'
+       · https://iagonaron.github.io/atonalidad/ (el Taller, que sigue en su dirección). */
+    { u:'u3', n:'Atonalidad · El museo', sub:'El escape room, en tres capítulos', url:'https://atonalidad.gp.lmathome.es/prueba.html' },
     { u:'u4', n:'Magnetófono',          sub:'El sonido en imanes',      url:'https://iagonaron.github.io/magnetofono/' },
     { u:'ham', n:'Hamilton',            sub:'El musical, por Jaime Altozano',
       url:'https://www.youtube.com/watch?v=MploZ2urlwo', video:true },
@@ -7423,7 +7426,7 @@ window.DictadoClase = (function(){
       }, 420);
     }, 340);
   }
-  function _tecla(ev){ if(ev.key==='Escape') siguiente(); }
+  function _tecla(ev){ if(ev.key==='Escape' && _foco) cerrar(); }   /* (16-oct-2026, tarde) Escape acaba el revelado entero */
   function siguiente(){
     _paso++;
     if(_paso >= _cola.length){ cerrar(); return; }
@@ -7537,10 +7540,13 @@ window.DictadoClase = (function(){
     ((d && d.hitos) || []).forEach(function(x){ var m = /^tema:([a-z]+):(\d+)$/.exec(String((x && x.hito) || '')); if(m && m[1] === portal) o[m[2]] = 1; });
     return Object.keys(o).map(Number).sort(function(a, b){ return a - b; });
   }
+  /* (16-oct-2026, tarde) cada portal por hitos, con su dirección: la cabaña (Acústica) y el museo (Atonalidad) */
+  var HITO_WEB = { cabana: /^https:\/\/acustica\.gp\.lmathome\.es\//, atonalidad: /^https:\/\/atonalidad\.gp\.lmathome\.es\// };
   function conHitos(u){
     var s = ses(); if(!(s && s.id) || !_hitos) return null;
-    if(!/^https:\/\/acustica\.gp\.lmathome\.es\//.test(String(u))) return null;
-    var dias = diasDe(_hitos, 'cabana'); if(!dias.length) return null;
+    var p = null; Object.keys(HITO_WEB).forEach(function(k){ if(!p && HITO_WEB[k].test(String(u))) p = k; });
+    if(!p) return null;
+    var dias = diasDe(_hitos, p); if(!dias.length) return null;
     return String(u).split('#')[0] + '#cu=' + s.id + '&dias=' + dias.join('.');
   }
   async function arrancar(){
@@ -7556,7 +7562,9 @@ window.DictadoClase = (function(){
     }
     /* (16-oct-2026) HITOS: la cabaña, abierta si su grupo ya ha visto algún día en clase (y cerrada si aún ninguno) */
     var hh = await pedirHitos();
-    if(hh){ if(diasDe(hh, 'cabana').length) _abiertas.u2 = true; else delete _abiertas.u2; }
+    if(hh){ if(diasDe(hh, 'cabana').length) _abiertas.u2 = true; else delete _abiertas.u2;
+            /* (16-oct-2026, tarde) y Atonalidad (u3), igual: abierta con el primer capítulo visto en clase (y cerrada si aún ninguno) */
+            if(diasDe(hh, 'atonalidad').length) _abiertas.u3 = true; else delete _abiertas.u3; }
     /* (3-sep-2026) el tester ya NO fuerza todas las insignias abiertas: ve
        exactamente lo que ve un alumno. Para verlas todas sigue ?demo= */
 
