@@ -24,6 +24,11 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   CabHitos o AtonHitos), sus tarjetas (HITO_TEMAS + hitos/) y sus títulos en diario-video-teoria.js del Diario.
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 16-oct 16:31 · Fichas y rediseño · HECHO · ESCALETA DEL AULA, dos retoques que pidió Iago (LMEAVathome bc2e736, piel/escaleta.js +
+  lm-piel.js ?v=2026-10-16f): «durante la reproducción de un vídeo didáctico quiero que la escaleta no se vea… molesta» → con el
+  vídeo abierto desde la tarjeta (didáctico o temático), la tarjeta no se ve (inmersivo() = «pantalla»); y «en FaActos e
+  Intervalia… solo la línea de la actividad actual, sin la de antes y la de después» → en el libro, solo qué toca y cuánto
+  queda. Deshacer: volver a subir los dos de fef9561.
 - 16-oct 16:20 · Fichas y rediseño · HECHO (en este mismo commit, con index.html) · ATONALIDAD POR CAPÍTULOS (Iago: «bloquear
   cada capítulo hasta verlo en clase»), como los días de Acústica. atonalidad be96f7b: prueba.html con window.AtonHitos
   («#cu=…&dias=…», «&dia=N»): portada con candado en el capítulo aún no visto, «Fin del capítulo N» sin pasar al siguiente si
