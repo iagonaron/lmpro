@@ -6,6 +6,16 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 16-oct 10:30 · Fichas y rediseño · HECHO (sin EN CURSO aparte; comprobado justo antes que ritmoathome seguía en ceec5cc,
+  LMEAVathome en 9bdfa93 y lmpro en 432cddd) · (1) QUIZ DE RITMO, las 4 fases (Iago: «el corchete pase por encima del
+  silencio cuando hay semicorcheas del mismo pulso antes y después»; fase 4: «silencio de semicorchea, no ese símbolo raro»
+  y «que lo adelantes un poquito»): autoBeam une por encima de los silencios cortos DEL MISMO PULSO (sin los del principio
+  o el final); fase 4 con silencios de verdad (glifos Bravura) y ventana de precisión 50 ms antes (ADELANTO_VENTANA; el
+  dibujo no cambia). ritmoathome 1b8b99d. Deshacer: ceec5cc. (2) PORTAL GE: el quiz a medias dice «Continuar el quiz»
+  (localStorage suite_quiz_abierto_<cuenta>_<envío>). LMEAVathome 4d4d466. Deshacer: 9bdfa93. (3) PORTAL GP: el temazo de
+  Protester va debajo de la botonera, a la altura de la tira de la música; la medalla de Atonalidad lleva el icono nuevo
+  para todos (cerrada: sombra dorada con «?»). lmpro 60f6720. Deshacer: 432cddd. Quien toque index.html de lmpro o de
+  LMEAVathome, que parta de 60f6720 / 4d4d466; las fases del quiz, de 1b8b99d.
 - 15-oct 23:23 · Fichas y rediseño · HECHO (sin EN CURSO aparte; comprobado justo antes que LMEAVathome seguía en edd4fdf) ·
   PENDIENTES DE IAGO («termina lo pendiente»): (1) MOROSOS DEL PORTAL (GE y GP), «más estrechos, primer apellido entero»: la
   lista mide 360 px (antes 430) y, si un nombre no cabe, se abrevian los demás apellidos y nunca el primero («Margarita
