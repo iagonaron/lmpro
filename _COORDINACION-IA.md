@@ -30,6 +30,16 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   ♭/♯) y se corrige. Todo pasa por LM_ACO (arriba/bajo/raizRueda) en index.html.
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 16-oct 20:52 · Fichas y rediseño · HECHO · DIARIO (Netlify diariodeiagocmus 6ad27105 encima de 6ad2428d, con el ok de Iago):
+  «Tareas para casa» salía VACÍO en «Fin de la clase» en GE. La casilla «Sin tareas» (semanas.tareas_ge_sin_tareas) está
+  oculta desde julio y la marca el Diario SOLA cuando «Otras tareas» está vacío (diario-restyle.js): significa «sin OTRAS
+  tareas», no «sin tareas». ipad.html pubTareas() la leía como «ninguna tarea» y mandaba []; ahora pubTareasGE() manda
+  lecciones, quiz (__introRitmo) y ficha (__ficha_fisica o teoria_ficha_numero) con sus números —lo mismo que el envío a
+  los alumnos, que SIEMPRE estuvo bien— y las «otras» solo si las hay. app.js: lo mismo en el PDF (construirSemanaGE).
+  OJO quien toque el Diario: que parta de 6ad27105 (ipad.html 4e952097, app.js 85722257) y que NADIE use
+  tareas_ge_sin_tareas como «sin tareas». Copia de antes: Dropbox «_SUBIDA-16-OCT-noche-tareas-en-la-pantalla-del-aula
+  (deploy 6ad27105)/antes (deploy 6ad2428d)». Ofrecido a Iago (sin aplicar): cron los viernes 17:00 y 18:00 UTC con
+  suite_quiz_barrer() para que el reparto quede hecho a las 19:00 aunque nadie abra el portal.
 - 16-oct 19:30 · Fichas y rediseño · HECHO · ACORDES EN TEORÍA GE Y GP (lo que pidió Iago), publicado y comprobado en vivo:
   teoriaathome 10b9385 (index.html b55c9b28) y teoriapro 4fd4aa8 (index.html 70cd5b10). (1) CONSTRUIR (Inversión de acordes
   «B · Construye», «Acordes» GE y sus fichas, «Construye» del avanzado GP y fichas GP): vale el bajo pedido (o la fundamental)
