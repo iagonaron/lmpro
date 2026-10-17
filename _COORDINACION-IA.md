@@ -30,6 +30,12 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   ♭/♯) y se corrige. Todo pasa por LM_ACO (arriba/bajo/raizRueda) en index.html.
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 17-oct 10:03 · Fichas y rediseño · HECHO · DIARIO (Netlify diariodeiagocmus 6ad32a90 encima de 6ad27105, con el ok de Iago):
+  en la CAMPANA, el 0 automático por no entregar (tarjeta negra con calavera, itemsCeros) ya va en el MISMO cuadro que
+  las demás notas (mismo alto y ancho, misma columna) y centrado; antes era un cuadrado propio (30×30 en el móvil, 34 de
+  alto en PC/iPad) y con la alineación por línea base el 0 quedaba arriba. Iago eligió «0» (no «0,00»): el ancho lo da un
+  «0,00» invisible (.scv-cero-num::before). suite-campana.js 23e10f18 y su ?v=s43 en index.html, ipad.html e iphone.html.
+  OJO quien toque la campana: que parta de 6ad32a90 y suba el ?v= de suite-campana.js (ahora s43) en los tres HTML.
 - 16-oct 20:52 · Fichas y rediseño · HECHO · DIARIO (Netlify diariodeiagocmus 6ad27105 encima de 6ad2428d, con el ok de Iago):
   «Tareas para casa» salía VACÍO en «Fin de la clase» en GE. La casilla «Sin tareas» (semanas.tareas_ge_sin_tareas) está
   oculta desde julio y la marca el Diario SOLA cuando «Otras tareas» está vacío (diario-restyle.js): significa «sin OTRAS
