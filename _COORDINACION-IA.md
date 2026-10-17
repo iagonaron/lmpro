@@ -30,6 +30,19 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   ♭/♯) y se corrige. Todo pasa por LM_ACO (arriba/bajo/raizRueda) en index.html.
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 17-oct 11:42 · Fichas y rediseño · HECHO · DIARIO (Netlify diariodeiagocmus 6ad342cd encima de 6ad340b9 y 6ad32a90, con el ok de Iago):
+  dos módulos nuevos que carga index.html justo después de diario-prep-extras.js. (1) RADAR (diario-radar.js?v=r2, cecd2c65):
+  botón en la barra de la preparación (GE y GP), a la izquierda de la chincheta 📌 (o de Guardar), con un «1» rojo cada
+  semana hasta que se abre (localStorage drd-visto:curso:anio:semana). Ventana de SOLO LECTURA (grupos_canon,
+  alumnos_canon, evaluaciones; sin testers ni evaluación inicial): la última ficha que entregó casi todo el curso,
+  ejercicio a ejercicio (%, por debajo del 50 %, ceros, patrones), y las áreas de la mejor a la peor con la media del
+  curso de la semana pasada, tendencia de 6 semanas y criterios. (2) ESCALETA DEL AULA SIN IPAD (diario-escaleta-aula.js?v=e1,
+  5a045c09): con la preparación a la vista y la semana (de la actual a +3) 15 s sin cambios, carga ipad.html de C1 y C2
+  en iframes ocultos (&tactil=0&aula=1), espera a que __escaletaAula.datos() se quede quieto y llama a escaleta_guardar
+  con la clave de esa vista; no escribe nada más. index.html 33a06827.
+  OJO quien toque el Diario: que parta de 6ad342cd (index.html 33a06827). Si alguien cambia ipad.html, que
+  window.__escaletaAula.datos() siga devolviendo {bloques, tareas}: ahora la escaleta del aula depende de eso aunque
+  nadie abra el iPad. Copia de antes: Dropbox «_SUBIDA-17-OCT-radar-y-escaleta-sin-ipad (deploy 6ad342cd)/antes (deploy 6ad32a90)».
 - 17-oct 10:03 · Fichas y rediseño · HECHO · DIARIO (Netlify diariodeiagocmus 6ad32a90 encima de 6ad27105, con el ok de Iago):
   en la CAMPANA, el 0 automático por no entregar (tarjeta negra con calavera, itemsCeros) ya va en el MISMO cuadro que
   las demás notas (mismo alto y ancho, misma columna) y centrado; antes era un cuadrado propio (30×30 en el móvil, 34 de
