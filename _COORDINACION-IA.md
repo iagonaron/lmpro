@@ -30,6 +30,15 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   ♭/♯) y se corrige. Todo pasa por LM_ACO (arriba/bajo/raizRueda) en index.html.
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 17-oct 14:01 · Fichas y rediseño · HECHO · TEORÍA PRO (repo teoriapro, commit d977da3, index.html 70fdfbe5; con el ok de Iago)
+  + Supabase (SQL lanzado por Iago): REPASO de una ficha ya entregada, «oculto» (sin botón en el Diario; se da con
+  select suite_ficha_repaso_dar('nombre', '2Gp', 4, 'motivo')). suite_ficha_abrir devuelve ahora 'repaso' (true si la cuenta tiene
+  un repaso por hacer de esa ficha; entonces abre aunque haya pasado fin_gracia). En teoriapro, con repaso=true: aviso antes de
+  empezar (no se evalúa), empieza en blanco, sin progreso ni SuiteTiempo, botón final «Corregir y ver mi nota» y entrega con
+  suite_ficha_repaso_entregar (tabla suite_ficha_repasos; NO toca evaluaciones ni el Diario). Un enlace con &repaso=1 cuyo
+  repaso ya está hecho dice «Ya hiciste el repaso». El aviso de la campana es una tarjeta «Recomendado para ti» (payload
+  recomendacion + apps): el portal no cambia.
+  OJO quien toque suite_ficha_abrir o el arranque de alumno de teoriapro: mantened el campo 'repaso' y el atajo &repaso=1.
 - 17-oct 11:58 · Fichas y rediseño · HECHO · DIARIO (Netlify diariodeiagocmus 6ad34707 encima de 6ad342cd, con el ok de Iago): Radar v3
   (diario-radar.js?v=r3, bf5447d9; index.html 65e08d33). (1) Bloque de teoría (GE: .notas-por-clase[data-bloque-id=bloque_teoria]
   textarea[data-clase]; GP: #gp-bteo-notas-c1/c2): si está vacío, placeholder «Sugerencia: repasar …» (lo más flojo de la última
