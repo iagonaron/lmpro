@@ -30,6 +30,20 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   ♭/♯) y se corrige. Todo pasa por LM_ACO (arriba/bajo/raizRueda) en index.html.
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 17-oct 18:01 · Fichas y rediseño · HECHO (sin EN CURSO aparte; cada repo comprobado justo antes; con el ok de Iago) ·
+  CAMPANA DEL ALUMNO, GE y GP: LMEAVathome 06a1538 (index.html c99b179d) y lmpro, este commit (index.html 7681daeb).
+  (1) «RESUMEN DE TU SEMANA»: aviso tipo 'aviso' con payload resumen_semana (ref_tabla 'resumen_semana', ref_id 'IYYY-WIW', índice
+  único suite_notif_resumen_unico). Lo crea la RPC suite_resumen_barrer(p_cuenta_id), que el portal llama en refrescar() después de
+  suite_recos_barrer (con try/catch: si aún no existe, no pasa nada), fechado el viernes a las 19:00 (Madrid) y solo si hubo notas esa
+  semana, de lunes a domingo. Las notas salen de _suite_resumen_areas (interna, revocada a anon y authenticated). El SQL
+  (resumen-semana.sql) lo lanza Iago. En el portal: rsmTarjeta(), justo debajo de «Tareas de la semana» (su _cuandoAviso es el de las
+  tareas menos 1 ms); «Ver mi semana» despliega las cajas por área; «Marcar como visto» la pone gris.
+  (2) Botones de ancho estándar (.cv2-btn2, blancos con contorno: .cv2-visto2 y .cv2-sobre2): «Marcar como visto», «Marcar como
+  estudiadas», «Marcar como hecha» y «Contestar a Iago»; encima del botón principal (26 px) si lo hay y, si no, abajo (34 px).
+  Reclamación: «Contestar a Iago» (la marca vista) y «Ver mi ficha corregida». (3) Solo GP: la tarjeta del día de un portal temático
+  dice «Marcar como visto» y «✓ Visto» (antes, «hecho»).
+  OJO quien toque la campana: no volváis a los cuadraditos .cv2-cuad en las tarjetas; una acción secundaria nueva, con cv2-btn2 y
+  cv2-visto2. Si cambiáis el orden de render(), que el resumen siga debajo de las tareas de la semana.
 - 17-oct 15:12 · Fichas y rediseño · HECHO (sin EN CURSO aparte; cada repo comprobado justo antes; con el ok de Iago, «súbelo todo») ·
   ACTIVIDAD «POR LIBRE» CON LO QUE HIZO DENTRO. (1) teoriapro 38a3899: index.html pone en <i id="lm-que" data-lm-ejercicio>
   «<data-path>|ej», «|ap» o «|vi» (ejercicios, apuntes, vídeo; en la portada '' = no cuenta); compases.html y modulacion.html, su marca
