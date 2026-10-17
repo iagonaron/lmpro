@@ -30,6 +30,20 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   ♭/♯) y se corrige. Todo pasa por LM_ACO (arriba/bajo/raizRueda) en index.html.
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 18-oct 00:15 · Fichas y rediseño · HECHO (sin EN CURSO aparte; cada repo comprobado justo antes; con el ok de Iago: «Todo, y
+  la previa ya encendida») · LA PREVIA DEL AULA, ENCENDIDA. LMEAVathome cfdf2ab y 36dc272 (piel/previa/: previa.html 3b02110d,
+  la música previa-ge48.mp3 y los sonidos) y 4d81e7a (piel/escaleta.js be67747d; piel/lm-piel.js f4a7ff08 carga
+  escaleta.js?v=2026-10-17p): la cuenta atrás del aula es ahora la previa, en un marco con sandbox (BASE + previa/previa.html):
+  aviso con los recordatorios, «¡Ojo! Cuidado con esto», respiro y, en GE, consejo; dura lo que mida (cuentaDe; la de siempre,
+  CUENTA = 32 s) y «Hoy en clase» sigue en su sitio. Se decide al empezar la cuenta (sessionStorage lm_esc_pv:<clave>); si no
+  está lista, la de siempre; «Saltar», Av Pág / → / Esc o 3,5 s sin señales del marco → la de siempre con su pista. El sonido
+  de la previa lo pone escaleta.js (pvSuena, por el MASTER). Y EL MANDO (keydown en escaleta.js): Av Pág / Re Pág, B o «.»,
+  F5 sin recargar en clase, flechas solo en el portal; con libro, pizarra, dictado, editor o campo de texto, no hace nada.
+  Diario 6ad3f2f1 (encima de 6ad3cc2b): diario-previa.js (nuevo) calcula el ¡Ojo! de cada grupo (última ficha cerrada, error
+  más repetido y su apartado; solo lee evaluaciones) e ipad.html (pubDatos) lo publica en el bloque «__previa» (m: 0; la
+  escaleta de antes lo ignora). OJO quien toque escaleta.js: sube su ?v en lm-piel.js (ahora 2026-10-17p) y no uses CUENTA
+  para las fases (es la pista de 32 s): usa v.cu. Quien toque pubDatos (ipad.html): deja el bloque «__previa». Para apagar la
+  previa: PREVIA_ON = false en escaleta.js. Copia de antes: APPs/_PARA BORRAR/17-oct-2026-escaleta-antes-de-la-previa/.
 - 17-oct 21:30 · Fichas y rediseño · HECHO (sin EN CURSO aparte; cada repo comprobado justo antes; con el ok de Iago) ·
   DIARIO (Netlify diariodeiagocmus 6ad3cc2b encima de 6ad3a730; suite-campana.js?v=s47, sha1 48b619b3; las tres páginas solo cambian
   el ?v=s46 → s47): la campana SIN HORAS de los alumnos. Iago: «la hora a la que terminó… no es un dato importante… me va a hacer
