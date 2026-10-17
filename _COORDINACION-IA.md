@@ -30,6 +30,17 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   ♭/♯) y se corrige. Todo pasa por LM_ACO (arriba/bajo/raizRueda) en index.html.
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 17-oct 20:05 · Fichas y rediseño · HECHO (sin EN CURSO aparte; cada repo comprobado justo antes; con el ok de Iago) ·
+  CAMPANA y RESUMEN DE TU SEMANA (3.ª vuelta). LMEAVathome (index.html d613d22b) y lmpro, este commit (index.html 0ed6abca):
+  (1) contarPendientes ya no cuenta el resumen semanal ni los portales interactivos (payload.portal_hito): «que la campana solo
+  numere las tareas, reclamaciones y mensajes»; (2) sin el punto de «nuevo» (.alu-dot display:none) en .rsm y .cv2-hito; (3) teoría
+  con no_entregada → chip «Teoría · sin entregar» (rosa; title con la frase entera) y, en GE, «No se entregó la ficha de esta
+  semana» en «Ver mi semana»; rsmN(null) = «—»; rsmRecos no cuenta áreas sin nota; (4) .rsm>.cv2-mid con height:auto y
+  min-height:64px y chips compactos de 641 a 900 px (en iPad el 4.º chip se salía de la tarjeta; ya pasaba antes). SQL
+  resumen-semana-3.sql (lo lanza Iago): suite_resumen_barrer_todos() y la tarea de pg_cron «lm_resumen_semana» (viernes 17:01
+  y 18:01 UTC → 19:01 de Galicia en verano y en invierno) crean el resumen a todas las cuentas validadas; _suite_resumen_areas:
+  teoría = la ficha que cerró ese viernes a las 19:00 (suite_fichas_asignadas.fin_normal, la de su grupo) con la nota que tenía
+  al cerrar; si no la entregó: {ap:'teoria', nota:null, no_entregada:true, ficha:N}.
 - 17-oct 18:53 · Fichas y rediseño · HECHO (sin EN CURSO aparte; cada repo comprobado justo antes; con el ok de Iago) ·
   RESUMEN DE TU SEMANA (2.ª vuelta), LA CABAÑA y DIARIO. (1) LMEAVathome 6f56d8a (index.html 249bfbd6) y lmpro, este commit (index.html
   388384b8): el icono «semana» sin la raya de abajo y con las barras grandes; el puntito de «sin ver», con los cuatro colores

@@ -2071,7 +2071,7 @@ function showEnig(kind){
   CV2_IC.semana='<rect x="2" y="9" width="4.4" height="13" rx="1.4" fill="#22c55e" stroke="none"/><rect x="7.2" y="13.5" width="4.4" height="8.5" rx="1.4" fill="#4a9eff" stroke="none"/><rect x="12.4" y="4" width="4.4" height="18" rx="1.4" fill="#f97316" stroke="none"/><rect x="17.6" y="11" width="4.4" height="11" rx="1.4" fill="#ec4899" stroke="none"/>';
   var RSM_AREA={ ritmo:['Ritmo','#22c55e','#86efac'], entonacion:['Entonación','#4a9eff','#93c5fd'], audicion:['Dictado','#f97316','#fdba74'], teoria:['Teoría','#ec4899','#f9a8d4'] };
   var RSM_MES=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
-  function rsmN(v){ var n=Number(v); return isFinite(n)?(Math.round(n*100)/100).toFixed(2).replace('.',','):'—'; }
+  function rsmN(v){ if(v==null||v==='') return '—'; var n=Number(v); return isFinite(n)?(Math.round(n*100)/100).toFixed(2).replace('.',','):'—'; }
   function rsmCol(n){ n=Number(n); return n>=7?'#4ade80':(n>=5?'#facc15':'#ff7a8a'); }
   function rsmPcol(p){ p=Number(p); return p>=0.7?'#4ade80':(p>=0.5?'#facc15':'#ff7a8a'); }
   function rsmPct(p){ return Math.round(Number(p)*100)+' %'; }
@@ -2083,6 +2083,7 @@ function showEnig(kind){
   }
   /* lo más flojo: todo en 7 o más → nada; si hay alguna por debajo de 5 → todas esas; si no, la más baja (entre 5 y 6,99) */
   function rsmRecos(areas){
+    areas=areas.filter(function(a){ return a.nota!=null; });   /* (17-oct-2026, noche) sin nota, no cuenta para recomendar */
     var bajas=areas.filter(function(a){ return Number(a.nota)<5; }).map(function(a){ return a.ap; });
     if(bajas.length) return bajas;
     var m=null; areas.forEach(function(a){ if(!m || Number(a.nota)<Number(m.nota)) m=a; });
@@ -2114,8 +2115,10 @@ function showEnig(kind){
     var A=RSM_AREA[a.ap]||[a.ap,'#ffffff','#ffffff'], items=a.items||[], solo=items.length===1;
     var det0=solo && items[0].det && (items[0].det.afinacion!=null || items[0].det.alturas!=null || (items[0].det.apartados && items[0].det.apartados.length));
     var sub=det0?esc(items[0].t||''):(solo?({ritmo:'tu lección',entonacion:'tu lección',audicion:'tu dictado',teoria:'tu ficha'}[a.ap]||''):(items.length+' notas'));
+    if(a.no_entregada) sub=esc('Ficha '+(a.ficha!=null?a.ficha:''));
     var h='<div class="rsm-caja" style="--ac:'+A[1]+'"><div class="rsm-cab"><span class="rsm-an" style="color:'+A[2]+'">'+A[0]+'</span><span class="rsm-sub">'+sub+'</span><b class="rsm-n">'+rsmN(a.nota)+'</b></div>';
     h+=items.map(function(it){ return rsmItem(a.ap,it,!!det0); }).join('');
+    if(a.no_entregada) h+='<div class="rsm-noent-c">No se entregó la ficha de esta semana</div>';
     var app=(a.apps||[])[0];
     if(reco && app && app.url) h+='<div class="rsm-sep">RECOMENDADO PARA TI</div><a class="rsm-reco" href="'+esc(app.url)+'" target="_blank" rel="noopener">Practicar en '+esc(app.nombre||'')+'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17L17 7"/><path d="M9 7h8v8"/></svg></a>';
     return h+'</div>';
@@ -2125,7 +2128,12 @@ function showEnig(kind){
     var recos=rsmRecos(areas);
     /* (17-oct-2026, noche, Iago) en GP, las cuatro notas siempre (sin nota: «—») y sin «Ver mi semana»: «nos lo ahorramos» */
     var gp=pj.nivel==='gp', lista=gp?['ritmo','entonacion','audicion','teoria'].map(function(k){ return areas.filter(function(a){ return a.ap===k; })[0]||{ap:k,nota:null,_vacia:true}; }):areas;
-    var chips=lista.map(function(a){ var A=RSM_AREA[a.ap]; return '<span class="rsm-chip'+(a._vacia?' rsm-vacia':'')+'" style="--ac:'+A[1]+'"><span style="color:'+A[2]+'">'+A[0]+'</span><b>'+(a._vacia?'—':rsmN(a.nota))+'</b></span>'; }).join('');
+    /* (17-oct-2026, noche, Iago) sin nota: «—». Y (Iago: «alguien que entre en zona extra… que no tenga nota de teoría… que ponga:
+       no se entregó la ficha de esta semana, o algo así») si la ficha de esa semana no se entregó, el chip de teoría lo dice en rosa
+       (en la misma fila, para que la tarjeta no cambie de alto; la frase entera, al pasar por encima y en «Ver mi semana») */
+    var chips=lista.map(function(a){ var A=RSM_AREA[a.ap], v=a._vacia||a.nota==null;
+      if(a.no_entregada) return '<span class="rsm-chip rsm-noent" style="--ac:#f9a8d4" title="No se entregó la ficha de esta semana"><span style="color:'+A[2]+'">'+A[0]+'</span><b>sin entregar</b></span>';
+      return '<span class="rsm-chip'+(v?' rsm-vacia':'')+'" style="--ac:'+A[1]+'"><span style="color:'+A[2]+'">'+A[0]+'</span><b>'+(v?'—':rsmN(a.nota))+'</b></span>'; }).join('');
     var dias=rsmDias(pj.desde,pj.hasta);
     var ver=gp?'':'<button type="button" class="rsm-ver" aria-expanded="false"><span class="rsm-ver-t">Ver mi semana</span><span class="rsm-mini">'+cv2Svg('semana')+'</span></button>';
     /* (17-oct-2026, noche, Iago) la fecha, discreta y sin marco, justo después del título: «12–18 oct» (sin el número de semana) */
@@ -2309,7 +2317,14 @@ function showEnig(kind){
       C+'.rsm-fecha{margin-left:12px;font-size:14px;font-weight:600;color:#8b97c4;letter-spacing:0;white-space:nowrap}',
       C+'.rsm-vacia{opacity:.45}',
       '#alu-body .alu-item.cv2.rsm .cv2-tile .cv2-ico{width:26px;height:26px}',
-      '#alu-body .alu-item.cv2.rsm .cv2-tile .alu-dot{background:conic-gradient(#22c55e 0 25%,#4a9eff 0 50%,#f97316 0 75%,#ec4899 0)!important}',
+      /* (17-oct-2026, noche, Iago: «ni le pongas circulito… solo las tareas. Ni lo de acústica, ni el resumen semanal») */
+      '#alu-body .alu-item.cv2.rsm .cv2-tile .alu-dot,#alu-body .alu-item.cv2.cv2-hito .cv2-tile .alu-dot{display:none!important}',
+      C+'.rsm-chip.rsm-noent b{font-size:13px;font-weight:700;color:#f9a8d4}',
+      /* (17-oct-2026, noche) en tablet (iPad en vertical, 768–900 px) los cuatro chips no cabían en una fila y el de teoría se
+         quedaba fuera de la tarjeta (ya pasaba antes): chips más compactos para que quepan */
+      '#alu-body .alu-item.cv2.rsm>.cv2-mid{height:auto;min-height:64px;overflow:visible}',   /* y si aun así no caben, la tarjeta crece */
+      '@media (min-width:641px) and (max-width:900px){'+C+'.rsm-chips{gap:5px}'+C+'.rsm-chip{height:26px;padding:0 6px;gap:4px;font-size:12px}'+C+'.rsm-chip b{font-size:13px}'+C+'.rsm-chip.rsm-noent b{font-size:12px}}',
+      C+'.rsm-noent-c{font-size:13px;font-weight:600;color:#f9a8d4}',
       '@media (max-width:640px){'+C+'.rsm-grid{grid-template-columns:minmax(0,1fr)}'+C+'.rsm-barra{grid-template-columns:minmax(0,1fr) 70px 40px}'+C+'.rsm-barra span:first-child{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;line-height:1.25}'+C+'.rsm-ver{justify-content:flex-start}}',
       C+'.cv2-visto:hover{background:rgba(34,197,94,.16)!important}',
       C+'.cv2-sobre{border:1.5px solid #facc15!important;color:#facc15!important}',
@@ -2648,7 +2663,9 @@ function showEnig(kind){
         n++; return;
       }
       if(pj.quiz && pj.envio_id){ if(!_quizHechos[pj.envio_id]) n++; return; }
-      if(pj.resumen_semana){ if(!o.leido && semanaDespues(o.creado_en)>Date.now()) n++; return; }   // (17-oct-2026) una semana
+      /* (17-oct-2026, noche, Iago: «que la campana solo te numere las tareas, reclamaciones, mensajes, pero no portales
+         interactivos ni resumen de la semana») */
+      if(pj.resumen_semana || pj.portal_hito) return;
       if(pj.recomendacion) return;                                          // @RECO: consejo, no tarea
       if(pj.dictado_revision){ if(!o.leido) n++; return; }
       if(!o.leido && !esValidacionTxt(o)) n++;                               // aviso sin leer
