@@ -30,6 +30,16 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   ♭/♯) y se corrige. Todo pasa por LM_ACO (arriba/bajo/raizRueda) en index.html.
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 17-oct 15:12 · Fichas y rediseño · HECHO (sin EN CURSO aparte; cada repo comprobado justo antes; con el ok de Iago, «súbelo todo») ·
+  ACTIVIDAD «POR LIBRE» CON LO QUE HIZO DENTRO. (1) teoriapro 38a3899: index.html pone en <i id="lm-que" data-lm-ejercicio>
+  «<data-path>|ej», «|ap» o «|vi» (ejercicios, apuntes, vídeo; en la portada '' = no cuenta); compases.html y modulacion.html, su marca
+  fija («compasespro|ej», «modulacion|ej»). (2) cualidadesdelsonido 7cbd498: prueba.html, marcaLatido() «dia-N», «dia-N-paradas»,
+  «repaso» ('' en la portada y las listas). (3) LMEAVathome 7b8f622: piel/latido.js, sonando() mira también el vídeo/audio de los
+  iframes de la misma web (los vídeos de Teoría van en uno). (4) Diario 6ad372b5 (encima de 6ad34707; suite-campana.js?v=s44, 8ab9cb4d):
+  «Por libre» de Teoría PRO por apartado y tipo; portales temáticos, una tarjeta por día con la textura de HITO_TEMAS
+  (gp.lmathome.es/hitos/<portal>-<n>.webp) y data-leer-id «l|<rato>|<n>»; flechita ⌄ «ver todo» en las tarjetas del listado que no caben.
+  OJO quien toque Teoría PRO o un portal temático: mantened el <i id="lm-que"> y sus claves (el Diario las traduce en PORTAL_LIBRE y
+  TEO_GP de suite-campana.js). Un portal nuevo por días o capítulos: que apunte «<pref>-N» y añadidlo a PORTAL_LIBRE.
 - 17-oct 14:01 · Fichas y rediseño · HECHO · TEORÍA PRO (repo teoriapro, commit d977da3, index.html 70fdfbe5; con el ok de Iago)
   + Supabase (SQL lanzado por Iago): REPASO de una ficha ya entregada, «oculto» (sin botón en el Diario; se da con
   select suite_ficha_repaso_dar('nombre', '2Gp', 4, 'motivo')). suite_ficha_abrir devuelve ahora 'repaso' (true si la cuenta tiene
