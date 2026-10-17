@@ -30,6 +30,15 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   ♭/♯) y se corrige. Todo pasa por LM_ACO (arriba/bajo/raizRueda) en index.html.
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 18-oct 01:10 · Fichas y rediseño · HECHO (sin EN CURSO aparte; cada repo comprobado justo antes; con el ok de Iago: «¡Ojo! que
+  faltan» y «Todo, y la previa ya encendida») · LOS ¡OJO! QUE FALTABAN. LMEAVathome 19d3766 (solo piel/previa/previa.html,
+  84ae8fa6; antes 3b02110d): 8 moldes nuevos del «¡Ojo! Cuidado con esto» (GP: serieArmonica, dodeConstruir, dodeVariante,
+  modulacion, transporte, blues; GE: terminos, quizGE = notas de adorno y abreviaciones). Llevan «rotacion: false»: solo salen
+  por un error de verdad en la última ficha cerrada, nunca de repaso (eligeOjos los salta). Diario 6ad3ffa8 (encima de 6ad3f2f1):
+  diario-previa.js 2026-10-18a (08bd63ce) saca el apartado fallado de esos ejercicios (en GE, términos/adornos/abreviaciones
+  leen aparte estado->i->_terminos/_quiz, solo lectura) e ipad.html solo cambia su ?v (b5e4fe13). OJO quien toque eligeOjos o
+  paramsDe en la previa: diario-previa.js lleva una copia generada (gen-diario.py); paramsDe no puede usar TEO. Copias de antes:
+  APPs/_PARA BORRAR/18-oct-2026-previa-antes-de-los-ojos-nuevos/ y _SUBIDA-18-OCT-madrugada-ojos-que-faltaban (deploy 6ad3ffa8)/.
 - 18-oct 00:15 · Fichas y rediseño · HECHO (sin EN CURSO aparte; cada repo comprobado justo antes; con el ok de Iago: «Todo, y
   la previa ya encendida») · LA PREVIA DEL AULA, ENCENDIDA. LMEAVathome cfdf2ab y 36dc272 (piel/previa/: previa.html 3b02110d,
   la música previa-ge48.mp3 y los sonidos) y 4d81e7a (piel/escaleta.js be67747d; piel/lm-piel.js f4a7ff08 carga
