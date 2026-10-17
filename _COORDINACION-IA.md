@@ -30,6 +30,19 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   ♭/♯) y se corrige. Todo pasa por LM_ACO (arriba/bajo/raizRueda) en index.html.
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 17-oct 18:53 · Fichas y rediseño · HECHO (sin EN CURSO aparte; cada repo comprobado justo antes; con el ok de Iago) ·
+  RESUMEN DE TU SEMANA (2.ª vuelta), LA CABAÑA y DIARIO. (1) LMEAVathome 6f56d8a (index.html 249bfbd6) y lmpro, este commit (index.html
+  388384b8): el icono «semana» sin la raya de abajo y con las barras grandes; el puntito de «sin ver», con los cuatro colores
+  (conic-gradient); la fecha, «12–18 oct» (.rsm-fecha), discreta y sin marco tras el título; en GP (payload.nivel = 'gp'), solo las
+  cuatro notas, sin «Ver mi semana»; y el resumen dura 7 días desde su creado_en: luego deja de pintarse y de contar en el globo
+  (contarPendientes lo cuenta solo si está sin leer y vigente). (2) Solo GP, la cabaña (.hito-cab): fuera el ruido de entrada (el
+  ::after, sin animación; el dial se queda) y el borde del icono, el puntito y los botones, con rgb(var(--hito-dia)) (azul, verde o
+  salmón según el día) en vez de blanco. (3) Diario 6ad3a730 (encima de 6ad38ea7; suite-campana.js?v=s46, fbc0f2a2): los cambios de
+  contraseña ya no tienen sección propia: son avisos de «Actividad de los alumnos» (itemsResets), con el nombre oficial cuando
+  suite_pass_resets_listar devuelve nombre y apellidos. Eso lo trae el SQL resumen-semana-2.sql (lo lanza Iago), que además cambia
+  _suite_resumen_areas: la última ficha entregada aunque no sea de esa semana, y en los dictados de GP con porcentajes, «pres_…» =
+  true es que está BIEN (resta cuando es false).
+  OJO quien toque la campana del Diario: seccionResets ya no se pinta; los cambios de contraseña salen de itemsResets.
 - 17-oct 18:01 · Fichas y rediseño · HECHO (sin EN CURSO aparte; cada repo comprobado justo antes; con el ok de Iago) ·
   CAMPANA DEL ALUMNO, GE y GP: LMEAVathome 06a1538 (index.html c99b179d) y lmpro, este commit (index.html 7681daeb).
   (1) «RESUMEN DE TU SEMANA»: aviso tipo 'aviso' con payload resumen_semana (ref_tabla 'resumen_semana', ref_id 'IYYY-WIW', índice
