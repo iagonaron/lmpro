@@ -30,6 +30,13 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   ♭/♯) y se corrige. Todo pasa por LM_ACO (arriba/bajo/raizRueda) en index.html.
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 17-oct 21:30 · Fichas y rediseño · HECHO (sin EN CURSO aparte; cada repo comprobado justo antes; con el ok de Iago) ·
+  DIARIO (Netlify diariodeiagocmus 6ad3cc2b encima de 6ad3a730; suite-campana.js?v=s47, sha1 48b619b3; las tres páginas solo cambian
+  el ?v=s46 → s47): la campana SIN HORAS de los alumnos. Iago: «la hora a la que terminó… no es un dato importante… me va a hacer
+  tóxico mirar eso… el tiempo que han echado, sí». Fuera «terminó a las HH:MM» de itemsLibres (un rato de varios días ponía en todas
+  sus tarjetas la hora en que acabó el rato entero) y la hora de itemsResets («Cambió su contraseña» y el mensaje que se copia, solo
+  con el día). Se quedan los plazos de las fichas (fechaHoraGal/hastaTxt), la fecha y hora de las notas borradas y la del certificado.
+  OJO quien toque la campana del Diario: no volváis a poner la hora de la actividad de los alumnos (los minutos, sí).
 - 17-oct 20:05 · Fichas y rediseño · HECHO (sin EN CURSO aparte; cada repo comprobado justo antes; con el ok de Iago) ·
   CAMPANA y RESUMEN DE TU SEMANA (3.ª vuelta). LMEAVathome (index.html d613d22b) y lmpro, este commit (index.html 0ed6abca):
   (1) contarPendientes ya no cuenta el resumen semanal ni los portales interactivos (payload.portal_hito): «que la campana solo
