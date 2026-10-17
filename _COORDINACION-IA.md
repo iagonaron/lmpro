@@ -30,6 +30,17 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   ♭/♯) y se corrige. Todo pasa por LM_ACO (arriba/bajo/raizRueda) en index.html.
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 17-oct 11:58 · Fichas y rediseño · HECHO · DIARIO (Netlify diariodeiagocmus 6ad34707 encima de 6ad342cd, con el ok de Iago): Radar v3
+  (diario-radar.js?v=r3, bf5447d9; index.html 65e08d33). (1) Bloque de teoría (GE: .notas-por-clase[data-bloque-id=bloque_teoria]
+  textarea[data-clase]; GP: #gp-bteo-notas-c1/c2): si está vacío, placeholder «Sugerencia: repasar …» (lo más flojo de la última
+  ficha) y un + (.drd-mas) que escribe el texto y lanza input y change. (2) SOLO GE: el Radar ESCRIBE una nota en
+  bloques_data.__notas_bloque[entonacion|dictado] (criterio por debajo del 70 % o el mismo fallo de presentación del dictado en 3
+  o más) y lo apunta en bloques_data.__radar_notas = {bloque: {txt, clave}}. Nunca pisa una nota escrita a mano, no repone las
+  que se borran, no repite una clave usada en las 2 semanas anteriores y solo escribe en semanas de la actual en adelante con la
+  anterior ya terminada; guarda con window.scheduleSave(). (3) Ventana: sugerencias arriba, semáforo (rojo <5, amarillo 5–6,99,
+  verde ≥7) y barrida de radar.
+  OJO quien toque el Diario: que parta de 6ad34707 (index.html 65e08d33). bloques_data.__radar_notas es del Radar: no lo borréis
+  al guardar ni lo uséis para otra cosa.
 - 17-oct 11:42 · Fichas y rediseño · HECHO · DIARIO (Netlify diariodeiagocmus 6ad342cd encima de 6ad340b9 y 6ad32a90, con el ok de Iago):
   dos módulos nuevos que carga index.html justo después de diario-prep-extras.js. (1) RADAR (diario-radar.js?v=r2, cecd2c65):
   botón en la barra de la preparación (GE y GP), a la izquierda de la chincheta 📌 (o de Guardar), con un «1» rojo cada
