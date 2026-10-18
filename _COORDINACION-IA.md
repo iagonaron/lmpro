@@ -30,6 +30,20 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   ♭/♯) y se corrige. Todo pasa por LM_ACO (arriba/bajo/raizRueda) en index.html.
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 18-oct 09:20 · Fichas y rediseño · HECHO (cada repo comprobado justo antes; con el ok de Iago: «en clase ya ni toco el iPad…
+  lo que sí abro es el portal tester o el protester… ahí es donde decida» y «y si construyo el intervalo, que lo haga igual») ·
+  EL ¡OJO! DE LA PREVIA LO CALCULA LA PANTALLA DEL AULA. LMEAVathome 5bd21e7 (piel/previa/previa.html fadac467, antes 25c5f5bc;
+  piel/previa/elige.js 64d7d4d8, NUEVO) y 56af89b (piel/escaleta.js 83f78b0a, antes ea9cd8ab; piel/lm-piel.js 7b06bc13, antes
+  1472de03, carga escaleta.js?v=2026-10-18a): con el portal abierto (desde 8 min antes como mucho; a la hora en punto sobra) y
+  solo con la cuenta Tester / Protester, la escaleta pide UNA VEZ POR CLASE escaleta_previa_fichas(p_cuenta_id, p_grupo, p_anio,
+  p_semana) (Supabase, NUEVA: security definer, solo lectura, con _escaleta_es_profe; las entregas de la última ficha cerrada
+  del grupo, sin nombres; la crea Iago con Run) y elige con piel/previa/elige.js (generado con gen-diario.py: el motor de
+  ojos.js y lo compartido de diario-previa.src.js). Se guarda en sessionStorage lm_esc_ojo:<clave>|<clase>. En pvConfig manda lo
+  calculado aquí (aunque sea null: uno de repaso) sobre el bloque «__previa» del iPad. PREVIA_V 2026-10-18a. Para mirar:
+  LMEscaleta.ojo(); para quitarlo: OJO_ON = false. Además, «Construye el intervalo» (intConstr) con la natural en medio y su
+  raya, como al clasificar. OJO quien toque escaleta.js: el próximo ?v en lm-piel.js, después de 2026-10-18a; quien toque
+  eligeOjos, paramsDe o fallados: regenerar elige.js y diario-previa.js (gen-diario.py). Copias de antes: APPs/_PARA
+  BORRAR/18-oct-2026-antes-del-ojo-en-el-aula/.
 - 18-oct 08:53 · Magnetófono (Cowork, la conversación de las animáticas) · EN CURSO · LA VERSIÓN INTERACTIVA DEL MAGNETÓFONO,
   SOLO PARA PROTESTER (Iago, 17-oct: «que me lo habilites solo en Protester, para que yo lo pueda ir viendo ahí»; hoy: «sube»,
   «pero sólo para protester»). Voy a tocar: (1) repo magnetofono: prueba.html y cinta/, ficheros NUEVOS (index.html y lo demás,
