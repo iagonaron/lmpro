@@ -30,6 +30,12 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   ♭/♯) y se corrige. Todo pasa por LM_ACO (arriba/bajo/raizRueda) en index.html.
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 18-oct 08:25 · Fichas y rediseño · HECHO (con el ok de Iago: «prefiero que añadas en el medio un sol natural pequeño… y una raya
+  más») · INTERVALOS EN LA PREVIA. LMEAVathome f6c5e0b (solo piel/previa/previa.html, 3df44964; antes 84ae8fa6): en el ¡Ojo!
+  «Clasifica el intervalo», las 2ª y 3ª que se cuentan sin alteraciones y la alteración cambia: la alterada se aparta, la
+  natural queda en medio en cabecita pequeña y sale la raya de la alteración (+ st / − st); igual en las 6ª y 7ª al darles la
+  vuelta (antes ahí faltaba ese paso y la línea final no cuadraba). OJO quien toque intClasif en ojos.js: rayaAlt y «aparta».
+  Copia de antes: APPs/_PARA BORRAR/18-oct-2026-previa-antes-de-intervalos/.
 - 18-oct 01:10 · Fichas y rediseño · HECHO (sin EN CURSO aparte; cada repo comprobado justo antes; con el ok de Iago: «¡Ojo! que
   faltan» y «Todo, y la previa ya encendida») · LOS ¡OJO! QUE FALTABAN. LMEAVathome 19d3766 (solo piel/previa/previa.html,
   84ae8fa6; antes 3b02110d): 8 moldes nuevos del «¡Ojo! Cuidado con esto» (GP: serieArmonica, dodeConstruir, dodeVariante,
