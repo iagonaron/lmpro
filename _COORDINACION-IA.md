@@ -30,6 +30,7 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   ♭/♯) y se corrige. Todo pasa por LM_ACO (arriba/bajo/raizRueda) en index.html.
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 18-oct 16:05 · Magnetófono (Cowork, la conversación de las animáticas) · HECHO · (1) voluntarios/ (b6ab9e6 y fc451c1): lm-voluntarios.js v3 (sin botón arriba: «Seleccionar voluntario» surge en el medio al empezar, en hora de clase; el del Fonógrafo, de cilindro de cera; ofrece({tras}) fuera de hora no espera a nada) y su LEEME; los portales no cambian. (2) Repo magnetofono, solo prueba.html + cinta/ (index.html sin tocar), commits f67ddef…492c41c (27): la interactiva con las animáticas nuevas (prólogo v5.3, bobina 1 v3.6, bobinas 2 y 3 v3.5): tramos en cinta/v y cinta/v7, pistas de sonido continuas en cinta/p (nuevo), motor y estaciones con las notas de Iago de la mañana, LEEME al día. En vivo: los 415 ficheros, iguales al repo; la bobina 1 suena y avanza en Chrome. Siguen en el repo, sin usarse, b1_00_g.mp4 y b3_08_e.mp4 de cinta/v y cinta/v7 (cortes de antes).
 - 18-oct 13:50 · Fichas y rediseño · HECHO (sin EN CURSO aparte; cada repo comprobado justo antes; con el ok de Iago: «Sí, los
   dos») · RESUMEN DE TU SEMANA, LOS CUATRO RECUADROS IGUALES (Iago: «que los cuatro apartados… tengan el mismo largo… en versión
   móvil, un 2x2… que solo ponga teoría… y lo de ficha no entregada en pequeñito dentro del propio recuadro, abajo a la derecha,
