@@ -30,6 +30,20 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   ♭/♯) y se corrige. Todo pasa por LM_ACO (arriba/bajo/raizRueda) en index.html.
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 18-oct 10:55 · Fichas y rediseño · HECHO (cada repo comprobado justo antes; con el ok de Iago: «Sí, los dos») · EL MANDO N76 Y
+  EL ¡OJO! DE TODOS LOS TIPOS. LMEAVathome d19b007 y f5eadab (piel/escaleta.js 6003dd9b, antes 83f78b0a; piel/lm-piel.js
+  9fa9f4b1, carga escaleta.js?v=2026-10-18c): el mando de Iago (Norwii N76) hace solo cuatro cosas («sin funciones de mantener
+  ni cosas extrañas»): arriba (Tab) = play / pausa (antes de empezar, el ▶); → (o ↓, Av Pág) = siguiente; ← (o ↑, Re Pág) =
+  anterior; F5 en clase no recarga y no hace nada; B, «.» y Esc ya no hacen nada; en la previa, el mando no hace nada. Y 8c9843b
+  (piel/previa/previa.html 9aec3e68; piel/previa/elige.js 0be5595a, 2026-10-18b): el tipo de ejercicio, grande, en la línea del
+  «¡Ojo! Cuidado con esto»; en GP la rotación también saca los moldes de GE; paramsDe ya saca el ¡Ojo! de
+  int_clasif/intervalos_id, int_constr/intervalos_build, inv_*/inversion_int_*, acordes*, aco_*/inversion_aco_*, cadencias y
+  ton_* de GP (antes devolvía null y salía otro), y fallados el apartado de casi todos. Supabase: escaleta_previa_fichas, 2.ª
+  versión (en GE, cada ejercicio entero salvo render y _solSvg; la creó Iago con Run). Siguen sin ¡Ojo! propio (salen solo de
+  repaso): cla_* (la ficha no guarda la clave), semitonos, ena_*/enarmoniapro, gra_senalar, ton_vecinos, esc_otras/escala_otras
+  y acordespro_*. OJO: diario-previa.js NO se ha subido (sigue 08bd63ce en el Diario 6ad3ffa8): su copia del motor es la de
+  antes; da igual, manda lo del aula. Quien toque escaleta.js: el próximo ?v en lm-piel.js, después de 2026-10-18c. Copias de
+  antes: APPs/_PARA BORRAR/18-oct-2026-antes-del-mando-n76/ y 18-oct-2026-antes-del-ojo-por-tipos/.
 - 18-oct 09:26 · Magnetófono (Cowork, la conversación de las animáticas) · HECHO · LA VERSIÓN INTERACTIVA DEL MAGNETÓFONO, SOLO
   PARA PROTESTER (Iago, 17-oct: «que me lo habilites solo en Protester, para que yo lo pueda ir viendo ahí»; hoy: «sube», «pero
   sólo para protester»).
