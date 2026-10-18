@@ -30,6 +30,17 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   ♭/♯) y se corrige. Todo pasa por LM_ACO (arriba/bajo/raizRueda) en index.html.
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 18-oct 12:45 · Fichas y rediseño · HECHO (Iago: «Este alumno, que ha entrado hoy, no tiene en notificaciones su resumen de la
+  semana») · RESUMEN DE TU SEMANA: CASI NADIE LO TENÍA. Causa: suite_notificaciones ya tenía el índice único
+  suite_notif_ref_uidx (ref_tabla, ref_id) y el resumen usaba de ref_id solo la semana ('2026-W42'), igual para todos: entró el
+  primero y a los demás el portal les daba «duplicate key» (409) en cada refresco, callado (1.232 desde el 17). Arreglo (SQL
+  lanzado por Iago, resumen-semana-4.sql; portales sin tocar, no usan ref_id): suite_resumen_barrer pone ref_id =
+  'IYYY-Wnn:<cuenta>' (como los demás avisos), «ya lo tiene» mira solo la semana (split_part) y el insert va con on conflict do
+  nothing sin índice; suite_resumen_barrer_todos (tarea lm_resumen_semana, viernes 17:01 y 18:01 UTC) sigue si una cuenta falla
+  y cuenta los errores. Creados los 47 que faltaban (semana 12–18 oct, fechados el viernes 16 a las 19:00): 48 en total, ninguna
+  cuenta validada sin el suyo; desde las 12:43 el portal recibe 200. OJO quien cree avisos en suite_notificaciones: (ref_tabla,
+  ref_id) es único en TODA la tabla, no por cuenta: mete la cuenta en ref_id. Deshacer: _PARA
+  BORRAR/18-oct-2026-resumen4-antes/deshacer-resumen-semana-4.sql.
 - 18-oct 11:20 · Fichas y rediseño · HECHO (Iago: «si sabes que el ejercicio de claves ha salido mal, pues pones un ojo sobre
   explicación de cómo se resuelve… y que tengas varias variantes según el día… eso puedes aplicarlo a cualquier ejercicio del
   que no puedes tener un rastreo tan preciso») · EL ¡OJO! DE CUALQUIER EJERCICIO FALLADO. LMEAVathome e82aed0
