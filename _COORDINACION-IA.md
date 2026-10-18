@@ -30,6 +30,17 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   ♭/♯) y se corrige. Todo pasa por LM_ACO (arriba/bajo/raizRueda) en index.html.
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 18-oct 13:50 · Fichas y rediseño · HECHO (sin EN CURSO aparte; cada repo comprobado justo antes; con el ok de Iago: «Sí, los
+  dos») · RESUMEN DE TU SEMANA, LOS CUATRO RECUADROS IGUALES (Iago: «que los cuatro apartados… tengan el mismo largo… en versión
+  móvil, un 2x2… que solo ponga teoría… y lo de ficha no entregada en pequeñito dentro del propio recuadro, abajo a la derecha,
+  discreto»). index.html de los dos portales (LMEAVathome 8dd73f0 y este commit en lmpro): .rsm-chips es una rejilla de columnas
+  iguales dentro de .rsm-chips-c (container-type:inline-size, nombre rsmc): 2 columnas, y 4 en fila con @container rsmc
+  (min-width:500px); tamaños con cqw (clamp). Teoría sin entregar = «Teoría —» + <i class="rsm-noent-t">ficha no entregada</i>
+  (9,5 px, rosa, abajo a la derecha). Fuera el «sin entregar» y la regla de tableta (641–900 px) de los recuadros. Banco: GE y
+  GP a 360/390/820/1024/1280 px, 90 de 90. Y EL DIARIO (deploy 6ad4b0f0 encima de 6ad3ffa8): en el móvil la campana se ponía
+  padding:10px!important y pisaba la zona segura del iPhone (la ✕ quedaba debajo de la hora y no se podía pulsar); ahora
+  padding-top calc(12px + env(safe-area-inset-top)) y la ✕ de 44 × 44. suite-campana.js?v=s48 en las tres páginas: quien lo
+  toque después, s49.
 - 18-oct 13:50 · Magnetófono (Cowork, la conversación de las animáticas) · EN CURSO · (1) voluntarios/: lm-voluntarios.js v3 y su LEEME (V2 y V3 de Iago: el del Fonógrafo, de cilindro de cera; nada de botón arriba: «Seleccionar voluntario» surge en el medio al empezar, en hora de clase; los portales no cambian). (2) Repo magnetofono: la interactiva con las animáticas nuevas (prólogo v5.3, bobina 1 v3.6, bobinas 2 y 3 v3.5), hacia las 16:00. No toco index.html.
 - 18-oct 12:45 · Fichas y rediseño · HECHO (Iago: «Este alumno, que ha entrado hoy, no tiene en notificaciones su resumen de la
   semana») · RESUMEN DE TU SEMANA: CASI NADIE LO TENÍA. Causa: suite_notificaciones ya tenía el índice único

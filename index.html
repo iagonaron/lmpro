@@ -2133,14 +2133,16 @@ function showEnig(kind){
        no se entregó la ficha de esta semana, o algo así») si la ficha de esa semana no se entregó, el chip de teoría lo dice en rosa
        (en la misma fila, para que la tarjeta no cambie de alto; la frase entera, al pasar por encima y en «Ver mi semana») */
     var chips=lista.map(function(a){ var A=RSM_AREA[a.ap], v=a._vacia||a.nota==null;
-      if(a.no_entregada) return '<span class="rsm-chip rsm-noent" style="--ac:#f9a8d4" title="No se entregó la ficha de esta semana"><span style="color:'+A[2]+'">'+A[0]+'</span><b>sin entregar</b></span>';
+      /* (18-oct-2026, Iago: «que solo ponga teoría y que sea igual en todos… lo de ficha no entregada, en pequeñito dentro del
+         propio recuadro, abajo a la derecha, discreto») */
+      if(a.no_entregada) return '<span class="rsm-chip rsm-noent" style="--ac:'+A[1]+'" title="No se entregó la ficha de esta semana"><span style="color:'+A[2]+'">'+A[0]+'</span><b>—</b><i class="rsm-noent-t">ficha no entregada</i></span>';
       return '<span class="rsm-chip'+(v?' rsm-vacia':'')+'" style="--ac:'+A[1]+'"><span style="color:'+A[2]+'">'+A[0]+'</span><b>'+(v?'—':rsmN(a.nota))+'</b></span>'; }).join('');
     var dias=rsmDias(pj.desde,pj.hasta);
     var ver=gp?'':'<button type="button" class="rsm-ver" aria-expanded="false"><span class="rsm-ver-t">Ver mi semana</span><span class="rsm-mini">'+cv2Svg('semana')+'</span></button>';
     /* (17-oct-2026, noche, Iago) la fecha, discreta y sin marco, justo después del título: «12–18 oct» (sin el número de semana) */
     var html=cv2Tarjeta({cls:'rsm cv2-info'+(gp?' rsm-gp':'')+(o.leido?'':' no-leido'), id:o.id, col:'blanco', ic:'semana',
       tit:'Resumen de tu semana'+(dias?'<span class="rsm-fecha">'+esc(dias)+'</span>':''),
-      datos:'<span class="rsm-chips">'+chips+'</span>', sec:o.leido?'':cv2Visto(o.id), btn:ver, fecha:_f});
+      datos:'<span class="rsm-chips-c"><span class="rsm-chips">'+chips+'</span></span>', sec:o.leido?'':cv2Visto(o.id), btn:ver, fecha:_f});
     if(gp) return html;
     var panel='<div class="rsm-panel"><div class="rsm-grid">'+areas.map(function(a){ return rsmCaja(a, recos.indexOf(a.ap)>=0); }).join('')+'</div>'
       +'<div class="rsm-ley"><span><i style="background:#4ade80"></i>bien (7 o más · 70 % o más)</span><span><i style="background:#facc15"></i>flojito (de 5 a 6,99 · 50 % o más)</span><span><i style="background:#ff7a8a"></i>menos de la mitad · lo que resta</span><span>La semana que viene, intenta que no se repita.</span></div></div>';
@@ -2281,10 +2283,16 @@ function showEnig(kind){
       C+'.cv2-sobre2:hover{background:rgba(255,255,255,.12)!important}',
       C+'.cv2-btn2[disabled]{opacity:.5;cursor:default}',
       /* (17-oct-2026) RESUMEN DE TU SEMANA */
-      C+'.rsm-chips{display:flex;flex-wrap:wrap;gap:8px}',
-      C+'.rsm-chip{box-sizing:border-box;display:inline-flex;align-items:center;gap:7px;height:28px;padding:0 9px;border-radius:9px;border:1.5px solid var(--ac);font-size:13px;white-space:nowrap}',
-      C+'.rsm-chip span{font-weight:700}',
-      C+'.rsm-chip b{font-size:14px;color:#fff}',
+      /* (18-oct-2026, Iago: «que los cuatro apartados… tengan el mismo largo… en versión móvil, un 2x2») columnas iguales: dos, o
+         cuatro en fila si el sitio de la tarjeta lo permite (lo mide la propia tarjeta, no la pantalla) */
+      C+'.rsm-chips-c{display:block;width:100%;container-type:inline-size;container-name:rsmc}',
+      C+'.rsm-chips{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}',
+      C+'.rsm-chip{position:relative;box-sizing:border-box;display:flex;align-items:center;justify-content:space-between;gap:4px;min-width:0;height:42px;padding:0 10px;padding:0 clamp(6px,3cqw,10px);border-radius:9px;border:1.5px solid var(--ac);font-size:13px;font-size:clamp(11px,5cqw,13px);white-space:nowrap}',
+      C+'.rsm-chip span{font-weight:700;line-height:1;min-width:0;overflow:hidden;text-overflow:ellipsis}',
+      C+'.rsm-chip b{flex:none;font-size:14px;font-size:clamp(12px,5.4cqw,14px);line-height:1;color:#fff}',
+      C+'.rsm-noent-t{position:absolute;right:8px;right:clamp(6px,3cqw,8px);bottom:2px;font-style:normal;font-size:9.5px;font-size:clamp(8.5px,3.8cqw,9.5px);font-weight:600;line-height:1;letter-spacing:.01em;color:#f9a8d4;pointer-events:none}',
+      /* en el ordenador (y el iPad en horizontal), si caben, los cuatro en fila: un pelín más prietos */
+      '@container rsmc (min-width:500px){'+C+'.rsm-chips{grid-template-columns:repeat(4,minmax(0,1fr))}'+C+'.rsm-chip{padding:0 8px;font-size:12.5px}'+C+'.rsm-chip b{font-size:13.5px}'+C+'.rsm-noent-t{right:7px;font-size:9px}}',
       C+'.rsm-ver{display:inline-flex!important;align-items:center;justify-content:flex-end;gap:10px;width:100%;height:34px;margin:0!important;padding:0!important;border:0!important;background:none!important;box-shadow:none!important;color:#fff!important;font-family:inherit!important;font-size:13px!important;font-weight:700!important;cursor:pointer}',
       C+'.rsm-mini{box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;flex:none;border-radius:8px;border:1.5px solid rgba(255,255,255,.45)}',
       C+'.rsm-mini .cv2-ico{width:18px;height:18px}',
@@ -2320,11 +2328,11 @@ function showEnig(kind){
       '#alu-body .alu-item.cv2.rsm .cv2-tile .cv2-ico{width:26px;height:26px}',
       /* (17-oct-2026, noche, Iago: «ni le pongas circulito… solo las tareas. Ni lo de acústica, ni el resumen semanal») */
       '#alu-body .alu-item.cv2.rsm .cv2-tile .alu-dot,#alu-body .alu-item.cv2.cv2-hito .cv2-tile .alu-dot{display:none!important}',
-      C+'.rsm-chip.rsm-noent b{font-size:13px;font-weight:700;color:#f9a8d4}',
+
       /* (17-oct-2026, noche) en tablet (iPad en vertical, 768–900 px) los cuatro chips no cabían en una fila y el de teoría se
          quedaba fuera de la tarjeta (ya pasaba antes): chips más compactos para que quepan */
       '#alu-body .alu-item.cv2.rsm>.cv2-mid{height:auto;min-height:64px;overflow:visible}',   /* y si aun así no caben, la tarjeta crece */
-      '@media (min-width:641px) and (max-width:900px){'+C+'.rsm-chips{gap:5px}'+C+'.rsm-chip{height:26px;padding:0 6px;gap:4px;font-size:12px}'+C+'.rsm-chip b{font-size:13px}'+C+'.rsm-chip.rsm-noent b{font-size:12px}}',
+
       C+'.rsm-noent-c{font-size:13px;font-weight:600;color:#f9a8d4}',
       '@media (max-width:640px){'+C+'.rsm-grid{grid-template-columns:minmax(0,1fr)}'+C+'.rsm-barra{grid-template-columns:minmax(0,1fr) 70px 40px}'+C+'.rsm-barra span:first-child{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;line-height:1.25}'+C+'.rsm-ver{justify-content:flex-start}}',
       C+'.cv2-visto:hover{background:rgba(34,197,94,.16)!important}',
