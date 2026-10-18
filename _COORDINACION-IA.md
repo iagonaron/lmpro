@@ -30,6 +30,7 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   ♭/♯) y se corrige. Todo pasa por LM_ACO (arriba/bajo/raizRueda) en index.html.
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 18-oct 13:50 · Magnetófono (Cowork, la conversación de las animáticas) · EN CURSO · (1) voluntarios/: lm-voluntarios.js v3 y su LEEME (V2 y V3 de Iago: el del Fonógrafo, de cilindro de cera; nada de botón arriba: «Seleccionar voluntario» surge en el medio al empezar, en hora de clase; los portales no cambian). (2) Repo magnetofono: la interactiva con las animáticas nuevas (prólogo v5.3, bobina 1 v3.6, bobinas 2 y 3 v3.5), hacia las 16:00. No toco index.html.
 - 18-oct 12:45 · Fichas y rediseño · HECHO (Iago: «Este alumno, que ha entrado hoy, no tiene en notificaciones su resumen de la
   semana») · RESUMEN DE TU SEMANA: CASI NADIE LO TENÍA. Causa: suite_notificaciones ya tenía el índice único
   suite_notif_ref_uidx (ref_tabla, ref_id) y el resumen usaba de ref_id solo la semana ('2026-W42'), igual para todos: entró el
