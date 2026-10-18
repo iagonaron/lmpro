@@ -30,6 +30,15 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   ♭/♯) y se corrige. Todo pasa por LM_ACO (arriba/bajo/raizRueda) en index.html.
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 18-oct 08:53 · Magnetófono (Cowork, la conversación de las animáticas) · EN CURSO · LA VERSIÓN INTERACTIVA DEL MAGNETÓFONO,
+  SOLO PARA PROTESTER (Iago, 17-oct: «que me lo habilites solo en Protester, para que yo lo pueda ir viendo ahí»; hoy: «sube»,
+  «pero sólo para protester»). Voy a tocar: (1) repo magnetofono: prueba.html y cinta/, ficheros NUEVOS (index.html y lo demás,
+  sin tocar); (2) lmpro (este repo), sobre main d14d7b1: index.html (PRUEBAS u4 solo /protester/i con el icono u4n, y u3 y u4
+  con «misterio»: en Protester se VEN cerradas, con la «?», pero se abren al pulsarlas; HITO_TEMAS «magnetofono» para las
+  tarjetas de la campana, tema «cinta»; la medalla u4n en __MED_IMG__; dos letras nuevas en hitoCSS), voluntarios/lm-voluntarios.js
+  (v2: el tema «cinta»; los otros tres, igual) y su LEEME.md, y hitos/ (magnetofono-1…3.webp, f-courier.woff2,
+  f-courier-700.woff2, f-bodoni-900.woff2). Sin Supabase. Que nadie toque @MEDALLERO, HITO_TEMAS ni voluntarios/ hasta que esto
+  pase a HECHO.
 - 18-oct 08:25 · Fichas y rediseño · HECHO (con el ok de Iago: «prefiero que añadas en el medio un sol natural pequeño… y una raya
   más») · INTERVALOS EN LA PREVIA. LMEAVathome f6c5e0b (solo piel/previa/previa.html, 3df44964; antes 84ae8fa6): en el ¡Ojo!
   «Clasifica el intervalo», las 2ª y 3ª que se cuentan sin alteraciones y la alteración cambia: la alterada se aparta, la
