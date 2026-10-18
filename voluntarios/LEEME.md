@@ -2,7 +2,23 @@
 
 Hecho por Claude para Iago (conversación Cowork del escape room «Atonalidad»). Solo lo ve la cuenta **Iago González Protester**.
 
-## Qué hace
+## v3 (18-oct-2026): el botón surge solo al empezar, y el Fonógrafo es de cilindro
+Iago (18-oct): «Nada de botón arriba: que SURJA SOLO al abrir con Protester EN HORARIO DE CLASE. Al “Empezar el día N” (cuando
+ya ha cargado lo que tenga que cargar, o tras “permitir micrófono”), un botón en el MEDIO de la pantalla, “Seleccionar
+voluntario”, y ya con ese grupo. En casa, fuera de hora, no sale.» · «El del Fonógrafo NO puede ser un disco: es de CILINDRO DE
+CERA.» · «El día 1 del Fonógrafo NO lleva voluntario (es solo verlo).»
+- **Ya no hay botón arriba.** Al pulsar el botón de empezar del portal (`#cEmpezar` en Acústica y Atonalidad, `#mcEmpezar` en
+  «Monta tu fonógrafo»; el día 1 del Fonógrafo, el vídeo, no tiene) —o cuando el portal llama a `LMVoluntarios.ofrece()`, como
+  hace el Magnetófono al empezar cada bobina, después del permiso del micro—, si hay clase en ese momento sale en el medio
+  **«Seleccionar voluntario»** (debajo, el grupo de esa hora) y **«Ahora no»**. El portal espera: empieza en cuanto se cierra
+  la ruleta o se dice «Ahora no». Fuera de la hora de clase no sale nada y el portal empieza como siempre.
+- **Fonógrafo: el cilindro de cera** (el tema sigue llamándose `disco`, para no tocar el portal): el fonógrafo de frente, con
+  los nombres alrededor del cilindro, que suben por la cara que se ve y frenan; el que queda delante, junto al fiel de latón,
+  se ilumina con la fanfarria.
+- Lo de los cuatro temas (uno por portal) sigue igual. Lo de «un selector distinto por día» (V1) queda para otra tanda.
+- Deshacer: volver a subir la v2 (`lm-voluntarios.js` de antes; copia en `_PARA BORRAR/18-oct-2026-voluntarios-v2/`).
+
+## Qué hace (v1–v2; desde la v3, sin el botón de arriba: ver arriba)
 - En cada portal interactivo del medallero GP sale, arriba a la derecha (a la izquierda de la pausa y la pantalla completa),
   un botón con icono y el texto «Voluntarios».
 - Solo está activo en la **hora exacta** de clase de los grupos GP (tabla `horario_clases` de Supabase, hora de Madrid):

@@ -26,11 +26,18 @@
      <script> cargador: si hay #c= o lm_vol_cuenta, carga https://gp.lmathome.es/voluntarios/lm-voluntarios.js y llama a
      LMVoluntarios.monta({ portal:'atonalidad', tema:'museo', boton:{ padre, antes, id, clase }, alAbrir, alCerrar, sonidos }) </script>
    Quitarlo de un portal: borrar su cargador. Quitarlo de todos: borrar este fichero (los portales siguen igual, sin botón).
+
+   v3 (18-oct-2026, Iago: «Nada de botón arriba: que SURJA SOLO al abrir con Protester EN HORARIO DE CLASE. Al “Empezar el día N”
+   (cuando ya ha cargado lo que tenga que cargar, o tras “permitir micrófono”), un botón en el MEDIO de la pantalla, “Seleccionar
+   voluntario”, y ya con ese grupo. En casa, fuera de hora, no sale.» · «El del Fonógrafo NO puede ser un disco: es de CILINDRO
+   DE CERA»). Ya no hay botón arriba: al pulsar el botón de empezar del portal (#cEmpezar en Acústica y Atonalidad, #mcEmpezar en
+   el montaje del Fonógrafo; el día 1 del Fonógrafo, el vídeo, no lleva) o cuando el portal llama a LMVoluntarios.ofrece(), si hay
+   clase ahora mismo sale en el medio «Seleccionar voluntario» (con su grupo) y «Ahora no»; el portal espera y empieza después.
    ═════════════════════════════════════════════════════════════════════════════════════════════════════════════════ */
 (function () {
   'use strict';
   if (window.LMVoluntarios) return;
-  const VERSION = 2;   // (17-oct-2026) v2: el tema «cinta» del Magnetófono
+  const VERSION = 3;   // (17-oct-2026) v2: el tema «cinta» del Magnetófono · (18-oct-2026) v3: el cilindro del Fonógrafo y el botón que surge al empezar
   const SB = 'https://woiptkyrxkbpnvioypit.supabase.co';
   const CLAVE_PUB = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndvaXB0a3lyeGticG52aW95cGl0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0NzI2ODYsImV4cCI6MjA5MjA0ODY4Nn0.B2nKgj5rD0rkdLeMIrd9KgD8lUPWsBT4Y7aCtmnvbjA';
   const CLAVE = 'lm_vol_cuenta';
@@ -593,14 +600,17 @@
     }
   };
 
-  /* ── «disco» · Fonógrafo: el disco que gira y la aguja que cae en un nombre ──
-     Un disco de pizarra negra con los nombres en sectores (como una ruleta), su etiqueta dorada y el brazo de latón con el diafragma.
-     Se da cuerda (trinquete), el disco arranca con su crepitar, cada sector golpea la aguja al pasar, frena… y la aguja cae en el
-     nombre: suena una fanfarria «de cilindro», con su crepitar. El nombre sale en una placa de latón. */
+  /* ── «disco» (= «cilindro») · Fonógrafo: el cilindro de cera (18-oct-2026, V2 de Iago: «el del Fonógrafo NO puede ser un disco:
+     el fonógrafo es de CILINDRO DE CERA») ──
+     El fonógrafo visto de frente: el cilindro de cera marrón en su mandril de latón, sobre la base de madera, con el diafragma
+     y su bocina encima. Los nombres van escritos alrededor del cilindro (cada uno, una franja de la vuelta), y al girar suben
+     por la cara que se ve, encogiéndose hacia los bordes, como en un cilindro de verdad. Frena; el nombre que queda delante, a
+     la altura de la aguja de latón, se ilumina, y suena la fanfarria de cera. (Se llama «disco» para que el Fonógrafo, que ya
+     pide ese tema, no tenga que cambiar nada; «cilindro» es lo mismo.) */
   TEMAS.disco = {
     fuentes: ['500 30px Jost', '400 96px "Bodoni 72"'],
     css: `
-.lmv-t-disco .lmv-velo{background:radial-gradient(ellipse at 40% 50%,rgba(34,24,14,.965) 0%,rgba(20,16,12,.985) 55%,rgba(8,6,4,.995) 100%)}
+.lmv-t-disco .lmv-velo{background:radial-gradient(ellipse at 34% 50%,rgba(34,24,14,.965) 0%,rgba(20,16,12,.985) 55%,rgba(8,6,4,.995) 100%)}
 .lmv-t-disco .lmv-cab{top:250px;left:1150px;right:60px}
 .lmv-t-disco .lmv-ceja{font:400 22px/1 Jost,"Iowan Old Style",Palatino,Georgia,serif;letter-spacing:.5em;text-transform:uppercase;color:#C9A24A}
 .lmv-t-disco .lmv-grupo{margin-top:14px;font:300 18px/1 Jost,"Iowan Old Style",Palatino,Georgia,serif;letter-spacing:.3em;text-transform:uppercase;color:#9C8E77}
@@ -614,134 +624,150 @@
 .lmv-t-disco .lmv-cargando{color:#F0B860}`,
     crea(esc, o) {
       const L = lienzo(esc), g = L.g;
-      const CX = 640, CY = 540, R = 400, RL = 112;
-      const st = { items: [], sec: 0, ang: 0, vel: 0, aguja: 0, luz: -1, brillo: 0, t: 0, elegido: -1 };
-      let surcos = null, raf = 0, vivo = true;
-      function pintaSurcos(g) {           // lo que no gira a la vista: el plato, los surcos y sus brillos
+      const XL = 170, XR = 1010, CY = 520, RC = 232, CAP = 30;            // el cilindro: de XL a XR, eje en CY, radio RC (y sus tapas)
+      const XM = (XL + XR) / 2;
+      const st = { items: [], sec: 0, ang: 0, vel: 0, luz: -1, brillo: 0, t: 0, aguja: 0 };
+      let fijo = null, raf = 0, vivo = true;
+      const laton = (g, x0, y0, x1, y1) => { const gr = g.createLinearGradient(x0, y0, x1, y1); gr.addColorStop(0, '#5c4219'); gr.addColorStop(.35, '#f2d793'); gr.addColorStop(.6, '#c9a24a'); gr.addColorStop(1, '#4a3311'); return gr; };
+      function pintaFijo(g) {            // lo que no se mueve: la base de madera, los soportes, el mandril y su volante
         g.save();
-        g.shadowColor = 'rgba(0,0,0,.8)'; g.shadowBlur = 50; g.shadowOffsetY = 20; g.beginPath(); g.arc(CX, CY, R + 14, 0, 6.283); g.fillStyle = '#2a2016'; g.fill(); g.shadowColor = 'transparent';
-        let gr = g.createRadialGradient(CX, CY, R, CX, CY, R + 14); gr.addColorStop(0, '#6d5a3a'); gr.addColorStop(1, '#2a2016'); g.beginPath(); g.arc(CX, CY, R + 14, 0, 6.283); g.fillStyle = gr; g.fill();
+        // la base de madera, con su moldura y la placa
+        g.shadowColor = 'rgba(0,0,0,.8)'; g.shadowBlur = 50; g.shadowOffsetY = 22;
+        rr(g, 80, 820, 1020, 150, 14); g.fillStyle = '#3b2412'; g.fill(); g.shadowColor = 'transparent';
+        let gr = g.createLinearGradient(0, 820, 0, 970); gr.addColorStop(0, '#7a4a24'); gr.addColorStop(.12, '#5a341a'); gr.addColorStop(.7, '#40250f'); gr.addColorStop(1, '#24140a');
+        rr(g, 80, 820, 1020, 150, 14); g.fillStyle = gr; g.fill();
+        g.globalAlpha = .18; for (let k = 0; k < 26; k++) { g.strokeStyle = k % 2 ? '#2a170a' : '#8a5a30'; g.lineWidth = 1 + (k % 3); g.beginPath();
+          const y = 840 + k * 5; g.moveTo(90, y); g.bezierCurveTo(400, y + 6 * Math.sin(k), 700, y - 5 * Math.cos(k), 1090, y + 2); g.stroke(); } g.globalAlpha = 1;
+        g.strokeStyle = 'rgba(255,214,150,.25)'; g.lineWidth = 2; g.beginPath(); g.moveTo(96, 824); g.lineTo(1084, 824); g.stroke();
+        rr(g, 370, 880, 440, 46, 6); g.fillStyle = laton(g, 370, 880, 810, 926); g.fill();
+        g.strokeStyle = 'rgba(60,40,10,.7)'; g.lineWidth = 2; rr(g, 376, 886, 428, 34, 4); g.stroke();
+        g.fillStyle = '#2A1E0A'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.font = '500 15px Jost, Georgia, serif'; textoCabe(g, 'LM AT HOME · FONÓGRAFO · VOLUNTARIOS', 590, 903, 400);
+        // los dos soportes del mandril (hierro negro, con su perfil)
+        for (const x of [XL - 70, XR + 70]) {
+          gr = g.createLinearGradient(x - 26, 0, x + 26, 0); gr.addColorStop(0, '#0d0b09'); gr.addColorStop(.45, '#4a4440'); gr.addColorStop(1, '#0d0b09');
+          g.beginPath(); g.moveTo(x - 22, 822); g.lineTo(x - 13, CY + 20); g.lineTo(x + 13, CY + 20); g.lineTo(x + 22, 822); g.closePath(); g.fillStyle = gr; g.fill();
+          gr = g.createRadialGradient(x - 8, CY - 8, 3, x, CY, 34); gr.addColorStop(0, '#6a625a'); gr.addColorStop(1, '#141210');
+          g.beginPath(); g.arc(x, CY, 32, 0, 6.283); g.fillStyle = gr; g.fill();
+        }
+        // el eje de latón, de soporte a soporte (por detrás del cilindro asoma por los dos lados)
+        g.fillStyle = laton(g, 0, CY - 14, 0, CY + 14); g.fillRect(XL - 72, CY - 13, (XR + 72) - (XL - 72), 26);
+        // el volante (a la izquierda, fuera)
+        gr = g.createRadialGradient(XL - 70 - 6, CY - 10, 4, XL - 70, CY, 60); gr.addColorStop(0, '#fff0c4'); gr.addColorStop(.5, '#c9a24a'); gr.addColorStop(1, '#4a3311');
+        g.beginPath(); g.ellipse(XL - 112, CY, 18, 92, 0, 0, 6.283); g.fillStyle = gr; g.fill(); g.strokeStyle = 'rgba(40,26,8,.7)'; g.lineWidth = 3; g.stroke();
         g.restore();
       }
-      function ajusta(s) { if (L.ajusta(s) || !surcos) surcos = capaFija(L.k, pintaSurcos, CX - R - 60, CY - R - 60, 2 * R + 120, 2 * R + 120); }
-      function pintaDisco() {
-        const n = st.sec, a0 = st.ang;
-        g.save(); g.translate(CX, CY);
-        // sectores
-        for (let j = 0; j < n; j++) {
-          const a = a0 + j * 2 * Math.PI / n, b = a + 2 * Math.PI / n;
-          g.beginPath(); g.moveTo(0, 0); g.arc(0, 0, R, a, b); g.closePath();
-          g.fillStyle = j % 2 ? '#1c140e' : '#120d09'; g.fill();
-        }
-        // los surcos
+      function ajusta(s) { if (L.ajusta(s) || !fijo) fijo = capaFija(L.k, pintaFijo, 0, 0, 1920, 1080); }
+      // y = altura en pantalla de un punto del cilindro a la vuelta «a» (0: delante; positivo: hacia arriba)
+      const yDe = a => CY - RC * Math.sin(a);
+      function pintaCilindro() {
+        const n = st.sec, paso = n ? 2 * Math.PI / n : 1;
+        g.save();
+        // la cera: marrón oscuro, con su luz (más clara por delante y arriba, oscura en los bordes)
+        let gr = g.createLinearGradient(0, CY - RC, 0, CY + RC);
+        gr.addColorStop(0, '#120a05'); gr.addColorStop(.18, '#4a2e15'); gr.addColorStop(.36, '#8a5a2c'); gr.addColorStop(.46, '#6e4520');
+        gr.addColorStop(.62, '#4a2d14'); gr.addColorStop(.86, '#2a180b'); gr.addColorStop(1, '#0c0703');
+        g.fillStyle = gr; g.fillRect(XL, CY - RC, XR - XL, 2 * RC);
+        // los surcos (cada uno da la vuelta: de frente se ven como rayitas verticales finísimas)
         g.lineWidth = 1;
-        for (let r = RL + 14; r < R - 4; r += 5) { g.strokeStyle = `rgba(255,240,210,${.025 + .02 * Math.sin(r * .7)})`; g.beginPath(); g.arc(0, 0, r, 0, 6.283); g.stroke(); }
-        // brillos fijos (la luz no gira con el disco)
-        g.save(); g.rotate(-st.ang); g.rotate(-.6);
-        for (const sgn of [0, Math.PI]) { const gr = g.createRadialGradient(0, 0, RL, 0, 0, R); gr.addColorStop(0, 'rgba(255,230,190,0)'); gr.addColorStop(.5, 'rgba(255,230,190,.10)'); gr.addColorStop(1, 'rgba(255,230,190,0)');
-          g.fillStyle = gr; g.beginPath(); g.moveTo(0, 0); g.arc(0, 0, R, sgn - .22, sgn + .22); g.closePath(); g.fill(); }
-        g.restore();
-        // las divisiones y los nombres
-        const vel = Math.abs(st.vel), copias = vel > 3 ? Math.min(9, 1 + Math.floor(vel / 2.2)) : 1, peso = c => copias > 1 ? Math.pow(1 - c / copias, 1.7) * 2.6 / copias : 1;
-        g.font = `500 ${n > 14 ? 24 : n > 10 ? 28 : 31}px Jost, "Iowan Old Style", Georgia, serif`; g.textAlign = 'right'; g.textBaseline = 'middle';
-        for (let j = 0; j < n; j++) {
-          const a = a0 + j * 2 * Math.PI / n;
-          g.save(); g.rotate(a); g.strokeStyle = 'rgba(201,162,74,.75)'; g.lineWidth = 2; g.beginPath(); g.moveTo(RL + 6, 0); g.lineTo(R - 2, 0); g.stroke(); g.restore();
-          const nom = st.items[j % st.items.length] || '';
-          for (let c = 0; c < copias; c++) {
-            const aa = a + Math.PI / n - (copias > 1 ? (c / copias) * st.vel / 60 : 0);
-            g.save(); g.rotate(aa); g.globalAlpha = Math.min(1, peso(c));
-            const luz = st.luz === j ? st.brillo : 0;
-            g.fillStyle = luz > 0 ? `rgb(${lerp(220, 255, luz)},${lerp(205, 215, luz)},${lerp(176, 140, luz)})` : '#DCCDB0';
-            if (luz > 0) { g.shadowColor = `rgba(240,184,96,${luz})`; g.shadowBlur = 24; }
-            textoCabe(g, nom.toUpperCase(), R - 26, 0, R - RL - 50);
-            g.restore();
+        for (let x = XL + 8; x < XR - 6; x += 5) { g.strokeStyle = `rgba(255,236,200,${.035 + .02 * Math.sin(x * .9)})`; g.beginPath(); g.moveTo(x, CY - RC + 6); g.lineTo(x, CY + RC - 6); g.stroke(); }
+        // los nombres, alrededor (los que caen en la cara de delante); con estela si va deprisa
+        if (n) {
+          const vel = Math.abs(st.vel), copias = vel > 3 ? Math.min(8, 1 + Math.floor(vel / 2.4)) : 1;
+          g.textAlign = 'center'; g.textBaseline = 'middle';
+          for (let j = 0; j < n; j++) {
+            for (let c = 0; c < copias; c++) {
+              const a = st.ang + (j + .5) * paso - (copias > 1 ? (c / copias) * st.vel / 60 : 0);
+              const aa = Math.atan2(Math.sin(a), Math.cos(a));                         // en (−π, π]
+              if (Math.abs(aa) > 1.45) continue;
+              const k = Math.cos(aa), y = yDe(aa), peso = copias > 1 ? Math.pow(1 - c / copias, 1.7) * 2.4 / copias : 1;
+              const luz = st.luz === j ? st.brillo : 0;
+              g.save(); g.translate(XM, y); g.scale(1, Math.max(.05, k)); g.globalAlpha = Math.min(1, peso) * Math.pow(k, .7);
+              g.font = `500 ${n > 14 ? 34 : 40}px Jost, "Iowan Old Style", Georgia, serif`;
+              g.fillStyle = luz > 0 ? `rgb(${lerp(226, 255, luz)},${lerp(206, 222, luz)},${lerp(170, 140, luz)})` : '#E2CEAA';
+              if (luz > 0) { g.shadowColor = `rgba(240,184,96,${luz})`; g.shadowBlur = 26; }
+              textoCabe(g, (st.items[j % st.items.length] || '').toUpperCase(), 0, 0, (XR - XL) - 120);
+              g.restore();
+            }
+            // la raya entre nombre y nombre (rayada en la cera)
+            const b = Math.atan2(Math.sin(st.ang + j * paso), Math.cos(st.ang + j * paso));
+            if (Math.abs(b) < 1.5) { const k = Math.cos(b); g.strokeStyle = `rgba(201,162,74,${.55 * k})`; g.lineWidth = 2 * Math.max(.3, k); g.beginPath(); g.moveTo(XL + 14, yDe(b)); g.lineTo(XR - 14, yDe(b)); g.stroke(); }
           }
         }
-        // la etiqueta del centro
-        let gr = g.createRadialGradient(-20, -26, 6, 0, 0, RL); gr.addColorStop(0, '#f2d793'); gr.addColorStop(.7, '#c9a24a'); gr.addColorStop(1, '#8a6a2a');
-        g.beginPath(); g.arc(0, 0, RL, 0, 6.283); g.fillStyle = gr; g.fill();
-        g.lineWidth = 2; g.strokeStyle = 'rgba(60,40,10,.6)'; g.beginPath(); g.arc(0, 0, RL - 10, 0, 6.283); g.stroke();
-        g.save(); g.rotate(a0); g.fillStyle = '#2A1E0A'; g.textAlign = 'center'; g.textBaseline = 'middle';
-        g.font = '500 15px Jost, Georgia, serif'; g.fillText('LM AT HOME', 0, -46);
-        g.font = 'italic 400 30px "Bodoni 72", "Bodoni MT", Didot, Georgia, serif'; g.fillText('Fonógrafo', 0, -8);
-        g.font = '400 13px Jost, Georgia, serif'; g.fillText('2.º GP · VOLUNTARIOS', 0, 30);
-        g.restore();
-        g.beginPath(); g.arc(0, 0, 9, 0, 6.283); g.fillStyle = '#0c0805'; g.fill(); g.beginPath(); g.arc(-2, -2, 4, 0, 6.283); g.fillStyle = '#c8c8c8'; g.fill();
-        // la luz del nombre elegido
-        if (st.luz >= 0 && st.brillo > 0) { g.save(); g.globalCompositeOperation = 'lighter'; const a = a0 + st.luz * 2 * Math.PI / n;
-          const gr2 = g.createRadialGradient(R * .7, 0, 10, R * .7, 0, R * .55); gr2.addColorStop(0, `rgba(240,184,96,${.28 * st.brillo})`); gr2.addColorStop(1, 'rgba(240,184,96,0)');
-          g.rotate(a + Math.PI / n); g.fillStyle = gr2; g.beginPath(); g.moveTo(0, 0); g.arc(0, 0, R, -Math.PI / n, Math.PI / n); g.closePath(); g.fill(); g.restore(); }
+        // el brillo de la cera (quieto: la luz no gira con el cilindro)
+        gr = g.createLinearGradient(0, CY - RC, 0, CY + RC); gr.addColorStop(0, 'rgba(255,230,190,0)'); gr.addColorStop(.3, 'rgba(255,230,190,.16)');
+        gr.addColorStop(.36, 'rgba(255,240,210,.22)'); gr.addColorStop(.44, 'rgba(255,230,190,0)'); g.fillStyle = gr; g.fillRect(XL, CY - RC, XR - XL, 2 * RC);
+        // la luz del nombre elegido, delante
+        if (st.luz >= 0 && st.brillo > 0) { g.save(); g.globalCompositeOperation = 'lighter';
+          gr = g.createRadialGradient(XM, CY, 10, XM, CY, (XR - XL) * .55); gr.addColorStop(0, `rgba(240,184,96,${.26 * st.brillo})`); gr.addColorStop(1, 'rgba(240,184,96,0)');
+          g.fillStyle = gr; g.fillRect(XL, CY - RC * .5, XR - XL, RC); g.restore(); }
+        // las tapas (el canto del cilindro, en perspectiva) y el mandril que asoma
+        for (const [x, s] of [[XL, -1], [XR, 1]]) {
+          gr = g.createLinearGradient(0, CY - RC, 0, CY + RC); gr.addColorStop(0, '#0c0703'); gr.addColorStop(.4, '#5a3a1c'); gr.addColorStop(1, '#0c0703');
+          g.beginPath(); g.ellipse(x, CY, CAP, RC, 0, s < 0 ? Math.PI / 2 : -Math.PI / 2, s < 0 ? 3 * Math.PI / 2 : Math.PI / 2); g.fillStyle = gr; g.fill();
+          g.beginPath(); g.ellipse(x + s * 6, CY, 12, 46, 0, 0, 6.283); g.fillStyle = laton(g, 0, CY - 46, 0, CY + 46); g.fill();
+        }
         g.restore();
       }
-      function pintaBrazo() {             // el brazo de latón (cuello de cisne) y el diafragma, con la aguja a las tres en punto
-        const sube = 1 - st.aguja, bx = 1112, by = 150, nx = CX + R - 14, ny = CY, sx = 1066, sy = 488 - 8 * sube;
-        const camino = (dx, dy) => { g.beginPath(); g.moveTo(bx + dx, by + dy); g.bezierCurveTo(bx + 18 + dx, by + 170 + dy, 1100 + dx, 372 + dy - 6 * sube, sx + 12 + dx, sy - 40 + dy); g.lineTo(sx + dx, sy + dy); };
-        g.save(); g.lineCap = 'round'; g.lineJoin = 'round';
-        // sombra (más lejos cuanto más levantada)
-        g.filter = 'blur(6px)'; g.strokeStyle = 'rgba(0,0,0,.45)'; g.lineWidth = 24; camino(10 + 14 * sube, 14 + 14 * sube); g.stroke();
-        g.beginPath(); g.arc(sx + 12 + 14 * sube, sy + 16 + 14 * sube, 44, 0, 6.283); g.fillStyle = 'rgba(0,0,0,.45)'; g.fill(); g.filter = 'none';
-        // la base
-        let gr = g.createRadialGradient(bx - 14, by - 14, 4, bx, by, 60); gr.addColorStop(0, '#fff0c4'); gr.addColorStop(.5, '#c9a24a'); gr.addColorStop(1, '#5c4219');
-        g.beginPath(); g.arc(bx, by, 56, 0, 6.283); g.fillStyle = gr; g.fill();
-        g.lineWidth = 2; g.strokeStyle = 'rgba(60,40,10,.6)'; g.beginPath(); g.arc(bx, by, 40, 0, 6.283); g.stroke();
-        gr = g.createRadialGradient(bx - 6, by - 6, 2, bx, by, 22); gr.addColorStop(0, '#f6e2a8'); gr.addColorStop(1, '#6b4c1c'); g.beginPath(); g.arc(bx, by, 22, 0, 6.283); g.fillStyle = gr; g.fill();
-        // el brazo: tubo de latón con su brillo
-        gr = g.createLinearGradient(1080, 0, 1140, 0); gr.addColorStop(0, '#7a5a1e'); gr.addColorStop(.4, '#f2d793'); gr.addColorStop(.7, '#c9a24a'); gr.addColorStop(1, '#6b4c1c');
-        g.strokeStyle = gr; g.lineWidth = 22; camino(0, 0); g.stroke();
-        g.strokeStyle = 'rgba(255,248,220,.55)'; g.lineWidth = 4; camino(-5, 0); g.stroke();
-        // el diafragma (la cajita con la mica) y la aguja
-        g.translate(sx, sy); g.scale(1 + .05 * sube, 1 + .05 * sube);
-        gr = g.createRadialGradient(-12, -14, 4, 0, 0, 48); gr.addColorStop(0, '#fff3cf'); gr.addColorStop(.45, '#c9a24a'); gr.addColorStop(1, '#4a3311');
-        g.beginPath(); g.arc(0, 0, 44, 0, 6.283); g.fillStyle = gr; g.fill();
-        gr = g.createRadialGradient(-6, -8, 2, 0, 0, 30); gr.addColorStop(0, 'rgba(250,245,230,.95)'); gr.addColorStop(1, 'rgba(190,175,150,.85)');
-        g.beginPath(); g.arc(0, 0, 29, 0, 6.283); g.fillStyle = gr; g.fill(); g.lineWidth = 2; g.strokeStyle = 'rgba(60,40,10,.55)'; g.stroke();
-        for (let r = 8; r < 29; r += 6) { g.beginPath(); g.arc(0, 0, r, 0, 6.283); g.strokeStyle = 'rgba(120,100,70,.25)'; g.lineWidth = 1; g.stroke(); }
-        g.beginPath(); g.arc(0, 0, 4, 0, 6.283); g.fillStyle = '#5c4219'; g.fill();
-        g.setTransform(L.k, 0, 0, L.k, 0, 0);
-        g.strokeStyle = '#d9d9d9'; g.lineWidth = 3; g.beginPath(); g.moveTo(sx - 26, sy + 30); g.lineTo(nx, ny - 2 - 12 * sube); g.stroke();
-        g.fillStyle = '#e8e8e8'; g.beginPath(); g.arc(nx, ny - 2 - 12 * sube, 2.5, 0, 6.283); g.fill();
+      function pintaDiafragma() {         // el diafragma (sobre el cilindro, con su aguja) y la bocina de latón
+        const sube = 1 - st.aguja, dx = 760, dy = CY - RC - 64 - 10 * sube;
+        g.save();
+        // la bocina: un cono grande hacia arriba a la derecha
+        let gr = g.createLinearGradient(820, 120, 1100, 420); gr.addColorStop(0, '#f6e2a8'); gr.addColorStop(.35, '#c9a24a'); gr.addColorStop(.8, '#7a5a1e'); gr.addColorStop(1, '#4a3311');
+        g.beginPath(); g.moveTo(dx + 18, dy - 24); g.quadraticCurveTo(930, 200, 1010, 40); g.lineTo(1150, 120); g.quadraticCurveTo(1020, 220, dx + 30, dy - 6); g.closePath(); g.fillStyle = gr; g.fill();
+        g.beginPath(); g.ellipse(1080, 80, 80, 26, -.5, 0, 6.283); g.fillStyle = '#2a1e0a'; g.fill(); g.strokeStyle = laton(g, 1000, 60, 1160, 100); g.lineWidth = 7; g.stroke();
+        // el brazo y la caja del diafragma
+        g.fillStyle = laton(g, 0, dy - 22, 0, dy + 22); g.fillRect(300, dy - 8, dx - 300, 16);
+        gr = g.createRadialGradient(dx - 12, dy - 12, 4, dx, dy, 52); gr.addColorStop(0, '#fff3cf'); gr.addColorStop(.45, '#c9a24a'); gr.addColorStop(1, '#4a3311');
+        g.beginPath(); g.ellipse(dx, dy, 54, 30, 0, 0, 6.283); g.fillStyle = gr; g.fill(); g.strokeStyle = 'rgba(60,40,10,.6)'; g.lineWidth = 2; g.stroke();
+        g.beginPath(); g.ellipse(dx, dy - 2, 34, 17, 0, 0, 6.283); g.fillStyle = 'rgba(235,228,210,.85)'; g.fill();
+        // la aguja, que baja hasta la cera
+        g.strokeStyle = '#d9d9d9'; g.lineWidth = 3; g.beginPath(); g.moveTo(dx, dy + 26); g.lineTo(dx, CY - RC + 2 - 14 * sube); g.stroke();
         g.restore();
+        // el fiel de latón, delante a la izquierda: señala el nombre que suena
+        g.save(); gr = g.createLinearGradient(XL - 60, 0, XL - 4, 0); gr.addColorStop(0, '#4a3311'); gr.addColorStop(.5, '#f2d793'); gr.addColorStop(1, '#8a6a2a');
+        g.beginPath(); g.moveTo(XL - 66, CY - 16); g.lineTo(XL - 4, CY); g.lineTo(XL - 66, CY + 16); g.closePath(); g.fillStyle = gr; g.fill(); g.restore();
       }
       let tAnt = performance.now();
       function bucle(ahora) {
         if (!vivo) return;
         const dt = Math.min(.05, (ahora - tAnt) / 1000); tAnt = ahora; st.t += dt;
         L.borra();
-        let gr = g.createRadialGradient(CX - 140, CY - 260, 40, CX, CY, 1100); gr.addColorStop(0, 'rgba(240,184,96,.10)'); gr.addColorStop(1, 'rgba(240,184,96,0)'); g.fillStyle = gr; g.fillRect(0, 0, 1920, 1080);
-        if (surcos) ponCapa(g, surcos); if (st.sec) pintaDisco(); pintaBrazo();
+        const gr = g.createRadialGradient(XM - 120, CY - 300, 40, XM, CY, 1100); gr.addColorStop(0, 'rgba(240,184,96,.10)'); gr.addColorStop(1, 'rgba(240,184,96,0)'); g.fillStyle = gr; g.fillRect(0, 0, 1920, 1080);
+        if (fijo) ponCapa(g, fijo); pintaCilindro(); pintaDiafragma();
         raf = requestAnimationFrame(bucle);
       }
       raf = requestAnimationFrame(bucle);
       return {
         ajusta,
-        espera() { if (!st.sec) { st.items = ['· · ·']; st.sec = 8; } },
+        espera() { if (!st.sec) { st.items = ['· · ·']; st.sec = 10; } },
         async gira(bombo, k) {
-          const n = bombo.length, rep = n < 8 ? Math.ceil(8 / n) : 1, S = n * rep;
+          const n = bombo.length, rep = n < 10 ? Math.ceil(10 / n) : 1, S = n * rep;
           st.items = bombo.slice(); st.sec = S; st.luz = -1; st.brillo = 0; st.aguja = 0;
-          const paso = 2 * Math.PI / S, kk = k + n * Math.floor(Math.random() * rep);     // en qué sector (si el bombo va repetido)
-          // ángulo final: el centro del sector kk a las tres en punto (ángulo 0); unas cuatro vueltas y media en el sentido de las agujas
+          const paso = 2 * Math.PI / S, kk = k + n * Math.floor(Math.random() * rep);
+          // al final, el centro de la franja kk, delante (ángulo 0); unas cuatro vueltas y media
           const a0 = st.ang; let a1 = -(kk + .5) * paso; while (a1 < a0 + 4.5 * 2 * Math.PI) a1 += 2 * Math.PI;
           const f = recorrido(a0 / paso, a1 / paso, { p: 2.4, retro: .25, sobra: .06 });
-          const ac = A.crea(); let crepita = null;
+          const ac = A.crea(); let zumba = null;
           if (ac) {
-            for (let i = 0; i < 7; i++) A.clic({ t: i * .045, f: 1800 + i * 120, q: 4, gan: .25, dur: .02 });        // la cuerda (trinquete)
-            crepita = A.continuo({ tipo: 'highpass', f: 2400, q: .5, wet: .1 });
+            for (let i = 0; i < 6; i++) A.clic({ t: i * .05, f: 1500 + i * 110, q: 4, gan: .22, dur: .02 });        // se da cuerda (el trinquete)
+            zumba = A.continuo({ tipo: 'bandpass', f: 520, q: .9, wet: .08 });                                       // el regulador que zumba
           }
           await new Promise(ok => {
             const t0 = performance.now(); let antes = a0 / paso, ult = Math.floor(a0 / paso);
             (function p_() {
               const t = Math.min(f.T, (performance.now() - t0) / 1000), q = f(t);
               st.vel = (q - antes) * paso * 60; antes = q; st.ang = q * paso;
-              const c = Math.floor(q); if (c !== ult) { ult = c; if (A.ac) A.clic({ f: 1200 + 60 * Math.min(20, Math.abs(st.vel) * 3), q: 2, gan: .32, dur: .025, wet: .15 }); }
-              if (crepita) { A.pon(crepita.g.gain, .03 + clamp(Math.abs(st.vel) / 12, 0, 1) * .05 + (Math.random() < .08 ? .06 : 0), .02); }
+              const c = Math.floor(q); if (c !== ult) { ult = c; if (A.ac) A.clic({ f: 900 + 50 * Math.min(20, Math.abs(st.vel) * 3), q: 2, gan: .26, dur: .025, wet: .15 }); }
+              if (zumba) { A.pon(zumba.g.gain, clamp(Math.abs(st.vel) / 14, 0, 1) * .07, .03); A.pon(zumba.f.frequency, 360 + clamp(Math.abs(st.vel), 0, 14) * 40, .03); }
               if (t < f.T) requestAnimationFrame(p_); else ok();
             })();
           });
           st.ang = a1; st.vel = 0; st.luz = kk;
-          // cae la aguja… y suena la fanfarria, como en un cilindro de cera
+          if (zumba) zumba.para(.4);
+          // la aguja baja a la cera… y suena la fanfarria, por la bocina
           if (ac) {
             A.nota(70, { tipo: 'sine', dur: .25, gan: .45, desliza: 45 }); A.clic({ f: 900, q: .8, gan: .4, dur: .06 });
+            const crepita = A.continuo({ tipo: 'highpass', f: 2600, q: .5, wet: .1 }); if (crepita) A.pon(crepita.g.gain, .05, .05);
             const bp = ac.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 1300; bp.Q.value = .6; bp.connect(A.via(1, .35));
             const v = ac.createGain(); v.gain.value = .9; v.connect(bp);
             [[392, .28], [523.25, .4], [659.25, .52], [783.99, .64]].forEach(([fq, t]) => A.nota(fq, { tipo: 'sawtooth', t, dur: .35, gan: .09, destino: v }));
@@ -1023,7 +1049,24 @@
 .lmv-aviso.lmv-av-museo{font:500 16px/1.4 Poppins,"Avenir Next","Segoe UI",system-ui,sans-serif;border:2px solid #c4945c;background:rgba(14,12,18,.94);color:#f0e8da;border-radius:12px}
 .lmv-aviso.lmv-av-radio{font:300 15px/1.45 Jost,system-ui,sans-serif;letter-spacing:.06em;border:1px solid rgba(255,255,255,.72);background:rgba(8,12,14,.86);color:#fff;border-radius:9px}
 .lmv-aviso.lmv-av-disco{font:400 14px/1.45 Jost,"Iowan Old Style",Georgia,serif;letter-spacing:.06em;border:1px solid rgba(201,162,74,.6);background:rgba(20,14,9,.92);color:#DCCDB0;border-radius:8px}
-.lmv-aviso.lmv-av-cinta{font:400 15px/1.45 "Courier Prime","Courier New",Courier,monospace;border:1px solid rgba(239,229,207,.6);background:rgba(22,17,12,.94);color:#efe5cf;border-radius:4px}`;
+.lmv-aviso.lmv-av-cinta{font:400 15px/1.45 "Courier Prime","Courier New",Courier,monospace;border:1px solid rgba(239,229,207,.6);background:rgba(22,17,12,.94);color:#efe5cf;border-radius:4px}
+.lmv-oferta{position:fixed;inset:0;z-index:2147482999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;background:rgba(6,5,4,.74);-webkit-backdrop-filter:blur(7px);backdrop-filter:blur(7px);opacity:0;transition:opacity .35s ease;font-synthesis:none;-webkit-font-smoothing:antialiased;user-select:none;-webkit-user-select:none}
+.lmv-oferta.ve{opacity:1}
+.lmv-ob{display:inline-flex;align-items:center;gap:.6em;padding:22px 44px;cursor:pointer;-webkit-appearance:none;appearance:none;border:2px solid rgba(255,255,255,.85);border-radius:14px;background:rgba(14,12,18,.92);color:#fff;font:600 clamp(20px,2.2vw,30px)/1 system-ui,-apple-system,"Segoe UI",sans-serif;box-shadow:0 18px 50px rgba(0,0,0,.6);transition:transform .2s,filter .2s}
+.lmv-ob:hover{transform:translateY(-2px);filter:brightness(1.08)}
+.lmv-ob:focus-visible{outline:3px solid #fff;outline-offset:4px}
+.lmv-ob .lmv-ico{flex:none;width:1.3em;height:1.3em;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.lmv-og{margin:0;font:500 clamp(14px,1.3vw,20px)/1.3 system-ui,-apple-system,"Segoe UI",sans-serif;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.82);text-shadow:0 2px 8px rgba(0,0,0,.8)}
+.lmv-no{cursor:pointer;-webkit-appearance:none;appearance:none;background:none;border:none;padding:8px 14px;color:rgba(255,255,255,.72);font:500 clamp(14px,1.2vw,18px)/1 system-ui,-apple-system,"Segoe UI",sans-serif;text-decoration:underline;text-underline-offset:4px}
+.lmv-no:hover{color:#fff}
+.lmv-of-museo .lmv-ob{font-family:Poppins,"Avenir Next","Segoe UI",system-ui,sans-serif;border-color:#c4945c;color:#f0e8da;background:rgba(14,12,18,.94)}
+.lmv-of-museo .lmv-og,.lmv-of-museo .lmv-no{font-family:Poppins,"Avenir Next","Segoe UI",system-ui,sans-serif}
+.lmv-of-radio .lmv-ob{font-family:Jost,system-ui,sans-serif;font-weight:300;letter-spacing:.08em;border:1px solid rgba(255,255,255,.72);border-radius:9px;background:rgba(8,12,14,.86)}
+.lmv-of-radio .lmv-og,.lmv-of-radio .lmv-no{font-family:Jost,system-ui,sans-serif}
+.lmv-of-disco .lmv-ob{font-family:Jost,"Iowan Old Style",Georgia,serif;font-weight:500;letter-spacing:.22em;text-transform:uppercase;border:1px solid #F2D793;border-radius:6px;background:linear-gradient(#F2D793,#C9A24A 55%,#8a6a2a);color:#2A1E0A}
+.lmv-of-disco .lmv-og{font-family:Jost,Georgia,serif;color:#DCCDB0}.lmv-of-disco .lmv-no{font-family:Jost,Georgia,serif;color:rgba(220,205,176,.8)}
+.lmv-of-cinta .lmv-ob{font-family:"Courier Prime","Courier New",Courier,monospace;font-weight:700;letter-spacing:.08em;text-transform:uppercase;border:1px solid #f4ecd8;border-radius:4px;background:linear-gradient(#f4ecd8,#e2d3b2);color:#1e1a16}
+.lmv-of-cinta .lmv-og,.lmv-of-cinta .lmv-no{font-family:"Courier Prime","Courier New",Courier,monospace;color:#efe5cf}`;
   const ICONO = '<svg class="lmv-ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13.2" r="8.3"/><circle cx="12" cy="13.2" r="1.7"/><path d="M12 4.9v6.6M12 14.9v6.6M3.7 13.2h6.6M13.7 13.2h6.6M9.6 1.9h4.8L12 4.6z"/></svg>';
   function css(id, txt) { if (document.getElementById(id)) return; const s = el('style', null, document.head, null); s.id = id; s.textContent = txt; }
 
@@ -1036,44 +1079,70 @@
     requestAnimationFrame(() => a.classList.add('ve')); clearTimeout(avisoT); avisoT = setTimeout(() => a.classList.remove('ve'), 4200);
   }
 
+  /* v3: sin botón arriba. Al empezar (el botón de empezar del portal, o LMVoluntarios.ofrece()), si hay clase ahora mismo, el
+     botón «Seleccionar voluntario» en el medio; resuelve cuando se ha cerrado la ruleta (true) o con «Ahora no» (false). */
+  const EMPEZAR = ['#cEmpezar', '#mcEmpezar', '[data-lmv-empezar]'];
+  let MONTADO = null;
   function monta(o) {
     try {
       o = o || {};
       const id = leeCuenta(); if (!id) return null;
+      if (MONTADO) return MONTADO;
       const tema = TEMAS[o.tema] || TEMAS.museo, nomTema = TEMAS[o.tema] ? o.tema : 'museo';
       css('lmv-css', CSS); css('lmv-css-' + nomTema, tema.css);
-      const bo = o.boton || {};
-      const padre = (typeof bo.padre === 'string' ? document.querySelector(bo.padre) : bo.padre) || document.body;
-      const antes = typeof bo.antes === 'string' ? document.querySelector(bo.antes) : bo.antes;
-      const b = document.createElement('button'); b.type = 'button'; b.id = bo.id || 'bVoluntarios';
-      b.className = ((bo.clase || '') + ' lmv-boton lmv-apagado').trim(); b.setAttribute('aria-disabled', 'true');
-      b.innerHTML = ICONO + '<span>' + (bo.texto || 'Voluntarios') + '</span>'; b.title = 'Voluntarios · conectando…';
-      if (antes && antes.parentNode) { if (bo.despues) antes.after(b); else antes.before(b); } else padre.appendChild(b);
-      let est = null, clave = null, abierta = null;
-      const pinta = () => {
-        const f = est && est.horario ? franja(est.horario) : null;
-        b.classList.toggle('lmv-apagado', !f); b.setAttribute('aria-disabled', f ? 'false' : 'true');
-        b.title = f ? 'Elegir un voluntario de ' + f.g + ' al azar' : (est && est.horario ? 'Voluntarios · solo en la hora de clase' + (proxima(est.horario) ? ' · la próxima: ' + proxima(est.horario) : '') : 'Voluntarios · conectando…');
-      };
+      let est = null, clave = null, oferta = null, pasa = false, vivo = true;
       async function refresca() {
         try { est = await rpc('suite_voluntarios_estado', { p_cuenta_id: id }); }
-        catch (e) { pinta(); return; }
-        if (!est || est.ok === false) { olvida(); b.remove(); clearInterval(iv); return; }
-        pinta();
+        catch (e) { return; }
+        if (!est || est.ok === false) { olvida(); est = null; vivo = false; clearInterval(iv); document.removeEventListener('click', engancha, true); }
       }
-      const iv = setInterval(() => { const f = est && est.horario ? franja(est.horario) : null, k = f ? f.g + f.d + f.i : '-'; if (k !== clave) { clave = k; refresca(); } else pinta(); }, 15000);
-      b.addEventListener('click', ev => {
-        ev.preventDefault(); ev.stopPropagation(); A.crea();
-        if (abierta) return;
-        if (!est) { aviso(b, 'Conectando con el portal… vuelve a pulsar en un momento.', nomTema); refresca(); return; }
-        if (!franja(est.horario)) { const p = proxima(est.horario); aviso(b, 'Ahora no hay clase de ninguno de tus grupos.' + (p ? ' La próxima: ' + p + '.' : ''), nomTema); return; }
-        abierta = abre(o, tema, nomTema, id, () => { abierta = null; refresca(); });
-      });
-      ['pointerdown', 'mousedown', 'touchstart'].forEach(t => b.addEventListener(t, ev => ev.stopPropagation()));
+      const iv = setInterval(() => { const f = est && est.horario ? franja(est.horario) : null, k = f ? f.g + f.d + f.i : '-'; if (k !== clave) { clave = k; refresca(); } }, 30000);
+      function ofrece(op) {
+        op = op || {};
+        if (oferta) return oferta;
+        oferta = (async () => {
+          if (op.tras) { try { await op.tras; } catch (e) {} }
+          if (!vivo) return false;
+          if (!est) await refresca();
+          const f = est && est.horario ? franja(est.horario) : null;
+          if (!f) return false;
+          return await new Promise(ok => {
+            const fs = document.fullscreenElement || document.webkitFullscreenElement;
+            const host = fs && fs !== document.documentElement && fs !== document.body ? fs : document.body;
+            const c = el('div', 'lmv-oferta lmv-of-' + nomTema, host);
+            c.innerHTML = '<button type="button" class="lmv-ob">' + ICONO + '<span>Seleccionar voluntario</span></button><p class="lmv-og"></p><button type="button" class="lmv-no">Ahora no</button>';
+            c.querySelector('.lmv-og').textContent = f.g + ' · en clase ahora';
+            const bOk = c.querySelector('.lmv-ob'), bNo = c.querySelector('.lmv-no');
+            let hecho = false;
+            const quita = () => { ['keydown', 'keyup', 'keypress'].forEach(t => window.removeEventListener(t, teclas, true)); c.classList.remove('ve'); setTimeout(() => c.remove(), 350); };
+            const no = () => { if (hecho) return; hecho = true; quita(); ok(false); };
+            const si = () => { if (hecho) return; hecho = true; A.crea(); quita(); abre(o, tema, nomTema, id, () => { refresca(); ok(true); }); };
+            const teclas = ev => { ev.stopPropagation(); if (ev.type !== 'keydown') return; if (ev.key === 'Escape') { ev.preventDefault(); no(); } else if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); si(); } };
+            ['keydown', 'keyup', 'keypress'].forEach(t => window.addEventListener(t, teclas, true));
+            ['click', 'pointerdown', 'mousedown', 'touchstart', 'wheel'].forEach(t => c.addEventListener(t, ev => ev.stopPropagation()));
+            bOk.addEventListener('click', si); bNo.addEventListener('click', no);
+            requestAnimationFrame(() => { c.classList.add('ve'); try { bOk.focus({ preventScroll: true }); } catch (e) {} });
+          });
+        })();
+        return oferta.then(r => { oferta = null; return r; }, () => { oferta = null; return false; });
+      }
+      // el botón de empezar del portal: si hay clase, primero la oferta y luego (al cerrarla) se pulsa de verdad
+      function engancha(ev) {
+        if (pasa || !vivo) return;
+        const b = ev.target && ev.target.closest ? ev.target.closest((o.empezar || EMPEZAR).join(',')) : null;
+        if (!b) return;
+        const f = est && est.horario ? franja(est.horario) : null;
+        if (!f) return;                                       // fuera de hora (o aún sin saberlo): el portal sigue como siempre
+        ev.preventDefault(); ev.stopImmediatePropagation(); ev.stopPropagation();
+        ofrece({}).then(() => { pasa = true; try { b.click(); } finally { pasa = false; } });
+      }
+      if (o.engancha !== false) document.addEventListener('click', engancha, true);
       refresca();
-      return { boton: b, refresca };
+      MONTADO = { ofrece, refresca };
+      return MONTADO;
     } catch (e) { try { console.warn('LMVoluntarios', e); } catch (_) {} return null; }
   }
+  function ofrece(op) { return MONTADO ? MONTADO.ofrece(op) : Promise.resolve(false); }
 
   // la capa de la ruleta: tapa todo el portal (y se ve también en pantalla completa)
   function abre(o, tema, nomTema, id, alCerrar) {
@@ -1129,5 +1198,5 @@
     return { cierra };
   }
 
-  window.LMVoluntarios = { version: VERSION, monta, temas: Object.keys(TEMAS), _TEMAS: TEMAS, _recorrido: recorrido, _A: A };
+  window.LMVoluntarios = { version: VERSION, monta, ofrece, temas: Object.keys(TEMAS), _TEMAS: TEMAS, _recorrido: recorrido, _A: A, _abre: abre };
 })();
