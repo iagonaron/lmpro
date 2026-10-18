@@ -30,6 +30,16 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   ♭/♯) y se corrige. Todo pasa por LM_ACO (arriba/bajo/raizRueda) en index.html.
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 18-oct 11:20 · Fichas y rediseño · HECHO (Iago: «si sabes que el ejercicio de claves ha salido mal, pues pones un ojo sobre
+  explicación de cómo se resuelve… y que tengas varias variantes según el día… eso puedes aplicarlo a cualquier ejercicio del
+  que no puedes tener un rastreo tan preciso») · EL ¡OJO! DE CUALQUIER EJERCICIO FALLADO. LMEAVathome e82aed0
+  (piel/previa/previa.html 738153ed, antes 9aec3e68; piel/previa/elige.js 80aad636, 2026-10-18c): en eligeOjos, si paramsDe no
+  saca el apartado exacto (o falla), variante(molde, key, curso, semana + n) da una de las variantes de ejemplo de ese tipo
+  (filtradas: escala mayor/menor, identificar/construir, cadencias de GE sin perfecta, adornos/abreviaciones, enarmonía de la
+  nota/avanzada; los test, no) y el pick lleva generico: true. El resumen de MOLDES (window.__previa.resumen, moldes.json) lleva
+  ya TODAS las variantes. acordePro: dos de construir más (Sol 7, Mi ø). Sin ¡Ojo!: solo ex_* de GP (no hay molde). OJO:
+  diario-previa.js sigue sin subir (Diario 6ad3ffa8, 08bd63ce). Copia de antes: APPs/_PARA
+  BORRAR/18-oct-2026-antes-de-las-variantes/.
 - 18-oct 10:55 · Fichas y rediseño · HECHO (cada repo comprobado justo antes; con el ok de Iago: «Sí, los dos») · EL MANDO N76 Y
   EL ¡OJO! DE TODOS LOS TIPOS. LMEAVathome d19b007 y f5eadab (piel/escaleta.js 6003dd9b, antes 83f78b0a; piel/lm-piel.js
   9fa9f4b1, carga escaleta.js?v=2026-10-18c): el mando de Iago (Norwii N76) hace solo cuatro cosas («sin funciones de mantener
