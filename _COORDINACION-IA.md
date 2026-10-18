@@ -30,6 +30,32 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   ♭/♯) y se corrige. Todo pasa por LM_ACO (arriba/bajo/raizRueda) en index.html.
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 18-oct 09:26 · Magnetófono (Cowork, la conversación de las animáticas) · HECHO · LA VERSIÓN INTERACTIVA DEL MAGNETÓFONO, SOLO
+  PARA PROTESTER (Iago, 17-oct: «que me lo habilites solo en Protester, para que yo lo pueda ir viendo ahí»; hoy: «sube», «pero
+  sólo para protester»).
+  (1) magnetofono, commits fa9251d…5666e0b (23): prueba.html + cinta/ NUEVOS (el motor, las estaciones de las tres bobinas, los
+  tramos de vídeo en cinta/v/ y cinta/v7/, sonidos en cinta/a/, imágenes en cinta/i/; qué es y cómo se quita: cinta/LEEME.txt).
+  En vivo: https://magnetofono.gp.lmathome.es/prueba.html (sin enlazar desde ningún sitio y con noindex); su index.html, SIN
+  TOCAR.
+  (2) lmpro, commits 0bbb807 (hitos/), 0c8c1d5 (voluntarios/) y 0f05dbc (index.html 29cfc13a…): PRUEBAS u4 → con la cuenta
+  Protester la medalla u4 se VE CERRADA, con la sombra del icono nuevo (u4n, la caja de Alemania con el magnetófono) y la «?»,
+  pero al pulsarla abre la prueba con «#c=<cuenta>»; lo mismo la u3 de Atonalidad, que hasta hoy le salía abierta (misterio:true
+  en las dos; Iago, 18-oct: «que visualmente se siga viendo con la interrogación, eso sí, con el icono nuevo… ponme también el
+  de atonalidad con la interrogación (aunque en protester sí pueda acceder pulsando)»); cuando se abra la semana, se ven
+  abiertas, como siempre. Tester y alumnos, igual que antes (probado sin red en 1280 y 390: las once medallas idénticas a las de
+  main, cerradas y abiertas). En vivo, con la cuenta Protester: Fonógrafo y Acústica abiertas, Atonalidad y Magnetófono con la
+  «?» y al pulsarlas abren su prueba; las demás, cerradas («Todavía no desbloqueado»); magnetofono sirve los 339 ficheros (200,
+  mismos bytes). HITO_TEMAS «magnetofono» (tema «cinta»: «MAGNETÓFONO» en Bodoni crema, «Bobina N» en el rojo de grabar, el
+  título en una etiqueta a máquina, la luz roja y dos bobinas que giran despacio; con «reducir movimiento», quietas) + hitos/ (6
+  ficheros nuevos); voluntarios/lm-voluntarios.js v2 (más el tema «cinta»; museo, radio y disco idénticos, probados los cuatro)
+  y su LEEME.md. SUPABASE: nada. El SQL de las tarjetas (_suite_hito_meta y _suite_hito_de_texto con «magnetofono» y «bobina N»;
+  comprobado contra lo de hoy) está SIN EJECUTAR y lo lanza Iago: APPs/DIARIO PROFESOR (netlify
+  diariodeiagocmus)/SQL-BD/18-oct-2026-hitos-magnetofono (SIN EJECUTAR).sql; hasta entonces no sale ninguna tarjeta del
+  Magnetófono en la campana. Deshacer: borrar la entrada u4 de PRUEBAS (y la línea de u4n) y el «misterio:true» de la u3, o
+  subir los de APPs/_PARA BORRAR/18-oct-2026-lmpro-antes-del-magnetofono/ (index.html, lm-voluntarios.js y LEEME.md de 3ce6f36 =
+  d14d7b1); en magnetofono, borrar prueba.html y cinta/. OJO quien toque @MEDALLERO: mantén las entradas u3 y u4 de PRUEBAS con
+  su misterio:true (y el .misterio de pintar(), del clic y del CSS) y la línea de u4n de __MED_IMG__ (va DESPUÉS de las de u3n,
+  que la del 15-oct crea __MED_IMG__ de cero). OJO quien toque voluntarios/: es la v2, con cuatro temas.
 - 18-oct 09:20 · Fichas y rediseño · HECHO (cada repo comprobado justo antes; con el ok de Iago: «en clase ya ni toco el iPad…
   lo que sí abro es el portal tester o el protester… ahí es donde decida» y «y si construyo el intervalo, que lo haga igual») ·
   EL ¡OJO! DE LA PREVIA LO CALCULA LA PANTALLA DEL AULA. LMEAVathome 5bd21e7 (piel/previa/previa.html fadac467, antes 25c5f5bc;
@@ -44,15 +70,6 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   raya, como al clasificar. OJO quien toque escaleta.js: el próximo ?v en lm-piel.js, después de 2026-10-18a; quien toque
   eligeOjos, paramsDe o fallados: regenerar elige.js y diario-previa.js (gen-diario.py). Copias de antes: APPs/_PARA
   BORRAR/18-oct-2026-antes-del-ojo-en-el-aula/.
-- 18-oct 08:53 · Magnetófono (Cowork, la conversación de las animáticas) · EN CURSO · LA VERSIÓN INTERACTIVA DEL MAGNETÓFONO,
-  SOLO PARA PROTESTER (Iago, 17-oct: «que me lo habilites solo en Protester, para que yo lo pueda ir viendo ahí»; hoy: «sube»,
-  «pero sólo para protester»). Voy a tocar: (1) repo magnetofono: prueba.html y cinta/, ficheros NUEVOS (index.html y lo demás,
-  sin tocar); (2) lmpro (este repo), sobre main d14d7b1: index.html (PRUEBAS u4 solo /protester/i con el icono u4n, y u3 y u4
-  con «misterio»: en Protester se VEN cerradas, con la «?», pero se abren al pulsarlas; HITO_TEMAS «magnetofono» para las
-  tarjetas de la campana, tema «cinta»; la medalla u4n en __MED_IMG__; dos letras nuevas en hitoCSS), voluntarios/lm-voluntarios.js
-  (v2: el tema «cinta»; los otros tres, igual) y su LEEME.md, y hitos/ (magnetofono-1…3.webp, f-courier.woff2,
-  f-courier-700.woff2, f-bodoni-900.woff2). Sin Supabase. Que nadie toque @MEDALLERO, HITO_TEMAS ni voluntarios/ hasta que esto
-  pase a HECHO.
 - 18-oct 08:25 · Fichas y rediseño · HECHO (con el ok de Iago: «prefiero que añadas en el medio un sol natural pequeño… y una raya
   más») · INTERVALOS EN LA PREVIA. LMEAVathome f6c5e0b (solo piel/previa/previa.html, 3df44964; antes 84ae8fa6): en el ¡Ojo!
   «Clasifica el intervalo», las 2ª y 3ª que se cuentan sin alteraciones y la alteración cambia: la alterada se aparta, la
