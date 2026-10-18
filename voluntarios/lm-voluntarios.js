@@ -1101,9 +1101,13 @@
         op = op || {};
         if (oferta) return oferta;
         oferta = (async () => {
-          if (op.tras) { try { await op.tras; } catch (e) {} }
+          // (18-oct, tarde) primero, si hay clase ahora; fuera de hora no se espera a nada (ni al permiso del micro: el portal
+          // empieza ya, como antes). En hora de clase, sí: la oferta sale cuando se ha contestado al permiso (op.tras).
           if (!vivo) return false;
           if (!est) await refresca();
+          if (!(est && est.horario && franja(est.horario))) return false;
+          if (op.tras) { try { await op.tras; } catch (e) {} }
+          if (!vivo) return false;
           const f = est && est.horario ? franja(est.horario) : null;
           if (!f) return false;
           return await new Promise(ok => {

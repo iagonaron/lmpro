@@ -17,6 +17,8 @@ CERA.» · «El día 1 del Fonógrafo NO lleva voluntario (es solo verlo).»
   se ilumina con la fanfarria.
 - Lo de los cuatro temas (uno por portal) sigue igual. Lo de «un selector distinto por día» (V1) queda para otra tanda.
 - Deshacer: volver a subir la v2 (`lm-voluntarios.js` de antes; copia en `_PARA BORRAR/18-oct-2026-voluntarios-v2/`).
+- (18-oct, tarde) `ofrece({ tras })`: primero mira si hay clase; **fuera de hora no espera a nada** (ni al permiso del micro)
+  y el portal empieza ya, como antes. En hora de clase sí espera a que se conteste al permiso y entonces saca la oferta.
 
 ## Qué hace (v1–v2; desde la v3, sin el botón de arriba: ver arriba)
 - En cada portal interactivo del medallero GP sale, arriba a la derecha (a la izquierda de la pausa y la pantalla completa),
