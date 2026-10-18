@@ -19,7 +19,8 @@
    · El botón: icono + «Voluntarios», apagado fuera de la hora de clase (al pulsarlo, dice cuándo es la próxima).
    · Tres estéticas («temas»), una por portal: «museo» (Atonalidad: la rueda del candado del capítulo 3, de latón, con la luz
      azul de la noche), «radio» (Acústica · La cabaña: la radio de la cabaña, el dial que sintoniza el nombre, con su ojo mágico)
-     y «disco» (Fonógrafo: el disco que gira y la aguja que cae en un nombre). Un portal nuevo = un tema nuevo aquí.
+     y «disco» (Fonógrafo: el disco que gira y la aguja que cae en un nombre). (17-oct-2026) Y «cinta» (Magnetófono: los nombres
+     escritos en la cinta, que rebobina, frena y deja uno bajo el cabezal de reproducir). Un portal nuevo = un tema nuevo aquí.
 
    Uso en un portal (ver LEEME):
      <script> cargador: si hay #c= o lm_vol_cuenta, carga https://gp.lmathome.es/voluntarios/lm-voluntarios.js y llama a
@@ -29,7 +30,7 @@
 (function () {
   'use strict';
   if (window.LMVoluntarios) return;
-  const VERSION = 1;
+  const VERSION = 2;   // (17-oct-2026) v2: el tema «cinta» del Magnetófono
   const SB = 'https://woiptkyrxkbpnvioypit.supabase.co';
   const CLAVE_PUB = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndvaXB0a3lyeGticG52aW95cGl0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0NzI2ODYsImV4cCI6MjA5MjA0ODY4Nn0.B2nKgj5rD0rkdLeMIrd9KgD8lUPWsBT4Y7aCtmnvbjA';
   const CLAVE = 'lm_vol_cuenta';
@@ -754,6 +755,245 @@
     }
   };
 
+  /* ── «cinta» · Magnetófono: el magnetófono de la caja de Alemania (17-oct-2026, guion v4.5, VOLUNTARIOS) ──
+     Visto desde arriba: dos bobinas de aluminio, la cinta marrón que pasa por los tres cabezales (borrar, grabar y reproducir)
+     y los nombres de la clase escritos en la propia cinta, separados por empalmes en diagonal. Al tirar se baja la tecla de
+     rebobinar y la cinta corre hacia la izquierda a toda velocidad (MicroTapeRewind_SFXB.4110); frena (el trinquete de
+     FF_JO_foley_metal_crank_slowdown); y el nombre que queda bajo el cabezal de reproducir se ilumina, con el clic de la tecla
+     de reproducir, el ojo mágico que se abre y la cinta que arranca. Sin muestras, suena un silbido sintético que sigue a la cinta. */
+  TEMAS.cinta = {
+    fuentes: ['700 30px "Courier Prime"', '400 30px "Courier Prime"', '900 96px "Bodoni Moda"'],
+    css: `
+.lmv-t-cinta .lmv-velo{background:radial-gradient(ellipse at 34% 50%,rgba(38,30,22,.965) 0%,rgba(22,17,12,.985) 55%,rgba(8,6,4,.995) 100%)}
+.lmv-t-cinta .lmv-cab{top:250px;left:1150px;right:60px}
+.lmv-t-cinta .lmv-ceja{font:700 22px/1 "Courier Prime","Courier New",Courier,monospace;letter-spacing:.32em;text-transform:uppercase;color:#e5483b;text-shadow:0 0 14px rgba(229,72,59,.45)}
+.lmv-t-cinta .lmv-grupo{margin-top:16px;font:400 19px/1 "Courier Prime","Courier New",Courier,monospace;letter-spacing:.1em;text-transform:uppercase;color:#b9ad95}
+.lmv-t-cinta .lmv-nombre{top:440px;left:1150px;right:60px;font:900 88px/1.1 "Bodoni Moda","Bodoni 72","Bodoni MT",Didot,Georgia,serif;letter-spacing:.01em;color:#f3ead6;text-shadow:0 0 34px rgba(255,214,150,.32),0 4px 18px rgba(0,0,0,.9)}
+.lmv-t-cinta .lmv-nota{top:620px;left:1150px;right:60px;font:400 22px/1.4 "Courier Prime","Courier New",Courier,monospace;color:#d8ccb2}
+.lmv-t-cinta .lmv-pie{left:1150px;right:60px;bottom:auto;top:760px}
+.lmv-t-cinta .lmv-b{display:inline-flex;align-items:center;gap:12px;padding:16px 30px;border-radius:4px;border:1px solid rgba(239,229,207,.6);background:rgba(22,17,12,.72);color:#efe5cf;font:700 20px/1 "Courier Prime","Courier New",Courier,monospace;letter-spacing:.08em;text-transform:uppercase;transition:color .25s,border-color .25s,background .25s}
+.lmv-t-cinta .lmv-b:hover{border-color:#efe5cf;background:rgba(239,229,207,.12)}
+.lmv-t-cinta .lmv-b.lmv-otra{background:linear-gradient(#f4ecd8,#e2d3b2);border-color:#f4ecd8;color:#1e1a16}
+.lmv-t-cinta .lmv-b.lmv-otra:hover{background:#fff6e2;color:#000}
+.lmv-t-cinta .lmv-cargando{color:#e5483b}`,
+    crea(esc, o) {
+      const L = lienzo(esc), g = L.g;
+      const CU = '"Courier Prime","Courier New",Courier,monospace', BO = '"Bodoni Moda","Bodoni 72","Bodoni MT",Didot,Georgia,serif';
+      const RL = { x: 330, y: 372 }, RR = { x: 830, y: 372 }, RF = 196;      // las bobinas: centro y radio del plato
+      const TY = 708, TH = 52, X0 = 158, X1 = 1002;                            // la cinta por los cabezales (de poste a poste)
+      const HX = [452, 590, 760], HN = ['BORRAR', 'GRABAR', 'REPRODUCIR'], PH = HX[2];
+      const KY = 842, KX = [226, 336, 446, 556], KN = ['◀◀', '■', '▶', '●'];   // las teclas: rebobinar, parar, reproducir, grabar
+      const st = { items: [], p: 0, vel: 0, aL: 0, aR: 0, luz: 0, ojo: .25, rew: 0, play: 0, t: 0, SW: 300, n: 0 };
+      let fijo = null, raf = 0, vivo = true;
+      const pack = (c) => { const k = Math.cos(st.p * .018); return c === 'L' ? 128 - 26 * k : 128 + 26 * k; };
+      const metal = (g, x0, y0, x1, y1, a, b, c) => { const gr = g.createLinearGradient(x0, y0, x1, y1); gr.addColorStop(0, a); gr.addColorStop(.5, b); gr.addColorStop(1, c); return gr; };
+      function tornillo(g, x, y) {
+        const gr = g.createRadialGradient(x - 2, y - 2, 1, x, y, 9); gr.addColorStop(0, '#e6e1d6'); gr.addColorStop(1, '#5b564d');
+        g.beginPath(); g.arc(x, y, 8, 0, 6.283); g.fillStyle = gr; g.fill();
+        g.strokeStyle = 'rgba(30,26,22,.8)'; g.lineWidth = 2; g.beginPath(); g.moveTo(x - 5, y + 2); g.lineTo(x + 5, y - 2); g.stroke();
+      }
+      function pintaFijo(g) {            // el chasis, la placa, los postes, las teclas (su hueco) y el marco del ojo mágico
+        g.save();
+        g.shadowColor = 'rgba(0,0,0,.75)'; g.shadowBlur = 60; g.shadowOffsetY = 24;
+        rr(g, 80, 96, 1000, 900, 26); g.fillStyle = '#3a342c'; g.fill(); g.shadowColor = 'transparent';
+        rr(g, 92, 108, 976, 876, 20); g.fillStyle = metal(g, 92, 108, 1068, 984, '#a39d92', '#8b857a', '#6f6a60'); g.fill();
+        // cepillado del aluminio
+        g.globalAlpha = .07; g.strokeStyle = '#fff'; g.lineWidth = 1;
+        for (let y = 112; y < 980; y += 3) { g.beginPath(); g.moveTo(96, y + Math.sin(y * 1.7) * .8); g.lineTo(1064, y); g.stroke(); }
+        g.globalAlpha = 1;
+        [[118, 134], [1042, 134], [118, 958], [1042, 958]].forEach(([x, y]) => tornillo(g, x, y));
+        // los huecos de las bobinas
+        [RL, RR].forEach(c => { const gr = g.createRadialGradient(c.x, c.y, RF - 40, c.x, c.y, RF + 16); gr.addColorStop(0, '#24201b'); gr.addColorStop(1, '#4b453c');
+          g.beginPath(); g.arc(c.x, c.y, RF + 12, 0, 6.283); g.fillStyle = gr; g.fill(); });
+        // la placa de los cabezales (debajo de la cinta)
+        rr(g, X0 - 40, TY - 92, X1 - X0 + 80, 176, 14); g.fillStyle = '#2b2620'; g.fill();
+        rr(g, X0 - 34, TY - 86, X1 - X0 + 68, 164, 11); g.fillStyle = metal(g, 0, TY - 86, 0, TY + 78, '#4d463d', '#3a342d', '#2c2721'); g.fill();
+        // la etiqueta crema, escrita a máquina
+        g.save(); g.translate(796, 846); g.rotate(-.012);
+        g.shadowColor = 'rgba(0,0,0,.45)'; g.shadowBlur = 8; g.shadowOffsetY = 3;
+        g.fillStyle = '#efe5cf'; g.fillRect(-150, -46, 300, 92); g.shadowColor = 'transparent';
+        g.strokeStyle = 'rgba(120,96,60,.35)'; g.lineWidth = 1.5; g.strokeRect(-144, -40, 288, 80);
+        g.fillStyle = '#1e1a16'; g.textAlign = 'center'; g.textBaseline = 'middle';
+        g.font = `700 15px ${CU}`; g.fillText('LM AT HOME · 2.º GP', 0, -20);
+        g.font = `900 30px ${BO}`; g.fillText('Magnetófono', 0, 6);
+        g.font = `400 14px ${CU}`; g.fillStyle = '#c83a2c'; g.fillText('VOLUNTARIOS', 0, 30);
+        g.restore();
+        // el hueco de las teclas
+        rr(g, KX[0] - 66, KY - 50, KX[3] - KX[0] + 132, 104, 10); g.fillStyle = '#26221d'; g.fill();
+        // el marco del ojo mágico
+        g.beginPath(); g.arc(1006, 846, 36, 0, 6.283); g.fillStyle = metal(g, 970, 810, 1042, 882, '#d8d2c6', '#8d877c', '#4e4942'); g.fill();
+        g.beginPath(); g.arc(1006, 846, 27, 0, 6.283); g.fillStyle = '#0b120c'; g.fill();
+        g.restore();
+      }
+      function ajusta(s) { if (L.ajusta(s) || !fijo) fijo = capaFija(L.k, pintaFijo); }
+      function bobina(c, ang, rp) {
+        g.save(); g.translate(c.x, c.y);
+        // la cinta enrollada
+        let gr = g.createRadialGradient(0, 0, 40, 0, 0, rp); gr.addColorStop(0, '#3b2414'); gr.addColorStop(.85, '#5c3a22'); gr.addColorStop(1, '#2e1c10');
+        g.beginPath(); g.arc(0, 0, rp, 0, 6.283); g.fillStyle = gr; g.fill();
+        g.strokeStyle = 'rgba(255,220,180,.06)'; g.lineWidth = 1; for (let r = 52; r < rp; r += 4) { g.beginPath(); g.arc(0, 0, r, 0, 6.283); g.stroke(); }
+        g.rotate(ang);
+        // el plato de aluminio: el aro, tres radios anchos y el buje (por las ventanas se ve la cinta)
+        const al = metal(g, -RF, -RF, RF, RF, '#e9e6df', '#a9a49a', '#6d685f');
+        g.beginPath(); g.arc(0, 0, RF, 0, 6.283); g.arc(0, 0, RF - 16, 2 * Math.PI, 0, true); g.fillStyle = al; g.fill();
+        for (let i = 0; i < 3; i++) {
+          const a = i * 2.0944;
+          g.beginPath(); g.arc(0, 0, RF - 12, a - .3, a + .3); g.arc(0, 0, 50, a + .62, a - .62, true); g.closePath(); g.fillStyle = al; g.fill();
+          g.strokeStyle = 'rgba(40,36,30,.35)'; g.lineWidth = 2; g.stroke();
+          // un agujero pequeño en cada radio
+          g.beginPath(); g.arc(Math.cos(a) * (RF - 62), Math.sin(a) * (RF - 62), 13, 0, 6.283); g.fillStyle = 'rgba(30,22,16,.85)'; g.fill();
+        }
+        g.beginPath(); g.arc(0, 0, 52, 0, 6.283); g.fillStyle = metal(g, -52, -52, 52, 52, '#f2efe8', '#b3aea4', '#77726a'); g.fill();
+        g.beginPath(); g.arc(0, 0, 18, 0, 6.283); g.fillStyle = '#2a2621'; g.fill();
+        g.fillStyle = '#c9c4ba'; for (let i = 0; i < 3; i++) { g.save(); g.rotate(i * 2.0944); g.fillRect(-4, -18, 8, 9); g.restore(); }
+        g.restore();
+        // el brillo, que no gira
+        g.save(); g.globalCompositeOperation = 'lighter';
+        gr = g.createLinearGradient(c.x - RF, c.y - RF, c.x + RF, c.y + RF); gr.addColorStop(.35, 'rgba(255,255,255,0)'); gr.addColorStop(.5, 'rgba(255,255,255,.10)'); gr.addColorStop(.65, 'rgba(255,255,255,0)');
+        g.beginPath(); g.arc(c.x, c.y, RF, 0, 6.283); g.fillStyle = gr; g.fill(); g.restore();
+      }
+      function cinta() {
+        const rl = pack('L'), rr_ = pack('R');
+        // del poste izquierdo a la bobina izquierda y del derecho a la derecha (por debajo de los platos)
+        g.save(); g.lineCap = 'butt'; g.strokeStyle = '#4a2e1b'; g.lineWidth = 20;
+        g.beginPath(); g.moveTo(X0, TY); g.lineTo(RL.x - rl * .96, RL.y + rl * .28); g.stroke();
+        g.beginPath(); g.moveTo(X1, TY); g.lineTo(RR.x + rr_ * .96, RR.y + rr_ * .28); g.stroke();
+        g.restore();
+        // la cinta por los cabezales: la banda donde van los nombres
+        g.save();
+        let gr = g.createLinearGradient(0, TY - TH / 2, 0, TY + TH / 2); gr.addColorStop(0, '#3a2414'); gr.addColorStop(.25, '#5e3c23'); gr.addColorStop(.75, '#55361f'); gr.addColorStop(1, '#2f1d10');
+        g.fillStyle = gr; g.fillRect(X0, TY - TH / 2, X1 - X0, TH);
+        g.beginPath(); g.rect(X0, TY - TH / 2, X1 - X0, TH); g.clip();
+        const n = st.n || 1, SW = st.SW, vel = Math.abs(st.vel), copias = vel > .05 ? Math.min(8, 1 + Math.floor(vel * 9)) : 1;
+        const j0 = Math.floor(st.p - (PH - X0) / SW) - 1, j1 = Math.ceil(st.p + (X1 - PH) / SW) + 1;
+        g.font = `700 ${n > 18 ? 26 : 29}px ${CU}`; g.textAlign = 'center'; g.textBaseline = 'middle';
+        for (let j = j0; j <= j1; j++) {
+          const x = PH + (j - st.p) * SW, nom = (st.items[((j % n) + n) % n] || '').toUpperCase();
+          // el empalme en diagonal entre un nombre y el siguiente
+          g.strokeStyle = 'rgba(239,229,207,.55)'; g.lineWidth = 2; g.beginPath(); g.moveTo(x - SW / 2 - 9, TY + TH / 2); g.lineTo(x - SW / 2 + 9, TY - TH / 2); g.stroke();
+          const elegido = st.luz > 0 && Math.abs(x - PH) < 2;
+          for (let c = 0; c < copias; c++) {
+            g.save(); g.globalAlpha = copias > 1 ? Math.pow(1 - c / copias, 1.6) * 2.2 / copias : 1;
+            g.fillStyle = elegido ? `rgb(255,${Math.round(lerp(229, 244, st.luz))},${Math.round(lerp(207, 214, st.luz))})` : '#e9dfc6';
+            if (elegido) { g.shadowColor = `rgba(255,214,150,${.9 * st.luz})`; g.shadowBlur = 26; }
+            textoCabe(g, nom, x + c * Math.sign(st.vel || 1) * 14, TY + 1, SW - 46);
+            g.restore();
+          }
+        }
+        g.restore();
+        // el brillo de la cinta
+        g.fillStyle = 'rgba(255,230,200,.07)'; g.fillRect(X0, TY - TH / 2 + 5, X1 - X0, 6);
+        // los postes de guía
+        [X0, X1].forEach(x => { const gr2 = g.createRadialGradient(x - 5, TY - 6, 2, x, TY, 26); gr2.addColorStop(0, '#f5f2ec'); gr2.addColorStop(1, '#6a655d');
+          g.beginPath(); g.arc(x, TY, 24, 0, 6.283); g.fillStyle = gr2; g.fill(); g.beginPath(); g.arc(x, TY, 7, 0, 6.283); g.fillStyle = '#3a352f'; g.fill(); });
+      }
+      function cabezales() {
+        HX.forEach((x, i) => {
+          const y0 = TY - TH / 2 - 74, w = 76, juega = i === 2 ? st.luz : 0;
+          g.save();
+          g.shadowColor = 'rgba(0,0,0,.6)'; g.shadowBlur = 12; g.shadowOffsetY = 5;
+          rr(g, x - w / 2, y0, w, 78, [10, 10, 4, 4]); g.fillStyle = metal(g, x - w / 2, 0, x + w / 2, 0, '#5f594f', '#c9c3b7', '#5a544b'); g.fill();
+          g.shadowColor = 'transparent';
+          // la ranura del cabezal, que toca la cinta
+          g.fillStyle = '#1a1714'; g.fillRect(x - 2, y0 + 50, 4, 28);
+          if (juega > 0) { g.globalCompositeOperation = 'lighter'; const gr = g.createRadialGradient(x, TY - TH / 2, 2, x, TY - TH / 2, 90);
+            gr.addColorStop(0, `rgba(255,190,110,${.55 * juega})`); gr.addColorStop(1, 'rgba(255,190,110,0)'); g.fillStyle = gr; g.fillRect(x - 100, TY - TH / 2 - 90, 200, 180); g.globalCompositeOperation = 'source-over'; }
+          g.fillStyle = i === 2 ? (juega > 0 ? '#ffd9a0' : '#efe5cf') : '#cfc4ad'; g.font = `700 ${i === 2 ? 17 : 15}px ${CU}`; g.textAlign = 'center'; g.textBaseline = 'middle';
+          g.fillText(HN[i], x, TY + TH / 2 + 30);
+          g.restore();
+        });
+        // la flecha que marca el cabezal de reproducir
+        g.fillStyle = st.luz > 0 ? '#ff4b3a' : '#e5483b'; g.beginPath(); g.moveTo(PH - 9, TY + TH / 2 + 50); g.lineTo(PH + 9, TY + TH / 2 + 50); g.lineTo(PH, TY + TH / 2 + 40); g.closePath(); g.fill();
+      }
+      function teclas() {
+        KX.forEach((x, i) => {
+          const baja = i === 0 ? st.rew : i === 2 ? st.play : 0, y = KY - 34 + 8 * baja;
+          g.save(); g.shadowColor = 'rgba(0,0,0,.55)'; g.shadowBlur = 10 * (1 - baja) + 2; g.shadowOffsetY = 6 * (1 - baja) + 1;
+          rr(g, x - 50, y, 100, 68, 7); g.fillStyle = metal(g, 0, y, 0, y + 68, '#f6f0e1', '#e5dac0', '#c9bb9b'); g.fill(); g.shadowColor = 'transparent';
+          g.fillStyle = i === 3 ? '#c83a2c' : '#2a2520'; g.font = `700 ${i === 0 ? 24 : 26}px ${CU}`; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(KN[i], x, y + 35);
+          g.restore();
+        });
+      }
+      function ojo() {                    // el ojo mágico: un abanico verde que se abre cuando suena
+        const a = .25 + .75 * st.ojo;
+        g.save(); g.translate(1006, 846);
+        const gr = g.createRadialGradient(0, 0, 3, 0, 0, 27); gr.addColorStop(0, `rgba(170,255,170,${.9 * a})`); gr.addColorStop(1, `rgba(40,160,70,${.75 * a})`);
+        g.fillStyle = gr; g.beginPath(); g.moveTo(0, 0); g.arc(0, 0, 25, -Math.PI / 2 + (1 - st.ojo) * 1.1, -Math.PI / 2 + 2 * Math.PI - (1 - st.ojo) * 1.1); g.closePath(); g.fill();
+        g.beginPath(); g.arc(0, 0, 7, 0, 6.283); g.fillStyle = '#0b120c'; g.fill();
+        if (st.ojo > .6) { g.globalCompositeOperation = 'lighter'; const gr2 = g.createRadialGradient(0, 0, 10, 0, 0, 90); gr2.addColorStop(0, `rgba(90,255,120,${.25 * (st.ojo - .6) / .4})`); gr2.addColorStop(1, 'rgba(90,255,120,0)'); g.fillStyle = gr2; g.fillRect(-90, -90, 180, 180); }
+        g.restore();
+      }
+      let tAnt = performance.now();
+      function bucle(ahora) {
+        if (!vivo) return;
+        const dt = Math.min(.05, (ahora - tAnt) / 1000); tAnt = ahora; st.t += dt;
+        // las bobinas giran con la cinta (hacia la izquierda: las dos, al revés que las agujas del reloj)
+        const v = st.vel * st.SW * 60;                     // px por segundo
+        st.aL -= v * dt / pack('L'); st.aR -= v * dt / pack('R');
+        L.borra();
+        const gr = g.createRadialGradient(560, 300, 40, 560, 540, 1100); gr.addColorStop(0, 'rgba(255,214,150,.07)'); gr.addColorStop(1, 'rgba(255,214,150,0)'); g.fillStyle = gr; g.fillRect(0, 0, 1920, 1080);
+        if (fijo) ponCapa(g, fijo);
+        cinta(); bobina(RL, st.aL, pack('L')); bobina(RR, st.aR, pack('R')); cabezales(); teclas(); ojo();
+        raf = requestAnimationFrame(bucle);
+      }
+      raf = requestAnimationFrame(bucle);
+      // los sonidos (si el portal los da) y, si no, sintéticos
+      const son = {}, S = o.sonidos || {};
+      Promise.all([A.carga(S.rebobina), A.carga(S.frena), A.carga(S.tecla)]).then(([a, b, c]) => { son.rebobina = a; son.frena = b; son.tecla = c; });
+      function muestra(buf, t, gan, fuera) {          // una muestra con su volumen y, si se pide, un fundido de salida
+        const ac = A.ac; if (!ac || !buf) return false;
+        const s = ac.createBufferSource(); s.buffer = buf; const v = A.via(1, .18); const g2 = ac.createGain(); s.connect(g2); g2.connect(v);
+        const t0 = ac.currentTime + t; g2.gain.setValueAtTime(gan, t0);
+        if (fuera) { g2.gain.setValueAtTime(gan, t0 + fuera[0]); g2.gain.linearRampToValueAtTime(.0001, t0 + fuera[0] + fuera[1]); }
+        s.start(t0); return true;
+      }
+      const tecla = (t, gan = .9) => { if (!muestra(son.tecla, t, gan)) A.clic({ t, f: 1500, q: 1.4, gan: .55, dur: .05, wet: .1 }); };
+      return {
+        ajusta,
+        espera() { if (!st.n) { st.items = ['· · ·']; st.n = 1; } },
+        async gira(bombo, k) {
+          const n = bombo.length; st.items = bombo.slice(); st.n = n; st.luz = 0; st.play = 0; st.ojo = .25;
+          // el ancho de cada nombre en la cinta: el del más largo, con aire (entre 240 y 380 px)
+          g.save(); g.font = `700 29px ${CU}`; const w = Math.max(...bombo.map(s => g.measureText(String(s).toUpperCase()).width)); g.restore();
+          st.SW = clamp(w + 70, 240, 380);
+          // unas 30–36 posiciones más allá (dos o tres vueltas al bombo), y que caiga en el elegido
+          const p0 = Math.round(st.p); let p1 = p0 + 30; p1 += ((k - p1) % n + n) % n;
+          st.p = p0;
+          const f = recorrido(p0, p1, { p: 2.45 });
+          const ac = A.crea();
+          let silbido = null;
+          if (ac) {
+            tecla(0, 1);
+            if (!muestra(son.rebobina, .3, .95, [2.15, .55])) silbido = A.continuo({ f: 1800, q: 4, wet: .15 });
+            muestra(son.frena, 2.55, .8);
+            A.nota(98, { tipo: 'triangle', t: .3, dur: 2.6, gan: .05, ataque: .5, filtro: { f: 600 }, wet: .3 });      // el motor
+          }
+          // la tecla de rebobinar baja
+          await new Promise(ok => { const t0 = performance.now(); (function p_() { const u = (performance.now() - t0) / 160; st.rew = eo(u, 2); if (u < 1) requestAnimationFrame(p_); else ok(); })(); });
+          await new Promise(ok => {
+            const t0 = performance.now(); let antes = p0;
+            (function p_() {
+              const t = Math.min(f.T, (performance.now() - t0) / 1000), q = f(t);
+              st.vel = q - antes; antes = q; st.p = q;
+              if (silbido) { A.pon(silbido.g.gain, clamp(Math.abs(st.vel) * 1.4, 0, 1) * .12, .04); A.pon(silbido.f.frequency, 400 + 9000 * clamp(Math.abs(st.vel), 0, .6), .04); }
+              if (t > f.T - .9) st.rew = 1 - eo((t - (f.T - .9)) / .5, 2);       // la tecla de rebobinar sube al frenar
+              if (t < f.T) requestAnimationFrame(p_); else ok();
+            })();
+          });
+          st.p = p1; st.vel = 0; if (silbido) silbido.para(.15);
+          // clic de la tecla de reproducir; el ojo mágico se abre y la cinta arranca (un acorde que sube a su altura, como la cinta al coger velocidad)
+          tecla(0, 1);
+          if (ac) {
+            const v = ac.createGain(); v.gain.value = .85; const bp = ac.createBiquadFilter(); bp.type = 'lowpass'; bp.frequency.value = 2600; v.connect(bp); bp.connect(A.via(1, .3));
+            [261.63, 329.63, 392, 523.25].forEach((fq, i) => { A.nota(fq * .5, { tipo: 'sawtooth', t: .06 + i * .015, dur: .38, gan: .06, desliza: fq, destino: v }); A.nota(fq, { tipo: 'sawtooth', t: .44, dur: 1.7, gan: .055, ataque: .03, destino: v }); });
+          }
+          await new Promise(ok => { const t0 = performance.now(); (function p_() { const u = (performance.now() - t0) / 520; st.play = eo(u * 3, 2); st.luz = eo(u, 2); st.ojo = .25 + .75 * eo(u, 2); if (u < 1) requestAnimationFrame(p_); else ok(); })(); });
+        },
+        quita() { vivo = false; cancelAnimationFrame(raf); }
+      };
+    }
+  };
+
   /* ═════════════════════════ LA PARTE COMÚN: estilos, el botón, la capa y el sorteo ═════════════════════════ */
   const CSS = `
 .lmv-boton{display:inline-flex;align-items:center;justify-content:center;gap:.55em;white-space:nowrap;cursor:pointer;user-select:none;-webkit-user-select:none}
@@ -782,7 +1022,8 @@
 .lmv-aviso.ve{opacity:1;transform:none}
 .lmv-aviso.lmv-av-museo{font:500 16px/1.4 Poppins,"Avenir Next","Segoe UI",system-ui,sans-serif;border:2px solid #c4945c;background:rgba(14,12,18,.94);color:#f0e8da;border-radius:12px}
 .lmv-aviso.lmv-av-radio{font:300 15px/1.45 Jost,system-ui,sans-serif;letter-spacing:.06em;border:1px solid rgba(255,255,255,.72);background:rgba(8,12,14,.86);color:#fff;border-radius:9px}
-.lmv-aviso.lmv-av-disco{font:400 14px/1.45 Jost,"Iowan Old Style",Georgia,serif;letter-spacing:.06em;border:1px solid rgba(201,162,74,.6);background:rgba(20,14,9,.92);color:#DCCDB0;border-radius:8px}`;
+.lmv-aviso.lmv-av-disco{font:400 14px/1.45 Jost,"Iowan Old Style",Georgia,serif;letter-spacing:.06em;border:1px solid rgba(201,162,74,.6);background:rgba(20,14,9,.92);color:#DCCDB0;border-radius:8px}
+.lmv-aviso.lmv-av-cinta{font:400 15px/1.45 "Courier Prime","Courier New",Courier,monospace;border:1px solid rgba(239,229,207,.6);background:rgba(22,17,12,.94);color:#efe5cf;border-radius:4px}`;
   const ICONO = '<svg class="lmv-ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13.2" r="8.3"/><circle cx="12" cy="13.2" r="1.7"/><path d="M12 4.9v6.6M12 14.9v6.6M3.7 13.2h6.6M13.7 13.2h6.6M9.6 1.9h4.8L12 4.6z"/></svg>';
   function css(id, txt) { if (document.getElementById(id)) return; const s = el('style', null, document.head, null); s.id = id; s.textContent = txt; }
 

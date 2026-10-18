@@ -13,7 +13,9 @@ Hecho por Claude para Iago (conversación Cowork del escape room «Atonalidad»)
 - **Cada nombre que sale queda fuera** hasta que hayan salido todos los de su grupo (haya aceptado ser voluntario o no). Cuando
   ya han salido todos, empieza una ronda nueva con el grupo entero. El sorteo lo hace Supabase, no la página.
 - Cada portal tiene su estética (su «tema»): `museo` (Atonalidad: la rueda del candado del capítulo 3), `radio` (Acústica ·
-  La cabaña: la radio que sintoniza el nombre) y `disco` (Fonógrafo: el disco y la aguja).
+  La cabaña: la radio que sintoniza el nombre), `disco` (Fonógrafo: el disco y la aguja) y, desde el 18-oct-2026 (v2),
+  `cinta` (Magnetófono: los nombres escritos en la cinta, que rebobina, frena y deja uno bajo el cabezal de reproducir; sus
+  sonidos, en el portal: `cinta/a/vol_rebobina.mp3`, `vol_frena.mp3` y `vol_tecla.mp3`).
 
 ## Cómo funciona
 1. El medallero de `gp.lmathome.es` (index.html, bloque @MEDALLERO, función `conCuentaVol`) abre cada portal con
