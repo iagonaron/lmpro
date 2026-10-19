@@ -30,6 +30,17 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   ♭/♯) y se corrige. Todo pasa por LM_ACO (arriba/bajo/raizRueda) en index.html.
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 19-oct 11:15 · Fichas y rediseño · HECHO (cada repo comprobado justo antes; con el ok de Iago: «adelante, y que sea
+  reversible… sé cauto») · LA CAMPANA SIN GASTAR DE MÁS. En Supabase, el 87 % de las peticiones eran la campana de los portales:
+  preguntaba cada 30 s, con 9 llamadas, aunque nadie mirara la pestaña (una pestaña olvidada abierta = 14.000 peticiones al
+  día). index.html de GE (LMEAVathome 6fbfd95) y GP (este commit), solo AluCampana: autoRefrescar() no pregunta con la pestaña
+  oculta (al volver o con el foco, al momento y una sola vez); POLL 60 s (antes 30); barridos(id, cada) —quiz/tareas, hitos
+  (GP), recos, resumen— al entrar, al abrir la campana (si hace más de 1 min) y luego cada 10 min como mucho.
+  AluCampana.refrescar() llamado desde otros módulos: igual que antes. AHORRO=false (junto a POLL): todo como antes.
+  piel/apps/portal.js (LMEAVathome 0f783b2): cargarMorosos no pide con la pestaña oculta. Banco con reloj simulado (GE y GP):
+  mismas llamadas al entrar, mismo globo, misma lista; 10 min a la vista, 160 → 53 llamadas; 30 min oculta, 480 → 0. OJO quien
+  toque la campana: no volver a poner setInterval(refrescar, …) sin mirar document.hidden; los barridos van en barridos().
+  Copias de antes: Dropbox APPs/_PARA BORRAR/19-oct-2026-antes-de-la-campana-que-ahorra/.
 - 18-oct 23:05 · Magnetófono (Cowork, la conversación de las animáticas) · HECHO · commits 6c51215…19c429a · Repo magnetofono, solo prueba.html + cinta/ (index.html sin tocar): MOTOR v3 como La cabaña (Iago: «va a tirones… 1080 y 60 frames pero usando vídeos»): cinta/r (1080p60: un vídeo por tramo seguido con su sonido dentro, en trozos de 9,5 MB) y cinta/r3 (720p30), cinta/js (motor.js, comun.js y runs.js nuevo), prueba.html y LEEME; el micro se pide al pulsar la bobina; el prólogo sin pianos ni clarinete. Con el ok de Iago («Si, te dejo»), al final fuera cinta/v y cinta/v7 (quedan en el historial). En lmpro, solo esta línea.
 - 18-oct 16:05 · Magnetófono (Cowork, la conversación de las animáticas) · HECHO · (1) voluntarios/ (b6ab9e6 y fc451c1): lm-voluntarios.js v3 (sin botón arriba: «Seleccionar voluntario» surge en el medio al empezar, en hora de clase; el del Fonógrafo, de cilindro de cera; ofrece({tras}) fuera de hora no espera a nada) y su LEEME; los portales no cambian. (2) Repo magnetofono, solo prueba.html + cinta/ (index.html sin tocar), commits f67ddef…492c41c (27): la interactiva con las animáticas nuevas (prólogo v5.3, bobina 1 v3.6, bobinas 2 y 3 v3.5): tramos en cinta/v y cinta/v7, pistas de sonido continuas en cinta/p (nuevo), motor y estaciones con las notas de Iago de la mañana, LEEME al día. En vivo: los 415 ficheros, iguales al repo; la bobina 1 suena y avanza en Chrome. Siguen en el repo, sin usarse, b1_00_g.mp4 y b3_08_e.mp4 de cinta/v y cinta/v7 (cortes de antes).
 - 18-oct 13:50 · Fichas y rediseño · HECHO (sin EN CURSO aparte; cada repo comprobado justo antes; con el ok de Iago: «Sí, los

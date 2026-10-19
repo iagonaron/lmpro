@@ -1967,7 +1967,10 @@ function showEnig(kind){
   var SB_URL='https://woiptkyrxkbpnvioypit.supabase.co';
   var SB_ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndvaXB0a3lyeGticG52aW95cGl0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0NzI2ODYsImV4cCI6MjA5MjA0ODY4Nn0.B2nKgj5rD0rkdLeMIrd9KgD8lUPWsBT4Y7aCtmnvbjA';
   var LS_ULT='alu_campana_ultimo_pro';
-  var POLL=30000;
+  /* (19-oct-2026, Iago: «que ahorremos… y pueda hacer exactamente lo mismo») LA CAMPANA, SIN GASTAR DE MÁS: con la pestaña
+     oculta no pregunta (al volver, al momento); a la vista, cada minuto (antes, cada 30 s); los barridos, al abrir el portal o
+     la campana y luego cada 10 min como mucho. AHORRO=false: todo como antes. */
+  var AHORRO=true, POLL=AHORRO?60000:30000, BARRIDO_MS=AHORRO?600000:0, BARRIDO_ABRIR=AHORRO?60000:0;
   var _cli=null,_timer=null,_nuevoT=null,_cdTimer=null;
   function cli(){ if(!_cli && window.supabase){ _cli=window.supabase.createClient(SB_URL,SB_ANON); } return _cli; }
   function ses(){ try{ return (JSON.parse(localStorage.getItem('lmpro_session')||'null')||window.__LM_SES||null); }catch(e){ return window.__LM_SES||null; } }
@@ -3501,11 +3504,12 @@ function showEnig(kind){
     } else { w.style.display='none'; }
   }
   function onda(){ var b=btn(); if(!b) return; b.classList.add('nuevo'); if(_nuevoT) clearTimeout(_nuevoT); _nuevoT=setTimeout(function(){ b.classList.remove('nuevo'); },700); }
-  async function refrescar(){
-    pintarBienvenida();
-    var id=cuentaId(),b=btn(),bd=badge();
-    if(!id){ if(b) b.style.display='none'; return; }
-    if(b) b.style.display='';
+  /* (19-oct-2026) LOS BARRIDOS: crean los avisos que llegan a una hora (quiz programado y tareas del viernes, recomendaciones,
+     resumen de la semana, hitos). Son idempotentes: basta con pasarlos de vez en cuando, no en cada refresco. */
+  var _barridoT=0, _autoT=0;
+  async function barridos(id, cada){
+    if(cada && Date.now()-_barridoT < cada) return;
+    _barridoT=Date.now();
     // FASE 7.3 · barrido perezoso: materializa las notificaciones de quizzes
     // PROGRAMADOS cuya hora ya se cumplió (idempotente, sin datos sensibles).
     try{ await rpc('suite_quiz_barrer',{}); }catch(e){}
@@ -3515,6 +3519,21 @@ function showEnig(kind){
     try{ await rpc('suite_recos_barrer',{p_cuenta_id:id}); }catch(e){}
     // (17-oct-2026) RESUMEN DE TU SEMANA · el del último viernes a las 19:00, si aún no lo tiene (idempotente)
     try{ await rpc('suite_resumen_barrer',{p_cuenta_id:id}); }catch(e){}
+  }
+  /* (19-oct-2026) lo que pregunta sola la campana (cada minuto, al volver a la pestaña, al darle el foco): con la pestaña
+     oculta, nada; y «volver» y «foco» suelen llegar juntos: una sola vez */
+  function autoRefrescar(){
+    if(!AHORRO){ refrescar(); return; }
+    if(document.hidden) return;
+    if(Date.now()-_autoT < 10000) return;
+    _autoT=Date.now(); refrescar();
+  }
+  async function refrescar(){
+    pintarBienvenida();
+    var id=cuentaId(),b=btn(),bd=badge();
+    if(!id){ if(b) b.style.display='none'; return; }
+    if(b) b.style.display='';
+    await barridos(id, BARRIDO_MS);   /* (19-oct-2026) los barridos, cada 10 min como mucho (antes, en cada refresco) */
     // (6-ago Iago, v2) la campana pone el NÚMERO DE COSAS pendientes — ficha
     // por hacer o a medias (en plazo), quiz, lecciones sin estudiar, «otras»
     // sin marcar y avisos sin leer. Ficha + quiz + lecciones = «3». Cada cosa
@@ -3971,6 +3990,7 @@ function showEnig(kind){
     body.innerHTML='<div class="alu-vacio">Cargando…</div>';
     try{ cv2CSS(); }catch(eC){}   /* (15-oct-2026) campana en «columna de botones» */
     var id=cuentaId(); if(!id){ body.innerHTML='<div class="alu-vacio">Inicia sesión para ver tus notificaciones.</div>'; return; }
+    await barridos(id, BARRIDO_ABRIR);   /* (19-oct-2026) al abrir la campana, lo que acaba de llegar */
     var r=await rpc('suite_alumno_notif_listar',{p_cuenta_id:id});
     // (Iago 15-sep-2026) Antes un fallo de red se pintaba igual que «no hay
     // nada»: el alumno se iba convencido de que esta semana no tenía tareas.
@@ -4774,11 +4794,11 @@ function showEnig(kind){
   }
   function start(){
     injectNebCSS();
-    refrescar();
+    _autoT=Date.now(); refrescar();
     if(_timer) clearInterval(_timer);
-    _timer=setInterval(refrescar,POLL);
-    document.addEventListener('visibilitychange',function(){ if(!document.hidden) refrescar(); });
-    window.addEventListener('focus',refrescar);
+    _timer=setInterval(autoRefrescar,POLL);   /* (19-oct-2026) con la pestaña oculta, nada */
+    document.addEventListener('visibilitychange',function(){ if(!document.hidden) autoRefrescar(); });
+    window.addEventListener('focus',function(){ autoRefrescar(); });
     document.addEventListener('keydown',function(e){ if(e.key==='Escape') cerrar(); });
   }
   window.AluCampana={ abrir:abrir, cerrar:cerrar, refrescar:refrescar };
