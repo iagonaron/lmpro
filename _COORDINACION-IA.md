@@ -30,6 +30,19 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   ♭/♯) y se corrige. Todo pasa por LM_ACO (arriba/bajo/raizRueda) en index.html.
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 19-oct 14:55 · Fichas y rediseño · HECHO (con el ok de Iago: «tienes ya mi OK… para subir todo») · MI MAPA DE TEORÍA, 2.ª
+  versión. LMEAVathome: solo piel/mapa.js (cbfe0d2; antes 5f96670). Misma dirección (piel/mapa.js?v=2026-10-19a): los portales
+  NO cambian. Iago: «la flecha de arriba a la izquierda no funciona», «demasiado grande… más continuidad del portal», «el propio
+  mapa debería ser una ventana emergente… con el fondo que estuviese antes» y «cuando pone practicar, una mini ventanita para
+  escoger apuntes, vídeo o ejercicios libres». Ahora: ventana en el centro con el portal detrás atenuado, letra y tamaños de la
+  campana; se cierra con la ✕ (cuadrada, arriba a la derecha), Esc, tocando fuera o «atrás» (deja su entrada en el historial,
+  como el visor de lecciones). La flecha de antes no cerraba porque el SVG de las pistas le quedaba encima (ahora sin clics).
+  «Practicar» (solo en rojo) abre una ventanita con lo que haya: Ver apuntes (teoria.ge/gp.lmathome.es/?apuntes=…&nombre=…),
+  Vídeo didáctico (intros/<carpeta>/index.html) y Ejercicios libres (?practice=<clave>), en pestaña nueva y con #c=<cuenta>
+  como los enlaces del portal (sin la cuenta en el modo profesor). Tablas AP/VI/PR copiadas del bloque «APUNTES EN LAS FICHAS»
+  de teoriaathome y teoriapro: OJO quien cambie allí apuntes, vídeos o prácticas, que lo cambie también en piel/mapa.js. Tipo
+  test de 2.º GP sin apuntes web: «Apuntes en el Libro de 2.º GP · unidad N · págs.». Nunca enlaza portales interactivos (se
+  abren con su medalla). Copia de antes: APPs/_PARA BORRAR/19-oct-2026-antes-del-mapa-v2/mapa.js.
 - 19-oct 13:50 · Fichas y rediseño · HECHO (con el ok de Iago; él ejecutó el SQL) · MI MAPA DE TEORÍA. Supabase (lo ejecutó Iago, un
   solo «Run»): suite_mi_mapa_teoria(p_cuenta_id) (solo lee; como suite_mis_resultados) da, de una cuenta validada, cada clave de
   ejercicio de las fichas que ha hecho: veces, media, media3 (las 3 últimas: el color de la luz) y última; digital, de
