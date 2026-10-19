@@ -2115,6 +2115,16 @@ function showEnig(kind){
     if(d.restas && d.restas.length) h+='<div class="rsm-sep">RESTA</div>'+d.restas.map(function(r){ return rsmFila(esc(r.t||''), '−'+String(Number(r.v)).replace('.',','), '#ff7a8a'); }).join('');
     return h;
   }
+  /* (19-oct-2026) MI MAPA DE TEORÍA: el icono «Circuito» (el que eligió Iago) y el interruptor (RSM_SIN_MAPA=true quita los botones) */
+  var RSM_SIN_MAPA=false, RSM_MAPA_SVG='<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8.5" y="8.5" width="7" height="7" rx="1.6"/><path d="M12 8.5V4.5M15.5 12h3V6.5M12 15.5v4M8.5 12h-3v5.5"/><circle cx="12" cy="3.3" r="1.3"/><circle cx="18.5" cy="5.2" r="1.3"/><circle cx="12" cy="20.7" r="1.3"/><circle cx="5.5" cy="18.8" r="1.3"/></svg>';
+  /* (19-oct-2026, Iago: «para los de grado profesional… al lado de teoría aparezca también el icono de mapa teórico») en la tira de GP,
+     el iconito del mapa delante de «Teoría», y todo el recuadro de Teoría abre el mapa (sin estrechar los otros tres) */
+  function rsmChipMapa(a,gp,h){
+    if(!gp || RSM_SIN_MAPA || !a || a.ap!=='teoria') return h;
+    var A=RSM_AREA.teoria;
+    return h.replace('<span class="rsm-chip','<span role="button" tabindex="0" aria-label="Ver mi mapa de teoría" class="rsm-chip rsm-chip-mapa')
+            .replace('">'+A[0]+'</span>','"><i class="rsm-mapa-mini">'+RSM_MAPA_SVG+'</i>'+A[0]+'</span>');
+  }
   function rsmCaja(a,reco){
     var A=RSM_AREA[a.ap]||[a.ap,'#ffffff','#ffffff'], items=a.items||[], solo=items.length===1;
     var det0=solo && items[0].det && (items[0].det.afinacion!=null || items[0].det.alturas!=null || (items[0].det.apartados && items[0].det.apartados.length));
@@ -2122,6 +2132,8 @@ function showEnig(kind){
     if(a.no_entregada) sub=esc('Ficha '+(a.ficha!=null?a.ficha:''));
     if(a.tarde) sub+=' · entregada tarde';   /* (19-oct-2026) */
     var h='<div class="rsm-caja" style="--ac:'+A[1]+'"><div class="rsm-cab"><span class="rsm-an" style="color:'+A[2]+'">'+A[0]+'</span><span class="rsm-sub">'+sub+'</span><b class="rsm-n">'+rsmN(a.nota)+'</b></div>';
+    /* (19-oct-2026, Iago) «Ver mi mapa de teoría», arriba a la derecha DENTRO del recuadro de Teoría (desplegado) */
+    if(a.ap==='teoria' && !RSM_SIN_MAPA) h+='<div class="rsm-mapa-f"><button type="button" class="rsm-mapa"><span class="rsm-mapa-i">'+RSM_MAPA_SVG+'</span>Ver mi mapa de teoría</button></div>';
     h+=items.map(function(it){ return rsmItem(a.ap,it,!!det0); }).join('');
     if(a.no_entregada) h+='<div class="rsm-noent-c">No se entregó la ficha de esta semana</div>';
     var app=(a.apps||[])[0];
@@ -2141,7 +2153,7 @@ function showEnig(kind){
          propio recuadro, abajo a la derecha, discreto») */
       if(a.no_entregada) return '<span class="rsm-chip rsm-noent" style="--ac:'+A[1]+'" title="No se entregó la ficha de esta semana"><span style="color:'+A[2]+'">'+A[0]+'</span><b>—</b><i class="rsm-noent-t">ficha no entregada</i></span>';
       /* (19-oct-2026, Iago: «en el momento en el que entrega la ficha correspondiente a esa semana… que esa nota aparezca») */
-      return '<span class="rsm-chip'+(v?' rsm-vacia':'')+'" style="--ac:'+A[1]+'"'+(a.tarde?' title="Ficha entregada en tiempo extra"':'')+'><span style="color:'+A[2]+'">'+A[0]+'</span><b>'+(v?'—':rsmN(a.nota))+'</b>'+(a.tarde?'<i class="rsm-noent-t rsm-tarde-t">entregada tarde</i>':'')+'</span>'; }).join('');
+      return '<span class="rsm-chip'+(v?' rsm-vacia':'')+'" style="--ac:'+A[1]+'"'+(a.tarde?' title="Ficha entregada en tiempo extra"':'')+'><span style="color:'+A[2]+'">'+A[0]+'</span><b>'+(v?'—':rsmN(a.nota))+'</b>'+(a.tarde?'<i class="rsm-noent-t rsm-tarde-t">entregada tarde</i>':'')+'</span>'; }).map(function(h,i){ return rsmChipMapa(lista[i],gp,h); }).join('');   /* (19-oct-2026) GP: el iconito del mapa en Teoría */
     var dias=rsmDias(pj.desde,pj.hasta);
     /* (19-oct-2026, Iago) «Ver detalle me gusta. Y una flechita sutil abajo… sin el icono (el icono ya está grande a la izquierda)» */
     var ver=gp?'':'<button type="button" class="rsm-ver" aria-expanded="false"><span class="rsm-ver-t">Ver detalle</span><svg class="rsm-flecha" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>';
@@ -2304,6 +2316,18 @@ function showEnig(kind){
       C+'.rsm-flecha{width:16px;height:16px;flex:none;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;opacity:.8;transition:transform .2s ease}',
       '#alu-body .cv2.rsm.rsm-abierta .rsm-flecha{transform:rotate(180deg)}',
       C+'.rsm-ver:hover .rsm-flecha{opacity:1}',
+      /* (19-oct-2026) «Ver mi mapa de teoría» (GE, dentro de Teoría) y el iconito del mapa junto a Teoría (GP, en la tira) */
+      C+'.rsm-mapa-f{display:flex;justify-content:flex-end;margin:2px 0 8px}',
+      C+'.rsm-mapa{display:inline-flex!important;align-items:center;gap:9px;height:34px;margin:0!important;padding:0 13px 0 4px!important;border-radius:10px!important;border:1px solid rgba(236,72,153,.5)!important;background:rgba(236,72,153,.08)!important;color:#fff!important;font-family:inherit!important;font-size:12.5px!important;font-weight:700!important;line-height:1!important;cursor:pointer;box-shadow:none!important}',
+      C+'.rsm-mapa:hover{background:rgba(236,72,153,.18)!important}',
+      C+'.rsm-mapa-i{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;flex:none;border-radius:7px;background:#ec4899}',
+      C+'.rsm-mapa-i svg{width:18px;height:18px;fill:none;stroke:#fff;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}',
+      C+'.rsm-chip-mapa{cursor:pointer;transition:background .15s ease}',
+      C+'.rsm-chip-mapa:hover{background:rgba(236,72,153,.12)}',
+      C+'.rsm-chip-mapa:focus-visible{outline:2px solid #ec4899;outline-offset:2px}',
+      C+'.rsm-chip.rsm-chip-mapa>span:first-child{display:inline-flex;align-items:center;overflow:visible}',
+      C+'.rsm-mapa-mini{display:inline-flex;align-items:center;justify-content:center;width:19px;height:19px;flex:none;margin-right:6px;border-radius:5px;background:#ec4899}',
+      C+'.rsm-mapa-mini svg{width:14px;height:14px;fill:none;stroke:#fff;stroke-width:2.1;stroke-linecap:round;stroke-linejoin:round}',
       /* (19-oct-2026, Iago: «cuando pase el siguiente viernes… la nueva, a color») los resúmenes de semanas anteriores, en gris */
       '#alu-body .alu-item.cv2.rsm.rsm-viejo{filter:grayscale(1);opacity:.55}',
       '#alu-body .alu-item.cv2.rsm.rsm-viejo:hover,#alu-body .alu-item.cv2.rsm.rsm-viejo.rsm-abierta{opacity:.85}',
@@ -3512,6 +3536,14 @@ function showEnig(kind){
     } else { w.style.display='none'; }
   }
   function onda(){ var b=btn(); if(!b) return; b.classList.add('nuevo'); if(_nuevoT) clearTimeout(_nuevoT); _nuevoT=setTimeout(function(){ b.classList.remove('nuevo'); },700); }
+  /* (19-oct-2026) MI MAPA DE TEORÍA: piel/mapa.js se carga al tocar el botón; los datos, de suite_mi_mapa_teoria (solo lee) */
+  var MAPA_JS='https://ge.lmathome.es/piel/mapa.js?v=2026-10-19a';
+  function abrirMapaTeoria(){
+    var s=ses(); if(!(s&&s.id)) return;
+    var abre=function(){ try{ window.LMMapa.abrir({ cargar:function(){ return rpc('suite_mi_mapa_teoria',{p_cuenta_id:s.id}); } }); }catch(e){} };
+    if(window.LMMapa) return abre();
+    var sc=document.createElement('script'); sc.src=MAPA_JS; sc.async=true; sc.onload=abre; (document.head||document.documentElement).appendChild(sc);
+  }
   /* (19-oct-2026) LOS BARRIDOS: crean los avisos que llegan a una hora (quiz programado y tareas del viernes, recomendaciones,
      resumen de la semana, hitos). Son idempotentes: basta con pasarlos de vez en cuando, no en cada refresco. */
   var _barridoT=0, _autoT=0;
@@ -4537,6 +4569,11 @@ function showEnig(kind){
         b.setAttribute('aria-expanded', ab?'true':'false');
         var tx=b.querySelector('.rsm-ver-t'); if(tx) tx.textContent=ab?'Cerrar detalle':'Ver detalle';   /* (19-oct-2026) */
       });
+    });
+    // (19-oct-2026) «Ver mi mapa de teoría» (GE) y el iconito junto a Teoría (GP): abren el mapa; no dan por visto el resumen
+    Array.prototype.forEach.call(body.querySelectorAll('.rsm-mapa,.rsm-chip-mapa'),function(b){
+      b.addEventListener('click',function(ev){ ev.stopPropagation(); ev.preventDefault(); abrirMapaTeoria(); });
+      b.addEventListener('keydown',function(ev){ if(ev.key==='Enter'||ev.key===' '){ ev.stopPropagation(); ev.preventDefault(); abrirMapaTeoria(); } });
     });
     Array.prototype.forEach.call(body.querySelectorAll('.rsm-panel a'),function(a){ a.addEventListener('click',function(ev){ ev.stopPropagation(); }); });
     // Clic en una notificación sin acción: solo marcar leído.

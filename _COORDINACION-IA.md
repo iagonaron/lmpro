@@ -30,6 +30,17 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   ♭/♯) y se corrige. Todo pasa por LM_ACO (arriba/bajo/raizRueda) en index.html.
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 19-oct 13:50 · Fichas y rediseño · HECHO (con el ok de Iago; él ejecutó el SQL) · MI MAPA DE TEORÍA. Supabase (lo ejecutó Iago, un
+  solo «Run»): suite_mi_mapa_teoria(p_cuenta_id) (solo lee; como suite_mis_resultados) da, de una cuenta validada, cada clave de
+  ejercicio de las fichas que ha hecho: veces, media, media3 (las 3 últimas: el color de la luz) y última; digital, de
+  payload.ejercicios; papel, de ejercicios_pct con las claves de suite_fichas_asignadas.ejercicios_json (mismo orden). Y la 5.ª
+  versión del resumen: _suite_resumen_teoria_tarde + suite_resumen_barrer (ficha entregada tarde → recuadro de Teoría con su nota y
+  'tarde': true, guardando 'antes'); 3 resúmenes de la semana 42 ya puestos al día. LMEAVathome: piel/mapa.js (5f96670, el mapa:
+  diseño Circuito, «Teoría» en el centro, cajas por áreas con sus luces; MAPA.ge con las 24 claves de teoriaathome y MAPA.gp con
+  las de teoriapro; «Practicar ›» en lo rojo, a ?practice=<clave>) e index.html (3637c57): «Ver mi mapa de teoría» dentro de
+  Teoría en el resumen desplegado. lmpro (este commit): en la tira del resumen, el iconito del mapa delante de «Teoría» y todo ese
+  recuadro abre el mapa. Interruptor en los dos portales: RSM_SIN_MAPA=true. OJO quien toque las claves de las fichas: una clave
+  nueva sale en el mapa solo si se añade a MAPA de piel/mapa.js.
 - 19-oct 13:10 · Fichas y rediseño · HECHO (cada sitio comprobado justo antes; con el ok de Iago: «tienes ya mi OK… para subir todo») ·
   DIARIO deploy 6ad5f1e9 (encima de 6ad5eb29), solo ipad.html (0c1525aa): la nota 🗒 de cada apartado va con la escaleta como
   b.nota (hasta 120 letras), sea la del Radar o escrita a mano (Iago: «las notas que escriba yo a mano también deberían aparecerme»).
