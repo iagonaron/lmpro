@@ -2120,6 +2120,7 @@ function showEnig(kind){
     var det0=solo && items[0].det && (items[0].det.afinacion!=null || items[0].det.alturas!=null || (items[0].det.apartados && items[0].det.apartados.length));
     var sub=det0?esc(items[0].t||''):(solo?({ritmo:'tu lección',entonacion:'tu lección',audicion:'tu dictado',teoria:'tu ficha'}[a.ap]||''):(items.length+' notas'));
     if(a.no_entregada) sub=esc('Ficha '+(a.ficha!=null?a.ficha:''));
+    if(a.tarde) sub+=' · entregada tarde';   /* (19-oct-2026) */
     var h='<div class="rsm-caja" style="--ac:'+A[1]+'"><div class="rsm-cab"><span class="rsm-an" style="color:'+A[2]+'">'+A[0]+'</span><span class="rsm-sub">'+sub+'</span><b class="rsm-n">'+rsmN(a.nota)+'</b></div>';
     h+=items.map(function(it){ return rsmItem(a.ap,it,!!det0); }).join('');
     if(a.no_entregada) h+='<div class="rsm-noent-c">No se entregó la ficha de esta semana</div>';
@@ -2127,7 +2128,7 @@ function showEnig(kind){
     if(reco && app && app.url) h+='<div class="rsm-sep">RECOMENDADO PARA TI</div><a class="rsm-reco" href="'+esc(app.url)+'" target="_blank" rel="noopener">Practicar en '+esc(app.nombre||'')+'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17L17 7"/><path d="M9 7h8v8"/></svg></a>';
     return h+'</div>';
   }
-  function rsmTarjeta(o,_f){
+  function rsmTarjeta(o,_f,viejo){
     var pj=o.payload_json||{}, areas=(Array.isArray(pj.areas)?pj.areas:[]).filter(function(a){ return a && RSM_AREA[a.ap]; });
     var recos=rsmRecos(areas);
     /* (17-oct-2026, noche, Iago) en GP, las cuatro notas siempre (sin nota: «—») y sin «Ver mi semana»: «nos lo ahorramos» */
@@ -2139,11 +2140,13 @@ function showEnig(kind){
       /* (18-oct-2026, Iago: «que solo ponga teoría y que sea igual en todos… lo de ficha no entregada, en pequeñito dentro del
          propio recuadro, abajo a la derecha, discreto») */
       if(a.no_entregada) return '<span class="rsm-chip rsm-noent" style="--ac:'+A[1]+'" title="No se entregó la ficha de esta semana"><span style="color:'+A[2]+'">'+A[0]+'</span><b>—</b><i class="rsm-noent-t">ficha no entregada</i></span>';
-      return '<span class="rsm-chip'+(v?' rsm-vacia':'')+'" style="--ac:'+A[1]+'"><span style="color:'+A[2]+'">'+A[0]+'</span><b>'+(v?'—':rsmN(a.nota))+'</b></span>'; }).join('');
+      /* (19-oct-2026, Iago: «en el momento en el que entrega la ficha correspondiente a esa semana… que esa nota aparezca») */
+      return '<span class="rsm-chip'+(v?' rsm-vacia':'')+'" style="--ac:'+A[1]+'"'+(a.tarde?' title="Ficha entregada en tiempo extra"':'')+'><span style="color:'+A[2]+'">'+A[0]+'</span><b>'+(v?'—':rsmN(a.nota))+'</b>'+(a.tarde?'<i class="rsm-noent-t rsm-tarde-t">entregada tarde</i>':'')+'</span>'; }).join('');
     var dias=rsmDias(pj.desde,pj.hasta);
-    var ver=gp?'':'<button type="button" class="rsm-ver" aria-expanded="false"><span class="rsm-ver-t">Ver mi semana</span><span class="rsm-mini">'+cv2Svg('semana')+'</span></button>';
+    /* (19-oct-2026, Iago) «Ver detalle me gusta. Y una flechita sutil abajo… sin el icono (el icono ya está grande a la izquierda)» */
+    var ver=gp?'':'<button type="button" class="rsm-ver" aria-expanded="false"><span class="rsm-ver-t">Ver detalle</span><svg class="rsm-flecha" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>';
     /* (17-oct-2026, noche, Iago) la fecha, discreta y sin marco, justo después del título: «12–18 oct» (sin el número de semana) */
-    var html=cv2Tarjeta({cls:'rsm cv2-info'+(gp?' rsm-gp':'')+(o.leido?'':' no-leido'), id:o.id, col:'blanco', ic:'semana',
+    var html=cv2Tarjeta({cls:'rsm cv2-info'+(gp?' rsm-gp':'')+(viejo?' rsm-viejo':'')+(o.leido?'':' no-leido'), id:o.id, col:'blanco', ic:'semana',
       tit:'Resumen de tu semana'+(dias?'<span class="rsm-fecha">'+esc(dias)+'</span>':''),
       datos:'<span class="rsm-chips-c"><span class="rsm-chips">'+chips+'</span></span>', sec:o.leido?'':cv2Visto(o.id), btn:ver, fecha:_f});
     if(gp) return html;
@@ -2297,10 +2300,15 @@ function showEnig(kind){
       /* en el ordenador (y el iPad en horizontal), si caben, los cuatro en fila: un pelín más prietos */
       '@container rsmc (min-width:500px){'+C+'.rsm-chips{grid-template-columns:repeat(4,minmax(0,1fr))}'+C+'.rsm-chip{padding:0 8px;font-size:12.5px}'+C+'.rsm-chip b{font-size:13.5px}'+C+'.rsm-noent-t{right:7px;font-size:9px}}',
       C+'.rsm-ver{display:inline-flex!important;align-items:center;justify-content:flex-end;gap:10px;width:100%;height:34px;margin:0!important;padding:0!important;border:0!important;background:none!important;box-shadow:none!important;color:#fff!important;font-family:inherit!important;font-size:13px!important;font-weight:700!important;cursor:pointer}',
-      C+'.rsm-mini{box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;flex:none;border-radius:8px;border:1.5px solid rgba(255,255,255,.45)}',
-      C+'.rsm-mini .cv2-ico{width:18px;height:18px}',
-      '#alu-body .cv2.rsm.rsm-abierta .rsm-mini{border-color:#fff;background:rgba(255,255,255,.12)}',
-      C+'.rsm-ver:hover .rsm-mini{border-color:#fff}',
+      /* (19-oct-2026) «Ver detalle» con una flechita fina hacia abajo (abierta, hacia arriba) */
+      C+'.rsm-flecha{width:16px;height:16px;flex:none;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;opacity:.8;transition:transform .2s ease}',
+      '#alu-body .cv2.rsm.rsm-abierta .rsm-flecha{transform:rotate(180deg)}',
+      C+'.rsm-ver:hover .rsm-flecha{opacity:1}',
+      /* (19-oct-2026, Iago: «cuando pase el siguiente viernes… la nueva, a color») los resúmenes de semanas anteriores, en gris */
+      '#alu-body .alu-item.cv2.rsm.rsm-viejo{filter:grayscale(1);opacity:.55}',
+      '#alu-body .alu-item.cv2.rsm.rsm-viejo:hover,#alu-body .alu-item.cv2.rsm.rsm-viejo.rsm-abierta{opacity:.85}',
+      /* (19-oct-2026) la ficha de esa semana entregada tarde: su nota y, en pequeño, «entregada tarde» */
+      C+'.rsm-tarde-t{color:#c4cad6}',
       '#alu-body .alu-item.cv2.rsm>.rsm-panel{display:none;grid-column:1/-1;margin-top:14px}',
       '#alu-body .alu-item.cv2.rsm.rsm-abierta>.rsm-panel{display:block}',
       C+'.rsm-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}',
@@ -4129,6 +4137,8 @@ function showEnig(kind){
       return (pa-pb) || (_cuandoOrden(b)-_cuandoOrden(a)) || _ordHito(a,b);
     });
     var _hitosD={}; try{ hitoCSS(); _hitosD=await hitosAbiertos(id, listTodas); }catch(eH){}   /* (16-oct-2026) los días abiertos de cada portal */
+    /* (19-oct-2026) el resumen más reciente, a color; los de semanas anteriores, en gris */
+    var _rsmUlt=0; list.forEach(function(o){ var pj=(o&&o.payload_json)||{}; if(pj.resumen_semana){ var t=Date.parse((o&&o.creado_en)||'')||0; if(t>_rsmUlt) _rsmUlt=t; } });
     body.innerHTML=(list.length?list.map(function(o){
       /* (15-oct-2026, Iago: «mira este caos de notificaciones… que sean más parecidos entre todos, que las cosas estén en los
          mismos lugares» → eligió la propuesta 2, «COLUMNA DE BOTONES», con sus cambios). Todas las tarjetas igual: cuadro con
@@ -4141,7 +4151,7 @@ function showEnig(kind){
          cada aviso con su colocación (botones a la izquierda o a la derecha, la fecha arriba o abajo, nebulosas, degradados);
          para volver, el index.html de antes del 15-oct-2026. */
       var _f=fecha(o.creado_en);
-      if(o.payload_json && o.payload_json.resumen_semana) return rsmTarjeta(o,_f);   /* (17-oct-2026) Resumen de tu semana */
+      if(o.payload_json && o.payload_json.resumen_semana) return rsmTarjeta(o,_f,(Date.parse(o.creado_en||'')||0)<_rsmUlt);   /* (17-oct-2026) Resumen de tu semana · (19-oct) el de antes, en gris */
       // ---------- TAREAS DE LA SEMANA: quiz → lecciones → otras (y la ficha en papel) → la ficha; todas las filas igual de altas
       if(esTareas(o)){
         var tj=o.payload_json, se=tj.semana_envio_id;
@@ -4525,7 +4535,7 @@ function showEnig(kind){
         var it=b.closest('.alu-item'); if(!it) return;
         var ab=it.classList.toggle('rsm-abierta');
         b.setAttribute('aria-expanded', ab?'true':'false');
-        var tx=b.querySelector('.rsm-ver-t'); if(tx) tx.textContent=ab?'Cerrar mi semana':'Ver mi semana';
+        var tx=b.querySelector('.rsm-ver-t'); if(tx) tx.textContent=ab?'Cerrar detalle':'Ver detalle';   /* (19-oct-2026) */
       });
     });
     Array.prototype.forEach.call(body.querySelectorAll('.rsm-panel a'),function(a){ a.addEventListener('click',function(ev){ ev.stopPropagation(); }); });

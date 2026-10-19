@@ -30,6 +30,22 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   ♭/♯) y se corrige. Todo pasa por LM_ACO (arriba/bajo/raizRueda) en index.html.
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 19-oct 13:10 · Fichas y rediseño · HECHO (cada sitio comprobado justo antes; con el ok de Iago: «tienes ya mi OK… para subir todo») ·
+  DIARIO deploy 6ad5f1e9 (encima de 6ad5eb29), solo ipad.html (0c1525aa): la nota 🗒 de cada apartado va con la escaleta como
+  b.nota (hasta 120 letras), sea la del Radar o escrita a mano (Iago: «las notas que escriba yo a mano también deberían aparecerme»).
+  AULA (LMEAVathome 3095bb1): piel/escaleta.js: b.nota en el cartel con la letra del subtítulo (blanca, 36 px; ya no la píldora
+  amarilla); lm-piel.js: escaleta.js?v=2026-10-19b. OJO quien toque la escaleta: ahora SÍ salen en el aula las 🗒 escritas a mano.
+  PREVIA (LMEAVathome 5b8da1d): piel/previa/previa.html, molde «Tipo test del libro»: ni la pregunta ni sus opciones (Iago: «no la
+  resolución del tipo test… un parrafito de la información»): el concepto de título y un parrafito que lo explica. EXPL_TEST tiene
+  uno por cada una de las 102 preguntas del BANCO de la ficha (teoriapro), buscadas por el texto de la pregunta normalizado; si no
+  está, el del tramo (EXPL_TRAMO). OJO quien cambie el BANCO de los tipo test: una pregunta nueva o reescrita sale con el parrafito
+  de su tramo hasta que se le escriba el suyo.
+  PORTALES, RESUMEN DE TU SEMANA (index.html de GE, LMEAVathome d6da1e4, y de GP, este commit): «Ver detalle» con una flechita
+  (sin el iconito; abierta, «Cerrar detalle»), los resúmenes anteriores en gris (.rsm-viejo) y, si areas[teoría].tarde, el chip
+  de Teoría con su nota y «entregada tarde» (el SQL v5 del resumen, que lo marca, está pendiente). Banco: 58 de 58.
+  Copias de antes: Dropbox APPs/_PARA BORRAR/19-oct-2026-antes-de-las-notas-a-mano-en-el-aula/,
+  …/19-oct-2026-antes-del-tipo-test-explicado/ y …/19-oct-2026-antes-del-resumen-ver-detalle/; el Diario, en
+  APPs/DIARIO PROFESOR (netlify diariodeiagocmus)/_SUBIDA-19-OCT-mediodia-notas-a-mano-en-el-aula (deploy 6ad5f1e9)/antes (deploy 6ad5eb29)/.
 - 19-oct 12:15 · Fichas y rediseño · HECHO (cada sitio comprobado justo antes; con el ok de Iago: «tienes ya mi OK… para subir todo») ·
   DIARIO deploy 6ad5eb29 (encima de 6ad4b0f0), 4 ficheros: diario-radar.js r4 (a41b4e60) e index.html ?v=r4 (fc78bae2): el icono del
   Radar con los tres colores en el dibujo; en GP el ritmo entonado ya no va «todo junto»: Ritmo (nota_final) y Entonación
