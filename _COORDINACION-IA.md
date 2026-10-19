@@ -30,6 +30,18 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   ♭/♯) y se corrige. Todo pasa por LM_ACO (arriba/bajo/raizRueda) en index.html.
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 19-oct 12:15 · Fichas y rediseño · HECHO (cada sitio comprobado justo antes; con el ok de Iago: «tienes ya mi OK… para subir todo») ·
+  DIARIO deploy 6ad5eb29 (encima de 6ad4b0f0), 4 ficheros: diario-radar.js r4 (a41b4e60) e index.html ?v=r4 (fc78bae2): el icono del
+  Radar con los tres colores en el dibujo; en GP el ritmo entonado ya no va «todo junto»: Ritmo (nota_final) y Entonación
+  (nota_secundaria con etiqueta entonacion, o payload.entonacion) salen aparte, como ya los separa el Diario; lo que hay que repasar,
+  en rojo; de las áreas, la mejor en verde y la más floja en rojo. ipad.html (dc24cdc4): el vídeo elegido para el bloque de teoría
+  sale en su tarjeta (en GE se pinta aunque no haya texto); la nota 🗒 que puso el Radar (solo la suya, tal cual) va con la escaleta
+  como b.nota; diario-previa.js 2026-10-18c (¡Ojo! con variantes, 18274d1b).
+  AULA (LMEAVathome 019e9ac): piel/escaleta.js: «Hoy en clase» → «Teoría: ▶ <vídeo>» (o una línea más); el cartel de la actividad
+  enseña b.nota en amarillo («Recordar los matices»); lm-piel.js: escaleta.js?v=2026-10-19a.
+  OJO quien toque la escaleta: b.video y b.nota vienen del iPad; las 🗒 escritas a mano NO se publican en el aula.
+  Copias de antes: Dropbox APPs/DIARIO PROFESOR (netlify diariodeiagocmus)/_SUBIDA-19-OCT-radar-video-y-notas (deploy 6ad5eb29)/antes
+  (deploy 6ad4b0f0)/ y APPs/_PARA BORRAR/19-oct-2026-antes-del-video-en-el-indice/.
 - 19-oct 11:15 · Fichas y rediseño · HECHO (cada repo comprobado justo antes; con el ok de Iago: «adelante, y que sea
   reversible… sé cauto») · LA CAMPANA SIN GASTAR DE MÁS. En Supabase, el 87 % de las peticiones eran la campana de los portales:
   preguntaba cada 30 s, con 9 llamadas, aunque nadie mirara la pestaña (una pestaña olvidada abierta = 14.000 peticiones al
