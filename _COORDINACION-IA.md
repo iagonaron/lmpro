@@ -30,6 +30,9 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   ♭/♯) y se corrige. Todo pasa por LM_ACO (arriba/bajo/raizRueda) en index.html.
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 19-oct 15:34 · Fichas y rediseño · HECHO · MI MAPA DE TEORÍA: LMEAVathome bd29342 (solo piel/mapa.js). Tonalidades con
+  los nombres del libro (Indica la tonalidad · Indica la armadura · Tonalidades vecinas) y, en la ventanita de «Practicar»,
+  debajo de «Ver apuntes», la pestaña en la que se abren (3.er dato de AP). Iago: «vídeo explicativo es vídeo didáctico».
 - 19-oct 14:55 · Fichas y rediseño · HECHO (con el ok de Iago: «tienes ya mi OK… para subir todo») · MI MAPA DE TEORÍA, 2.ª
   versión. LMEAVathome: solo piel/mapa.js (cbfe0d2; antes 5f96670). Misma dirección (piel/mapa.js?v=2026-10-19a): los portales
   NO cambian. Iago: «la flecha de arriba a la izquierda no funciona», «demasiado grande… más continuidad del portal», «el propio
