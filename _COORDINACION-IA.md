@@ -30,6 +30,11 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   ♭/♯) y se corrige. Todo pasa por LM_ACO (arriba/bajo/raizRueda) en index.html.
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 20-oct 08:55 · Fichas y rediseño · HECHO · RESUMEN DE TU SEMANA en los dos portales (LMEAVathome 6156343 y lmpro c9de7eb,
+  solo index.html, +5 −3 cada uno): fuera «entregada tarde» (la ficha entregada en el tiempo extra, solo su nota); sin entregar,
+  «—» y en la esquina «Ficha N» (antes «ficha no entregada», que queda si no viene el número); el subtítulo del detalle ya no
+  dice «· entregada tarde». Supabase no cambia ('tarde' sigue en el payload). Iago: «si entregaron en el periodo extra que no
+  ponga nada» · «simplemente: Ficha 4, en la esquina».
 - 20-oct 07:21 · Fichas y rediseño · HECHO (con el ok de Iago para subir lo terminado) · LMEAVathome 292d6a0, solo
   index.html (+3 −2): en el resumen de la semana de GE, sin desplegar, el iconito del mapa delante de «Teoría» y todo ese recuadro
   abre «Mi mapa de teoría», como ya pasaba en GP (rsmChipMapa ya no se limita a GP). «Ver mi mapa de teoría» del detalle, igual.
