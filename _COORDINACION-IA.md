@@ -30,6 +30,16 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   ♭/♯) y se corrige. Todo pasa por LM_ACO (arriba/bajo/raizRueda) en index.html.
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 20-oct 11:30 · Fichas y rediseño · HECHO (con el ok de Iago para subir lo terminado) · cinco arreglos de esta mañana:
+  (1) RESUMEN DE TU SEMANA, «Ficha N» en la esquina del recuadro de Teoría también con nota: LMEAVathome 4f57e7d y lmpro
+  ccc7162 (solo index.html, +7 −1). (2) ESCALETA, el contorno amarillo de la lección se ve amarillo aunque la notificación
+  esté en gris (el gris se aparta de los padres del botón y queda en lo demás; sin :has()): LMEAVathome 6937110 (solo
+  piel/escaleta.js, misma ?v). (3) TEORÍA PRO, serie armónica (clave de Fa hasta Mi4, la nota donde se pulsa, recuerda su
+  clave, se corrige por el sonido; Iago: «como ahora», 1/7 por armónico): teoriapro 15ef491. (4) TEORÍA PRO, botón
+  «Entendido» al terminar la ficha, como en GE: teoriapro 0f56012. (5) TEORÍA at home, en la ficha corregida el intervalo
+  pedido bajo cada compás de «Coloca la 2ª nota»: teoriaathome 1047528. Los de teoría, apuntados también en el
+  _COORDINACION-IA.md de cada repositorio. Espejos de Dropbox iguales, copias de antes en _PARA BORRAR/20-oct-2026-* y
+  LEEME-20-oct-2026-* en las carpetas GE y GP.
 - 20-oct 08:55 · Fichas y rediseño · HECHO · RESUMEN DE TU SEMANA en los dos portales (LMEAVathome 6156343 y lmpro c9de7eb,
   solo index.html, +5 −3 cada uno): fuera «entregada tarde» (la ficha entregada en el tiempo extra, solo su nota); sin entregar,
   «—» y en la esquina «Ficha N» (antes «ficha no entregada», que queda si no viene el número); el subtítulo del detalle ya no
