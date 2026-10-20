@@ -2,6 +2,33 @@
 
 Hecho por Claude para Iago (conversación Cowork del escape room «Atonalidad»). Solo lo ve la cuenta **Iago González Protester**.
 
+## v4 (20-oct-2026): temas del Blues y un tema por oferta
+Encargo del proyecto «Blues»: una estética por acto, y que cada oferta pueda elegir la suya. `VERSION = 4`. Los cuatro temas de
+antes (`museo`, `radio`, `disco`, `cinta`) quedan **igual**.
+- **Cuatro temas nuevos** (1920×1080 escalado, sin dependencias; solo las tipografías que el portal ya carga: Limelight,
+  Cormorant Garamond, Jost y Poiret One):
+  - `telegrafo` (Acto 1, vapor de 1928): el telégrafo de órdenes de la sala de máquinas, latón #C9A45C, crema #F3E6C8 y azul
+    acero #3E5E7A. Con pocos nombres, **sectores** y una palanca que barre; con muchos, un **tambor** que gira con su trinquete.
+    Al final, doble campana y el sector del elegido se enciende. «Voluntario» y el nombre, en Limelight.
+  - `tabla` (Acto 2, tabla de lavar): zinc ondulado en marco de madera, ocre #9A6A2E y un dedal de metal que **raspa** hacia abajo
+    y hacia arriba y da el **golpe** al frenar; la línea del elegido se ilumina.
+  - `marquesina` (Acto 3, art déco): marquesina roja #8C1E26 y oro con bombillas que persiguen, letras que **voltean** (con su
+    tecla), y al final bombillas parpadeando, aplauso y metales. «Voluntario» en Limelight.
+  - `album` (Acto 4, el álbum de John): fotos en ámbar #A0672A, páginas que **pasan** (pagina/papel), pies de foto en Cormorant
+    cursiva; la página elegida se ilumina suave.
+- **Sonidos** (`monta({ sonidos })`; si falta alguno, suena el sintetizador del módulo): `campana` (telégrafo), `raspa`
+  (lista de 2: abajo y arriba) y `golpe` (tabla), `tecla` y `aplauso` (marquesina), `pagina` y `papel` (álbum).
+- **`ofrece({ tema })`**: el tema de **esa** oferta. Si `tema` existe en `TEMAS`, esa oferta (botón y ruleta) usa esa estética;
+  si no existe o no se da, usa el de `monta`. Cada tema inyecta su CSS solo cuando se usa (`lmv-css-<tema>`) y el botón lleva la
+  clase `lmv-of-<tema>`. Ejemplo: `LMVoluntarios.monta({ portal:'blues', tema:'telegrafo', engancha:false, sonidos })` y, en el
+  Acto 3, `LMVoluntarios.ofrece({ tema:'marquesina' })`.
+- Los temas nuevos respetan **`prefers-reduced-motion`**: el giro dura menos, sin destellos ni confeti, y los cambios son directos.
+- **Nombres largos**: en los temas nuevos el nombre final se achica hasta caber (`nombreFit`, opcional por tema), aunque sea
+  «María del Carmen Fernández-Villaverde»; probado con 1, 6, 12 y 22 nombres. Los cuatro temas antiguos no lo llevan (si algún
+  día aparece un nombre así, basta con ponerles `nombreFit: { min: 40 }`).
+- `gira()` de los temas nuevos espera hasta 0,7 s a que carguen los sonidos antes de empezar, para que el primer giro no sea mudo.
+- Deshacer: volver a subir la v3 (`lm-voluntarios.js` anterior); los portales no cambian.
+
 ## v3 (18-oct-2026): el botón surge solo al empezar, y el Fonógrafo es de cilindro
 Iago (18-oct): «Nada de botón arriba: que SURJA SOLO al abrir con Protester EN HORARIO DE CLASE. Al “Empezar el día N” (cuando
 ya ha cargado lo que tenga que cargar, o tras “permitir micrófono”), un botón en el MEDIO de la pantalla, “Seleccionar
