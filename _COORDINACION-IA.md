@@ -30,6 +30,20 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   ♭/♯) y se corrige. Todo pasa por LM_ACO (arriba/bajo/raizRueda) en index.html.
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 20-oct 21:20 · Fichas y rediseño · HECHO (con el ok de Iago para subir lo terminado) · LMEAVathome 906c0a9 y 1309640
+  (piel/escaleta.js) · LA ESCALETA EN LA INTRO DE LA CARTA, ARRIBA EN EL CENTRO («a mí me gusta que la escaleta esté siempre en el
+  centro, arriba… que la referencia sea arriba en el medio»; y luego: «lo importante es que el botón de avanzar esté habilitado, que
+  los títulos de los carteles estén habilitados… si la escaleta está justo encima de esos puntitos… un mal menor»): con #introOv
+  abierto (RITMO at home / PRO), #lme-mini (.lme-intro, translateX(-50%)) va centrado en la pantalla si cabe entre .intro-brand y
+  .intro-nav; si no, lo más cerca del centro entre los dos (mín. 150 px); si ni así (móvil), justo bajo .intro-bar, y #introStage
+  con margin-top 44px (ESCENA; se quita al cerrar la intro). Nunca encima de .intro-brand ni de ← «Siguiente» ✕. Los .intro-dots que
+  queden debajo: translateX a su derecha o a su izquierda si caben; si no, visibility:hidden (PUNTOS; vuelven al cerrar). OJO quien
+  toque la barra de la intro de RITMO (.intro-brand, .intro-dots, .intro-nav, #introStage): la escaleta se coloca por ellas. Banco
+  t-intro-centro en 10 tamaños (1920 a 390 px) + los de siempre. Copias:
+  _PARA BORRAR/20-oct-2026-antes-de-la-escaleta-centrada-en-la-intro (ee89743) y
+  _PARA BORRAR/20-oct-2026-antes-de-la-escaleta-de-la-intro-en-ventanas-estrechas (906c0a9).
+  · Y lo del dictado manual GP de las 20:22: SQL ejecutado por Iago y comprobado (ese dictado ya cuenta; la alumna tiene sus 5
+  dictados del curso en el Diario y en Mis resultados, y en la corrección manual GP sale una sola vez, con los apellidos puestos).
 - 20-oct 20:22 · Fichas y rediseño · HECHO (con el ok de Iago para subir lo terminado) · LMEAVathome ee89743 (piel/escaleta.js) ·
   EL VÍDEO DEL ▶ DE LA TARJETA, COMO LOS DE TEORÍA («el botón de play de la tarjeta de la escaleta lo que abra quiero que sea igual,
   vamos, a unificar»): el didáctico (#lme-video.lme-did) va en .lme-vcaja (16:9 centrada sobre #050403, las medidas de .apxf-vid-caja),
