@@ -30,6 +30,27 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   ♭/♯) y se corrige. Todo pasa por LM_ACO (arriba/bajo/raizRueda) en index.html.
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 20-oct 19:56 · Fichas y rediseño · HECHO (con el ok de Iago para subir lo terminado) · tres cosas:
+  (1) LMEAVathome 1613b54 (piel/escaleta.js) · ESCALETA EN EL MARGEN NEGRO DE LOS VÍDEOS DE TEORÍA («¿durante los vídeos podía ocupar
+  menos la escaleta? Ojalá cupiese en el margen negro de arriba sin invadir el vídeo»): con .apxf-vid (vídeo de Teoría at home / PRO)
+  abierto, inmersivo() = 'vidteoria' (sin tarjeta) y #lme-mini (.lme-vid) va en el .apxf-vid, centrado en la banda entre su borde
+  de arriba y .apxf-vid-caja (no toca el vídeo ni la ✕). t-video 28/28 a 1280, 1523, 1920 y 820 + los de siempre. OJO quien toque
+  .apxf-vid / .apxf-vid-caja: la escaleta se coloca por ellos. Copia: _PARA BORRAR/20-oct-2026-antes-de-la-escaleta-en-el-margen-del-video.
+  (2) teoriapro 9e638f0 (index.html; su _COORDINACION-IA.md, en el mismo commit) · MODOS POR NOTAS NETAS (Iago: en los modos vale
+  la armadura de referencia + la alteración característica, pero también otra armadura si «las notas netas resultantes» son las del
+  modo): modoNetasOk (familia 'modo') en MODOS_MOTOR.puntua, corregirESCVar y dibujarEscCorr («Armadura: ✓ 3 ♭ (la de referencia:
+  4 ♭)»); MODOS_NETAS = false lo quita. Banco con las 42 respuestas distintas entregadas (157 ejercicios): suben 20, las otras
+  137 igual. LAS NOTAS YA PUESTAS: SQL que pega Iago (LMATHOME GP/PENDIENTE-20-oct-2026-modos-notas-netas (pegar en Supabase).sql,
+  y su DESHACER): 20 ejercicios en 14 entregas (fichas 2-5 de 2.º GP) al 100 % en payload.ejercicios, nota recalculada con
+  _suite_nota_con (solo esas 14 filas; marca payload.modos_netas con pct_antes y nota_antes), copia en _bak_modos_netas_20261020
+  (RLS, sin permisos web), un aviso por alumno en suite_notificaciones (tipo aviso, payload mensaje_prof + modos_netas) y PARA si
+  hay nota a mano en la casilla (manda la última la borraría) o choque con el antiduplicados. Probado en una base local con el mismo
+  esquema y triggers: 21/21. OJO quien toque payload.ejercicios de fichas: la marca modos_netas es lo que usa el DESHACER.
+  (3) Netlify dictadoselemental 6ad7aace (encima de 6ad132e5) · CORRECCIÓN MANUAL GP, CADA ALUMNO UNA VEZ: vw_dictados_gp_canon
+  saca una fila por cada enlace de alumnos_link (app dictado-profesional) y tres alumnos tienen 2-3 fichas viejas enlazadas: salían
+  repetidos y «Hay N alumnos que se llaman…: pon el apellido». canon-unico-20oct.js (NUEVO; envuelve cargarAlumnosManual) deja una
+  fila por alumno_canon_id, con el app_id cuya ficha vieja casa mejor con nombre y apellidos. La base de datos no cambia. Banco
+  17/17. Deshacer: Publish deploy 6ad132e5.
 - 20-oct 19:15 · Fichas y rediseño · HECHO (con el ok de Iago para subir lo terminado) · DIARIO, deploy 6ad798cf (encima de 6ad7592f):
   «VER FICHA» EN EL DESGLOSE DE LA LUPA 🔍 de cada ficha entregada en la campana («cómo puedo ver lo que contestó un alumno en un
   ejercicio que no ha reclamado?»): al pie del desglose, enlace a su ficha corregida (?revision=ficha:cuenta&s=…&piel=1, el mismo
