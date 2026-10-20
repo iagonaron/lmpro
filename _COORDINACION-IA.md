@@ -30,6 +30,18 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   ♭/♯) y se corrige. Todo pasa por LM_ACO (arriba/bajo/raizRueda) en index.html.
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 20-oct 18:30 · Fichas y rediseño · HECHO (Iago, en clase con 2.º GP; con su ok para subir lo terminado) · LMEAVathome dd22efd
+  (piel/escaleta.js y piel/lm-piel.js): (1) UN SOLO DICTADO EN «HOY EN CLASE» («sale el dictado número 6… pero también sale dictado
+  en plan redundante y sin datos»): formatea() lee «Corregir dictado» (slot corregir-dictado) como «Corrección del dictado» (antes,
+  /dictado/ en el slot → «Dictado»); agendaHoy() no la pone aparte si la clase tiene su dictado (sin dictado, sí); irA() le deja
+  «Abrir el dictado»; detalles() quita «Editar en DICTADO PRO». (2) LA ESCALETA EN LA INTRO DE LA CARTA («durante la intro… no
+  tengo referencia del tiempo que queda»): el INTRO del portal abre RITMO at home / RITMO PRO, otra web sin sesión del profe.
+  lm-piel.js, en el portal con sesión de Tester/Protester, guarda su cuenta en la cookie lm_cta_ge / lm_cta_gp (*.lmathome.es,
+  12 h; con otra sesión la borra) y, en la familia ritmo sin sesión, la acepta SOLO para la escaleta (TESTER_ID; CTA_COOKIE).
+  escaleta.js: con #introOv.show, inmersivo() = 'intro' y #lme-mini (.lme-intro) a la altura de .intro-bar, tras .intro-brand y
+  antes de .intro-dots (fuera de la barra: en el repaso va en grayscale). Bancos t-dictado 17/17 y t-intro 26/26 + los de siempre.
+  OJO quien toque lm-piel.js o escaleta.js: parte de dd22efd; quien toque la intro de RITMO (#introOv, .intro-bar, .intro-brand,
+  .intro-dots): la escaleta se coloca por ellos. Copias: _PARA BORRAR/20-oct-2026-antes-del-dictado-unico-y-la-escaleta-en-la-intro.
 - 20-oct 17:48 · Fichas y rediseño · HECHO (Iago, en clase; con su ok para subir lo terminado) · lo de la tarde, en cuatro subidas:
   (1) LMEAVathome 78eb0cd (piel/escaleta.js) · LA ESCALETA YA NO TAPA LOS MENÚS NI LA PANTALLA DE RESULTADOS («pulso resultados, no
   me abre… paré la escaleta… y ahí sí»): apartar() corría .topbar-right con transform, que la hacía capa aparte (stacking context)
