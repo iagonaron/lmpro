@@ -10372,7 +10372,7 @@ body.tester-sin-by .topbar-right #rs-mini{order:2}
       +'#pz-selsvg .pz-asa{fill:#fff;stroke:#0284c7;stroke-width:1.6}'
       +'@media (prefers-reduced-motion:reduce){#pz-zona #pz-brillo{animation:none;opacity:.75}#pz-sel-lazo{animation:none}}'
       /* con los dos botones nuevos, en el iPad en vertical la barra sigue cabiendo en una fila (la pizarra no encoge) */
-      +'@media (max-width:900px){#pz-bar{gap:6px 8px;padding:5px 6px}.pz-g{gap:4px}.pz-g.pz-cols{gap:5px}}';
+      +'@media (max-width:900px){#pz-bar{gap:6px 8px;padding:5px 6px}.pz-g{gap:4px}.pz-g.pz-cols{gap:5px}}#pz-bar{position:relative;z-index:2}@media (min-width:1500px){.pz-esc{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);max-width:340px}}';
     document.head.appendChild(s);
   }
   function ov(){
@@ -10394,9 +10394,13 @@ body.tester-sin-by .topbar-right #rs-mini{order:2}
     COLORES.forEach(function(c,i){ h+='<button type="button" class="pz-col" data-color="'+i+'" style="--c:'+c[0]+'" title="'+c[1]+'" aria-label="'+c[1]+'"></button>'; });
     /* (16-oct-2026, tarde, Iago) «a la izquierda los colores, en el centro la escaleta y a la derecha los grosores» (y la goma,
        la selección, deshacer y borrar; la ✕, al final) */
-    h+='</div><span class="pz-hueco"></span><div id="pz-esc" class="pz-esc"></div><span class="pz-hueco"></span><div class="pz-g" role="group" aria-label="Grosor">';
+    /* (20-oct-2026, Iago: «el de goma y el de borrar todo lo pondría a la izquierda»… sin invadir la escaleta del centro) */
+    h+='</div><div class="pz-g pz-borra" role="group" aria-label="Borrar">'
+      +'<button type="button" class="pz-b pz-q" id="pz-goma" title="Goma" aria-label="Goma">'+ICO.goma+'</button>'
+      +'<button type="button" class="pz-b pz-q" id="pz-borrar" title="Borrar todo" aria-label="Borrar todo">'+ICO.borrar+'<span class="pz-conf">¿Borrar todo?</span></button>'
+      +'</div><span class="pz-hueco"></span><div id="pz-esc" class="pz-esc"></div><span class="pz-hueco"></span><div class="pz-g" role="group" aria-label="Grosor">';
     GROSOR.forEach(function(g,i){ h+='<button type="button" class="pz-b pz-q" data-grosor="'+i+'" title="'+NOMBRE_GROSOR[i]+'" aria-label="'+NOMBRE_GROSOR[i]+'"><span class="pz-lin" style="height:'+[2,4,8][i]+'px"></span></button>'; });
-    h+='<button type="button" class="pz-b pz-q" id="pz-goma" title="Goma" aria-label="Goma">'+ICO.goma+'</button></div>'
+    h+='</div>'
       /* (29-sep-2026, Iago) selección libre y cursor */
       +'<div class="pz-g" role="group" aria-label="Seleccionar">'
       +'<button type="button" class="pz-b pz-q" id="pz-h-lazo" title="Selección libre: rodea lo que quieras" aria-label="Selección libre">'+ICO.lazo+'</button>'
@@ -10404,7 +10408,6 @@ body.tester-sin-by .topbar-right #rs-mini{order:2}
       +'</div>'
       +'<div class="pz-g">'
       +'<button type="button" class="pz-b pz-q" id="pz-deshacer" title="Deshacer (Ctrl+Z)" aria-label="Deshacer">'+ICO.deshacer+'</button>'
-      +'<button type="button" class="pz-b pz-q" id="pz-borrar" title="Borrar todo" aria-label="Borrar todo">'+ICO.borrar+'<span class="pz-conf">¿Borrar todo?</span></button>'
       +'</div>'
       +'<button type="button" class="pz-b pz-q" id="pz-x" title="Cerrar (Esc)" aria-label="Cerrar">'+ICO.cerrar+'</button>'
       +'</div><div id="pz-zona" aria-label="Pizarra: escribe con el ratón, el lápiz o el dedo"><canvas id="pz-fondo"></canvas><canvas id="pz-tinta"></canvas>'
