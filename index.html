@@ -2155,7 +2155,13 @@ function showEnig(kind){
         var fn=(a.ficha!=null && a.ficha!=='')?String(a.ficha):'';
         return '<span class="rsm-chip rsm-noent" style="--ac:'+A[1]+'" title="'+(fn?'No se entregó la ficha '+esc(fn):'No se entregó la ficha de esta semana')+'"><span style="color:'+A[2]+'">'+A[0]+'</span><b>—</b><i class="rsm-noent-t">'+(fn?'Ficha '+esc(fn):'ficha no entregada')+'</i></span>'; }
       /* (19-oct-2026, Iago: «en el momento en el que entrega la ficha correspondiente a esa semana… que esa nota aparezca») */
-      return '<span class="rsm-chip'+(v?' rsm-vacia':'')+'" style="--ac:'+A[1]+'"'+'><span style="color:'+A[2]+'">'+A[0]+'</span><b>'+(v?'—':rsmN(a.nota))+'</b></span>';   /* (20-oct-2026) sin «entregada tarde» */ }).map(function(h,i){ return rsmChipMapa(lista[i],gp,h); }).join('');   /* (19-oct-2026) GP: el iconito del mapa en Teoría */
+      /* (20-oct-2026, Iago: «la haya entregado a tiempo o tarde, me da igual… abajo en la esquina, de forma discreta, quiero
+         que ponga la ficha») en Teoría, «Ficha N» en la esquina también cuando hay nota (a.ficha o el título del ítem, «Ficha 4») */
+      var fT='';
+      if(a.ap==='teoria'){ var fns=[]; if(a.ficha!=null && a.ficha!=='') fns.push(String(a.ficha));
+        (a.items||[]).forEach(function(it){ var m=/^Ficha\s+(\S+)/.exec(String((it&&it.t)||'')); if(m && fns.indexOf(m[1])<0) fns.push(m[1]); });
+        if(fns.length) fT=(fns.length===1?'Ficha ':'Fichas ')+fns.join(' y '); }
+      return '<span class="rsm-chip'+(v?' rsm-vacia':'')+'" style="--ac:'+A[1]+'"'+'><span style="color:'+A[2]+'">'+A[0]+'</span><b>'+(v?'—':rsmN(a.nota))+'</b>'+(fT?'<i class="rsm-noent-t rsm-ficha-t">'+esc(fT)+'</i>':'')+'</span>';   /* (20-oct-2026) sin «entregada tarde» */ }).map(function(h,i){ return rsmChipMapa(lista[i],gp,h); }).join('');   /* (19-oct-2026) GP: el iconito del mapa en Teoría */
     var dias=rsmDias(pj.desde,pj.hasta);
     /* (19-oct-2026, Iago) «Ver detalle me gusta. Y una flechita sutil abajo… sin el icono (el icono ya está grande a la izquierda)» */
     var ver=gp?'':'<button type="button" class="rsm-ver" aria-expanded="false"><span class="rsm-ver-t">Ver detalle</span><svg class="rsm-flecha" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>';
