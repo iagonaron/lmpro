@@ -30,6 +30,14 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   ♭/♯) y se corrige. Todo pasa por LM_ACO (arriba/bajo/raizRueda) en index.html.
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 20-oct 16:55 · Fichas y rediseño · HECHO (Iago, en clase; con su ok para subir lo terminado) · LMEAVathome cd7cc72 (piel/lm-piel.js y
+  piel/escaleta.js): (1) LA ESCALETA EN TEORÍA at home / PRO («en los ejercicios libres… no aparece la escaleta»): allí no hay
+  lmeav_session/lmpro_session; la cuenta llega del portal en el #c= (apuntes.js → apx_cuenta_ge/_gp). lm-piel.js, solo en la
+  familia teoria y sin sesión, la acepta si es la de Tester/Protester (TESTER_ID) y deja LMPiel.cuentaTester; escaleta.js la usa
+  en cuenta0(). (2) ■ y luego ▶ = la clase DE NUEVO, por la previa (para seguir, ⏸). (3) PreDict: contorno amarillo en la
+  caracola (#ge-espiral, GE) o en .carrusel-btn (GP), no en el dictado. Banco 35/35 + 13/13 + 9/9 + 6/6 (Teoría at home de
+  verdad, copia saneada). OJO quien toque lm-piel.js o escaleta.js: parte de cd7cc72. Copia:
+  _PARA BORRAR/20-oct-2026-antes-de-teoria-reinicio-y-caracola-escaleta; LEEME de la escaleta en LMATHOME GE, ampliado.
 - 20-oct 16:34 · Fichas y rediseño · HECHO (Iago, en clase con 4B; con su ok para subir lo terminado) · ESCALETA (solo piel/escaleta.js,
   LMEAVathome): (1) 805f106 · un ▶ de prueba antes de la hora que luego se para (■) o se pausa (⏸) antes de la hora ya no cuenta:
   en punto, entrada (la lista de morosos se abre sola), previa, «Hoy en clase» y la primera actividad (hoy: ▶ 15:57:21 y ■ 15:57:31
