@@ -30,6 +30,7 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   ♭/♯) y se corrige. Todo pasa por LM_ACO (arriba/bajo/raizRueda) en index.html.
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 20-oct 13:30 · C1 del proyecto Blues · EN CURSO · index.html (medalla u5n del Blues: icono para todos, anticipo en Protester con «?», u5 por hitos y su URL blues.gp.lmathome.es; HITO_TEMAS.blues + hitoChip + CSS «billete de 1928» para las 5 tarjetas «Blues · Acto N») y hitos/ NUEVOS (blues-1…5.webp, f-limelight, f-cormorant-600, f-cormorant-italica). Por favor, no subáis index.html hasta que ponga HECHO.
 - 20-oct 12:50 · Fichas y rediseño · HECHO · RITMO at home 1.6, 2.ª vuelta (lo que pidió Iago al probarlo): en «¿Qué hace la
   ligadura?» los 4 ejemplos en 2×2, grandes y a la misma escala, y suenan con el pulso debajo como en la génesis; en las fases
   1-3 la nota grave de una nota alargada por ligadura suena entera (antes lo ligado parecía mudo); con la piel, la gemela del
