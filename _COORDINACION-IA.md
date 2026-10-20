@@ -30,6 +30,15 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   ♭/♯) y se corrige. Todo pasa por LM_ACO (arriba/bajo/raizRueda) en index.html.
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 20-oct 20:22 · Fichas y rediseño · HECHO (con el ok de Iago para subir lo terminado) · LMEAVathome ee89743 (piel/escaleta.js) ·
+  EL VÍDEO DEL ▶ DE LA TARJETA, COMO LOS DE TEORÍA («el botón de play de la tarjeta de la escaleta lo que abra quiero que sea igual,
+  vamos, a unificar»): el didáctico (#lme-video.lme-did) va en .lme-vcaja (16:9 centrada sobre #050403, las medidas de .apxf-vid-caja),
+  ✕ arriba a la derecha, e inmersivo() = 'vidteoria' → la línea #lme-mini (.lme-vid) en su margen de arriba (miniLibro busca
+  .apxf-vid o #lme-video.lme-did y su caja). El temático (.lme-tema, un portal) sigue a pantalla completa y sin escaleta. VID_CAJA =
+  false lo quita. t-video-portal 48/48 + los de siempre. Copia: _PARA BORRAR/20-oct-2026-antes-del-video-del-play-como-en-teoria.
+  · Y un dictado manual GP de hoy guardado en una ficha vieja nueva sin enlazar (la app de dictados se lo saltó escribiendo el nombre
+  a medias): SQL para Iago que lo enlaza (alumnos_link) y vuelve a pasar ese dictado (APPS CORRECCION/PENDIENTE-20-oct-2026-…sql).
+  OJO: escaleta_ausentes cuenta como «No vino» a quien tiene el dictado en una ficha sin enlazar.
 - 20-oct 19:56 · Fichas y rediseño · HECHO (con el ok de Iago para subir lo terminado) · tres cosas:
   (1) LMEAVathome 1613b54 (piel/escaleta.js) · ESCALETA EN EL MARGEN NEGRO DE LOS VÍDEOS DE TEORÍA («¿durante los vídeos podía ocupar
   menos la escaleta? Ojalá cupiese en el margen negro de arriba sin invadir el vídeo»): con .apxf-vid (vídeo de Teoría at home / PRO)
