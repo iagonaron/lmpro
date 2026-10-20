@@ -30,6 +30,17 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   ♭/♯) y se corrige. Todo pasa por LM_ACO (arriba/bajo/raizRueda) en index.html.
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 20-oct 16:34 · Fichas y rediseño · HECHO (Iago, en clase con 4B; con su ok para subir lo terminado) · ESCALETA (solo piel/escaleta.js,
+  LMEAVathome): (1) 805f106 · un ▶ de prueba antes de la hora que luego se para (■) o se pausa (⏸) antes de la hora ya no cuenta:
+  en punto, entrada (la lista de morosos se abre sola), previa, «Hoy en clase» y la primera actividad (hoy: ▶ 15:57:21 y ■ 15:57:31
+  dejaron la clase «parada» y no salió nada). ANTES_NO_CUENTA. (2) bccd040 · el ▶ (y el botón de arriba del mando) empieza SIEMPRE
+  por la previa —antes de la hora, en la entrada o tras un ■ antes de la hora—: estado nuevo { pre } que corre la línea de tiempo
+  (v.t5 = cuándo empieza la primera actividad); si la previa no está lista, espera 6 s como mucho y si no, la cuenta de siempre;
+  tras un ■ en plena clase, sigue donde estaba. La previa se prepara desde 10 min antes. PLAY_CON_PREVIA. (3) bccd040 · con la
+  pizarra, el visor de ritmo (#ts-visor) o el de entonación (#lm-ento) abiertos y la clase en marcha, ↓ ↑ Av/Re Pág → ← y Tab son
+  de la escaleta (escucha en window, fase de captura), no del control con el foco (rueda de la tonalidad, herramientas); en un
+  campo de texto, del campo. MANDO_PIZARRA. Banco 33/33 + 13/13 + 9/9. OJO quien toque escaleta.js: parte de bccd040. Copias:
+  _PARA BORRAR/20-oct-2026-antes-del-play-de-prueba-escaleta y …-antes-del-play-con-previa-escaleta; LEEME en LMATHOME GE.
 - 20-oct 14:09 · Fichas y rediseño · HECHO (con el ok de Iago para subir lo terminado) · CAMPANA DEL DIARIO, qué día abrió cada
   alumno en Acústica (Iago: «me gustaría saber qué día es el que ha abierto… a mí también»; la tarjeta sin día llevaba la textura
   del Día 1). (1) La cabaña: el latido apunta también «portada», «lugares» y «dia-N-carga» (en «Preparando el Día N»):
