@@ -30,6 +30,22 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   ♭/♯) y se corrige. Todo pasa por LM_ACO (arriba/bajo/raizRueda) en index.html.
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 20-oct 17:48 · Fichas y rediseño · HECHO (Iago, en clase; con su ok para subir lo terminado) · lo de la tarde, en cuatro subidas:
+  (1) LMEAVathome 78eb0cd (piel/escaleta.js) · LA ESCALETA YA NO TAPA LOS MENÚS NI LA PANTALLA DE RESULTADOS («pulso resultados, no
+  me abre… paré la escaleta… y ahí sí»): apartar() corría .topbar-right con transform, que la hacía capa aparte (stacking context)
+  dentro de .wrap, y sus menús (.lm-ic-menu, z 5000: Libros, Ritmo, Entonación) quedaban bajo .hero (z 75): se veían, pero el toque
+  caía en el título. Ahora la corre con position:relative + left (correr(), CORRE_LEFT). Y con #lm-marco-app abierto (Resultados
+  dentro del portal), inmersivo() = 'marco': ni tarjeta ni ▶ encima; en clase, #lme-mini en el centro de .lm-ma-bar (.lme-marco).
+  Banco nuevo t-conf (menús, Resultados, campana, Mis resultados, libros y pizarra; GE y GP; 1280/1523/1920; fila corrida como en
+  el aula): 16/16 y 13/13; y los de siempre 40/40 + 13/13 + 19/19 ×2 + 6/6. OJO quien toque escaleta.js: parte de 78eb0cd; quien
+  toque el z-index de la fila, de .hero o de #lm-marco-app (portal.css), que lo pruebe con la escaleta en marcha.
+  (2) LMEAVathome b7167f8 (escaleta.js) · la lección y el consejo de entonación, en «Preparación entonación» (bloquesDe).
+  (3) LMEAVathome 97fd969 y lmpro e1bb064 (index.html, pizarra «Pentagrama») · la goma y «borrar todo», a la izquierda (grupo
+  .pz-borra tras los colores); con 1500 px o más, la escaleta (#pz-esc) en el centro exacto de #pz-bar.
+  (4) LMEAVathome 2b3086e (piel/apps/portal.js) · con la sospecha de «táctil enganchado», el dedo ya no desplaza la hoja del visor
+  de entonación al dibujar (#lm-ento.lm-en-dibuja .lm-en-pag y #pz-zona, fuera de tqDesliza).
+  Copias: _PARA BORRAR/20-oct-2026-antes-de-que-la-escaleta-no-tape-los-menus, …-antes-de-la-leccion-en-la-preparacion-escaleta,
+  …-antes-de-la-goma-a-la-izquierda-pizarra y …-antes-del-dedo-que-no-desplaza-al-dibujar. LEEMEs en LMATHOME GE (y GP, la pizarra).
 - 20-oct 16:55 · Fichas y rediseño · HECHO (Iago, en clase; con su ok para subir lo terminado) · LMEAVathome cd7cc72 (piel/lm-piel.js y
   piel/escaleta.js): (1) LA ESCALETA EN TEORÍA at home / PRO («en los ejercicios libres… no aparece la escaleta»): allí no hay
   lmeav_session/lmpro_session; la cuenta llega del portal en el #c= (apuntes.js → apx_cuenta_ge/_gp). lm-piel.js, solo en la
