@@ -30,6 +30,11 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   ♭/♯) y se corrige. Todo pasa por LM_ACO (arriba/bajo/raizRueda) en index.html.
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 20-oct 12:50 · Fichas y rediseño · HECHO · RITMO at home 1.6, 2.ª vuelta (lo que pidió Iago al probarlo): en «¿Qué hace la
+  ligadura?» los 4 ejemplos en 2×2, grandes y a la misma escala, y suenan con el pulso debajo como en la génesis; en las fases
+  1-3 la nota grave de una nota alargada por ligadura suena entera (antes lo ligado parecía mudo); con la piel, la gemela del
+  árbol se enciende entera. ritmoathome d378ef7 (index.html y fases 1-3; las demás cartas, iguales). Copia en _PARA BORRAR/
+  20-oct-2026-antes-de-la-2a-vuelta-ligaduras-1.6-RITMO-at-home; añadido al LEEME-20-oct-2026-ritmo-ligaduras-1.6-quiz-e-intro.txt.
 - 20-oct 12:20 · Fichas y rediseño · HECHO (con el ok de Iago para subir lo terminado) · (1) RITMO at home, carta 1.6
   «Ligaduras»: el quiz trabaja ocho ritmos de dos pulsos, el primero ligado al segundo (cuatro familias; cada fase coge cuatro
   al azar; ya no se recortan a su primer pulso). Fase 1, el pulso donde EMPIEZA; las cuatro fases dibujan y hacen sonar la
