@@ -30,6 +30,15 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   ♭/♯) y se corrige. Todo pasa por LM_ACO (arriba/bajo/raizRueda) en index.html.
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 20-oct 12:20 · Fichas y rediseño · HECHO (con el ok de Iago para subir lo terminado) · (1) RITMO at home, carta 1.6
+  «Ligaduras»: el quiz trabaja ocho ritmos de dos pulsos, el primero ligado al segundo (cuatro familias; cada fase coge cuatro
+  al azar; ya no se recortan a su primer pulso). Fase 1, el pulso donde EMPIEZA; las cuatro fases dibujan y hacen sonar la
+  ligadura; fase 3 con botón «Ligadura» (vale la grafía gemela); fase 4, la ligada no se percute. Intro: ejemplos que suenan,
+  génesis de 8 pasos y árbol de 8 con la gemela iluminada entera: ritmoathome a54b698 (index.html y las 4 fases). Las demás
+  cartas, iguales (regresión con el mismo azar en 1.1, 1.4, 2.1 y 6.2); en un puzzle sin relleno la cabecera ya no lo nombra.
+  (2) RITMO PRO, el ✦ «Revelar patrón» de las intros suena a un tercio: ritmopro 1efb95e (MAGIA_VOL). Espejos de Dropbox
+  iguales; copias en _PARA BORRAR/20-oct-2026-antes-de-las-ligaduras-1.6-RITMO-at-home y …-antes-de-bajar-la-varita-RITMO-PRO;
+  LEEME-20-oct-2026-ritmo-ligaduras-1.6-quiz-e-intro.txt en la carpeta GE.
 - 20-oct 11:30 · Fichas y rediseño · HECHO (con el ok de Iago para subir lo terminado) · cinco arreglos de esta mañana:
   (1) RESUMEN DE TU SEMANA, «Ficha N» en la esquina del recuadro de Teoría también con nota: LMEAVathome 4f57e7d y lmpro
   ccc7162 (solo index.html, +7 −1). (2) ESCALETA, el contorno amarillo de la lección se ve amarillo aunque la notificación
