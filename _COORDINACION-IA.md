@@ -30,6 +30,12 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   ♭/♯) y se corrige. Todo pasa por LM_ACO (arriba/bajo/raizRueda) en index.html.
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 20-oct 19:15 · Fichas y rediseño · HECHO (con el ok de Iago para subir lo terminado) · DIARIO, deploy 6ad798cf (encima de 6ad7592f):
+  «VER FICHA» EN EL DESGLOSE DE LA LUPA 🔍 de cada ficha entregada en la campana («cómo puedo ver lo que contestó un alumno en un
+  ejercicio que no ha reclamado?»): al pie del desglose, enlace a su ficha corregida (?revision=ficha:cuenta&s=…&piel=1, el mismo
+  generador que la lupa amarilla de las reclamaciones; GP → Teoría PRO), haya reclamado o no; solo si la entrega trae source_id.
+  suite-campana.js (VER_FICHA) y el ?v de index/ipad/iphone (s49 → s50; quien vuelva a tocar suite-campana.js: s51). Banco 12/12
+  con las hojas de estilo publicadas. Copias: DIARIO PROFESOR …/_SUBIDA-20-OCT-noche-ver-ficha-en-la-lupa (deploy 6ad798cf)/antes.
 - 20-oct 18:30 · Fichas y rediseño · HECHO (Iago, en clase con 2.º GP; con su ok para subir lo terminado) · LMEAVathome dd22efd
   (piel/escaleta.js y piel/lm-piel.js): (1) UN SOLO DICTADO EN «HOY EN CLASE» («sale el dictado número 6… pero también sale dictado
   en plan redundante y sin datos»): formatea() lee «Corregir dictado» (slot corregir-dictado) como «Corrección del dictado» (antes,
