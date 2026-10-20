@@ -30,6 +30,10 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   ♭/♯) y se corrige. Todo pasa por LM_ACO (arriba/bajo/raizRueda) en index.html.
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 20-oct 07:21 · Fichas y rediseño · HECHO (con el ok de Iago para subir lo terminado) · LMEAVathome 292d6a0, solo
+  index.html (+3 −2): en el resumen de la semana de GE, sin desplegar, el iconito del mapa delante de «Teoría» y todo ese recuadro
+  abre «Mi mapa de teoría», como ya pasaba en GP (rsmChipMapa ya no se limita a GP). «Ver mi mapa de teoría» del detalle, igual.
+  Iago: «cuando aún está compactado, ya aparezca en teoría el botón de ver mi mapa teórico, al igual que ocurre con profesional».
 - 19-oct 15:34 · Fichas y rediseño · HECHO · MI MAPA DE TEORÍA: LMEAVathome bd29342 (solo piel/mapa.js). Tonalidades con
   los nombres del libro (Indica la tonalidad · Indica la armadura · Tonalidades vecinas) y, en la ventanita de «Practicar»,
   debajo de «Ver apuntes», la pestaña en la que se abren (3.er dato de AP). Iago: «vídeo explicativo es vídeo didáctico».
