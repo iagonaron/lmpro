@@ -2130,7 +2130,7 @@ function showEnig(kind){
     var det0=solo && items[0].det && (items[0].det.afinacion!=null || items[0].det.alturas!=null || (items[0].det.apartados && items[0].det.apartados.length));
     var sub=det0?esc(items[0].t||''):(solo?({ritmo:'tu lección',entonacion:'tu lección',audicion:'tu dictado',teoria:'tu ficha'}[a.ap]||''):(items.length+' notas'));
     if(a.no_entregada) sub=esc('Ficha '+(a.ficha!=null?a.ficha:''));
-    if(a.tarde) sub+=' · entregada tarde';   /* (19-oct-2026) */
+    /* (20-oct-2026, Iago: «no pondría entregada tarde… si entregaron en el periodo extra, que no ponga nada») antes aquí: if(a.tarde) sub+=' · entregada tarde'; */
     var h='<div class="rsm-caja" style="--ac:'+A[1]+'"><div class="rsm-cab"><span class="rsm-an" style="color:'+A[2]+'">'+A[0]+'</span><span class="rsm-sub">'+sub+'</span><b class="rsm-n">'+rsmN(a.nota)+'</b></div>';
     /* (19-oct-2026, Iago) «Ver mi mapa de teoría», arriba a la derecha DENTRO del recuadro de Teoría (desplegado) */
     if(a.ap==='teoria' && !RSM_SIN_MAPA) h+='<div class="rsm-mapa-f"><button type="button" class="rsm-mapa"><span class="rsm-mapa-i">'+RSM_MAPA_SVG+'</span>Ver mi mapa de teoría</button></div>';
@@ -2151,9 +2151,11 @@ function showEnig(kind){
     var chips=lista.map(function(a){ var A=RSM_AREA[a.ap], v=a._vacia||a.nota==null;
       /* (18-oct-2026, Iago: «que solo ponga teoría y que sea igual en todos… lo de ficha no entregada, en pequeñito dentro del
          propio recuadro, abajo a la derecha, discreto») */
-      if(a.no_entregada) return '<span class="rsm-chip rsm-noent" style="--ac:'+A[1]+'" title="No se entregó la ficha de esta semana"><span style="color:'+A[2]+'">'+A[0]+'</span><b>—</b><i class="rsm-noent-t">ficha no entregada</i></span>';
+      if(a.no_entregada){   /* (20-oct-2026, Iago: «aclarar qué ficha es… simplemente: Ficha 4, en la esquina») */
+        var fn=(a.ficha!=null && a.ficha!=='')?String(a.ficha):'';
+        return '<span class="rsm-chip rsm-noent" style="--ac:'+A[1]+'" title="'+(fn?'No se entregó la ficha '+esc(fn):'No se entregó la ficha de esta semana')+'"><span style="color:'+A[2]+'">'+A[0]+'</span><b>—</b><i class="rsm-noent-t">'+(fn?'Ficha '+esc(fn):'ficha no entregada')+'</i></span>'; }
       /* (19-oct-2026, Iago: «en el momento en el que entrega la ficha correspondiente a esa semana… que esa nota aparezca») */
-      return '<span class="rsm-chip'+(v?' rsm-vacia':'')+'" style="--ac:'+A[1]+'"'+(a.tarde?' title="Ficha entregada en tiempo extra"':'')+'><span style="color:'+A[2]+'">'+A[0]+'</span><b>'+(v?'—':rsmN(a.nota))+'</b>'+(a.tarde?'<i class="rsm-noent-t rsm-tarde-t">entregada tarde</i>':'')+'</span>'; }).map(function(h,i){ return rsmChipMapa(lista[i],gp,h); }).join('');   /* (19-oct-2026) GP: el iconito del mapa en Teoría */
+      return '<span class="rsm-chip'+(v?' rsm-vacia':'')+'" style="--ac:'+A[1]+'"'+'><span style="color:'+A[2]+'">'+A[0]+'</span><b>'+(v?'—':rsmN(a.nota))+'</b></span>';   /* (20-oct-2026) sin «entregada tarde» */ }).map(function(h,i){ return rsmChipMapa(lista[i],gp,h); }).join('');   /* (19-oct-2026) GP: el iconito del mapa en Teoría */
     var dias=rsmDias(pj.desde,pj.hasta);
     /* (19-oct-2026, Iago) «Ver detalle me gusta. Y una flechita sutil abajo… sin el icono (el icono ya está grande a la izquierda)» */
     var ver=gp?'':'<button type="button" class="rsm-ver" aria-expanded="false"><span class="rsm-ver-t">Ver detalle</span><svg class="rsm-flecha" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>';
