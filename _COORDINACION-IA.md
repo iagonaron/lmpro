@@ -30,6 +30,16 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   ♭/♯) y se corrige. Todo pasa por LM_ACO (arriba/bajo/raizRueda) en index.html.
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 21-oct 08:28 · Fichas y rediseño · HECHO (con el ok de Iago; SQL lanzado por él) · DICTADOS PROFESIONAL, EL DICTADO EN DOS PÁGINAS
+  («medio dictado… en una hoja y medio en la parte de atrás… una línea de texto discreta… dos recuadros con su más… y a mí que me
+  lleguen dos fotos»). Supabase: dictados.foto_url_2 text (vacía en los de siempre). Netlify dictadosprofesional 6ad85af5 (encima de
+  6acfc65e): alumno: dos-paginas.js NUEVO (la línea «Tu dictado está en dos páginas diferentes» bajo el recuadro de la foto; dos
+  recuadros Página 1/2; «Continuar» solo con las dos; «Solo una página») y app.js?v=dos1 (sube la 2.ª como <id>/<hora>-2.jpg en
+  fotos-dictados y la manda en foto_url_2; si la columna no estuviera, va como enlace en comentario_alumno); profesor:
+  panel.js?v=p19 («1»/«2» junto al ↻ en la revisión uno a uno, cada página con giro y zoom de cero; la ficha del detalle con las
+  dos; la limpieza de 7 días también borra la 2.ª). OJO quien toque la foto del alumno en el panel (renderReviewStep, zoom-foto.js,
+  coloca-foto.js): revVerPagina cambia img.src y data-rot. Las evaluaciones (Diario, portal) siguen con foto_url: la 2.ª página solo
+  en el panel. Copias: _PARA BORRAR/21-oct-2026-antes-del-dictado-en-dos-paginas/.
 - 21-oct 07:54 · Fichas y rediseño · HECHO (SQL lanzado por Iago) · DICTADOS PROFESIONAL, «Error al guardar: permission denied for
   table evaluaciones» al revisar con número de dictado. Causa: el arreglo del 15-oct (una sola nota por dictado) puso en
   evaluaciones_upsert_dictados (SECURITY INVOKER) un DELETE de evaluaciones de los «hermanos» del dictado; la app escribe como anon,
