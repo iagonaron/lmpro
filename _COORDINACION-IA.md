@@ -30,6 +30,24 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   ♭/♯) y se corrige. Todo pasa por LM_ACO (arriba/bajo/raizRueda) en index.html.
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 21-oct 18:24 · Fichas y rediseño · HECHO (con el ok de Iago) · ESCALETA (VÍDEOS DE LAS TARJETAS DE TEORÍA Y «ABRIR ›» DE PREDICT
+  CARRUSEL) Y MI MAPA DE TEORÍA («VER APUNTES» EN «VER COMO EL ALUMNO»). LMEAVathome b93218e (encima de fbc8665), dos ficheros:
+  piel/escaleta.js — (1) Iago, foto del aula: «la escaleta invasiva… he abierto el vídeo yendo desde Teoría at home… que se comprima
+  arriba»: el visor de vídeos de las TARJETAS de Teoría at home / PRO (.ivg-caja: ▶ de la tarjeta → lista → vídeo) cuenta como
+  'vidteoria' (inmersivo): sin tarjeta grande y #lme-mini en una línea (clase lme-ivg: position:fixed, z-index 10001, fondo opaco),
+  centrada en el margen de arriba; el de «VER APUNTES» (.apxf-vid) sigue igual. (2) Iago: «cuando aparece la portada, PreDict
+  Carrusel, no me aparece el enlace para ir directamente a la aplicación»: en irA el «Abrir ›» de PreDict sale también fuera del
+  portal (abreCarrusel: pestaña 'lm-carrusel-pantalla'; GE https://iagonaron.github.io/PredictCarrusel/?pantalla=1&t=…, GP
+  …/PreDictPROCarrusel/?t=…); en el portal, como antes (pulsa #ge-espiral / .carrusel-btn). piel/mapa.js — en el modo profesor
+  (W.__VISOR, «ver como el alumno» desde el Diario) los enlaces llevan #c=<cuenta del alumno visto> (antes, sin cuenta: Teoría salía
+  de invitado y no abría los apuntes); Teoría con esa cuenta solo comprueba que está validada. Comprobados en vivo los 39 «Vídeo
+  didáctico» del mapa (18 GE, 21 GP) y que todos los temas de apuntes del mapa existen. OJO quien toque el visor .ivg de Teoría,
+  inmersivo/miniLibro o irA de la escaleta. Bancos: visor 85/85, cartel 12/12, mapa 12/12. Espejo Dropbox: LMATHOME
+  GE/LMEAV AT HOME/piel; los de antes en APPs/_PARA BORRAR/21-oct-2026-antes-escaleta-videos-teoria-predict-y-mapa-visor/. LEEME:
+  LMATHOME GE (github LMEAVathome)/LEEME-21-oct-2026-escaleta-videos-teoria-predict-y-mapa-ver-apuntes.txt. Y PENDIENTE DE IAGO (SQL
+  preparado, no lanzado): la lista de morosos del portal con el nombre OFICIAL (alumnos_canon) en vez del de la cuenta: una línea de
+  suite_morosos_fichas_v2 (DIARIO PROFESOR/SQL-BD/PEGAR-21-oct-2026--morosos-portal-nombre-oficial.sql; se para solo si esa línea ya
+  no está tal cual). OJO quien toque suite_morosos_fichas_v2 antes de que lo lance.
 - 21-oct 09:20 · Fichas y rediseño · HECHO (con el ok de Iago) · DICTADOS PROFESIONAL, LA APP DEL ALUMNO SE PONE SOLA EN LA VERSIÓN
   NUEVA Y LA CUENTA NO SE PIERDE POR UN FALLO DE RED («a los alumnos… ¿les aparecerá ya la nueva versión?… yo sí que voy a estar
   pendiente de tocar la banda amarilla… pero ellos igual no»; «que los alumnos tengan como su cuenta y no tengan que volver a meter el
