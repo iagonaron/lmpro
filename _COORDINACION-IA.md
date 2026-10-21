@@ -30,6 +30,22 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   ♭/♯) y se corrige. Todo pasa por LM_ACO (arriba/bajo/raizRueda) en index.html.
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 21-oct 09:20 · Fichas y rediseño · HECHO (con el ok de Iago) · DICTADOS PROFESIONAL, LA APP DEL ALUMNO SE PONE SOLA EN LA VERSIÓN
+  NUEVA Y LA CUENTA NO SE PIERDE POR UN FALLO DE RED («a los alumnos… ¿les aparecerá ya la nueva versión?… yo sí que voy a estar
+  pendiente de tocar la banda amarilla… pero ellos igual no»; «que los alumnos tengan como su cuenta y no tengan que volver a meter el
+  PIN»). Netlify dictadosprofesional 6ad86645 (encima de 6ad85af5), 4 ficheros: sw.js r2-2026-10-21 (la página del alumno, / e
+  /index.html: red primero hasta 4 s y si no la copia; al instalarse encima del r1, la página del alumno recién abierta —menos de 25 s
+  según el «date» de su copia— y a la vista se recarga UNA vez sola con client.navigate; profesor.html y todo lo demás exactamente
+  como el r1: copia al instante + banda; la MISMA caja lm-clase-r1-2026-09-22); index.html (el aviso «nueva-version» se escucha desde
+  el principio, no desde «load»; recién abierta y sin tocar → se recarga sola; a medias → al volver a #view-home; como mucho una
+  recarga cada 3 min, si no la banda; app.js?v=dos2); app.js dos2 (init(): la cuenta recordada solo se olvida si la base dice que ese
+  alumno no existe; con error de red/Supabase, un reintento y entra con la cuenta recordada; verificarAlumnoVigente(): con error, no
+  echa al alumno); profesor.html (el aviso desde el principio: la banda ya no se pierde; el panel NUNCA se recarga solo). OJO quien
+  toque el registro del service worker de estas dos páginas, sw.js o el init() del alumno: mantener esto. Banco con service worker
+  real 36/36 (Chromium + servidor que imita a Netlify); dos páginas 17/17 y 10/10 con los ficheros nuevos; borrador y publicado
+  comprobados en vivo. Espejo: Dropbox «DICTADOS PROFESIONAL v15 (minimal)» (los de antes, *.bak-antes-sw-r2-20261021 y
+  sw.r1-2026-09-22.js). LEEME: APPS CORRECCION (netlify x6)/LEEME-21-OCT-dictados-pro-version-nueva-sola-y-cuenta.txt. Deshacer:
+  Publish deploy 6ad85af5.
 - 21-oct 08:28 · Fichas y rediseño · HECHO (con el ok de Iago; SQL lanzado por él) · DICTADOS PROFESIONAL, EL DICTADO EN DOS PÁGINAS
   («medio dictado… en una hoja y medio en la parte de atrás… una línea de texto discreta… dos recuadros con su más… y a mí que me
   lleguen dos fotos»). Supabase: dictados.foto_url_2 text (vacía en los de siempre). Netlify dictadosprofesional 6ad85af5 (encima de
