@@ -30,6 +30,14 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   ♭/♯) y se corrige. Todo pasa por LM_ACO (arriba/bajo/raizRueda) en index.html.
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 21-oct 07:54 · Fichas y rediseño · HECHO (SQL lanzado por Iago) · DICTADOS PROFESIONAL, «Error al guardar: permission denied for
+  table evaluaciones» al revisar con número de dictado. Causa: el arreglo del 15-oct (una sola nota por dictado) puso en
+  evaluaciones_upsert_dictados (SECURITY INVOKER) un DELETE de evaluaciones de los «hermanos» del dictado; la app escribe como anon,
+  que no tiene DELETE en evaluaciones. Con numero NULL la función sale antes (por eso el 20-oct la corrección manual GP sí
+  guardaba). Arreglo: evaluaciones_upsert_dictados(text) SECURITY DEFINER y search_path = public, pg_temp (anon sigue sin DELETE;
+  datos sin tocar). Comprobado: los del 20-oct revisados, en evaluaciones como dictado 6, uno por alumno. OJO quien añada un DELETE
+  en una función que se llame desde los triggers de dictados u otra tabla que escriban las apps: necesita SECURITY DEFINER. Ficheros
+  (y DESHACER): APPS CORRECCION/DICTADOS PROFESIONAL/PENDIENTE-21-oct-2026-dictados-pro-guardar….
 - 21-oct 06:41 · Fichas y rediseño · HECHO (con el ok de Iago para subir lo terminado; cada repo comprobado justo antes) · RESUMEN
   DE TU SEMANA, LOS CUATRO EN UNA FILA Y LA TARJETA DEL ALTO DE LAS DEMÁS (Iago, tras enseñarla en el aula con Protester: «quiero
   que estén en una sola fila y la notificación ocupe igual que el resto… tanto en mi aula como en sus portales abiertos en tablet o
