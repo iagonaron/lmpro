@@ -30,6 +30,17 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   ♭/♯) y se corrige. Todo pasa por LM_ACO (arriba/bajo/raizRueda) en index.html.
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 21-oct 06:41 · Fichas y rediseño · HECHO (con el ok de Iago para subir lo terminado; cada repo comprobado justo antes) · RESUMEN
+  DE TU SEMANA, LOS CUATRO EN UNA FILA Y LA TARJETA DEL ALTO DE LAS DEMÁS (Iago, tras enseñarla en el aula con Protester: «quiero
+  que estén en una sola fila y la notificación ocupe igual que el resto… tanto en mi aula como en sus portales abiertos en tablet o
+  PC»). index.html de los dos portales (LMEAVathome fbc8665 y este commit en lmpro), solo CSS: tres reglas @container rsmc tras la
+  del 18-oct. Desde 296 px de rejilla, .rsm-chips en 4 columnas y .rsm-chip de 36 px (la tarjeta, 94 px, como un aviso); con 500 o
+  más, nombre y nota en la misma línea (12 y 13 px; el contenido 2,5 px más arriba para que «Ficha N», .rsm-noent-t abajo a la
+  derecha, no pise la nota); entre 296 y 499, nombre arriba y nota con «Ficha N» debajo; por debajo de 296 (móvil), el 2 × 2 de
+  siempre. El iconito del mapa, con .rsm-chip .rsm-mapa-mini (la regla base va después y ganaba). Antes: 2 × 2 por debajo de 500 px
+  de rejilla (iPad en vertical, aula con la pantalla ampliada) y la tarjeta de 150 px; en fila, recuadros de 42 px (tarjeta de 100)
+  y «Entonaci…» cortado con un 10,00. OJO quien toque .rsm-chip: hay reglas por tamaño de rejilla (@container rsmc) que pisan las de
+  base. Banco t-rsm21 (GE y GP, de 390 a 1920 px). Copias: _PARA BORRAR/21-oct-2026-antes-del-resumen-en-una-fila/.
 - 20-oct 21:20 · Fichas y rediseño · HECHO (con el ok de Iago para subir lo terminado) · LMEAVathome 906c0a9 y 1309640
   (piel/escaleta.js) · LA ESCALETA EN LA INTRO DE LA CARTA, ARRIBA EN EL CENTRO («a mí me gusta que la escaleta esté siempre en el
   centro, arriba… que la referencia sea arriba en el medio»; y luego: «lo importante es que el botón de avanzar esté habilitado, que
