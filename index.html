@@ -7573,7 +7573,16 @@ window.DictadoClase = (function(){
        se ve cerrada con el icono nuevo (u5n) y la «?», y al pulsarla abre https://blues.gp.lmathome.es/ con todo abierto (#c=).
        A los alumnos no les cambia nada hasta que vean el acto 1 en clase (hitos). Quitarlo: borrar esta entrada. */
     { u:'u5', img:'u5n', n:'Blues · La nana de Xan', sub:'La historia de Xan, en cinco actos',
-      url:'https://blues.gp.lmathome.es/', solo:/protester/i, misterio:true }
+      url:'https://blues.gp.lmathome.es/', solo:/protester/i, misterio:true },
+    /* (22-oct-2026) ANTICIPO de Hamilton, SOLO para la cuenta Protester (Iago: «habilitar esto solo en Iago González Protester…
+       que siga estando la imagen tapada con la interrogación… pero que al pulsar sí que yo acceda»): la medalla «ham» se ve
+       cerrada (la «?») y al pulsarla abre el portal nuevo, https://gp.lmathome.es/hamilton/ (carpeta hamilton/ de este repo:
+       «Elige tu camino» → análisis de Altozano o Hamilton exprés → test que va al Diario como «Ficha Hamilton»), con su cuenta (#c=).
+       A los alumnos no les cambia nada: su medalla sigue cerrada y, abierta, lleva al vídeo de YouTube hasta diciembre; además, el
+       propio portal no se abre a los alumnos hasta el jueves 3-dic-2026 a las 8:00 (Supabase: suite_hamilton_config).
+       Quitarlo: borrar esta entrada. Historia: Dropbox APPs/LMATHOME GP (github lmpro)/HAMILTON (propuestas)/CONVERSACIONES/ */
+    { u:'ham', img:'ham', n:'Hamilton', sub:'Elige tu camino: Altozano o exprés',
+      url:'https://gp.lmathome.es/hamilton/', solo:/protester/i, misterio:true }
   ];
   function pruebaDe(m){
     if(!m || !validada() || !esTester()) return null;
