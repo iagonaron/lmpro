@@ -788,7 +788,7 @@
   // cambiar, y sin esto la música no bajaba al hablar. Bajo la voz, la música se queda muy por debajo.
   var M = { el: null, i: 0, nivel: "off", fade: null, listo: false, arrancada: false, vol: 0,
     pistas: ["expres/musica/m1-intro.mp3", "expres/musica/m2.mp3", "expres/musica/m3.mp3"],
-    VOL: { portada: 0.4, fondo: 0.12, voz: 0.06, off: 0 }, silencio: !!ls.get("ham_musica_off", false), voz: false,
+    VOL: { portada: 0.8, fondo: 0.2, voz: 0.16, off: 0 }, silencio: !!ls.get("ham_musica_off", false), voz: false,
     t0: 0, tPlay: 0, alSonar: null, ctx: null, gain: null };
   function ponVol(v) { M.vol = v; if (M.gain) M.gain.gain.value = v; else if (M.el) M.el.volume = v; }
   function fundir(v, ms) {
@@ -919,15 +919,13 @@
     if (!CARTA.audio) { CARTA.audio = new Audio(); CARTA.audio.preload = "auto"; CARTA.audio.src = u(CARTA.voz); try { CARTA.audio.load(); } catch (e) {} }
     return CARTA.audio;
   }
-  // Cada párrafo, con la letra más grande que quepa en la tarjeta
+  // Todos los párrafos con la MISMA letra: la más grande con la que cabe el más largo (los cortos, centrados)
   function ajustaCarta() {
     var papel = $("#misiva-papel"); if (!papel || !papel.clientHeight) return;
-    var alto = papel.clientHeight - 110;
-    document.querySelectorAll(".mis-p").forEach(function (p) {
-      var fs = p.classList.contains("mis-lema") ? 64 : 46;
-      p.style.setProperty("--fs", fs + "px");
-      while (fs > 17 && p.offsetHeight > alto) { fs -= 1; p.style.setProperty("--fs", fs + "px"); }
-    });
+    var alto = papel.clientHeight - 110, ps = [].slice.call(document.querySelectorAll(".mis-p")), fs = 46;
+    var cabe = function () { return ps.every(function (p) { return p.offsetHeight <= alto; }); };
+    papel.style.setProperty("--fs", fs + "px");
+    while (fs > 17 && !cabe()) { fs -= 1; papel.style.setProperty("--fs", fs + "px"); }
   }
   window.addEventListener("resize", function () { clearTimeout(CARTA.rz); CARTA.rz = setTimeout(ajustaCarta, 150); });
   function portadaFase(f) {
