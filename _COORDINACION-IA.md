@@ -30,7 +30,7 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   ♭/♯) y se corrige. Todo pasa por LM_ACO (arriba/bajo/raizRueda) en index.html.
 
 ## Registro (lo más reciente arriba · hora de Galicia)
-- 22-oct 17:45 · C1 · Hamilton · EN CURSO · solo dentro de hamilton/ (index.html, js/app.js, js/datos-expres.js): «Satisfied» recortado de nuevo (v3 en Supabase) y sin «unos 7 minutos» en el test.
+- 22-oct 17:48 · C1 · Hamilton · HECHO · solo dentro de hamilton/ (index.html, js/app.js, js/datos-expres.js): «Satisfied» v3 (Supabase expres/escucha/E5_satisfied-v3.mp4) y test sin «unos 7 minutos».
 - 22-oct 17:15 · C1 · Hamilton · HECHO · solo hamilton/js/app.js: la carta sigue vacía hasta que empieza la voz de Iago.
 - 22-oct 17:05 · C1 · Hamilton · HECHO · solo dentro de hamilton/ (index.html, css/hamilton.css, js/app.js, voz-intro-v4.mp3 nuevo): voz sin «Nos vemos en clase», párrafos sincronizados con la voz, música bajo la voz al 18 %, vídeo de Jaime sin subtítulos automáticos.
 - 22-oct 16:50 · C1 · Hamilton · HECHO · commits f0fc9bd…e979cf3 · solo dentro de hamilton/ (index.html, css/hamilton.css, js/app.js, img/fondos/papel-carta.webp y voz-intro-v3.mp3 NUEVOS): botón «Reiniciar» para cuentas de prueba (RPC suite_hamilton_reiniciar), música más alta, carta con letra de época (IM Fell), papel nuevo, palabras clave en rojo y misma letra en todos los párrafos; voz v3 servida desde el portal (sin dos «clase»).
