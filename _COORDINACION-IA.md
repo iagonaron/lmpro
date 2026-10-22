@@ -30,6 +30,15 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   ♭/♯) y se corrige. Todo pasa por LM_ACO (arriba/bajo/raizRueda) en index.html.
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 22-oct 12:30 · Fichas y rediseño · HECHO (con el ok de Iago para subir lo terminado) · TEORÍA PRO: EL CARRITO DEL CONTADOR FLOTANTE
+  DEL GENERADOR DE FICHAS. teoriapro 5b6ae18 (encima de 98e5f82, el de «C1 · 4 Sabores» con los tests 7.1 y 7.2: esperé a su HECHO
+  para no pisarnos), solo index.html (+48) y su _COORDINACION-IA.md (ahí, el detalle). Iago: «me gustaría que ahí estuviese una
+  especie de resumen de los títulos de ejercicios que he ido añadiendo… como si estuviese sumando cosas a un carrito de la compra».
+  Encima del «4/5 · en la ficha», la lista de la ficha en su orden: tocar un título lleva a ese ejercicio; ✕ lo quita; tocar el número
+  pliega o despliega la lista (se recuerda en el aparato). En el móvil, solo el contador. En elemental no hace falta: la «Ficha de
+  esta semana» ya lista los tipos. También comprobado: el SQL de la norma del tipo test, pegado por Iago y funcionando, y que la norma
+  cubre los tests 7.1 y 7.2 nuevos (enunciados únicos). Espejo de Dropbox (LMPRO/TEORÍA PRO) igual a GitHub; copia de antes en
+  _PARA BORRAR/22-oct-2026-antes-carrito-del-generador/.
 - 22-oct 11:50 · Fichas y rediseño · HECHO (con el ok de Iago para subir lo terminado) · TEORÍA PRO: NORMA DEL TIPO TEST, NINGUNA
   PREGUNTA REPETIDA NI EN LA MISMA FICHA NI EN LA SIGUIENTE. teoriapro 9384723 (EN CURSO en 0875918, encima de 9e638f0), solo
   index.html (+85 −11) y su _COORDINACION-IA.md (ahí, el detalle). Iago: «si yo meto dos preguntas tipo test sobre acústica 2.1, que
