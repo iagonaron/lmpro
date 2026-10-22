@@ -30,7 +30,7 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   ♭/♯) y se corrige. Todo pasa por LM_ACO (arriba/bajo/raizRueda) en index.html.
 
 ## Registro (lo más reciente arriba · hora de Galicia)
-- 22-oct 17:12 · C1 · Hamilton · EN CURSO · solo hamilton/js/app.js: la carta sigue vacía hasta que empieza la voz de Iago.
+- 22-oct 17:15 · C1 · Hamilton · HECHO · solo hamilton/js/app.js: la carta sigue vacía hasta que empieza la voz de Iago.
 - 22-oct 17:05 · C1 · Hamilton · HECHO · solo dentro de hamilton/ (index.html, css/hamilton.css, js/app.js, voz-intro-v4.mp3 nuevo): voz sin «Nos vemos en clase», párrafos sincronizados con la voz, música bajo la voz al 18 %, vídeo de Jaime sin subtítulos automáticos.
 - 22-oct 16:50 · C1 · Hamilton · HECHO · commits f0fc9bd…e979cf3 · solo dentro de hamilton/ (index.html, css/hamilton.css, js/app.js, img/fondos/papel-carta.webp y voz-intro-v3.mp3 NUEVOS): botón «Reiniciar» para cuentas de prueba (RPC suite_hamilton_reiniciar), música más alta, carta con letra de época (IM Fell), papel nuevo, palabras clave en rojo y misma letra en todos los párrafos; voz v3 servida desde el portal (sin dos «clase»).
 - 22-oct 14:27 · C1 · Hamilton · HECHO · commits ef648e6, bd21442 y b18f80a · solo dentro de hamilton/ (index.html, css/hamilton.css, js/app.js, js/datos-expres.js): carta un párrafo cada vez + «Continuar» a los caminos, barras de carga, exprés recortado (7 partes, sin «Quédate con…») y sin música, iconos SVG. Medios nuevos en Supabase (intro-v2.mp3, E3_room…, E5_satisfied-v2). No toca index.html del portal GP.
