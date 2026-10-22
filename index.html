@@ -2125,6 +2125,37 @@ function showEnig(kind){
     return h.replace('<span class="rsm-chip','<span role="button" tabindex="0" aria-label="Ver mi mapa de teoría" class="rsm-chip rsm-chip-mapa')
             .replace('">'+A[0]+'</span>','"><i class="rsm-mapa-mini">'+RSM_MAPA_SVG+'</i>'+A[0]+'</span>');
   }
+  /* (22-oct-2026, Iago: «Te cabe en una fila todo?») el ordenador del aula usa Chrome 94, que no entiende «@container» (Chrome
+     105 / Safari 16): allí la tira del resumen salía en 2 × 2. Si el navegador no las entiende, cv2CSS añade las mismas reglas
+     colgadas de una clase (rsmq-296, rsmq-340, rsmq-500) y rsmMedir() se la pone a cada tira según su ancho real (y al cambiar
+     de tamaño). En los navegadores nuevos no hace nada. Para quitarlo: borrar estas tres funciones, su línea en cv2CSS y la de
+     rsmMedir en el pintado. */
+  function rsmCQ(){ try{ return !!(window.CSS && CSS.supports && CSS.supports('container-type','inline-size')); }catch(e){ return false; } }
+  var RSM_Q={ '(min-width:500px)':'rsmq-500', '(min-width:340px)':'rsmq-340', '(min-width:296px) and (max-width:339.98px)':'rsmq-296' };
+  function rsmSinCQ(css){
+    var out='', i=0, pre='@container rsmc ';
+    while((i=css.indexOf(pre,i))>=0){
+      var a=css.indexOf('{',i); if(a<0) break;
+      var cls=RSM_Q[css.slice(i+pre.length,a).trim()], n=1, j=a+1;
+      while(j<css.length && n>0){ var ch=css.charAt(j); if(ch==='{') n++; else if(ch==='}') n--; j++; }
+      if(cls) out+=css.slice(a+1,j-1).split('#alu-body .cv2 .rsm-').join('#alu-body .cv2 .rsm-chips-c.'+cls+' .rsm-');
+      i=j;
+    }
+    return out;
+  }
+  var _rsmRO=null;
+  function rsmMedir(raiz){
+    if(rsmCQ()) return;
+    var cs=(raiz||document).querySelectorAll('.rsm-chips-c');
+    var pon=function(c){ var w=c.clientWidth||0;
+      c.classList.toggle('rsmq-500', w>=500); c.classList.toggle('rsmq-340', w>=340); c.classList.toggle('rsmq-296', w>=296 && w<340); };
+    Array.prototype.forEach.call(cs,pon);
+    try{
+      if(!_rsmRO && window.ResizeObserver) _rsmRO=new ResizeObserver(function(es){ es.forEach(function(e){ pon(e.target); }); });
+      if(_rsmRO){ _rsmRO.disconnect(); Array.prototype.forEach.call(cs,function(c){ _rsmRO.observe(c); }); }
+      else Array.prototype.forEach.call(cs,function(c){ setTimeout(function(){ pon(c); },400); });
+    }catch(e){}
+  }
   function rsmCaja(a,reco){
     var A=RSM_AREA[a.ap]||[a.ap,'#ffffff','#ffffff'], items=a.items||[], solo=items.length===1;
     var det0=solo && items[0].det && (items[0].det.afinacion!=null || items[0].det.alturas!=null || (items[0].det.apartados && items[0].det.apartados.length));
@@ -2323,8 +2354,11 @@ function showEnig(kind){
          sus portales abiertos en tablet o PC») en tableta, ordenador y aula, los cuatro en UNA FILA y de 36 px: la tarjeta, del alto
          de las demás. Entre 296 y 499 px de rejilla (iPad en vertical, media pantalla, pantalla ampliada), el nombre arriba y la nota
          debajo; con 500 o más, en la misma línea. «Ficha N», abajo a la derecha. En el móvil (menos de 296), el 2 × 2 de siempre */
-      '@container rsmc (min-width:340px){'+C+'.rsm-chips{grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}'+C+'.rsm-chip{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-rows:12px 13px;align-content:center;align-items:end;column-gap:4px;row-gap:3px;height:36px;padding:0 6px;border-radius:8px}'+C+'.rsm-chip>span:first-child{grid-column:1/-1;font-size:10.5px;line-height:12px}'+C+'.rsm-chip b{grid-column:1;justify-self:start;font-size:13px;line-height:13px}'+C+'.rsm-noent-t{position:static;grid-column:2;grid-row:2;justify-self:end;align-self:end;font-size:8.5px;line-height:10px}'+C+'.rsm-chip .rsm-mapa-mini{width:12px;height:12px;margin-right:4px;border-radius:3px}'+C+'.rsm-chip .rsm-mapa-mini svg{width:9px;height:9px}}',
-      '@container rsmc (min-width:296px) and (max-width:339.98px){'+C+'.rsm-chips{grid-template-columns:repeat(4,minmax(0,1fr));gap:4px}'+C+'.rsm-chip{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-rows:11px 12px;align-content:center;align-items:end;column-gap:2px;row-gap:3px;height:36px;padding:0 3px;border-radius:8px}'+C+'.rsm-chip>span:first-child{grid-column:1/-1;font-size:9.5px;line-height:11px}'+C+'.rsm-chip b{grid-column:1;justify-self:start;font-size:12px;line-height:12px}'+C+'.rsm-noent-t{position:static;grid-column:2;grid-row:2;justify-self:end;align-self:end;font-size:8px;line-height:9px}'+C+'.rsm-chip .rsm-mapa-mini{width:11px;height:11px;margin-right:3px;border-radius:3px}'+C+'.rsm-chip .rsm-mapa-mini svg{width:8px;height:8px}}',
+      /* (22-oct-2026, Iago: «quiero que el botón "mapa teórico" esté disponible también en la versión abreviada… Te cabe en una
+         fila todo?») en la fila compacta el iconito del mapa iba en 12 px (11 en la más estrecha) y casi no se veía: ahora 16 px
+         (15), con el renglón del nombre algo más alto y el mismo alto de recuadro (36 px) y de tarjeta */
+      '@container rsmc (min-width:340px){'+C+'.rsm-chips{grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}'+C+'.rsm-chip{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-rows:16px 13px;align-content:center;align-items:end;column-gap:4px;row-gap:1px;height:36px;padding:0 6px;border-radius:8px}'+C+'.rsm-chip>span:first-child{grid-column:1/-1;font-size:10.5px;line-height:16px}'+C+'.rsm-chip b{grid-column:1;justify-self:start;font-size:13px;line-height:13px}'+C+'.rsm-noent-t{position:static;grid-column:2;grid-row:2;justify-self:end;align-self:end;font-size:8.5px;line-height:10px}'+C+'.rsm-chip .rsm-mapa-mini{width:16px;height:16px;margin-right:5px;border-radius:4px}'+C+'.rsm-chip .rsm-mapa-mini svg{width:12px;height:12px}}',
+      '@container rsmc (min-width:296px) and (max-width:339.98px){'+C+'.rsm-chips{grid-template-columns:repeat(4,minmax(0,1fr));gap:4px}'+C+'.rsm-chip{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-rows:15px 12px;align-content:center;align-items:end;column-gap:2px;row-gap:1px;height:36px;padding:0 3px;border-radius:8px}'+C+'.rsm-chip>span:first-child{grid-column:1/-1;font-size:9.5px;line-height:15px}'+C+'.rsm-chip b{grid-column:1;justify-self:start;font-size:12px;line-height:12px}'+C+'.rsm-noent-t{position:static;grid-column:2;grid-row:2;justify-self:end;align-self:end;font-size:8px;line-height:9px}'+C+'.rsm-chip .rsm-mapa-mini{width:15px;height:15px;margin-right:4px;border-radius:4px}'+C+'.rsm-chip .rsm-mapa-mini svg{width:11px;height:11px}}',
       '@container rsmc (min-width:500px){'+C+'.rsm-chip{display:flex;align-items:center;justify-content:space-between;gap:4px;height:36px;padding:0 7px 5px}'+C+'.rsm-chip>span:first-child{font-size:12px;line-height:1}'+C+'.rsm-chip b{font-size:13px;line-height:1}'+C+'.rsm-noent-t{position:absolute;right:7px;bottom:2px;font-size:8.5px;line-height:1}'+C+'.rsm-chip .rsm-mapa-mini{width:17px;height:17px;margin-right:5px;border-radius:5px}'+C+'.rsm-chip .rsm-mapa-mini svg{width:13px;height:13px}}',
       C+'.rsm-ver{display:inline-flex!important;align-items:center;justify-content:flex-end;gap:10px;width:100%;height:34px;margin:0!important;padding:0!important;border:0!important;background:none!important;box-shadow:none!important;color:#fff!important;font-family:inherit!important;font-size:13px!important;font-weight:700!important;cursor:pointer}',
       /* (19-oct-2026) «Ver detalle» con una flechita fina hacia abajo (abierta, hacia arriba) */
@@ -2557,6 +2591,7 @@ function showEnig(kind){
       +'}',
       '@media (prefers-reduced-motion:reduce){#alu-body .cv2 .cv2-dias i.hoy b,#alu-body .cv2 .cv2-mini .ts-dot,#alu-body .cv2 .cv2-extra{animation:none}}'
     ].join('');
+    try{ if(!rsmCQ()) s.textContent+=rsmSinCQ(s.textContent); }catch(eQ){}   /* (22-oct-2026) sin «@container» (el aula): ver rsmSinCQ */
     document.head.appendChild(s);
     window.addEventListener('resize',function(){ clearTimeout(_cv2RT); _cv2RT=setTimeout(function(){ try{ cv2Recortes(); }catch(e){} },200); });
   }
@@ -4595,6 +4630,7 @@ function showEnig(kind){
         var tx=b.querySelector('.rsm-ver-t'); if(tx) tx.textContent=ab?'Cerrar detalle':'Ver detalle';   /* (19-oct-2026) */
       });
     });
+    try{ rsmMedir(body); }catch(eM){}   // (22-oct-2026) sin «@container» (el aula, Chrome 94): la tira, en una fila igual
     // (19-oct-2026) «Ver mi mapa de teoría» (GE) y el iconito junto a Teoría (GP): abren el mapa; no dan por visto el resumen
     Array.prototype.forEach.call(body.querySelectorAll('.rsm-mapa,.rsm-chip-mapa'),function(b){
       b.addEventListener('click',function(ev){ ev.stopPropagation(); ev.preventDefault(); abrirMapaTeoria(); });
