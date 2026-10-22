@@ -30,6 +30,20 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   ♭/♯) y se corrige. Todo pasa por LM_ACO (arriba/bajo/raizRueda) en index.html.
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 22-oct 21:02 · Fichas y rediseño · HECHO (con el ok de Iago para subir lo terminado; lmpro y LMEAVathome comprobados justo antes) ·
+  TRES COSAS DE LA NOCHE. (1) CAMPANA DEL PORTAL GP, TODO POR FECHA (Iago, con la foto de la campana de una alumna: «Las
+  notificaciones quiero que sean por orden cronológico… No puede ser que aparezcan los 3 días de la cabaña juntos… Mira las fechas»):
+  en index.html (este commit, encima de f3ac1a6), list.sort compara con _cuandoAviso: cada aviso en su fecha y los días de un portal
+  ya no van juntos en el sitio del más reciente (_ordHito solo desempata); lo que se adelantaba (papel recién corregida, ficha en su
+  semana extra) se sigue adelantando. Deshacer: _cuandoOrden en lugar de _cuandoAviso. (2) LOS AVISOS DE LOS PORTALES, PARA TODO EL
+  GRUPO AL ACABAR LA CLASE: en Supabase, pg_cron «lm_hitos_barrer» cada 5 min (suite_hitos_barrer(null)), pegado por Iago a las 20:57;
+  antes el aviso solo se creaba cuando cada alumno abría su portal, y el visor (que solo lee) no lo veía. Deshacer:
+  SQL-BD/DESHACER-22-oct-2026--avisos-de-portales-al-acabar-la-clase.sql. (3) ESCALETA, «FIN DE LA CLASE» A SU HORA: LMEAVathome
+  3a5928f (solo piel/escaleta.js, FIN_A_SU_HORA): a la hora de acabar la clase (minuto 0 + 90 min en GE, + 60 en GP) sale aunque la
+  escaleta esté parada (■), en pausa o con retraso (el martes, en 4B, se paró con ■ a las 17:26 y ya no salió), encima de todo,
+  también de la pantalla de Resultados del portal; en los portales temáticos de GP, como antes. Banco 15/15 (y el de «No vinieron»,
+  25/25). Copias de antes en APPs/_PARA BORRAR/22-oct-2026-antes-fin-a-su-hora-y-campana-por-fecha/; espejos de Dropbox iguales a lo
+  publicado (el de index.html estaba aún sin el commit de Hamilton f3ac1a6: ahora ya lo lleva).
 - 22-oct 19:10 · Fichas y rediseño · HECHO (con el ok de Iago para subir lo terminado; LMEAVathome comprobado justo antes) · ESCALETA,
   «FIN DE LA CLASE»: «No vinieron» SIN LOS «…» DEL FINAL (Iago: «Esos puntos suspensivos… me genera dudas. Pon los alumnos que no haya
   evaluado y ya está»). LMEAVathome 3097fd9 (encima de 3012996), solo piel/escaleta.js (pintaAusentes): la lista ya es la de todos los

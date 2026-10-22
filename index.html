@@ -4223,10 +4223,14 @@ function showEnig(kind){
     var _ordHito=function(a,b){ var ja=(a&&a.payload_json)||{}, jb=(b&&b.payload_json)||{};
       if(ja.portal_hito && jb.portal_hito) return ja.portal===jb.portal ? ((_cuandoAviso(b)-_cuandoAviso(a)) || ((parseInt(jb.n,10)||0)-(parseInt(ja.n,10)||0))) : (String(ja.portal)<String(jb.portal)?-1:1);
       return ja.portal_hito ? -1 : (jb.portal_hito ? 1 : 0); };
+    /* (22-oct-2026, Iago, con la foto de la campana de una alumna: «Las notificaciones quiero que sean por orden cronológico…
+       No puede ser que aparezcan los 3 días de la cabaña juntos… Mira las fechas») otra vez TODO POR FECHA: cada día de un
+       portal, en la suya (el Día 3 arriba, el 2 y el 1 donde les toca, por debajo del dictado y de las tareas más nuevos).
+       _ordHito solo desempata. Volver a lo del 16-oct: _cuandoOrden en lugar de _cuandoAviso aquí abajo. */
     list.sort(function(a,b){
       var pa=(papelNueva(a)||enTiempoExtra(a))?-1:0;
       var pb=(papelNueva(b)||enTiempoExtra(b))?-1:0;
-      return (pa-pb) || (_cuandoOrden(b)-_cuandoOrden(a)) || _ordHito(a,b);
+      return (pa-pb) || (_cuandoAviso(b)-_cuandoAviso(a)) || _ordHito(a,b);
     });
     var _hitosD={}; try{ hitoCSS(); _hitosD=await hitosAbiertos(id, listTodas); }catch(eH){}   /* (16-oct-2026) los días abiertos de cada portal */
     /* (19-oct-2026) el resumen más reciente, a color; los de semanas anteriores, en gris */
