@@ -30,6 +30,18 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   ♭/♯) y se corrige. Todo pasa por LM_ACO (arriba/bajo/raizRueda) en index.html.
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 22-oct 17:51 · Fichas y rediseño · HECHO EN LA BASE CUANDO IAGO PEGUE EL SQL (hasta entonces, como antes) · REFUERZOS DE LAS FICHAS
+  DE TEORÍA (GE Y GP): CON LA ÚLTIMA FICHA CORREGIDA DE CADA ALUMNO. Iago, al imprimir la ficha 6 de 4.º GE sin refuerzos para ocho
+  alumnos: «me gustaría que el criterio sea coger la ficha última entregada y corregida». Comprobado en la base:
+  suite_ficha_profe_contexto_v2 (la que leen los dos generadores al abrirse, teoriaathome y teoriapro) solo miraba lo entregado o
+  corregido (papel) DESPUÉS del envío de la ficha anterior (u.enviada_en), y con varias entregas de un alumno a la misma hora
+  (updated_at igual) cogía una cualquiera. De los ocho, eso solo afectaba a uno; los otros siete no tenían ningún tipo ≤ 30 % en su
+  última ficha corregida. Con el SQL: por alumno, la ficha de número más alto con algo corregido (digital, o papel con deslizadores),
+  sin ventana y nunca la propia ficha; el resto igual (≤ 30 % en un tipo → refuerzo, 2 como mucho). Parche en su sitio, con guarda md5
+  y 5 anclajes (DO + pg_get_functiondef + replace):
+  APPs/DIARIO PROFESOR (netlify diariodeiagocmus)/SQL-BD/PEGAR-22-oct-2026--refuerzo-ultima-ficha-corregida.sql (y su DESHACER, y
+  LEEME). Ni teoriapro ni teoriaathome cambian. Con los datos de hoy, para la ficha siguiente: 4.º GE pasa de 2 a 4 alumnos con
+  refuerzo; 2.º GP, de 6 a 9.
 - 22-oct 17:40 · Fichas y rediseño · HECHO (con el ok de Iago para subir lo terminado; LMEAVathome comprobado justo antes) · LA PREVIA
   DEL AULA: EL RECORDATORIO DE LAS FICHAS EN PAPEL, EN UNA ESQUINA TODA LA PREVIA. LMEAVathome e6f9855 (encima de 32612b4), solo
   piel/previa/previa.html (+36 −1). Iago: «me gustaría que esté todo el tiempo de la previa en pantalla, en un lugar que yo pueda
