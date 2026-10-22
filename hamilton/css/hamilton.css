@@ -576,3 +576,4 @@ h3{font:600 18px/1.25 var(--display);letter-spacing:.08em;color:var(--oro);margi
 .mis-prog b{background:#9c2212}
 /* el párrafo entra a la vez que la voz: fundido corto */
 .mis-p{transition:opacity .45s ease}
+.mis-lema .tinta{color:#2b1a0d;text-shadow:0 0 .6px rgba(43,26,13,.55),0 0 1.4px rgba(60,36,16,.18)}
