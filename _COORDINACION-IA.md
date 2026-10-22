@@ -30,6 +30,7 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   ♭/♯) y se corrige. Todo pasa por LM_ACO (arriba/bajo/raizRueda) en index.html.
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 22-oct 16:25 · C1 · Hamilton · EN CURSO · solo dentro de hamilton/ (index.html, css/hamilton.css, js/app.js): botón «Reiniciar» solo para cuentas de prueba (RPC suite_hamilton_reiniciar, ya creada en Supabase).
 - 22-oct 14:27 · C1 · Hamilton · HECHO · commits ef648e6, bd21442 y b18f80a · solo dentro de hamilton/ (index.html, css/hamilton.css, js/app.js, js/datos-expres.js): carta un párrafo cada vez + «Continuar» a los caminos, barras de carga, exprés recortado (7 partes, sin «Quédate con…») y sin música, iconos SVG. Medios nuevos en Supabase (intro-v2.mp3, E3_room…, E5_satisfied-v2). No toca index.html del portal GP.
 - 22-oct 13:25 · C1 · Hamilton · HECHO · solo dentro de hamilton/ (app.js, css/hamilton.css, index.html): la intro del portal pasa a ser «la carta de Iago»,
   con su voz en off (Supabase hamilton/expres/voz/intro.mp3) y los párrafos apareciendo a su ritmo. No toca index.html del portal GP.
