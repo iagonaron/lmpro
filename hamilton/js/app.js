@@ -1006,6 +1006,22 @@
   }
   function cartaPara() { clearTimeout(CARTA.t); if (CARTA.el) { try { CARTA.el.pause(); } catch (e) {} } if (M.voz) { M.voz = false; musica(M.nivel); } }
 
+  /* Solo cuentas de prueba (Protester…): botón para empezar Hamilton de cero. Pulsar dos veces. */
+  function botonReiniciar() {
+    var b = $("#reiniciar-btn"); if (!b) return;
+    b.hidden = !(st.est && st.est.tester) || st.previa;
+    var listo = false, t = null;
+    b.onclick = function () {
+      if (!listo) { listo = true; b.classList.add("confirma"); aviso("Pulsa otra vez para borrar tu avance de Hamilton y empezar de cero."); t = setTimeout(function () { listo = false; b.classList.remove("confirma"); }, 4000); return; }
+      clearTimeout(t); b.disabled = true; pantallaCarga("Reiniciando");
+      rpc("suite_hamilton_reiniciar", { p_cuenta_id: st.cuenta }).then(function (r) {
+        if (!r || !r.ok) { cargaFin(); b.disabled = false; aviso("No se ha podido reiniciar."); return; }
+        try { Object.keys(localStorage).forEach(function (x) { if (x.indexOf(k("")) === 0) localStorage.removeItem(x); }); } catch (e) {}
+        location.reload();
+      }).catch(function () { cargaFin(); b.disabled = false; aviso("No se ha podido reiniciar. Revisa la conexión."); });
+    };
+  }
+
   /* Elegir camino: una sola vez y para siempre */
   function abrirCamino() { if (st.est.camino === "video") caminoVideo(); else if (st.est.camino === "expres") caminoExpres(); else portada(); }
   function elegirCamino(c, btn) {
@@ -1061,7 +1077,7 @@
       $("#plazo").textContent = "Plazo: hasta el " + fecha(e.cierra_en);
       if (!e.abierta) { $("#cerrado-txt").innerHTML = "Hamilton se abre el <b>" + esc(fecha(e.abre_en)) + "</b>."; return ver("v-cerrado"); }
       if (e.cerrada && !e.entregado) { $("#cerrado-txt").innerHTML = "El plazo terminó el <b>" + esc(fecha(e.cierra_en)) + "</b>."; return ver("v-cerrado"); }
-      botonMusica(); abrirTelon();
+      botonMusica(); botonReiniciar(); abrirTelon();
       if (e.entregado) return resultado(false);
       if (e.completado) return finCamino();
       if (e.camino) return abrirCamino();
