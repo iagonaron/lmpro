@@ -561,3 +561,5 @@ h3{font:600 18px/1.25 var(--display);letter-spacing:.08em;color:var(--oro);margi
 #mis-sigue .lacre-sello{width:60px;height:60px}
 #mis-sigue .lacre-txt{font-size:32px}
 #mis-sigue{animation:sube-caminos .6s ease both}
+/* botón de reinicio (solo cuentas de prueba) */
+#reiniciar-btn.confirma{background:var(--rojo,#d0473a);border-color:var(--rojo,#d0473a);color:#fff}
