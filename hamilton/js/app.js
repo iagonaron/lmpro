@@ -920,8 +920,8 @@
   // baja mucho y entra la voz. Un párrafo cada vez, que se funde con el siguiente; abajo, una línea con lo que lleva.
   // Al decir «No desperdicies tu oportunidad», la música vuelve a subir y aparece «Continuar»: lleva a los dos caminos.
   // Las veces siguientes se va directo a los caminos.
-  var CARTA = { voz: "voz-intro-v4.mp3", entra: 3.8, audio: null,   // la voz de Iago va con el portal (no es material de terceros)
-    cues: [0.0,  16.75,  24.93,  34.58,  49.06,  60.56,  74.32,  83.95,  93.75,  98.51], fin: 100.61,
+  var CARTA = { voz: "voz-intro-v5.mp3", entra: 3.8, audio: null,   // la voz de Iago va con el portal (no es material de terceros)
+    cues: [0.0,  15.05,  27.49,  38.51,  53.94,  65.6,  80.55,  91.22,  101.62,  106.12], fin: 108.9,
     el: null, t: null, ult: -1, pendiente: false, subida: false };
   function cartaPrecarga() {
     if (!CARTA.audio) { CARTA.audio = new Audio(); CARTA.audio.preload = "auto"; CARTA.audio.src = CARTA.voz; try { CARTA.audio.load(); } catch (e) {} }
