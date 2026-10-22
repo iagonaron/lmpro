@@ -232,13 +232,14 @@
     window.onYouTubeIframeAPIReady = function () {
       st.yt = new YT.Player("yt-player", {
         videoId: CFG.YT_ID,
-        playerVars: { controls: 0, disablekb: 1, rel: 0, playsinline: 1, modestbranding: 1, iv_load_policy: 3, fs: 0, start: Math.floor(V.pos) },
+        playerVars: { controls: 0, disablekb: 1, rel: 0, playsinline: 1, modestbranding: 1, iv_load_policy: 3, fs: 0, cc_load_policy: 0, cc_lang_pref: "es", start: Math.floor(V.pos) },
         events: {
           onReady: function (ev) { cargaFin(); controlesVideo(ev); },
           onPlaybackRateChange: function (ev) { if (ev.data !== 1) st.yt.setPlaybackRate(1); },
           onStateChange: function (ev) {
             clearInterval(V.tick);
             $("#v-play").innerHTML = ev.data === 1 ? ICO.pausa : ICO.play;
+            if (ev.data === 1) sinSubtitulos();
             if (ev.data === 1) { musica("off"); V.ultimo = Math.floor(st.yt.getCurrentTime()); V.tick = setInterval(tickVideo, 1000); }
             else guardaVideo(false);
           }
@@ -247,6 +248,13 @@
     };
     s.onerror = function () { cont.innerHTML = '<div class="sin-yt">No se ha podido cargar el vídeo. Comprueba la conexión y recarga la página.</div>'; };
     document.head.appendChild(s);
+  }
+  // Sin subtítulos automáticos (YouTube los activa solo en algunos dispositivos)
+  function sinSubtitulos() {
+    var p = st.yt; if (!p) return;
+    try { p.setOption("captions", "track", {}); } catch (e) {}
+    try { p.unloadModule("captions"); } catch (e) {}
+    try { p.unloadModule("cc"); } catch (e) {}
   }
   function controlesVideo() {
     var p = st.yt;
@@ -788,7 +796,7 @@
   // cambiar, y sin esto la música no bajaba al hablar. Bajo la voz, la música se queda muy por debajo.
   var M = { el: null, i: 0, nivel: "off", fade: null, listo: false, arrancada: false, vol: 0,
     pistas: ["expres/musica/m1-intro.mp3", "expres/musica/m2.mp3", "expres/musica/m3.mp3"],
-    VOL: { portada: 0.8, fondo: 0.2, voz: 0.16, off: 0 }, silencio: !!ls.get("ham_musica_off", false), voz: false,
+    VOL: { portada: 0.8, fondo: 0.2, voz: 0.18, off: 0 }, silencio: !!ls.get("ham_musica_off", false), voz: false,
     t0: 0, tPlay: 0, alSonar: null, ctx: null, gain: null };
   function ponVol(v) { M.vol = v; if (M.gain) M.gain.gain.value = v; else if (M.el) M.el.volume = v; }
   function fundir(v, ms) {
@@ -912,8 +920,8 @@
   // baja mucho y entra la voz. Un párrafo cada vez, que se funde con el siguiente; abajo, una línea con lo que lleva.
   // Al decir «No desperdicies tu oportunidad», la música vuelve a subir y aparece «Continuar»: lleva a los dos caminos.
   // Las veces siguientes se va directo a los caminos.
-  var CARTA = { voz: "voz-intro-v3.mp3", entra: 3.8, audio: null,   // la voz de Iago va con el portal (no es material de terceros)
-    cues: [0.0, 16.75, 24.93, 34.58, 49.06, 60.56, 74.32, 83.95, 93.75, 99.63], fin: 101.73,
+  var CARTA = { voz: "voz-intro-v4.mp3", entra: 3.8, audio: null,   // la voz de Iago va con el portal (no es material de terceros)
+    cues: [0.0,  16.75,  24.93,  34.58,  49.06,  60.56,  74.32,  83.95,  93.75,  98.51], fin: 100.61,
     el: null, t: null, ult: -1, pendiente: false, subida: false };
   function cartaPrecarga() {
     if (!CARTA.audio) { CARTA.audio = new Audio(); CARTA.audio.preload = "auto"; CARTA.audio.src = CARTA.voz; try { CARTA.audio.load(); } catch (e) {} }
@@ -978,12 +986,15 @@
       mis.classList.remove("leyendo"); mis.classList.add("leida");
       $("#mis-pausa").hidden = true; $("#mis-estado").textContent = ""; $("#mis-sigue").hidden = false;
     };
+    // cada párrafo entra justo cuando Iago empieza a decirlo (se mira en cada fotograma, no 4 veces por segundo)
     a.ontimeupdate = function () {
       var t = a.currentTime, i = -1; $("#mis-prog-b").style.width = Math.min(100, 100 * t / CARTA.fin) + "%";
-      for (var j = 0; j < CARTA.cues.length; j++) if (t >= CARTA.cues[j] - 0.1) i = j;
+      for (var j = 0; j < CARTA.cues.length; j++) if (t >= CARTA.cues[j] - 0.15) i = j;
       if (i >= 0) marca(i);
       if (t >= CARTA.fin) termina();
     };
+    var sigue = function () { if (CARTA.el !== a || CARTA.subida) return; if (!a.paused) a.ontimeupdate(); requestAnimationFrame(sigue); };
+    a.onplaying = function () { requestAnimationFrame(sigue); };
     a.onended = termina;
     a.onerror = function () { termina(); };                   // si la voz no carga, que nada se bloquee
     // primero baja la música (los chasquidos ya no tapan) y medio segundo después entra la voz
