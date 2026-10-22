@@ -30,6 +30,10 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   ♭/♯) y se corrige. Todo pasa por LM_ACO (arriba/bajo/raizRueda) en index.html.
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 22-oct 12:55 · C1 · Hamilton · EN CURSO (con el ok de Iago: «súbelo a lmpro») · PORTAL DE HAMILTON SOLO PARA PROTESTER: carpeta NUEVA hamilton/
+  (gp.lmathome.es/hamilton/: index.html, css/, js/, img/fondos/) y en index.html UNA entrada nueva en PRUEBAS del medallero
+  (u:'ham', solo:/protester/i, misterio:true): la medalla de Hamilton sigue con la «?» y al pulsarla abre el portal con #c=.
+  A los alumnos no les cambia nada (el portal no se les abre hasta el jue 3-dic 08:00, Supabase suite_hamilton_config).
 - 22-oct 12:30 · Fichas y rediseño · HECHO (con el ok de Iago para subir lo terminado) · TEORÍA PRO: EL CARRITO DEL CONTADOR FLOTANTE
   DEL GENERADOR DE FICHAS. teoriapro 5b6ae18 (encima de 98e5f82, el de «C1 · 4 Sabores» con los tests 7.1 y 7.2: esperé a su HECHO
   para no pisarnos), solo index.html (+48) y su _COORDINACION-IA.md (ahí, el detalle). Iago: «me gustaría que ahí estuviese una
