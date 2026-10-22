@@ -30,6 +30,7 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   ♭/♯) y se corrige. Todo pasa por LM_ACO (arriba/bajo/raizRueda) en index.html.
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 22-oct 14:25 · C1 · Hamilton · EN CURSO · solo dentro de hamilton/ (index.html, css/hamilton.css, js/app.js, js/datos-expres.js): carta un párrafo cada vez + «Continuar», barras de carga, exprés recortado (7 partes) y sin música, iconos SVG.
 - 22-oct 13:25 · C1 · Hamilton · HECHO · solo dentro de hamilton/ (app.js, css/hamilton.css, index.html): la intro del portal pasa a ser «la carta de Iago»,
   con su voz en off (Supabase hamilton/expres/voz/intro.mp3) y los párrafos apareciendo a su ritmo. No toca index.html del portal GP.
 - 22-oct 12:55 · C1 · Hamilton · HECHO (con el ok de Iago: «súbelo a lmpro») · commits 4357d02, 7b1158c, 27f187c y a4e17c0 (hamilton/) y f3ac1a6 (medalla) · probado en vivo con Protester · PORTAL DE HAMILTON SOLO PARA PROTESTER: carpeta NUEVA hamilton/
