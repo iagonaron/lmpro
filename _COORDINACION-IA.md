@@ -30,6 +30,22 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   ♭/♯) y se corrige. Todo pasa por LM_ACO (arriba/bajo/raizRueda) en index.html.
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 22-oct 18:33 · Fichas y rediseño · HECHO (con el ok de Iago para subir lo terminado; cada repo comprobado justo antes) · CUATRO
+  COSAS DE LA TARDE. (1) REFUERZOS: Iago ya pegó el SQL de las 17:51 y está comprobado (suite_ficha_profe_contexto_v2, md5 3f470ca6…;
+  para la ficha siguiente, 4.º GE 4 alumnos con refuerzo y 2.º GP 9, como el ensayo); en SQL-BD queda como YA-PEGADO. (2) PREVIA DEL
+  AULA: la tarjeta de los recordatorios, al lado DERECHO (Iago: «Yo lo pondría en el lado derecho mejor»). LMEAVathome 3012996 (encima
+  de e6f9855), solo piel/previa/previa.html: abajo a la derecha, 84 px sobre el borde para no quedar debajo del «Saltar ›» de la
+  escaleta; 180 px de ancho si cabe abajo y 168 si crece; la etiqueta, «Fichas en papel» (los nombres ya dicen cuántas). Banco: 0
+  cruces con los 30 moldes del ¡Ojo! y los consejos (5 juegos de recordatorios). (3) DIARIO, vista iPad: en el recordatorio de las
+  fichas en papel que se manda al aula, cada nombre con la inicial del primer apellido («si hay apellidos… la letra del primer
+  apellido»): deploy 6ada366c (encima de 6ad798cf), solo ipad.html (IpadPapel.lineas(curso, { inicial: true }) en pubRecordatorios);
+  en el propio iPad, igual que antes. (4) FICHA DEL ALUMNO, GE Y GP: «¿Seguro que quieres enviar la ficha?» antes de enviarla (una
+  alumna entregó sin querer, pulsando deprisa): teoriapro 541996d y teoriaathome e1ee27e (el detalle, en sus _COORDINACION-IA.md);
+  «Sí, enviar» tarda 1,2 s en poder pulsarse; no sale en el repaso ni en las pruebas del profesor. PENDIENTE DE IAGO: el SQL que le
+  reabre a esa alumna de 2.º GP la Ficha 5
+  (APPs/DIARIO PROFESOR (netlify diariodeiagocmus)/SQL-BD/PEGAR-22-oct-2026--…-ficha-5-segunda-oportunidad.sql, con su DESHACER).
+  Espejos de Dropbox iguales a lo publicado; copias de antes en _PARA BORRAR/22-oct-2026-antes-previa-recordatorio-en-esquina/ y
+  _PARA BORRAR/22-oct-2026-antes-confirmar-envio-ficha/.
 - 22-oct 18:10 · C1 · Hamilton · HECHO · solo hamilton/js/app.js: la letra de la carta se descarga antes de abrir el telón (no cambia de tamaño a mitad de un párrafo).
 - 22-oct 18:05 · C1 · Hamilton · HECHO · solo dentro de hamilton/ (index.html, js/app.js, voz-intro-v5.mp3 nuevo): la carta con la locución nueva de Iago (toma 3) y su texto.
 - 22-oct 17:51 · Fichas y rediseño · HECHO EN LA BASE CUANDO IAGO PEGUE EL SQL (hasta entonces, como antes) · REFUERZOS DE LAS FICHAS
