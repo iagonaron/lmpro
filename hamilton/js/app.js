@@ -3,6 +3,20 @@
    corregido en el servidor (suite_hamilton_entregar) que deja la nota en el Diario como «Ficha Hamilton». */
 (function () {
   "use strict";
+  // Iconos en SVG (los caracteres ▶ ◀ 🔊 se ven como emoji en el iPad)
+  var ICO = (function () {
+    var i = function (d) { return '<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="' + d + '"/></svg>'; };
+    return {
+      play: i("M8 5.2v13.6c0 .8.9 1.3 1.6.9l10.4-6.8c.6-.4.6-1.4 0-1.8L9.6 4.3C8.9 3.9 8 4.4 8 5.2z"),
+      pausa: i("M7 5h3.6v14H7zM13.4 5H17v14h-3.6z"),
+      stop: i("M7 7h10v10H7z"),
+      otra: i("M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"),
+      atras: i("M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z"),
+      vol: i("M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"),
+      mudo: i("M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51A8.8 8.8 0 0 0 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3 3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06a8.99 8.99 0 0 0 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4 9.91 6.09 12 8.18V4z"),
+      pantalla: i("M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z")
+    };
+  })();
   var CFG = {
     SB_URL: "https://woiptkyrxkbpnvioypit.supabase.co",
     SB_ANON: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndvaXB0a3lyeGticG52aW95cGl0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0NzI2ODYsImV4cCI6MjA5MjA0ODY4Nn0.B2nKgj5rD0rkdLeMIrd9KgD8lUPWsBT4Y7aCtmnvbjA",
@@ -115,6 +129,41 @@
   function pararTodo() { document.querySelectorAll("video,audio").forEach(function (m) { try { m.pause(); } catch (e) {} }); }
   function barajar(a) { a = a.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
 
+  /* ── Pantalla de carga: una barra que avanza mientras se prepara un camino o el test ── */
+  var CG = { tick: null, obj: 0, vis: 0, abierta: false };
+  function pantallaCarga(txt) {
+    var o = $("#cargando");
+    if (!CG.abierta) { CG.obj = 0.1; CG.vis = 0; $("#cargando-b").style.width = "0%"; }
+    CG.abierta = true; $("#cargando-txt").textContent = txt; o.hidden = false; o.classList.remove("sale");
+    clearInterval(CG.tick);
+    CG.tick = setInterval(function () {
+      if (CG.obj < 0.9) CG.obj = Math.min(0.9, CG.obj + 0.005);   // sola avanza despacio hasta el 90 %
+      CG.vis += (CG.obj - CG.vis) * 0.14;
+      $("#cargando-b").style.width = (100 * CG.vis).toFixed(1) + "%";
+    }, 50);
+  }
+  function cargaAvanza(x) { CG.obj = Math.max(CG.obj, x); }
+  function cargaFin() {
+    if (!CG.abierta) return; CG.abierta = false; CG.obj = 1;
+    setTimeout(function () {
+      if (CG.abierta) return;
+      $("#cargando").classList.add("sale");
+      setTimeout(function () { if (CG.abierta) return; clearInterval(CG.tick); $("#cargando").hidden = true; }, 400);
+    }, 420);
+  }
+  // Espera a que los vídeos y audios de un bloque tengan algo cargado (como mucho «ms»: el iPad no precarga)
+  function esperaMedios(cont, ms) {
+    var ms_ = [].slice.call((cont || document).querySelectorAll("video,audio"));
+    if (!ms_.length) return Promise.resolve();
+    return new Promise(function (ok) {
+      var t0 = Date.now(), iv = setInterval(function () {
+        var listos = ms_.filter(function (m) { return m.readyState >= 2; }).length;
+        cargaAvanza(0.55 + 0.4 * listos / ms_.length);
+        if (listos === ms_.length || Date.now() - t0 > ms) { clearInterval(iv); ok(); }
+      }, 100);
+    });
+  }
+
   /* ── Portada: «Elige tu camino» ─────────────────── */
   function portada() {
     var e = st.est, p = e.progreso || {};
@@ -130,9 +179,7 @@
     else if (e.completado) ft.innerHTML = '<p><b>¡Camino terminado!</b> Te espera el tipo test: 15 preguntas, con la misma puntuación que una ficha.</p><button class="btn lleno" type="button" data-ir="test-intro">Ir al test</button>';
     else ft.innerHTML = '<p>Al terminar tu camino se abre el <b>tipo test</b>: 15 preguntas, con la misma puntuación que una ficha.</p><span class="aviso">Piénsalo bien: una vez elegido, no se puede cambiar.</span>';
     ft.dataset.bloq = bloq;
-    var leido = !!ls.get(k("intro_leida"), false);
-    $(".caminos").classList.toggle("bloq", !leido);
-    cartaPrepara(leido);
+    cartaPrepara(!!ls.get(k("intro_leida"), false));
     $("#plazo-grande").innerHTML = "<b>Plazo: hasta el " + esc(fecha(e.cierra_en)) + ", antes de tu próxima clase.</b><br>Pasado el plazo, se considerará no entrega, con las mismas consecuencias que una ficha no entregada.";
     ver("v-portada");
   }
@@ -173,12 +220,13 @@
     if (V.pos >= n - 5) V.pos = 0;
     $("#vid-fin").innerHTML = '<div class="fin-camino">' + finHTML() + "</div>";
     pintaVideo();
-    if (st.yt) return;
+    if (st.yt) { cargaFin(); return; }
     var cont = $("#yt");
+    pantallaCarga("Preparando el vídeo"); setTimeout(cargaFin, 6000);
     if (st.previa && !/lmathome\.es$/.test(location.hostname)) {
       cont.innerHTML = '<div class="sin-yt"><div><h3>Aquí va el vídeo de Jaime Altozano</h3><p>La vista previa no puede incrustar YouTube. En el portal de verdad el vídeo se ve aquí mismo, con controles propios: reproducir, volver 10 segundos, la barra para volver a lo ya visto, el volumen y la pantalla completa.</p><button class="btn" type="button" id="sim-video">Simular que lo he visto entero</button></div></div>';
       $("#sim-video").onclick = function () { for (var i = 0; i < n; i++) V.mapa[i] = 1; pintaVideo(); guardaVideo(true); };
-      return;
+      cargaFin(); return;
     }
     var s = document.createElement("script"); s.src = "https://www.youtube.com/iframe_api";
     window.onYouTubeIframeAPIReady = function () {
@@ -186,11 +234,11 @@
         videoId: CFG.YT_ID,
         playerVars: { controls: 0, disablekb: 1, rel: 0, playsinline: 1, modestbranding: 1, iv_load_policy: 3, fs: 0, start: Math.floor(V.pos) },
         events: {
-          onReady: controlesVideo,
+          onReady: function (ev) { cargaFin(); controlesVideo(ev); },
           onPlaybackRateChange: function (ev) { if (ev.data !== 1) st.yt.setPlaybackRate(1); },
           onStateChange: function (ev) {
             clearInterval(V.tick);
-            $("#v-play").textContent = ev.data === 1 ? "❚❚" : "▶";
+            $("#v-play").innerHTML = ev.data === 1 ? ICO.pausa : ICO.play;
             if (ev.data === 1) { musica("off"); V.ultimo = Math.floor(st.yt.getCurrentTime()); V.tick = setInterval(tickVideo, 1000); }
             else guardaVideo(false);
           }
@@ -204,7 +252,7 @@
     var p = st.yt;
     $("#v-play").onclick = function () { if (p.getPlayerState() === 1) p.pauseVideo(); else p.playVideo(); };
     $("#v-atras").onclick = function () { var t = Math.max(0, p.getCurrentTime() - 10); p.seekTo(t, true); V.ultimo = Math.floor(t); V.pos = t; pintaVideo(); };
-    $("#v-vol").onclick = function () { if (p.isMuted()) { p.unMute(); this.textContent = "🔊"; } else { p.mute(); this.textContent = "🔇"; } };
+    $("#v-vol").onclick = function () { if (p.isMuted()) { p.unMute(); this.innerHTML = ICO.vol; } else { p.mute(); this.innerHTML = ICO.mudo; } };
     $("#v-full").onclick = function () { var m = $("#yt"), f = m.requestFullscreen || m.webkitRequestFullscreen; if (document.fullscreenElement) document.exitFullscreen(); else if (f) f.call(m); };
     $("#v-barra").onclick = function (ev) {
       var r = this.getBoundingClientRect(), t = Math.floor(V.dur * (ev.clientX - r.left) / r.width);
@@ -233,14 +281,13 @@
 
   /* ── Camino 2: Hamilton exprés · un único visor dorado ──────── */
   // Cada parte es una sucesión de pasos (una frase con su momento musical, una lectura breve o una actividad)
-  // y acaba con «Quédate con…». «Siguiente» se abre cuando el paso está hecho; se puede volver atrás.
+  // (sin «Quédate con…» desde el 22-oct 14:05). «Siguiente» se abre cuando el paso está hecho; se puede volver atrás.
   // Se guarda el paso en el que va el alumno y se retoma ahí.
   var X = { pasos: [], i: 0, max: 0 };
   function construyePasos() {
     X.pasos = [];
     window.HAM_EXPRES.forEach(function (parte, p) {
       parte.pasos.forEach(function (s) { X.pasos.push({ p: p, s: s }); });
-      X.pasos.push({ p: p, s: { t: "quedate" } });
     });
   }
   function primerPaso(p) { for (var i = 0; i < X.pasos.length; i++) if (X.pasos[i].p === p) return i; return X.pasos.length; }
@@ -267,8 +314,12 @@
     X.max = Math.min(ult, Math.max(+p.expres_max || 0, +loc.max || 0));
     if (st.est.completado) X.max = ult;
     X.i = Math.min(X.max, Math.max(+p.expres_i || 0, +loc.i || 0));
-    $("#expres-cuerpo").innerHTML = '<p class="aviso">Cargando los momentos musicales…</p>';
-    cargarMedia(rutasExpres()).then(function () { pintaPaso(false); });
+    $("#expres-cuerpo").innerHTML = "";
+    pantallaCarga("Preparando el exprés");
+    cargarMedia(rutasExpres()).then(function () {
+      cargaAvanza(0.55); pintaPaso(false);
+      return esperaMedios($("#vo-cuerpo"), 3500);
+    }).then(cargaFin, cargaFin);
   }
   function guardaExpres(fin) {
     ls.set(k("expres"), { i: X.i, max: X.max });
@@ -286,21 +337,20 @@
     pararTodo(); pintaPartes();
     var P = X.pasos[X.i], parte = window.HAM_EXPRES[P.p], s = P.s;
     var ini = primerPaso(P.p), tot = primerPaso(P.p + 1) - ini;
-    var ultimo = X.i === X.pasos.length - 1, finParte = s.t === "quedate";
+    var ultimo = X.i === X.pasos.length - 1, finParte = !ultimo && X.pasos[X.i + 1].p !== P.p;
     var hecho = X.i < X.max || st.est.completado;
     $("#expres-cuerpo").innerHTML = '<div class="vo" id="vo">' +
       '<div class="vo-cab"><span class="vo-parte"><b>' + (P.p + 1) + "</b>" + esc(parte.titulo) + '</span><span class="vo-cuenta">' + (X.i - ini + 1) + " / " + tot + "</span></div>" +
       '<div class="vo-cuerpo" id="vo-cuerpo"></div>' +
-      '<div class="vo-pie"><button class="btn icono" type="button" id="vo-ant" aria-label="Paso anterior" title="Paso anterior"' + (X.i ? "" : " disabled") + ">◀</button>" +
+      '<div class="vo-pie"><button class="btn icono" type="button" id="vo-ant" aria-label="Paso anterior" title="Paso anterior"' + (X.i ? "" : " disabled") + ">" + ICO.atras + "</button>" +
       '<span class="vo-estado" id="vo-estado"></span>' +
-      '<button class="btn lleno" type="button" id="vo-sig">' + (ultimo ? "Terminar ▶" : finParte ? "Parte " + (P.p + 2) + " ▶" : "Siguiente ▶") + "</button></div></div>";
+      '<button class="btn lleno" type="button" id="vo-sig">' + (ultimo ? "Terminar" : finParte ? "Parte " + (P.p + 2) : "Siguiente") + "</button></div></div>";
     var cuerpo = $("#vo-cuerpo"), sig = $("#vo-sig"), estado = $("#vo-estado");
     var bloquea = function (t) { sig.disabled = true; estado.textContent = t; };
     var listo = function () { sig.disabled = false; estado.textContent = ""; };
-    if (s.t === "texto") { cuerpo.innerHTML = textoHTML(s); listo(); }
+    if (s.t === "texto") { cuerpo.innerHTML = textoHTML(s); listo(); if (s.cartel) $("#vo").classList.add("con-cartel"); }
     else if (s.t === "clip") { bloquea("Escúchalo entero para seguir"); pasoClip(cuerpo, s, auto, listo); if (hecho) listo(); }
     else if (s.t === "act") { bloquea(s.a.tipo === "ordena" ? "Ordénalas bien para seguir" : "Haz la actividad para seguir"); actividad(s.a, cuerpo, listo, auto); if (hecho) listo(); }
-    else { cuerpo.innerHTML = '<div class="vo-quedate"><aside class="quedate"><span class="sello-t">Quédate con…</span><p>' + esc(parte.quedate) + "</p></aside></div>"; listo(); }
     $("#vo-ant").onclick = function () { if (X.i) { X.i--; guardaExpres(false); pintaPaso(false); } };
     sig.onclick = function () {
       if (sig.disabled) return;
@@ -314,6 +364,10 @@
     };
   }
   function textoHTML(s) {
+    var F = window.HAM_FIG || {};
+    if (s.cartel) return '<div class="vo-cartel"><span class="sello-t">Aviso</span><h3>' + esc(s.h) + '</h3><p class="sub">' + esc(s.sub) + "</p>" +
+      s.txt.map(function (t) { return "<p>" + t + "</p>"; }).join("") + "</div>";
+    if (s.txt) return '<div class="vo-solo">' + (s.fig && F[s.fig] ? '<img alt="" src="' + esc(u(F[s.fig])) + '">' : "") + "<p>" + s.txt + "</p></div>";
     var h = '<h3 class="vo-h">' + esc(s.h) + "</h3>";
     if (s.cartas) h += '<div class="vo-cartas' + (s.flujo ? " flujo" : "") + '">' + s.cartas.map(function (c) {
       return '<div class="vo-carta' + (c.img ? " con-img" : "") + '">' + (c.img ? '<img alt="" src="' + esc(u(c.img)) + '">' : "") + "<div><b>" + esc(c.k) + "</b><span>" + esc(c.t) + "</span></div></div>";
@@ -328,7 +382,7 @@
   // Reproductor propio: sin barra para saltar; cuenta lo escuchado de verdad
   function controlVideo(v, b, alAcabar) {
     var oido = 0, ult = 0, barra = v.parentNode.querySelector(".vo-barra b");
-    var pinta = function () { b.hidden = !v.paused; b.innerHTML = v.ended ? "↺ Otra vez" : (b.dataset.txt || "▶"); };
+    var pinta = function () { b.hidden = !v.paused; b.innerHTML = v.ended ? ICO.otra + " Otra vez" : (b.dataset.txt ? ICO.play + " " + esc(b.dataset.txt) : ICO.play); };
     b.onclick = function () { if (v.ended) { v.currentTime = 0; ult = 0; } intenta(v); };
     v.onclick = function () { if (v.paused) intenta(v); else v.pause(); };
     v.onplay = v.onpause = pinta;
@@ -341,7 +395,7 @@
   }
   function videoHTML(src, txtBoton, peq) {
     return '<div class="vo-video' + (peq ? " peq" : "") + '"><video playsinline preload="auto" src="' + esc(u(src)) + '"></video>' +
-      '<button type="button" class="vo-play" data-txt="' + esc(txtBoton || "▶") + '">' + esc(txtBoton || "▶") + '</button><i class="vo-barra"><b></b></i><div class="vo-atras" hidden></div></div>';
+      '<button type="button" class="vo-play' + (txtBoton ? "" : " solo") + '" data-txt="' + esc(txtBoton || "") + '" aria-label="' + esc(txtBoton || "Reproducir") + '">' + (txtBoton ? ICO.play + " " + esc(txtBoton) : ICO.play) + '</button><i class="vo-barra"><b></b></i><div class="vo-atras" hidden></div></div>';
   }
   function pasoClip(el, s, auto, listo) {
     var F = window.HAM_FIG || {};
@@ -363,7 +417,7 @@
     var dcha = barajar(a.items.map(function (x) { return x[1]; })), sel = {};
     el.innerHTML = '<p class="vo-consigna">' + a.consigna + '</p><div class="empareja">' + a.items.map(function (x, i) {
       var img = x[2] || a.img;
-      return '<div class="fila-e"><div class="izq">' + (img ? '<img alt="" src="' + esc(u(img)) + '">' : "") + "<span>" + esc(x[0]) + '</span></div><div class="chips" data-i="' + i + '">' +
+      return '<div class="fila-e"><div class="izq">' + (img ? '<img alt="" src="' + esc(u(img)) + '">' : "") + "<span>" + esc(x[0]) + '</span></div><div class="chips" style="--n:' + (dcha.length > 3 ? 2 : dcha.length) + '" data-i="' + i + '">' +
         dcha.map(function (d) { return '<button type="button" class="chip-op" data-v="' + esc(d) + '">' + esc(d) + "</button>"; }).join("") + "</div></div>";
     }).join("") + '</div><div class="botonera"><span class="vo-feed" id="e-res"></span><button class="btn lleno" type="button" id="e-comp">Comprobar</button></div>';
     el.querySelectorAll(".chips").forEach(function (c) {
@@ -384,8 +438,11 @@
     function item(play) {
       clearInterval(reloj); clearTimeout(pasa);
       var it = a.items[i], contestado = false;
-      el.innerHTML = '<p class="vo-consigna">' + a.consigna + "</p>" + videoHTML(it.src, "▶ Escuchar", true) +
-        '<div class="quien">' + a.opciones.map(function (o) { return '<button type="button" class="quien-op" data-o="' + esc(o.n) + '"><img alt="" src="' + esc(u(o.img)) + '"><span>' + esc(o.n) + "</span></button>"; }).join("") + "</div>" +
+      // los personajes, grandes, a los lados del vídeo; los botones, solo con el nombre
+      var fig = function (o, lado) { return '<button type="button" class="quien-fig ' + lado + '" data-o="' + esc(o.n) + '" aria-label="' + esc(o.n) + '"><img alt="" src="' + esc(u(o.img)) + '"></button>'; };
+      el.innerHTML = '<p class="vo-consigna">' + a.consigna + "</p>" +
+        '<div class="oido-escena">' + fig(a.opciones[0], "izq") + videoHTML(it.src, "Escuchar", true) + fig(a.opciones[1], "dcha") + "</div>" +
+        '<div class="quien">' + a.opciones.map(function (o) { return '<button type="button" class="quien-op" data-o="' + esc(o.n) + '">' + esc(o.n) + "</button>"; }).join("") + "</div>" +
         '<p class="vo-feed" id="o-feed">' + (i + 1) + " de " + a.items.length + "</p>";
       var v = el.querySelector("video"), atras = el.querySelector(".vo-atras"), feed = $("#o-feed", el);
       controlVideo(v, el.querySelector(".vo-play"), function () {});
@@ -394,11 +451,11 @@
         var n = 5; atras.hidden = false; atras.textContent = n;
         reloj = setInterval(function () { n--; if (n <= 0) responde(null); else atras.textContent = n; }, 1000);
       });
-      el.querySelector(".quien").onclick = function (ev) { var b = ev.target.closest(".quien-op"); if (b && !contestado) responde(b.dataset.o); };
+      el.onclick = function (ev) { var b = ev.target.closest(".quien-op, .quien-fig"); if (b && !contestado) responde(b.dataset.o); };
       function responde(o) {
         contestado = true; clearInterval(reloj); atras.hidden = true;
         var ok = o === it.ok; if (ok) bien++;
-        el.querySelectorAll(".quien-op").forEach(function (x) { x.disabled = true; if (x.dataset.o === it.ok) x.classList.add("bien"); else if (x.dataset.o === o) x.classList.add("mal"); });
+        el.querySelectorAll(".quien-op, .quien-fig").forEach(function (x) { x.disabled = true; if (x.dataset.o === it.ok) x.classList.add("bien"); else { x.classList.add("apaga"); if (x.dataset.o === o) x.classList.add("mal"); } });
         feed.className = "vo-feed " + (ok ? "bien" : "mal");
         feed.innerHTML = (o === null ? "Se acabó el tiempo: era <b>" + esc(it.ok) + "</b>. " : ok ? "✓ ¡Bien! " : "Era <b>" + esc(it.ok) + "</b>. ") + it.pie +
           '<i class="espera" style="animation-duration:' + (ok ? 3.5 : 4.5) + 's"></i>';
@@ -416,7 +473,7 @@
   // «¡Ahora!»: el fragmento empieza con música; vale desde que entra el coro hasta que termina la frase.
   function pulsa(a, el, listo) {
     el.innerHTML = '<p class="vo-consigna">' + a.consigna + "</p>" +
-      '<div class="pulsa"><button type="button" class="btn lleno" id="p-play">▶ Escuchar</button><button type="button" class="pulsa-ya" id="p-ya" disabled>¡Ahora!</button></div>' +
+      '<div class="pulsa"><button type="button" class="btn lleno" id="p-play">' + ICO.play + ' Escuchar</button><button type="button" class="pulsa-ya" id="p-ya" disabled>¡Ahora!</button></div>' +
       '<i class="vo-barra suelta"><b id="p-b"></b></i><p class="vo-feed" id="p-feed"></p><div id="p-ver"></div>' +
       '<audio id="p-au" preload="auto" src="' + esc(u(a.audio)) + '"></audio>';
     var au = $("#p-au", el), pl = $("#p-play", el), ya = $("#p-ya", el), feed = $("#p-feed", el), marcado = false;
@@ -424,7 +481,7 @@
     au.ontimeupdate = function () { $("#p-b", el).style.width = (100 * au.currentTime / (au.duration || 1)) + "%"; };
     pl.onclick = function () {
       marcado = false; $("#p-ver", el).innerHTML = ""; au.currentTime = 0; intenta(au);
-      ya.disabled = false; pl.textContent = "↺ Otra vez"; feed.className = "vo-feed"; feed.textContent = "Escucha… y pulsa «¡Ahora!» cuando entre el coro.";
+      ya.disabled = false; pl.innerHTML = ICO.otra + " Otra vez"; feed.className = "vo-feed"; feed.textContent = "Escucha… y pulsa «¡Ahora!» cuando entre el coro.";
     };
     ya.onclick = function () {
       if (marcado) return; marcado = true; ya.disabled = true;
@@ -567,16 +624,17 @@
     cargaResp();
     st.qi = primeraSinResponder();
     if (st.qi >= T.length) return entregar();
-    $("#test-cuerpo").innerHTML = '<p class="aviso">Preparando el test…</p>';
+    $("#test-cuerpo").innerHTML = "";
     ver("v-test", "escritorio");
-    cargarMedia(rutasTest()).then(pintaPregunta);
+    pantallaCarga("Preparando el test");
+    cargarMedia(rutasTest()).then(function () { cargaAvanza(0.55); pintaPregunta(); return esperaMedios($("#test-cuerpo"), 3000); }).then(cargaFin, cargaFin);
   }
   function pintaPregunta() {
     pararTodo(); window.scrollTo(0, 0);
     var q = T[st.qi], m = q.media || {}, sel = null, par = {}, esc_ = "", cuerpo = "";
     if (q.tipo === "img") esc_ = '<img class="figura" alt="Personaje del musical" src="' + esc(u(m.img)) + '">';
-    else if (q.tipo === "aud") esc_ = '<div class="reproductor"><button type="button" class="play-grande" id="t-play" aria-label="Escuchar el fragmento">▶</button><div class="ondas" id="t-ondas">' + "<i></i>".repeat(14) + '</div><span class="aviso">Puedes escucharlo las veces que quieras</span><audio id="t-audio" preload="auto" src="' + esc(u(m.audio)) + '"></audio></div>';
-    else if (q.tipo === "vid") esc_ = '<div class="t-video">' + videoHTML(m.video, "▶ Escuchar") + "</div>";
+    else if (q.tipo === "aud") esc_ = '<div class="reproductor"><button type="button" class="play-grande" id="t-play" aria-label="Escuchar el fragmento">' + ICO.play + '</button><div class="ondas" id="t-ondas">' + "<i></i>".repeat(14) + '</div><span class="aviso">Puedes escucharlo las veces que quieras</span><audio id="t-audio" preload="auto" src="' + esc(u(m.audio)) + '"></audio></div>';
+    else if (q.tipo === "vid") esc_ = '<div class="t-video">' + videoHTML(m.video, "Escuchar") + "</div>";
     else if (q.tipo === "emparejar") esc_ = '<div class="tira">' + m.figuras.map(function (f, i) { return '<figure><img alt="Figura ' + (i + 1) + '" src="' + esc(u(f)) + '"><figcaption>' + (i + 1) + "</figcaption></figure>"; }).join("") + "</div>";
     else esc_ = '<div class="num-grande">' + q.n + "</div>";
     if (q.tipo === "emparejar") {
@@ -594,7 +652,7 @@
       '<div class="test-marco"><div class="escena' + (q.tipo === "ide" ? " escritorio" : "") + (q.tipo === "vid" ? " con-video" : "") + '">' + esc_ + "</div>" +
       '<div class="pregunta"><div class="t-cab"><p class="rotulo">Pregunta ' + q.n + " de " + T.length + '</p><i class="t-progreso"><b style="width:' + (100 * st.qi / T.length) + '%"></b></i></div>' +
       '<p class="enun">' + esc(q.texto) + "</p>" + cuerpo +
-      '<div class="botonera t-pie"><span class="aviso">Al pasar a la siguiente, esta respuesta queda guardada.</span><button class="btn lleno" type="button" id="t-sig" disabled>' + (ultimo ? "Entregar el test" : "Siguiente ▶") + "</button></div></div></div>";
+      '<div class="botonera t-pie"><span class="aviso">Al pasar a la siguiente, esta respuesta queda guardada.</span><button class="btn lleno" type="button" id="t-sig" disabled>' + (ultimo ? "Entregar el test" : "Siguiente") + "</button></div></div></div>";
     if (q.tipo === "ide") $(".escena").style.backgroundImage = 'url("img/fondos/03-escritorio-1776.webp")';
     var sig = $("#t-sig");
     if (q.tipo === "emparejar") {
@@ -618,8 +676,8 @@
     if (q.tipo === "aud") {
       var au = $("#t-audio"), pl = $("#t-play"), on = $("#t-ondas");
       pl.onclick = function () { if (au.paused) { au.currentTime = 0; intenta(au); } else au.pause(); };
-      au.onplay = function () { pl.classList.add("sonando"); pl.textContent = "■"; on.classList.add("on"); };
-      au.onpause = au.onended = function () { pl.classList.remove("sonando"); pl.textContent = "▶"; on.classList.remove("on"); };
+      au.onplay = function () { pl.classList.add("sonando"); pl.innerHTML = ICO.stop; on.classList.add("on"); };
+      au.onpause = au.onended = function () { pl.classList.remove("sonando"); pl.innerHTML = ICO.play; on.classList.remove("on"); };
     }
     if (q.tipo === "vid") controlVideo($(".t-video video"), $(".t-video .vo-play"), function () {});
     sig.onclick = function () {
@@ -692,9 +750,9 @@
     $("#resultado-cuerpo").onclick = function (ev) {
       var b = ev.target.closest(".mini-play"); if (!b) return;
       if (!au.paused && au.dataset.src === b.dataset.src) { au.pause(); return; }
-      document.querySelectorAll(".mini-play").forEach(function (x) { x.textContent = "▶"; });
-      au.dataset.src = b.dataset.src; au.src = u(b.dataset.src); intenta(au); b.textContent = "■";
-      au.onended = au.onpause = function () { b.textContent = "▶"; };
+      document.querySelectorAll(".mini-play").forEach(function (x) { x.innerHTML = ICO.play; });
+      au.dataset.src = b.dataset.src; au.src = u(b.dataset.src); intenta(au); b.innerHTML = ICO.stop;
+      au.onended = au.onpause = function () { b.innerHTML = ICO.play; };
     };
     cargarMedia(rutasTest());
   }
@@ -717,7 +775,7 @@
                : '<p class="sol-mal">✗ ' + (tuya ? "Tu respuesta: " + esc(tuya.t) : "Sin contestar") + '</p><p class="sol-bien">✓ ' + esc(buena ? buena.t : "") + "</p>";
       }
       return '<div class="sol ' + (ok ? "ok" : "ko") + '"><div class="sol-cab"><span class="sol-n">' + q.n + "</span><b>" + esc(q.texto) + "</b>" +
-        (medio ? '<button type="button" class="mini-play" data-src="' + esc(medio) + '" aria-label="Volver a escuchar">▶</button>' : "") + "</div>" + h +
+        (medio ? '<button type="button" class="mini-play" data-src="' + esc(medio) + '" aria-label="Volver a escuchar">' + ICO.play + '</button>' : "") + "</div>" + h +
         (ex[q.id] ? '<p class="sol-ex">' + esc(ex[q.id]) + "</p>" : "") + "</div>";
     }).join("") + "</div>";
   }
@@ -726,42 +784,65 @@
   // Portada: «Alexander Hamilton» (instrumental). Después se alternan «Who Lives, Who Dies…» y «Hurricane».
   // Vídeo de Jaime: se corta al empezar el vídeo. Exprés: de fondo, moderado-bajo; se retira con un fundido
   // cuando suena un clip y vuelve al acabar. Test: en silencio (hay preguntas de escuchar).
-  var M = { el: null, i: 0, nivel: "off", fade: null, listo: false,
+  // (22-oct, Iago desde el iPad) El volumen va por Web Audio (un «gain»): en el iPad el volumen de un <audio> no se puede
+  // cambiar, y sin esto la música no bajaba al hablar. Bajo la voz, la música se queda muy por debajo.
+  var M = { el: null, i: 0, nivel: "off", fade: null, listo: false, arrancada: false, vol: 0,
     pistas: ["expres/musica/m1-intro.mp3", "expres/musica/m2.mp3", "expres/musica/m3.mp3"],
-    VOL: { portada: 0.5, fondo: 0.16, voz: 0.12, off: 0 }, silencio: !!ls.get("ham_musica_off", false), voz: false, t0: 0 };
+    VOL: { portada: 0.4, fondo: 0.12, voz: 0.06, off: 0 }, silencio: !!ls.get("ham_musica_off", false), voz: false,
+    t0: 0, tPlay: 0, alSonar: null, ctx: null, gain: null };
+  function ponVol(v) { M.vol = v; if (M.gain) M.gain.gain.value = v; else if (M.el) M.el.volume = v; }
   function fundir(v, ms) {
-    if (!M.el) return;
+    if (!M.el || !M.arrancada) return;
     clearInterval(M.fade);
     if (v > 0 && M.el.paused) { var pr = M.el.play(); if (pr && pr.catch) pr.catch(function () {}); }
-    var desde = M.el.volume, t0 = Date.now();
+    var desde = M.vol, t0 = Date.now();
     M.fade = setInterval(function () {
       var x = Math.min(1, (Date.now() - t0) / ms);
-      M.el.volume = Math.max(0, Math.min(1, desde + (v - desde) * x));
+      ponVol(Math.max(0, Math.min(1, desde + (v - desde) * x)));
       if (x >= 1) { clearInterval(M.fade); if (v === 0) M.el.pause(); }
-    }, 40);
+    }, 30);
   }
   function suenaAlgo() { return [].some.call(document.querySelectorAll("video,audio"), function (m) { return !m.paused && !m.ended; }); }
   function musica(nivel) {
     M.nivel = nivel;
-    if (!M.el) return;
+    if (!M.el || !M.arrancada) return;
     var v = M.silencio ? 0 : (M.VOL[nivel] || 0);
     if (v > 0 && suenaAlgo()) v = 0;
-    if (v > 0 && M.voz) v = Math.min(v, M.VOL.voz);     // mientras habla Iago, la música por debajo
-    fundir(v, M.voz ? 900 : (v > 0 ? 2500 : 1000));
+    if (v > 0 && M.voz) v = Math.min(v, M.VOL.voz);     // mientras habla Iago, la música muy por debajo
+    fundir(v, M.voz ? 600 : (v > 0 ? 2500 : 1000));
   }
   function musicaVista(id) {
-    var n = { "v-portada": "portada", "v-video": "portada", "v-expres": "fondo", "v-fin": "fondo", "v-test-intro": "fondo", "v-resultado": "fondo" }[id] || "off";
+    var n = { "v-portada": "portada", "v-video": "portada", "v-expres": "off", "v-fin": "fondo", "v-test-intro": "fondo", "v-resultado": "fondo" }[id] || "off";
     musica(n);
   }
-  function arrancaMusica() {
-    if (M.el) return;
-    M.el = new Audio(); M.el.preload = "auto"; M.el.volume = 0;
+  // Se prepara (y empieza a descargarse) antes del telón; solo suena al pulsar «Que se abra el telón»
+  function preparaMusica() {
+    if (M.el) return M.el;
+    M.el = new Audio(); M.el.preload = "auto"; M.el.crossOrigin = "anonymous";
     M.el.addEventListener("ended", function () {
       M.i = M.i === 1 ? 2 : 1; M.el.src = u(M.pistas[M.i]);
       if (!M.silencio && M.nivel !== "off") { var pr = M.el.play(); if (pr && pr.catch) pr.catch(function () {}); }
     });
-    M.i = 0; M.el.src = u(M.pistas[0]);
-    var pr = M.el.play(); if (pr && pr.catch) pr.catch(function () {});   // dentro del gesto del alumno
+    M.el.addEventListener("playing", function () {
+      if (M.tPlay) return; M.tPlay = Date.now();
+      var f = M.alSonar; M.alSonar = null; if (f) f();
+    });
+    M.i = 0; M.el.src = u(M.pistas[0]); try { M.el.load(); } catch (e) {}
+    return M.el;
+  }
+  function arrancaMusica() {
+    if (M.arrancada) return; M.arrancada = true;
+    preparaMusica();
+    try {                                                  // dentro del gesto del alumno
+      var AC = window.AudioContext || window.webkitAudioContext;
+      if (AC && !M.ctx) {
+        M.ctx = new AC(); M.gain = M.ctx.createGain(); M.gain.gain.value = 0;
+        M.ctx.createMediaElementSource(M.el).connect(M.gain); M.gain.connect(M.ctx.destination); M.el.volume = 1;
+      }
+      if (M.ctx && M.ctx.state === "suspended") M.ctx.resume();
+    } catch (e) { M.ctx = null; M.gain = null; }
+    ponVol(0);
+    var pr = M.el.play(); if (pr && pr.catch) pr.catch(function () {});
     M.t0 = Date.now();
     if (M.nivel === "portada" && !M.silencio) fundir(M.VOL.portada, 250);   // la entrada, con toda su fuerza
     else musica(M.nivel);
@@ -783,85 +864,145 @@
     b.title = M.silencio ? "Activar la música" : "Silenciar la música"; b.setAttribute("aria-label", b.title);
     b.onclick = function () { M.silencio = !M.silencio; ls.set("ham_musica_off", M.silencio); botonMusica(); musica(M.nivel); };
   }
+  // Telón con barra de carga: avanza mientras se comprueba la cuenta, se firman los enlaces y se descargan la música
+  // y la voz; cuando está todo, aparece «Que se abra el telón».
+  var CARGA = { obj: 0, vis: 0, tick: null };
+  function carga(obj) {
+    CARGA.obj = Math.max(CARGA.obj, obj);
+    if (CARGA.tick) return;
+    CARGA.tick = setInterval(function () {
+      var hueco = CARGA.obj - CARGA.vis;
+      CARGA.vis += hueco > 0 ? Math.max(0.15, hueco * 0.07) : 0;
+      if (CARGA.vis > CARGA.obj) CARGA.vis = CARGA.obj;
+      var b = $("#carga-b"); if (b) b.style.width = CARGA.vis.toFixed(1) + "%";
+      var c = $("#carga"); if (c) c.setAttribute("aria-valuenow", Math.round(CARGA.vis));
+      if (CARGA.vis >= 100) { clearInterval(CARGA.tick); CARGA.tick = null; }
+    }, 40);
+  }
   function abrirTelon() {
     var t = $("#telon"), e = $("#entrar");
-    t.hidden = false; e.disabled = true; e.textContent = "Preparando…";
-    cargarMedia(M.pistas.concat([CARTA.voz])).then(function () { e.disabled = false; e.textContent = "Que se abra el telón"; e.focus(); });
+    t.hidden = false; e.hidden = true; carga(45);
+    cargarMedia(M.pistas.concat([CARTA.voz])).then(function () {
+      carga(60);
+      var m = preparaMusica(), v = CARTA.pendiente ? cartaPrecarga() : null, t0 = Date.now();
+      var lista = function (x) { return !x || x.readyState >= 4; };
+      var parte = function (x) { if (!x) return 1; if (x.readyState >= 4) return 1; try { if (x.duration && x.buffered.length) return Math.min(1, x.buffered.end(x.buffered.length - 1) / Math.min(x.duration, 30)); } catch (er) {} return 0; };
+      var mira = setInterval(function () {
+        var p = (parte(m) + parte(v)) / 2, dt = Date.now() - t0;
+        carga(60 + 38 * p);
+        var nada = dt > 1500 && m.readyState === 0 && (!v || v.readyState === 0);   // iPad: no descarga hasta pulsar
+        if ((lista(m) && lista(v)) || nada || dt > 8000) { clearInterval(mira); listo(); }
+      }, 120);
+    });
+    function listo() {
+      carga(100);
+      setTimeout(function () { $("#carga").classList.add("hecha"); e.hidden = false; $("#telon-aviso").hidden = false; e.focus(); }, 500);
+    }
     e.onclick = function () {
       arrancaMusica();
       t.classList.add("abre"); setTimeout(function () { t.hidden = true; }, 900);
-      if (CARTA.pendiente && $("#v-portada").classList.contains("activa")) cartaVoz(false);
+      if (CARTA.pendiente && $("#v-portada").classList.contains("activa")) cartaVoz();
     };
   }
 
 
-  /* ── La carta de Iago: su voz lee la introducción mientras aparecen los párrafos ── */
+
+  /* ── La carta de Iago: su voz lee la introducción y en la tarjeta va saliendo, en grande, el párrafo que dice ── */
   // Primera vez (y hasta que la escuche entera): tras los ~4 s intensos del principio de «Alexander Hamilton», la música
-  // baja y entra la voz; los párrafos salen a su ritmo. Al decir «No desperdicies tu oportunidad», la música vuelve a subir
-  // y se pueden elegir los caminos. Después, la carta queda entera y se puede volver a escuchar.
-  var CARTA = { voz: "expres/voz/intro.mp3", entra: 3.8,
-    cues: [0.0, 16.75, 24.93, 34.58, 49.06, 60.56, 75.89, 85.52, 96.96, 102.84], fin: 104.94,
+  // baja mucho y entra la voz. Un párrafo cada vez, que se funde con el siguiente; abajo, una línea con lo que lleva.
+  // Al decir «No desperdicies tu oportunidad», la música vuelve a subir y aparece «Continuar»: lleva a los dos caminos.
+  // Las veces siguientes se va directo a los caminos.
+  var CARTA = { voz: "expres/voz/intro-v2.mp3", entra: 3.8, audio: null,
+    cues: [0.0, 16.75, 24.93, 34.58, 49.06, 60.56, 75.89, 85.52, 95.9, 101.78], fin: 103.88,
     el: null, t: null, ult: -1, pendiente: false, subida: false };
-  function cartaEntera() {
-    document.querySelectorAll(".mis-p, .mis-firma").forEach(function (p) { p.classList.add("ya"); p.classList.remove("actual"); });
-    $("#misiva").classList.add("leida");
+  function cartaPrecarga() {
+    if (!CARTA.audio) { CARTA.audio = new Audio(); CARTA.audio.preload = "auto"; CARTA.audio.src = u(CARTA.voz); try { CARTA.audio.load(); } catch (e) {} }
+    return CARTA.audio;
+  }
+  // Cada párrafo, con la letra más grande que quepa en la tarjeta
+  function ajustaCarta() {
+    var papel = $("#misiva-papel"); if (!papel || !papel.clientHeight) return;
+    var alto = papel.clientHeight - 110;
+    document.querySelectorAll(".mis-p").forEach(function (p) {
+      var fs = p.classList.contains("mis-lema") ? 64 : 46;
+      p.style.setProperty("--fs", fs + "px");
+      while (fs > 17 && p.offsetHeight > alto) { fs -= 1; p.style.setProperty("--fs", fs + "px"); }
+    });
+  }
+  window.addEventListener("resize", function () { clearTimeout(CARTA.rz); CARTA.rz = setTimeout(ajustaCarta, 150); });
+  function portadaFase(f) {
+    var por = $("#v-portada"); por.classList.toggle("fase-carta", f === "carta"); por.classList.toggle("fase-caminos", f === "caminos");
+    $("#portada-h").textContent = f === "carta" ? "Antes de empezar" : "Elige tu camino";
+    if (f === "carta") requestAnimationFrame(ajustaCarta);
+  }
+  function cartaMuestra(i) {
+    var ps = [].slice.call(document.querySelectorAll(".mis-p")), firma = $(".mis-firma");
+    ps.forEach(function (p, j) { p.classList.toggle("actual", j === i); });
+    firma.classList.toggle("ya", i === ps.length - 1);
   }
   function cartaPrepara(leido) {
     var mis = $("#misiva"); if (!mis) return;
-    $("#mis-otra").onclick = function () { cartaVoz(true); };
+    $("#mis-sigue").onclick = function () { cartaPara(); portadaFase("caminos"); window.scrollTo(0, 0); };
     $("#mis-pausa").onclick = function () {
       var a = CARTA.el; if (!a) return;
-      if (a.paused) { var pr = a.play(); if (pr && pr.catch) pr.catch(function () {}); this.textContent = "❚❚"; this.title = "Pausa"; }
-      else { a.pause(); this.textContent = "▶"; this.title = "Seguir"; }
+      if (a.paused) { var pr = a.play(); if (pr && pr.catch) pr.catch(function () {}); this.classList.remove("pausado"); this.title = "Pausa"; this.setAttribute("aria-label", "Pausa"); $("#mis-estado").textContent = ""; }
+      else { a.pause(); this.classList.add("pausado"); this.title = "Seguir"; this.setAttribute("aria-label", "Seguir"); }
     };
-    if (leido) { cartaEntera(); $("#mis-otra").hidden = false; CARTA.pendiente = false; return; }
+    if (leido) { CARTA.pendiente = false; portadaFase("caminos"); return; }
+    portadaFase("carta");
     if (CARTA.el && !CARTA.el.paused) return;                  // ya está sonando
     mis.classList.remove("leida"); mis.classList.add("espera");
-    document.querySelectorAll(".mis-p, .mis-firma").forEach(function (p) { p.classList.remove("ya", "actual"); });
-    $("#mis-estado").textContent = "";
+    cartaMuestra(-1);
+    $("#mis-sigue").hidden = true; $("#mis-estado").textContent = "";
     CARTA.pendiente = true;
-    if (M.el && $("#telon").hidden) cartaVoz(false);           // el telón ya estaba abierto: empieza ya
+    if (M.el && $("#telon").hidden) cartaVoz();                // el telón ya estaba abierto: empieza ya
   }
-  function cartaVoz(repetir) {
+  function cartaVoz() {
     CARTA.pendiente = false; clearTimeout(CARTA.t);
     if (CARTA.el) { try { CARTA.el.pause(); } catch (e) {} }
-    var a = CARTA.el = new Audio(u(CARTA.voz)), mis = $("#misiva"), papel = $("#misiva-papel");
-    var ps = [].slice.call(document.querySelectorAll(".mis-p")), firma = $(".mis-firma");
+    var a = CARTA.el = cartaPrecarga(), mis = $("#misiva");
+    try { a.currentTime = 0; } catch (e) {}
     a.preload = "auto"; CARTA.ult = -1; CARTA.subida = false;
     mis.classList.remove("espera"); mis.classList.add("leyendo");
-    if (!repetir) { ps.forEach(function (p) { p.classList.remove("ya", "actual"); }); firma.classList.remove("ya"); }
-    $("#mis-otra").hidden = true; $("#mis-pausa").hidden = false; $("#mis-pausa").textContent = "❚❚";
+    cartaMuestra(-1); ajustaCarta();
+    $("#mis-sigue").hidden = true; $("#mis-pausa").hidden = false; $("#mis-pausa").classList.remove("pausado"); $("#mis-prog").hidden = false;
     var marca = function (i) {
       if (i === CARTA.ult) return; CARTA.ult = i;
-      ps.forEach(function (p, j) { if (j <= i) p.classList.add("ya"); p.classList.toggle("actual", j === i); });
-      var p = ps[i]; if (!p) return;
-      if (p.offsetTop + p.offsetHeight > papel.scrollTop + papel.clientHeight - 20 || p.offsetTop < papel.scrollTop)
-        papel.scrollTo({ top: Math.max(0, p.offsetTop - 24), behavior: "smooth" });
-      if (p.dataset.plazo) { var pg = $("#plazo-grande"); pg.classList.remove("pulso"); void pg.offsetWidth; pg.classList.add("pulso"); }
-      if (i === ps.length - 1) setTimeout(function () { firma.classList.add("ya"); }, 1200);
+      cartaMuestra(i);
+      var p = document.querySelectorAll(".mis-p")[i];
+      if (p && p.dataset.plazo) { var pg = $("#plazo-grande"); pg.classList.remove("pulso"); void pg.offsetWidth; pg.classList.add("pulso"); }
     };
     var termina = function () {
       if (CARTA.subida) return; CARTA.subida = true;
       M.voz = false; musica(M.nivel);                          // «No desperdicies tu oportunidad»: sube la música
       ls.set(k("intro_leida"), true);
-      cartaEntera(); mis.classList.remove("leyendo");
-      $(".caminos").classList.remove("bloq"); $("#mis-pausa").hidden = true; $("#mis-otra").hidden = false;
+      cartaMuestra(CARTA.cues.length - 1); $("#mis-prog-b").style.width = "100%";
+      mis.classList.remove("leyendo"); mis.classList.add("leida");
+      $("#mis-pausa").hidden = true; $("#mis-estado").textContent = ""; $("#mis-sigue").hidden = false;
     };
     a.ontimeupdate = function () {
-      var t = a.currentTime, i = -1;
+      var t = a.currentTime, i = -1; $("#mis-prog-b").style.width = Math.min(100, 100 * t / CARTA.fin) + "%";
       for (var j = 0; j < CARTA.cues.length; j++) if (t >= CARTA.cues[j] - 0.1) i = j;
       if (i >= 0) marca(i);
       if (t >= CARTA.fin) termina();
     };
     a.onended = termina;
-    a.onerror = function () { $("#mis-estado").textContent = ""; termina(); };   // si la voz no carga, que nada se bloquee
+    a.onerror = function () { termina(); };                   // si la voz no carga, que nada se bloquee
+    // primero baja la música (los chasquidos ya no tapan) y medio segundo después entra la voz
     var empieza = function () {
       M.voz = true; musica(M.nivel);
-      var pr = a.play();
-      if (pr && pr.catch) pr.catch(function () { M.voz = false; musica(M.nivel); $("#mis-pausa").textContent = "▶"; $("#mis-estado").textContent = "Pulsa ▶ para escuchar la carta"; });
+      CARTA.t = setTimeout(function () {
+        var pr = a.play();
+        if (pr && pr.catch) pr.catch(function () { M.voz = false; musica(M.nivel); $("#mis-pausa").classList.add("pausado"); $("#mis-estado").textContent = "Pulsa el sello para escuchar la carta"; });
+      }, 550);
     };
-    var espera = repetir ? 400 : Math.max(0, CARTA.entra * 1000 - (Date.now() - (M.t0 || Date.now())));
-    CARTA.t = setTimeout(empieza, espera);
+    var cuenta = function () {                               // desde que la música suena de verdad
+      var desde = M.tPlay || Date.now();
+      CARTA.t = setTimeout(empieza, Math.max(0, (CARTA.entra - 0.55) * 1000 - (Date.now() - desde)));
+    };
+    if (M.silencio || !M.arrancada) CARTA.t = setTimeout(empieza, 300);
+    else if (M.tPlay) cuenta();
+    else { M.alSonar = cuenta; CARTA.t = setTimeout(function () { if (M.alSonar) { M.alSonar = null; empieza(); } }, 8000); }
   }
   function cartaPara() { clearTimeout(CARTA.t); if (CARTA.el) { try { CARTA.el.pause(); } catch (e) {} } if (M.voz) { M.voz = false; musica(M.nivel); } }
 
@@ -878,7 +1019,8 @@
     if (ca) { var pie = ca.closest(".pie"); if (pie && pie.dataset.orig) pie.innerHTML = pie.dataset.orig; return; }
     var el = ev.target.closest("[data-elige]"); if (!el) return;
     el.disabled = true; var c = el.dataset.elige;
-    guardar(c, { elegido: c }, false).then(function (r) { if (r && r.ok) { st.est.camino = st.est.camino || c; abrirCamino(); } else { el.disabled = false; } });
+    pantallaCarga(c === "video" ? "Preparando el vídeo" : "Preparando el exprés");
+    guardar(c, { elegido: c }, false).then(function (r) { if (r && r.ok) { st.est.camino = st.est.camino || c; abrirCamino(); } else { el.disabled = false; cargaFin(); } });
   });
 
   /* ── Arranque ───────────────────────────────────── */
@@ -897,6 +1039,7 @@
   document.addEventListener("click", function (ev) { var a = ev.target.closest("[data-parte]"); if (a && !a.disabled) { X.i = primerPaso(+a.dataset.parte); guardaExpres(false); pintaPaso(false); } });
 
   function arranca() {
+    try { if (document.fonts && document.fonts.ready) document.fonts.ready.then(ajustaCarta); } catch (e) {}
     st.cuenta = leerCuenta();
     st.previa = !st.cuenta && !/lmathome\.es$/.test(location.hostname);
     if (st.previa) {
@@ -904,11 +1047,15 @@
       $("#banda-previa").hidden = false;
       $("#reiniciar-previa").onclick = function () { try { Object.keys(localStorage).forEach(function (x) { if (x.indexOf("ham_") === 0) localStorage.removeItem(x); }); } catch (e) {} location.reload(); };
     }
+    var sinTelon = function () { $("#telon").hidden = true; };
+    carga(30);
     if (!st.cuenta && !st.previa) {
+      sinTelon();
       $("#cerrado-txt").innerHTML = "Entra desde tu portal de <b>LM at home</b>, pulsando la medalla de Hamilton.";
       return ver("v-cerrado");
     }
     pedirEstado().then(function (e) {
+      if (!e || !e.ok || !e.abierta || (e.cerrada && !e.entregado)) sinTelon();
       if (!e || !e.ok) { $("#cerrado-txt").textContent = "No he podido comprobar tu cuenta. Entra de nuevo desde tu portal de LM at home."; return ver("v-cerrado"); }
       st.est = e; st.est.progreso = e.progreso || {};
       $("#plazo").textContent = "Plazo: hasta el " + fecha(e.cierra_en);
@@ -919,7 +1066,7 @@
       if (e.completado) return finCamino();
       if (e.camino) return abrirCamino();
       portada();
-    }).catch(function () { $("#cerrado-txt").textContent = "No hay conexión con el servidor. Comprueba Internet y recarga la página."; ver("v-cerrado"); });
+    }).catch(function () { sinTelon(); $("#cerrado-txt").textContent = "No hay conexión con el servidor. Comprueba Internet y recarga la página."; ver("v-cerrado"); });
     if (window.matchMedia("(max-width: 600px) and (pointer: coarse)").matches) aviso("Optimizado para ordenador y tablet.");
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", arranca); else arranca();
