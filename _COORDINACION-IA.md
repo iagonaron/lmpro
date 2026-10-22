@@ -30,6 +30,8 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   ♭/♯) y se corrige. Todo pasa por LM_ACO (arriba/bajo/raizRueda) en index.html.
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 22-oct 13:25 · C1 · Hamilton · HECHO · solo dentro de hamilton/ (app.js, css/hamilton.css, index.html): la intro del portal pasa a ser «la carta de Iago»,
+  con su voz en off (Supabase hamilton/expres/voz/intro.mp3) y los párrafos apareciendo a su ritmo. No toca index.html del portal GP.
 - 22-oct 12:55 · C1 · Hamilton · HECHO (con el ok de Iago: «súbelo a lmpro») · commits 4357d02, 7b1158c, 27f187c y a4e17c0 (hamilton/) y f3ac1a6 (medalla) · probado en vivo con Protester · PORTAL DE HAMILTON SOLO PARA PROTESTER: carpeta NUEVA hamilton/
   (gp.lmathome.es/hamilton/: index.html, css/, js/, img/fondos/) y en index.html UNA entrada nueva en PRUEBAS del medallero
   (u:'ham', solo:/protester/i, misterio:true): la medalla de Hamilton sigue con la «?» y al pulsarla abre el portal con #c=.
