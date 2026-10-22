@@ -30,6 +30,20 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   ♭/♯) y se corrige. Todo pasa por LM_ACO (arriba/bajo/raizRueda) en index.html.
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 22-oct 17:40 · Fichas y rediseño · HECHO (con el ok de Iago para subir lo terminado; LMEAVathome comprobado justo antes) · LA PREVIA
+  DEL AULA: EL RECORDATORIO DE LAS FICHAS EN PAPEL, EN UNA ESQUINA TODA LA PREVIA. LMEAVathome e6f9855 (encima de 32612b4), solo
+  piel/previa/previa.html (+36 −1). Iago: «me gustaría que esté todo el tiempo de la previa en pantalla, en un lugar que yo pueda
+  verlo pero que no moleste a la previa. Una esquina quizá, en plan recordatorio» («me refiero al recordatorio de entregar fichas en
+  papel… en plan 2gpf tienes que entregar a…»). Antes, los recordatorios que manda el iPad (en C2, «Fichas en papel · N copias» con
+  los nombres de ese grupo; y los 📌 de la preparación) solo salían en el aviso (0–10 s) y en los respiros, en el centro. Ahora, una
+  tarjeta (#recEsq) abajo a la izquierda del escenario de 1920 × 1080 (left 24, bottom 30), de principio a fin: «Fichas en papel · N»
+  y un nombre por línea; las notas, con su título y sus líneas. Los del centro ya no salen (REC_ESQ). Medido con los 30 moldes del
+  ¡Ojo! (124 ejemplos) y todos los consejos: por debajo de y = 868 no llega nada a la izquierda de x = 259 y, más arriba, nada a la
+  izquierda de x = 200; por eso la tarjeta mide hasta 226 px si cabe abajo (182 px de alto) y, si no, 166 px y crece hacia arriba
+  (pintaEsq). Banco: 35 780 comprobaciones con 5 juegos de recordatorios, 0 veces con algo visible a menos de 8 px. Sin tocar
+  escaleta.js: GitHub Pages ya sirve la nueva también con su ?v=2026-10-18a (max-age 600). En vivo, por huella y en el Chrome de Iago.
+  Espejo de Dropbox igual; copia de antes en APPs/_PARA BORRAR/22-oct-2026-antes-previa-recordatorio-en-esquina/; LEEME en
+  APPs/LMATHOME GE (github LMEAVathome)/LEEME-22-oct-2026-previa-recordatorio-en-esquina.txt. Para quitarlo: REC_ESQ = false.
 - 22-oct 17:48 · C1 · Hamilton · HECHO · solo dentro de hamilton/ (index.html, js/app.js, js/datos-expres.js): «Satisfied» v3 (Supabase expres/escucha/E5_satisfied-v3.mp4) y test sin «unos 7 minutos».
 - 22-oct 17:15 · C1 · Hamilton · HECHO · solo hamilton/js/app.js: la carta sigue vacía hasta que empieza la voz de Iago.
 - 22-oct 17:05 · C1 · Hamilton · HECHO · solo dentro de hamilton/ (index.html, css/hamilton.css, js/app.js, voz-intro-v4.mp3 nuevo): voz sin «Nos vemos en clase», párrafos sincronizados con la voz, música bajo la voz al 18 %, vídeo de Jaime sin subtítulos automáticos.
