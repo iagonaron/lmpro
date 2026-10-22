@@ -30,6 +30,7 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   ♭/♯) y se corrige. Todo pasa por LM_ACO (arriba/bajo/raizRueda) en index.html.
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 22-oct 21:36 · C1 · Hamilton · EN CURSO · solo hamilton/ (index.html, css/hamilton.css): «Como diría Hamilton:» en tinta negra.
 - 22-oct 21:32 · C1 · Hamilton · HECHO · solo hamilton/index.html: texto de la carta (“ni me va ni me viene” entre comillas, «muchísima historia»).
 - 22-oct 21:02 · Fichas y rediseño · HECHO (con el ok de Iago para subir lo terminado; lmpro y LMEAVathome comprobados justo antes) ·
   TRES COSAS DE LA NOCHE. (1) CAMPANA DEL PORTAL GP, TODO POR FECHA (Iago, con la foto de la campana de una alumna: «Las
