@@ -2,6 +2,35 @@
 
 Hecho por Claude para Iago (conversación Cowork del escape room «Atonalidad»). Solo lo ve la cuenta **Iago González Protester**.
 
+## v5 (22-oct-2026): una animación por día, capítulo, bobina o sección
+Iago (22-oct): «pedí que cada día de un portal… tenga su propia animación de aleatoriedad de alumnos… hoy me encontré en el día 3
+de la cabaña la misma animación… que el del día 2» y «que las dos secciones de trabajo del fonógrafo también tienen cada uno un
+diseño». `VERSION = 5`. Los temas de antes quedan **igual**.
+- **`monta({ temaDe })`**: una función del portal que dice qué tema toca en **esa** oferta (recibe lo que se pasa a `ofrece()`).
+  Si `ofrece({ tema })` trae un tema que existe, manda ese. Sin `temaDe`, todo como en la v4.
+- **Siete temas nuevos** (1920×1080 escalado, sin dependencias; solo las letras que ya carga cada portal):
+  - Atonalidad: `cordon` (capítulo 1, el museo de día: postes de latón con su cartela y el cordón de terciopelo que cae en el
+    elegido) y `dado` (capítulo 2, la noche de los grafitis: el dado de oro que rueda y se para con su nombre arriba). El 3
+    sigue con `museo` (la rueda del candado).
+  - Magnetófono: `caza` (bobina 2, el plano del metro de París de 1948: el vagón da vueltas a la línea, frena en una estación y
+    se enciende «● REC») y `maquina` (bobina 3, la máquina de escribir del Club d'Essai: escribe los nombres cada vez más
+    despacio y el último, en rojo; «EN ANTENA»). La 1 sigue con `cinta`.
+  - Acústica: `arbol` (Día 1, el lago al amanecer: una ráfaga recorre los pinos de la orilla, cada uno con su tablilla; el
+    elegido cruje, se parte y cae al agua; luego, silencio) y `sinte` (Día 3, el sintetizador modular: el cable coral salta de
+    toma en toma, cada toma suena con otro timbre del mismo La —seno, triángulo, sierra, cuadrada, campana FM, filtro, órgano,
+    coro— y el osciloscopio dibuja su onda; los nombres, a mano en cinta de carrocero). El 2 sigue con `radio`.
+  - Fonógrafo: `taller` (el montaje: la mesa del despacho con el tapete verde, las piezas de latón con su etiqueta de cartón y
+    una lupa que las recorre; sin campanitas: roce, papel y el «clac» de una pieza que encaja). La grabación, con el cilindro
+    (`disco`).
+- **Los portales** (solo su `LM_VOL_CONFIG`; el Fonógrafo, también el final del montaje): Acústica y Atonalidad leen el día o el
+  capítulo de su pantalla de carga (`#carga .ceja`); el Magnetófono usa la bobina que ya pasaba (`ofrece({ dia })`); el Fonógrafo
+  usa `taller` en la oferta del montaje (`#mcEmpezar`) y, **nuevo**, al acabar de montar y antes de grabar llama a
+  `ofrece({ tema: 'disco' })` (hasta ahora la grabación no tenía sorteo). Con el módulo v4, los portales siguen como antes.
+- Fuentes de los temas y los scripts: Dropbox, `APPs/LMATHOME GP (github lmpro)/VOLUNTARIOS (fuentes)/v5-22-oct-2026/`.
+- Deshacer: volver a subir la v4 (`lm-voluntarios.js` y este LEEME anteriores; copia en
+  `APPs/_PARA BORRAR/22-oct-2026-voluntarios-v4/`). Los portales no hace falta tocarlos (sin la v5, `temaDe` no se usa); para
+  quitar la oferta antes de grabar del Fonógrafo, volver a subir su `index.html` anterior (copia en la misma carpeta).
+
 ## v4 (20-oct-2026): temas del Blues y un tema por oferta
 Encargo del proyecto «Blues»: una estética por acto, y que cada oferta pueda elegir la suya. `VERSION = 4`. Los cuatro temas de
 antes (`museo`, `radio`, `disco`, `cinta`) quedan **igual**.
