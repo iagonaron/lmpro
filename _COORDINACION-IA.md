@@ -30,6 +30,15 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   ♭/♯) y se corrige. Todo pasa por LM_ACO (arriba/bajo/raizRueda) en index.html.
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 22-oct 19:10 · Fichas y rediseño · HECHO (con el ok de Iago para subir lo terminado; LMEAVathome comprobado justo antes) · ESCALETA,
+  «FIN DE LA CLASE»: «No vinieron» SIN LOS «…» DEL FINAL (Iago: «Esos puntos suspensivos… me genera dudas. Pon los alumnos que no haya
+  evaluado y ya está»). LMEAVathome 3097fd9 (encima de 3012996), solo piel/escaleta.js (pintaAusentes): la lista ya es la de todos los
+  marcados como «No vino» en las apps de corrección durante la clase (y, en GP, los del dictado sin enviar ni corregir), ahora sin
+  nada detrás; sin marcas, «Nadie marcado como «no vino»», también sin «…»; si son muchos, en dos líneas y sin partir ningún nombre.
+  Banco: 25/25 (de 1 a 14 nombres, a 1523×790 y a 1920×1080, con y sin tareas). Copia de antes en
+  APPs/_PARA BORRAR/22-oct-2026-antes-escaleta-no-vinieron-sin-puntos/; espejo de Dropbox igual a lo publicado. Y la segunda
+  oportunidad en la Ficha 5 de la alumna de 2.º GP: Iago ya pegó el SQL y está comprobado (entrega retirada, nada a medias, aviso otra
+  vez sin leer; la ficha le sale pendiente hasta el 30-oct, 19:00); en SQL-BD queda como YA-PEGADO, con su DESHACER al lado.
 - 22-oct 18:33 · Fichas y rediseño · HECHO (con el ok de Iago para subir lo terminado; cada repo comprobado justo antes) · CUATRO
   COSAS DE LA TARDE. (1) REFUERZOS: Iago ya pegó el SQL de las 17:51 y está comprobado (suite_ficha_profe_contexto_v2, md5 3f470ca6…;
   para la ficha siguiente, 4.º GE 4 alumnos con refuerzo y 2.º GP 9, como el ensayo); en SQL-BD queda como YA-PEGADO. (2) PREVIA DEL
