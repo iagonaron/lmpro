@@ -30,6 +30,19 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   ♭/♯) y se corrige. Todo pasa por LM_ACO (arriba/bajo/raizRueda) en index.html.
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 22-oct 21:54 · Fichas y rediseño · HECHO (con el ok de Iago para subir lo terminado; cada repo comprobado justo antes) ·
+  SELECCIONADOR DE VOLUNTARIOS v5: UNA ANIMACIÓN POR DÍA, CAPÍTULO, BOBINA O SECCIÓN (Iago: «que cada día de un portal… tenga su
+  propia animación de aleatoriedad de alumnos… y que las dos secciones de trabajo del fonógrafo también»). lmpro b7cc32a (solo
+  voluntarios/lm-voluntarios.js y LEEME.md): monta({ temaDe }) y siete temas nuevos (cordon y dado, Atonalidad cap. 1 y 2; caza y
+  maquina, Magnetófono bobinas 2 y 3; arbol y sinte, Acústica días 1 y 3; taller, Fonógrafo montaje); los de antes, igual. Portales,
+  solo su LM_VOL_CONFIG (temaDe): cualidadesdelsonido 2dc434d y atonalidad 04a66fb (prueba.html; leen el día o el capítulo de #carga
+  .ceja), magnetofono ffcf23b (prueba.html, la bobina de ofrece({ dia }); con su línea HECHO en el _COORDINACION-IA.md de ese repo) y
+  fon-grafo 2fb4693 (index.html: además, al acabar de montar y antes de grabar, ofrece({ tema: 'disco' }), el cilindro; hasta ahora la
+  grabación no tenía sorteo). Con el módulo v4 los portales siguen como antes. Banco: arbol, sinte y taller con 6, 12 y 16 nombres,
+  «Otra vez», movimiento reducido y 4:3; cordon, dado, caza y maquina, con el suyo de esta tarde; temaDe 7/7. DESHACER: volver a subir
+  lo de APPs/_PARA BORRAR/22-oct-2026-voluntarios-v4/ (con COMO-DESHACER.txt): el módulo v4 basta para volver a lo de antes en todos.
+  Espejos de Dropbox iguales a lo publicado (el de LMPRO/voluntarios estaba aún en la v1 del 14-oct: ahora, v5; el del Magnetófono,
+  prueba.html nuevo en TEORIA INTERACTIVA 2GP/MAGNETÓFONO/).
 - 22-oct 21:38 · C1 · Hamilton · HECHO · solo hamilton/ (index.html, css/hamilton.css): «Como diría Hamilton:» en tinta negra.
 - 22-oct 21:32 · C1 · Hamilton · HECHO · solo hamilton/index.html: texto de la carta (“ni me va ni me viene” entre comillas, «muchísima historia»).
 - 22-oct 21:02 · Fichas y rediseño · HECHO (con el ok de Iago para subir lo terminado; lmpro y LMEAVathome comprobados justo antes) ·
