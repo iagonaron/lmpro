@@ -882,7 +882,7 @@
   function abrirTelon() {
     var t = $("#telon"), e = $("#entrar");
     t.hidden = false; e.hidden = true; carga(45);
-    cargarMedia(M.pistas.concat([CARTA.voz])).then(function () {
+    cargarMedia(M.pistas).then(function () {
       carga(60);
       var m = preparaMusica(), v = CARTA.pendiente ? cartaPrecarga() : null, t0 = Date.now();
       var lista = function (x) { return !x || x.readyState >= 4; };
@@ -912,11 +912,11 @@
   // baja mucho y entra la voz. Un párrafo cada vez, que se funde con el siguiente; abajo, una línea con lo que lleva.
   // Al decir «No desperdicies tu oportunidad», la música vuelve a subir y aparece «Continuar»: lleva a los dos caminos.
   // Las veces siguientes se va directo a los caminos.
-  var CARTA = { voz: "expres/voz/intro-v2.mp3", entra: 3.8, audio: null,
-    cues: [0.0, 16.75, 24.93, 34.58, 49.06, 60.56, 75.89, 85.52, 95.9, 101.78], fin: 103.88,
+  var CARTA = { voz: "voz-intro-v3.mp3", entra: 3.8, audio: null,   // la voz de Iago va con el portal (no es material de terceros)
+    cues: [0.0, 16.75, 24.93, 34.58, 49.06, 60.56, 74.32, 83.95, 93.75, 99.63], fin: 101.73,
     el: null, t: null, ult: -1, pendiente: false, subida: false };
   function cartaPrecarga() {
-    if (!CARTA.audio) { CARTA.audio = new Audio(); CARTA.audio.preload = "auto"; CARTA.audio.src = u(CARTA.voz); try { CARTA.audio.load(); } catch (e) {} }
+    if (!CARTA.audio) { CARTA.audio = new Audio(); CARTA.audio.preload = "auto"; CARTA.audio.src = CARTA.voz; try { CARTA.audio.load(); } catch (e) {} }
     return CARTA.audio;
   }
   // Todos los párrafos con la MISMA letra: la más grande con la que cabe el más largo (los cortos, centrados)
