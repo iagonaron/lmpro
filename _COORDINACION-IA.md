@@ -30,6 +30,7 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   ♭/♯) y se corrige. Todo pasa por LM_ACO (arriba/bajo/raizRueda) en index.html.
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 22-oct 18:08 · C1 · Hamilton · EN CURSO · solo hamilton/js/app.js: la letra de la carta se descarga antes de abrir el telón (no cambia de tamaño a mitad de un párrafo).
 - 22-oct 18:05 · C1 · Hamilton · HECHO · solo dentro de hamilton/ (index.html, js/app.js, voz-intro-v5.mp3 nuevo): la carta con la locución nueva de Iago (toma 3) y su texto.
 - 22-oct 17:51 · Fichas y rediseño · HECHO EN LA BASE CUANDO IAGO PEGUE EL SQL (hasta entonces, como antes) · REFUERZOS DE LAS FICHAS
   DE TEORÍA (GE Y GP): CON LA ÚLTIMA FICHA CORREGIDA DE CADA ALUMNO. Iago, al imprimir la ficha 6 de 4.º GE sin refuerzos para ocho
