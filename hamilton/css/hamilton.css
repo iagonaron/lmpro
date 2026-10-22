@@ -462,7 +462,7 @@ h3{font:600 18px/1.25 var(--display);letter-spacing:.08em;color:var(--oro);margi
   font:500 var(--fs,36px)/1.25 "Caveat","Bradley Hand","Segoe Print",cursive;color:#24170b;opacity:0;transition:opacity .9s ease;pointer-events:none}
 .mis-p.actual{opacity:1;pointer-events:auto}
 .mis-p b{color:#6b2410;font-weight:700}
-.mis-p em{font-style:normal}
+.mis-p em{font-style:italic}
 .mis-lema{color:#8a2b14;font-weight:700}
 .mis-firma{position:absolute;right:9%;bottom:12%;margin:0;font:700 44px/1 "Caveat","Bradley Hand",cursive;color:#3b2a14;opacity:0;transition:opacity 1.2s}
 .mis-firma::before{content:"";display:inline-block;width:46px;height:1px;background:#8a6a3a;vertical-align:middle;margin-right:10px}
@@ -563,3 +563,14 @@ h3{font:600 18px/1.25 var(--display);letter-spacing:.08em;color:var(--oro);margi
 #mis-sigue{animation:sube-caminos .6s ease both}
 /* botón de reinicio (solo cuentas de prueba) */
 #reiniciar-btn.confirma{background:var(--rojo,#d0473a);border-color:var(--rojo,#d0473a);color:#fff}
+/* 22-oct 16:40 · la carta: papel de verdad (textura con canto irregular), letra de época y palabras clave en tinta roja */
+.misiva{--letra-carta:"IM Fell English","IM FELL English",Georgia,serif}
+.misiva-papel{background:url("../img/fondos/papel-carta.webp") center/100% 100% no-repeat;box-shadow:none;border-radius:0;filter:drop-shadow(0 16px 26px rgba(0,0,0,.6))}
+.mis-p{font:italic 400 var(--fs,36px)/1.3 var(--letra-carta);color:#2b1a0d;text-shadow:0 0 .6px rgba(43,26,13,.55),0 0 1.4px rgba(60,36,16,.18)}
+.mis-p em{font-style:italic}
+.mis-p b{color:#9c2212;font-weight:inherit;text-shadow:0 0 .6px rgba(156,34,18,.5)}
+.mis-lema{color:#9c2212}
+.mis-firma{font:italic 400 46px/1 var(--letra-carta);color:#2b1a0d}
+.misiva .lacre-txt{font:italic 400 28px/1 var(--letra-carta)}
+.mis-prog{background:rgba(110,70,30,.2)}
+.mis-prog b{background:#9c2212}
