@@ -109,6 +109,7 @@
     document.querySelectorAll(".vista").forEach(function (v) { v.classList.toggle("activa", v.id === id); });
     document.body.className = fondo ? "f-" + fondo : "";
     pararTodo(); window.scrollTo(0, 0);
+    if (id !== "v-portada") cartaPara();
     musicaVista(id);
   }
   function pararTodo() { document.querySelectorAll("video,audio").forEach(function (m) { try { m.pause(); } catch (e) {} }); }
@@ -131,8 +132,7 @@
     ft.dataset.bloq = bloq;
     var leido = !!ls.get(k("intro_leida"), false);
     $(".caminos").classList.toggle("bloq", !leido);
-    $("#leido-intro").hidden = leido;
-    $("#leido-intro").onclick = function () { ls.set(k("intro_leida"), true); $(".caminos").classList.remove("bloq"); this.hidden = true; };
+    cartaPrepara(leido);
     $("#plazo-grande").innerHTML = "<b>Plazo: hasta el " + esc(fecha(e.cierra_en)) + ", antes de tu próxima clase.</b><br>Pasado el plazo, se considerará no entrega, con las mismas consecuencias que una ficha no entregada.";
     ver("v-portada");
   }
@@ -728,7 +728,7 @@
   // cuando suena un clip y vuelve al acabar. Test: en silencio (hay preguntas de escuchar).
   var M = { el: null, i: 0, nivel: "off", fade: null, listo: false,
     pistas: ["expres/musica/m1-intro.mp3", "expres/musica/m2.mp3", "expres/musica/m3.mp3"],
-    VOL: { portada: 0.5, fondo: 0.16, off: 0 }, silencio: !!ls.get("ham_musica_off", false) };
+    VOL: { portada: 0.5, fondo: 0.16, voz: 0.12, off: 0 }, silencio: !!ls.get("ham_musica_off", false), voz: false, t0: 0 };
   function fundir(v, ms) {
     if (!M.el) return;
     clearInterval(M.fade);
@@ -746,7 +746,8 @@
     if (!M.el) return;
     var v = M.silencio ? 0 : (M.VOL[nivel] || 0);
     if (v > 0 && suenaAlgo()) v = 0;
-    fundir(v, v > 0 ? 2500 : 1000);
+    if (v > 0 && M.voz) v = Math.min(v, M.VOL.voz);     // mientras habla Iago, la música por debajo
+    fundir(v, M.voz ? 900 : (v > 0 ? 2500 : 1000));
   }
   function musicaVista(id) {
     var n = { "v-portada": "portada", "v-video": "portada", "v-expres": "fondo", "v-fin": "fondo", "v-test-intro": "fondo", "v-resultado": "fondo" }[id] || "off";
@@ -761,7 +762,9 @@
     });
     M.i = 0; M.el.src = u(M.pistas[0]);
     var pr = M.el.play(); if (pr && pr.catch) pr.catch(function () {});   // dentro del gesto del alumno
-    musica(M.nivel);
+    M.t0 = Date.now();
+    if (M.nivel === "portada" && !M.silencio) fundir(M.VOL.portada, 250);   // la entrada, con toda su fuerza
+    else musica(M.nivel);
   }
   // Cuando suena un clip o un audio de la página, la música se retira; al acabar, vuelve.
   document.addEventListener("play", function (ev) {
@@ -783,13 +786,84 @@
   function abrirTelon() {
     var t = $("#telon"), e = $("#entrar");
     t.hidden = false; e.disabled = true; e.textContent = "Preparando…";
-    cargarMedia(M.pistas).then(function () { e.disabled = false; e.textContent = "Que se abra el telón"; e.focus(); });
+    cargarMedia(M.pistas.concat([CARTA.voz])).then(function () { e.disabled = false; e.textContent = "Que se abra el telón"; e.focus(); });
     e.onclick = function () {
       arrancaMusica();
       t.classList.add("abre"); setTimeout(function () { t.hidden = true; }, 900);
+      if (CARTA.pendiente && $("#v-portada").classList.contains("activa")) cartaVoz(false);
     };
   }
 
+
+  /* ── La carta de Iago: su voz lee la introducción mientras aparecen los párrafos ── */
+  // Primera vez (y hasta que la escuche entera): tras los ~4 s intensos del principio de «Alexander Hamilton», la música
+  // baja y entra la voz; los párrafos salen a su ritmo. Al decir «No desperdicies tu oportunidad», la música vuelve a subir
+  // y se pueden elegir los caminos. Después, la carta queda entera y se puede volver a escuchar.
+  var CARTA = { voz: "expres/voz/intro.mp3", entra: 3.8,
+    cues: [0.0, 16.75, 24.93, 34.58, 49.06, 60.56, 75.89, 85.52, 96.96, 102.84], fin: 104.94,
+    el: null, t: null, ult: -1, pendiente: false, subida: false };
+  function cartaEntera() {
+    document.querySelectorAll(".mis-p, .mis-firma").forEach(function (p) { p.classList.add("ya"); p.classList.remove("actual"); });
+    $("#misiva").classList.add("leida");
+  }
+  function cartaPrepara(leido) {
+    var mis = $("#misiva"); if (!mis) return;
+    $("#mis-otra").onclick = function () { cartaVoz(true); };
+    $("#mis-pausa").onclick = function () {
+      var a = CARTA.el; if (!a) return;
+      if (a.paused) { var pr = a.play(); if (pr && pr.catch) pr.catch(function () {}); this.textContent = "❚❚"; this.title = "Pausa"; }
+      else { a.pause(); this.textContent = "▶"; this.title = "Seguir"; }
+    };
+    if (leido) { cartaEntera(); $("#mis-otra").hidden = false; CARTA.pendiente = false; return; }
+    if (CARTA.el && !CARTA.el.paused) return;                  // ya está sonando
+    mis.classList.remove("leida"); mis.classList.add("espera");
+    document.querySelectorAll(".mis-p, .mis-firma").forEach(function (p) { p.classList.remove("ya", "actual"); });
+    $("#mis-estado").textContent = "";
+    CARTA.pendiente = true;
+    if (M.el && $("#telon").hidden) cartaVoz(false);           // el telón ya estaba abierto: empieza ya
+  }
+  function cartaVoz(repetir) {
+    CARTA.pendiente = false; clearTimeout(CARTA.t);
+    if (CARTA.el) { try { CARTA.el.pause(); } catch (e) {} }
+    var a = CARTA.el = new Audio(u(CARTA.voz)), mis = $("#misiva"), papel = $("#misiva-papel");
+    var ps = [].slice.call(document.querySelectorAll(".mis-p")), firma = $(".mis-firma");
+    a.preload = "auto"; CARTA.ult = -1; CARTA.subida = false;
+    mis.classList.remove("espera"); mis.classList.add("leyendo");
+    if (!repetir) { ps.forEach(function (p) { p.classList.remove("ya", "actual"); }); firma.classList.remove("ya"); }
+    $("#mis-otra").hidden = true; $("#mis-pausa").hidden = false; $("#mis-pausa").textContent = "❚❚";
+    var marca = function (i) {
+      if (i === CARTA.ult) return; CARTA.ult = i;
+      ps.forEach(function (p, j) { if (j <= i) p.classList.add("ya"); p.classList.toggle("actual", j === i); });
+      var p = ps[i]; if (!p) return;
+      if (p.offsetTop + p.offsetHeight > papel.scrollTop + papel.clientHeight - 20 || p.offsetTop < papel.scrollTop)
+        papel.scrollTo({ top: Math.max(0, p.offsetTop - 24), behavior: "smooth" });
+      if (p.dataset.plazo) { var pg = $("#plazo-grande"); pg.classList.remove("pulso"); void pg.offsetWidth; pg.classList.add("pulso"); }
+      if (i === ps.length - 1) setTimeout(function () { firma.classList.add("ya"); }, 1200);
+    };
+    var termina = function () {
+      if (CARTA.subida) return; CARTA.subida = true;
+      M.voz = false; musica(M.nivel);                          // «No desperdicies tu oportunidad»: sube la música
+      ls.set(k("intro_leida"), true);
+      cartaEntera(); mis.classList.remove("leyendo");
+      $(".caminos").classList.remove("bloq"); $("#mis-pausa").hidden = true; $("#mis-otra").hidden = false;
+    };
+    a.ontimeupdate = function () {
+      var t = a.currentTime, i = -1;
+      for (var j = 0; j < CARTA.cues.length; j++) if (t >= CARTA.cues[j] - 0.1) i = j;
+      if (i >= 0) marca(i);
+      if (t >= CARTA.fin) termina();
+    };
+    a.onended = termina;
+    a.onerror = function () { $("#mis-estado").textContent = ""; termina(); };   // si la voz no carga, que nada se bloquee
+    var empieza = function () {
+      M.voz = true; musica(M.nivel);
+      var pr = a.play();
+      if (pr && pr.catch) pr.catch(function () { M.voz = false; musica(M.nivel); $("#mis-pausa").textContent = "▶"; $("#mis-estado").textContent = "Pulsa ▶ para escuchar la carta"; });
+    };
+    var espera = repetir ? 400 : Math.max(0, CARTA.entra * 1000 - (Date.now() - (M.t0 || Date.now())));
+    CARTA.t = setTimeout(empieza, espera);
+  }
+  function cartaPara() { clearTimeout(CARTA.t); if (CARTA.el) { try { CARTA.el.pause(); } catch (e) {} } if (M.voz) { M.voz = false; musica(M.nivel); } }
 
   /* Elegir camino: una sola vez y para siempre */
   function abrirCamino() { if (st.est.camino === "video") caminoVideo(); else if (st.est.camino === "expres") caminoExpres(); else portada(); }
@@ -826,7 +900,7 @@
     st.cuenta = leerCuenta();
     st.previa = !st.cuenta && !/lmathome\.es$/.test(location.hostname);
     if (st.previa) {
-      window.__hamMusica = M;   // solo vista previa: para comprobar la música
+      window.__hamMusica = M; window.__hamCarta = function () { return CARTA.el; };   // solo vista previa: para comprobar música y carta
       $("#banda-previa").hidden = false;
       $("#reiniciar-previa").onclick = function () { try { Object.keys(localStorage).forEach(function (x) { if (x.indexOf("ham_") === 0) localStorage.removeItem(x); }); } catch (e) {} location.reload(); };
     }
