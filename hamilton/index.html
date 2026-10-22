@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Hamilton · LM at home</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600&family=Cinzel:wght@500;600;700&family=Jost:wght@400;500;600&family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&display=swap">
+<link rel="stylesheet" href="css/hamilton.css">
+</head>
+<body>
+<div class="telon" id="telon" hidden><div class="telon-in"><p class="rotulo">LM at home · Grado Profesional</p><h1 class="gran">HAMILTON</h1><button class="btn lleno" type="button" id="entrar">Que se abra el telón</button><p class="aviso">Con música: sube el volumen.</p></div></div>
+<div class="banda-previa" id="banda-previa" hidden>Vista previa para Iago · nada se guarda en Supabase · <button class="btn" style="min-height:26px;padding:2px 10px;font-size:11px" type="button" id="reiniciar-previa">Empezar de cero</button></div>
+<header class="cab">
+  <span class="marca">LM at home · <b>Grado Profesional</b></span>
+  <span class="titulo">HAMILTON</span>
+  <span class="derecha"><span class="plazo" id="plazo"></span><button class="btn icono" type="button" id="musica-btn" title="Silenciar la música" aria-label="Silenciar la música">♪</button></span>
+</header>
+
+<main>
+  <section class="vista activa" id="v-cargando"><p class="aviso" style="text-align:center;margin-top:20vh">Abriendo el telón…</p></section>
+
+  <section class="vista" id="v-cerrado" style="text-align:center;padding-top:12vh">
+    <p class="rotulo">Hamilton · 2.º de Grado Profesional</p>
+    <h1 class="gran">HAMILTON</h1>
+    <p class="intro" style="margin:0 auto" id="cerrado-txt"></p>
+  </section>
+
+  <section class="vista portada" id="v-portada">
+    <p class="rotulo">Antes de ver el musical en clase</p>
+    <h1 class="gran">Elige tu camino</h1>
+    <p class="intro"><em>Hamilton</em> es un musical estrenado en 2015 y compuesto por <b>Lin-Manuel Miranda</b>, que es quien hace de Hamilton en el vídeo que vamos a ver (también hizo la música de <em>Vaiana</em> y <em>Encanto</em>, de Disney). Es una historia americana ambientada en la Guerra de Independencia, y su música es un carrusel espectacular de géneros norteamericanos. ¿Que la Guerra de Independencia no te interesa? Te prometo que está tan bien hecho que casi da igual de lo que hable.</p>
+    <p class="intro" style="margin-top:10px">Ah, y a diferencia de otros musicales, óperas y zarzuelas, que alternan las canciones con partes habladas o recitadas, <em>Hamilton</em> no se para nunca: el rap, tan propio de Estados Unidos, le permite contar muchísima historia sin perder ni un segundo de ritmo.</p>
+    <p class="intro" style="margin-top:10px">Elige un camino. Los dos terminan en el mismo <b>tipo test de 15 preguntas</b>, con la misma puntuación que una ficha. Concéntrate: te hará disfrutar mucho más del musical.</p>
+    <div class="leer-intro"><button class="btn lleno" type="button" id="leido-intro">Marcar como leído</button></div>
+    <p class="plazo-grande" id="plazo-grande"></p>
+    <div class="caminos">
+      <article class="camino" id="cam-video">
+        <div class="foto" style="background-image:url('img/fondos/04-proscenio.webp')"></div>
+        <div class="cuerpo">
+          <span class="dur">32 minutos</span>
+          <h2>Análisis de Altozano</h2>
+          <p><b>Ver y simplemente disfrutar el vídeo del bueno de Jaime Altozano.</b> Te cuenta por qué <em>Hamilton</em> fue una revolución musical.</p>
+          <p class="aviso">No hace falta verlo del tirón: puedes dejarlo a medias y seguir por donde ibas cuando quieras.</p>
+          <div class="pie"><span id="sello-video"></span><button class="btn lleno" type="button" data-ir="video">Ver el vídeo</button></div>
+        </div>
+      </article>
+      <article class="camino" id="cam-expres">
+        <div class="foto" style="background-image:url('img/fondos/03-escritorio-1776.webp')"></div>
+        <div class="cuerpo">
+          <span class="dur">Unos 15 minutos · 8 partes</span>
+          <h2>Hamilton exprés</h2>
+          <p>Menos tiempo, más trabajo por tu parte: lees, escuchas los momentos clave del musical y resuelves pequeñas actividades.</p>
+          <p class="aviso">Tampoco hace falta del tirón: lo dejas a medias y, al volver, sigues donde lo dejaste.</p>
+          <div class="pie"><span id="sello-expres"></span><button class="btn" type="button" data-ir="expres">Empezar el exprés</button></div>
+        </div>
+      </article>
+    </div>
+    <div class="final-test" id="final-test"></div>
+  </section>
+
+  <section class="vista" id="v-video">
+    <div class="fila" style="margin-bottom:12px"><h2 style="margin:0">Análisis de Altozano</h2></div>
+    <div class="marco-video" id="yt"><div id="yt-player"></div><nav class="vctl" id="vctl" aria-label="Controles del vídeo"><button type="button" id="v-play" title="Reproducir" aria-label="Reproducir">▶</button><button type="button" id="v-atras" title="Volver 10 segundos" aria-label="Volver 10 segundos">↺10</button><div class="vbarra" id="v-barra" title="Puedes volver a lo que ya has visto"><i id="v-vista"></i><i id="v-pos"></i></div><span id="v-tiempo">0:00 / 32:56</span><button type="button" id="v-vol" title="Silenciar" aria-label="Silenciar">🔊</button><button type="button" id="v-full" title="Pantalla completa" aria-label="Pantalla completa">⛶</button></nav></div>
+    <div class="barra"><i id="vid-barra"></i></div>
+    <div class="fila"><span class="aviso" id="vid-cuenta"></span><span class="aviso">Puedes dejarlo cuando quieras: al volver, sigue donde lo dejaste.</span></div>
+    <div class="final-test" id="vid-fin" hidden style="margin-top:16px"><p><b>¡Vídeo terminado!</b> Ya puedes hacer el tipo test.</p><button class="btn lleno" type="button" data-ir="test-intro">Ir al test</button></div>
+  </section>
+
+  <section class="vista" id="v-expres">
+    <div class="fila cab-expres"><h2 style="margin:0">Hamilton exprés</h2><nav class="actos" id="actos" aria-label="Partes del exprés"></nav></div>
+    <p class="aviso" style="margin:2px 0 14px">Puedes dejarlo a medias: al volver, sigues donde lo dejaste.</p>
+    <div id="expres-cuerpo"></div>
+  </section>
+
+  <section class="vista" id="v-fin"><div id="fin-cuerpo"></div></section>
+
+  <section class="vista" id="v-test-intro" style="text-align:center;padding-top:6vh">
+    <p class="rotulo">El tipo test</p>
+    <h1 class="gran" style="font-size:clamp(34px,6vw,62px)">¿Estás listo?</h1>
+    <div class="pregunta" style="max-width:640px;margin:20px auto;text-align:left">
+      <p>· <b>15 preguntas</b>, unos 7 minutos. Hay de escuchar, de reconocer personajes y de ideas.</p>
+      <p>· Tendrá la <b>misma puntuación que una ficha</b>.</p>
+      <p>· Puedes dejarlo a medias: si sales, retomarás el test por donde ibas, pero no puedes volver a las preguntas ya contestadas.</p>
+      <p>· Plazo: <b id="plazo-test"></b>, antes de tu próxima clase. Pasado el plazo, se considerará no entrega, con las mismas consecuencias que una ficha no entregada.</p>
+      <p>· Al terminar verás tu nota y todas las respuestas explicadas.</p>
+      <div class="botonera" style="margin-top:14px"><button class="btn" type="button" data-ir="fin">◀ Volver</button><button class="btn lleno" type="button" data-ir="test" id="t-empezar">Empezar el test</button></div>
+    </div>
+  </section>
+
+  <section class="vista" id="v-test"><div id="test-cuerpo"></div></section>
+  <section class="vista" id="v-resultado"><div id="resultado-cuerpo" style="max-width:820px;margin:0 auto"></div></section>
+
+  <p class="pie-pag">Optimizado para ordenador y tablet · Momentos musicales: análisis de Jaime Altozano · <em>Hamilton</em> © Lin-Manuel Miranda · LM at home · by Iago González Alonso</p>
+</main>
+<div class="toast" id="toast" role="status" hidden></div>
+<script src="js/datos-expres.js"></script>
+<script src="js/datos-test.js"></script>
+<!--PREVIA-->
+<script src="js/app.js"></script>
+</body>
+</html>
