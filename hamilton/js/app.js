@@ -988,6 +988,7 @@
     };
     // cada párrafo entra justo cuando Iago empieza a decirlo (se mira en cada fotograma, no 4 veces por segundo)
     a.ontimeupdate = function () {
+      if (a.paused && !a.ended) return;                        // la tarjeta sigue vacía hasta que Iago empieza a hablar
       var t = a.currentTime, i = -1; $("#mis-prog-b").style.width = Math.min(100, 100 * t / CARTA.fin) + "%";
       for (var j = 0; j < CARTA.cues.length; j++) if (t >= CARTA.cues[j] - 0.15) i = j;
       if (i >= 0) marca(i);
