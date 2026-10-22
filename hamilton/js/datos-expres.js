@@ -83,7 +83,7 @@ window.HAM_EXPRES = [
     {t:"act", a:{tipo:"oido", consigna:"¿Quién canta: Angelica o Eliza? Lee la letra mientras escuchas y pulsa en cuanto lo sepas.",
       opciones:[{n:"Angelica", img:FIG.Angelica},{n:"Eliza", img:FIG.Eliza}],
       items:[
-        {src:O+"E5_satisfied-v2.mp4", ok:"Angelica", pie:"«Satisfied» (satisfecha): renuncia a él y se lo presenta a Eliza."},
+        {src:O+"E5_satisfied-v3.mp4", ok:"Angelica", pie:"«Satisfied» (satisfecha): renuncia a él y se lo presenta a Eliza."},
         {src:O+"E5_helpless.mp4", ok:"Eliza", pie:"«Helpless» (indefensa): rendida ante el amor."},
         {src:O+"E5_look-around-eliza.mp4", ok:"Eliza", pie:"«Look around» (mira a tu alrededor): le pide que se quede con ella."}]}}
   ]

@@ -593,7 +593,7 @@
   function finHTML() {
     var f = partesFecha(st.est.cierra_en);
     return '<p class="rotulo">Camino terminado</p><h2 class="fin-h">¡Ahora, el tipo test!</h2>' +
-      "<p>15 preguntas, unos 7 minutos, con la misma puntuación que una ficha.</p>" +
+      "<p>15 preguntas, con la misma puntuación que una ficha.</p>" +
       '<p class="recordatorio">Recuerda hacerlo antes del <b>' + esc(f.dia) + "</b>, al comienzo de tu clase (<b>a las " + esc(f.hora) + "</b>).</p>" +
       '<div class="botonera centro"><button class="btn lleno" type="button" data-ir="test-intro">Ir al test</button></div>';
   }
