@@ -890,6 +890,14 @@
   function abrirTelon() {
     var t = $("#telon"), e = $("#entrar");
     t.hidden = false; e.hidden = true; carga(45);
+    // la letra de la carta, descargada ANTES de abrir el telón (si llegara tarde, el párrafo cambiaría de tamaño a la vista)
+    var letra = false;
+    try {
+      Promise.race([
+        Promise.all([document.fonts.load('italic 400 40px "IM Fell English"'), document.fonts.load('400 40px "IM Fell English"')]),
+        new Promise(function (ok) { setTimeout(ok, 6000); })
+      ]).then(function () { letra = true; ajustaCarta(); }, function () { letra = true; });
+    } catch (er) { letra = true; }
     cargarMedia(M.pistas).then(function () {
       carga(60);
       var m = preparaMusica(), v = CARTA.pendiente ? cartaPrecarga() : null, t0 = Date.now();
@@ -899,7 +907,7 @@
         var p = (parte(m) + parte(v)) / 2, dt = Date.now() - t0;
         carga(60 + 38 * p);
         var nada = dt > 1500 && m.readyState === 0 && (!v || v.readyState === 0);   // iPad: no descarga hasta pulsar
-        if ((lista(m) && lista(v)) || nada || dt > 8000) { clearInterval(mira); listo(); }
+        if (((lista(m) && lista(v)) || nada || dt > 8000) && (letra || dt > 9000)) { clearInterval(mira); listo(); }
       }, 120);
     });
     function listo() {
@@ -930,12 +938,16 @@
   // Todos los párrafos con la MISMA letra: la más grande con la que cabe el más largo (los cortos, centrados)
   function ajustaCarta() {
     var papel = $("#misiva-papel"); if (!papel || !papel.clientHeight) return;
+    CARTA.ancho = window.innerWidth;
     var alto = papel.clientHeight - 110, ps = [].slice.call(document.querySelectorAll(".mis-p")), fs = 46;
     var cabe = function () { return ps.every(function (p) { return p.offsetHeight <= alto; }); };
     papel.style.setProperty("--fs", fs + "px");
     while (fs > 17 && !cabe()) { fs -= 1; papel.style.setProperty("--fs", fs + "px"); }
   }
-  window.addEventListener("resize", function () { clearTimeout(CARTA.rz); CARTA.rz = setTimeout(ajustaCarta, 150); });
+  window.addEventListener("resize", function () {
+    if (window.innerWidth === CARTA.ancho) return;               // la barra de Safari que aparece y desaparece no cuenta
+    CARTA.ancho = window.innerWidth; clearTimeout(CARTA.rz); CARTA.rz = setTimeout(ajustaCarta, 150);
+  });
   function portadaFase(f) {
     var por = $("#v-portada"); por.classList.toggle("fase-carta", f === "carta"); por.classList.toggle("fase-caminos", f === "caminos");
     $("#portada-h").textContent = f === "carta" ? "Antes de empezar" : "Elige tu camino";
