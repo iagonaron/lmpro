@@ -30,6 +30,18 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   ♭/♯) y se corrige. Todo pasa por LM_ACO (arriba/bajo/raizRueda) en index.html.
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 22-oct 11:50 · Fichas y rediseño · HECHO (con el ok de Iago para subir lo terminado) · TEORÍA PRO: NORMA DEL TIPO TEST, NINGUNA
+  PREGUNTA REPETIDA NI EN LA MISMA FICHA NI EN LA SIGUIENTE. teoriapro 9384723 (EN CURSO en 0875918, encima de 9e638f0), solo
+  index.html (+85 −11) y su _COORDINACION-IA.md (ahí, el detalle). Iago: «si yo meto dos preguntas tipo test sobre acústica 2.1, que
+  ninguna salga repetida… cuando le dé a generar ficha, que se baneen… al menos durante la siguiente semana… Así que sea una norma».
+  En las fichas 3–6 de 2.º GP ya había pasado tres veces (preguntas de una ficha repetidas en la siguiente). Ahora el generador elige
+  primero las que nunca salieron, luego las más antiguas; nunca una de esta ficha ni de la anterior si el banco da para ello (si no, ⚠
+  en ese ejercicio); el refuerzo, igual (la ficha manda). Lo de las fichas enviadas lo da una función NUEVA de Supabase,
+  suite_ficha_test_usadas(p_token), solo lectura, que Iago tiene que pegar:
+  DIARIO PROFESOR (netlify diariodeiagocmus)/SQL-BD/PEGAR-22-oct-2026--teoria-pro-tipo-test-sin-repetir.sql (y su DESHACER). Sin ella,
+  solo la norma dentro de la ficha. OJO, conversación del Latin: no toco BANCO; las preguntas y tramos nuevos entran solos en la norma
+  (por su texto). Espejo de Dropbox (LMPRO/TEORÍA PRO) igual a GitHub; copia de antes en
+  _PARA BORRAR/22-oct-2026-antes-tipo-test-sin-repetir/.
 - 22-oct 08:15 · Fichas y rediseño · HECHO (con el ok de Iago para subir lo terminado) · RESUMEN DE TU SEMANA: EL BOTÓN DEL MAPA, BIEN
   VISIBLE EN LA TIRA SIN DESPLEGAR, Y LA TIRA EN UNA FILA TAMBIÉN EN EL CHROME 94 DEL AULA. LMEAVathome 32612b4 (encima de b93218e) y
   lmpro 07f575d (encima de 18cad5b), solo index.html (+38 −2 cada uno, el mismo cambio). Iago: «abrí el visor de un alumno y en
