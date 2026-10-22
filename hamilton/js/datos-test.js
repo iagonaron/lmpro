@@ -184,7 +184,7 @@ window.HAM_TEST=[
   "tipo": "aud",
   "texto": "Escucha. ¿Quién canta este leitmotiv?",
   "media": {
-   "audio": "test/b5.mp3"
+   "audio": "test/b5-v2.mp3"
   },
   "opciones": [
    {
