@@ -30,6 +30,25 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   ♭/♯) y se corrige. Todo pasa por LM_ACO (arriba/bajo/raizRueda) en index.html.
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 22-oct 08:15 · Fichas y rediseño · HECHO (con el ok de Iago para subir lo terminado) · RESUMEN DE TU SEMANA: EL BOTÓN DEL MAPA, BIEN
+  VISIBLE EN LA TIRA SIN DESPLEGAR, Y LA TIRA EN UNA FILA TAMBIÉN EN EL CHROME 94 DEL AULA. LMEAVathome 32612b4 (encima de b93218e) y
+  lmpro 07f575d (encima de 18cad5b), solo index.html (+38 −2 cada uno, el mismo cambio). Iago: «abrí el visor de un alumno y en
+  resumen de la semana elemental todavía no salía el botón de mapa teórico cuando está sin expandir… Te cabe en una fila todo?». (1)
+  El iconito del mapa ya estaba en la tira de GE desde el 20-oct (292d6a0), pero en la fila compacta (@container rsmc de 296 a 499 px:
+  iPad en vertical, ventanas medianas) medía 12/11 px; ahora 16/15 px (renglón del nombre 16/15 px y row-gap 1 px; recuadro de 36 px y
+  tarjeta de 94 px, iguales). (2) El ordenador del aula es un Chrome 94 en Linux (lo dicen los registros de Supabase): no entiende
+  @container ni cqw (llegaron en Chrome 105), así que allí el resumen seguía en 2 × 2 (150 px). Ahora, si
+  CSS.supports('container-type','inline-size') es falso, cv2CSS añade las mismas reglas de las @container rsmc colgadas de
+  .rsm-chips-c.rsmq-296/340/500 (rsmSinCQ) y rsmMedir() pone la clase según el ancho medido (ResizeObserver); en los navegadores
+  nuevos no hace nada. Banco: 2452 comprobaciones (alumno y #visor=, 390–1920 px, navegador nuevo y Chrome 94 simulado); en vivo, por
+  huella. Espejos de Dropbox iguales; copias de antes en _PARA BORRAR/22-oct-2026-antes-resumen-boton-mapa-y-fila-aula/ y
+  LEEME-22-oct-2026-resumen-boton-mapa-y-una-fila-en-el-aula.txt en las carpetas GE y GP. OJO, para todos: ese Chrome 94 del aula
+  tampoco entiende :has() ni color-mix(), que usan otras partes de los portales.
+- 22-oct 07:11 · Fichas y rediseño · HECHO · MOROSOS DEL PORTAL CON EL NOMBRE OFICIAL: Iago pegó el SQL del 21-oct en Supabase.
+  Comprobado: suite_morosos_fichas_v2 ya saca el nombre de alumnos_canon (nombre + apellidos; si no hay, el de la cuenta), 0 veces la
+  línea vieja; la función de antes, en public._copia_fn_morosos_v2_20261021 (con RLS y sin acceso para anon/authenticated). En
+  DIARIO PROFESOR (netlify diariodeiagocmus)/SQL-BD el fichero se llama ahora «YA-PEGADO-21-oct-2026--morosos-portal-nombre-oficial
+  (ejecutado 22-oct).sql»; para deshacer, DESHACER-21-oct-2026--morosos-portal-nombre-oficial.sql.
 - 21-oct 18:24 · Fichas y rediseño · HECHO (con el ok de Iago) · ESCALETA (VÍDEOS DE LAS TARJETAS DE TEORÍA Y «ABRIR ›» DE PREDICT
   CARRUSEL) Y MI MAPA DE TEORÍA («VER APUNTES» EN «VER COMO EL ALUMNO»). LMEAVathome b93218e (encima de fbc8665), dos ficheros:
   piel/escaleta.js — (1) Iago, foto del aula: «la escaleta invasiva… he abierto el vídeo yendo desde Teoría at home… que se comprima
