@@ -30,6 +30,7 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   ♭/♯) y se corrige. Todo pasa por LM_ACO (arriba/bajo/raizRueda) en index.html.
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 22-oct 22:23 · C1 Hamilton · EN CURSO · index.html (raíz: la tarjeta de Hamilton en la campana —HITO_TEMAS.hamilton y rama ham_portal— y la medalla «ham» al portal con #cu=), hitos/ (hamilton-1.webp, hamilton-medalla.webp, f-fell.woff2, f-fell-italica.woff2) y hamilton/js/datos-test.js (pregunta 8, clip b5-v2). Encima de 36542a9; no toco nada más.
 - 22-oct 21:54 · Fichas y rediseño · HECHO (con el ok de Iago para subir lo terminado; cada repo comprobado justo antes) ·
   SELECCIONADOR DE VOLUNTARIOS v5: UNA ANIMACIÓN POR DÍA, CAPÍTULO, BOBINA O SECCIÓN (Iago: «que cada día de un portal… tenga su
   propia animación de aleatoriedad de alumnos… y que las dos secciones de trabajo del fonógrafo también»). lmpro b7cc32a (solo
