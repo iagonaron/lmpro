@@ -30,6 +30,16 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   ♭/♯) y se corrige. Todo pasa por LM_ACO (arriba/bajo/raizRueda) en index.html.
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 23-oct 18:46 · Fichas y rediseño · HECHO (con el ok de Iago para subir lo terminado; LMEAVathome comprobado justo antes) · ESCALETA:
+  EL MANDO, DONDE SE VEA LA ESCALETA (Iago: «cuando estamos en el dictado y a veces en otras cosas, como… FaActos… cuando está abierta
+  otra pestaña, si le quiero dar para adelante no me hace caso… solo estando en el portal me avanza»). LMEAVathome 2c25d5b (solo
+  piel/escaleta.js, MANDO_SIEMPRE): con la clase en marcha y la escaleta a la vista (tarjeta o línea), el mando manda también con el
+  dictado animado abierto, con un libro (↑ ↓ y Tab; ← → Re Pág y Av Pág siguen pasando página), con los Resultados o la intro de la
+  carta, y en las otras webs que la enseñan (Teoría, RITMO, carruseles…: ↓ ↑ como Av Pág y Re Pág). Antes solo actuaba con la tarjeta
+  a la vista y, fuera del portal, sin flechas (las del Norwii N76 son ↑ ↓). Siguen siendo de la página: escribiendo, la previa, un
+  vídeo, menús, la escaleta entera y las flechas en los editores de Dictados y Entonación. Banco 24/24 (con la de antes, 16/24) y el
+  del fin de la clase, 15/15. DESHACER: MANDO_SIEMPRE = false, o volver a subir la escaleta.js de 3a5928f (copia en
+  APPs/_PARA BORRAR/23-oct-2026-antes-mando-siempre/).
 - 22-oct 22:30 · C1 Hamilton · HECHO · lmpro aa4cf3c (hitos/: hamilton-1.webp, hamilton-medalla.webp, f-fell.woff2, f-fell-italica.woff2), d22f638 (hamilton/js/datos-test.js: pregunta 8 con test/b5-v2.mp3) y ca58e30 (index.html: la tarjeta de Hamilton en la campana —HITO_TEMAS.hamilton, rama ham_portal: carta con lacre, plazo de 7 casillas hasta su jueves, «Ir al portal»/«Continuar»/entregado con nota— y la medalla «ham» al portal con #cu=; fuera la tarea vieja del vídeo de YouTube). Solo se ve cuando Iago marca «Exámenes 1T» (Supabase _suite_hamilton_ventana); a los alumnos no les cambia nada hasta entonces. Probado con Playwright (3 estados, ordenador y móvil, sin errores). DESHACER: volver a subir el index.html de 36542a9. Copia y LEEME: Dropbox APPs/LMATHOME GP (github lmpro)/subidas de Claude/hamilton-22oct-2230/.
 - 22-oct 22:23 · C1 Hamilton · EN CURSO · index.html (raíz: la tarjeta de Hamilton en la campana —HITO_TEMAS.hamilton y rama ham_portal— y la medalla «ham» al portal con #cu=), hitos/ (hamilton-1.webp, hamilton-medalla.webp, f-fell.woff2, f-fell-italica.woff2) y hamilton/js/datos-test.js (pregunta 8, clip b5-v2). Encima de 36542a9; no toco nada más.
 - 22-oct 21:54 · Fichas y rediseño · HECHO (con el ok de Iago para subir lo terminado; cada repo comprobado justo antes) ·
