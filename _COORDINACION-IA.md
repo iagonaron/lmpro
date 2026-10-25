@@ -30,6 +30,14 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   ♭/♯) y se corrige. Todo pasa por LM_ACO (arriba/bajo/raizRueda) en index.html.
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 25-oct 09:35 · Fichas y rediseño · HECHO (con el ok de Iago: «sube lo de las cartas»; ritmoathome comprobado justo antes) · RITMO AT
+  HOME, FASE 2 DEL QUIZ: LA CAPA DE LAS CARTAS SE LLAMA capaCartas (Sentry PORTALES-5 «Vigía · cartas-invisibles», 14 y 24-oct,
+  Windows y Chrome 155). ritmoathome 68b26cf (solo quiz_fase2_puzzle.html): #floatLayer → #capaCartas (CSS, el div, makeFloatCard,
+  spawnPool y el extra del vigía). «floatLayer» es el nombre típico de un anuncio flotante y los bloqueadores lo esconden
+  (###floatLayer): la capa salía con display:none y las cartas 0×0, y la página saltaba a la bandeja. En el banco, con esa regla, la
+  versión anterior da la misma huella que Sentry (none,visible,1,fixed,40,none,0x0) y la nueva enseña las 8 cartas flotando, sin aviso
+  (8/8). No es cosa de actualizar Chrome. Si PORTALES-5 vuelve a salir, la causa es otra. DESHACER: volver a subir el
+  quiz_fase2_puzzle.html de d378ef7 (copia en APPs/_PARA BORRAR/25-oct-2026-antes-capa-cartas/).
 - 23-oct 18:46 · Fichas y rediseño · HECHO (con el ok de Iago para subir lo terminado; LMEAVathome comprobado justo antes) · ESCALETA:
   EL MANDO, DONDE SE VEA LA ESCALETA (Iago: «cuando estamos en el dictado y a veces en otras cosas, como… FaActos… cuando está abierta
   otra pestaña, si le quiero dar para adelante no me hace caso… solo estando en el portal me avanza»). LMEAVathome 2c25d5b (solo
