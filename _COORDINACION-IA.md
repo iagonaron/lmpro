@@ -30,6 +30,8 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   ♭/♯) y se corrige. Todo pasa por LM_ACO (arriba/bajo/raizRueda) en index.html.
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 27-oct 04:46 · La cabaña / Atonalidad (la conversación del Blues) · HECHO · lmpro 9f0c6d7 (solo index.html: Atonalidad sin «?» en
+  Protester). Deshacer: el index.html de APPs/_PARA BORRAR/27-oct-2026-antes-de-Atonalidad-sin-interrogacion-en-Protester/lmpro/.
 - 27-oct 04:40 · La cabaña / Atonalidad (la conversación del Blues) · EN CURSO · solo index.html: la medalla de Atonalidad (u3) se ve ya
   abierta en Protester (fuera «misterio:true» de su entrada en PRUEBAS). A los alumnos no les cambia nada: siguen por hitos.
 - 25-oct 09:35 · Fichas y rediseño · HECHO (con el ok de Iago: «sube lo de las cartas»; ritmoathome comprobado justo antes) · RITMO AT
