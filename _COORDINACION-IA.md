@@ -30,6 +30,18 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   ♭/♯) y se corrige. Todo pasa por LM_ACO (arriba/bajo/raizRueda) en index.html.
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 27-oct 04:39 · Mantenimiento · HECHO (encargo nocturno de Iago del 26-oct; cada repo y el Diario comprobados justo antes y en vivo
+  después) · (1) RITMO AT HOME, CARTA 2.1: ritmoathome e649414 (index.html: la ficha de la INTRO 2.1 ya no pregunta «¿En qué compás
+  estamos?» —m2Slides solo la pone si la carta trae meters; 2.2 y 2.3 igual—; quiz_fase1_pulso.html: con pulso de blanca el cartel
+  dice «el ritmo ocupa 2 pulsos de blanca» y «Aquí el pulso es la BLANCA: una blanca ocupa un pulso») y 272f523
+  (quiz_fase4_sigue.html: el «tresillo de negras» de la 2.1 ya sonaba y se corregía a 2/3 de negra, pero se pintaba sin corchete;
+  ahora la pista dibuja el corchete con el 3). (2) RITMO PRO, INTRO 1.6: ritmopro e571a5f (index.html, m16Fit: la tarjeta explicativa
+  se coloca dentro de la pantalla; probada a 1024×768, 768×1024, 1920×1080 y 390×844). (3) DIARIO deploy 6ae01c96 (encima de 6ada366c;
+  solo diario-restyle.js y diario-progresion.js): en Preparación de clases, GE y GP, primero el Bloque de teoría y debajo la Ficha; y
+  el plan de ritmo de 4.º GE propone en la 2.1 solo las lecciones 36 (C1) y 37 (C2). NO toqué index.html del Diario: el
+  _SUBIDA-22-OCT-noche-hamilton (SIN PUBLICAR) sigue valiendo tal cual. DESHACER: ritmoathome → subir los 3 ficheros de 68b26cf;
+  ritmopro → index.html de 1efb95e (copias en APPs/_PARA BORRAR/2026-10-27-mantenimiento-ritmo-2.1-y-intro-1.6-pro/); Diario →
+  Netlify, volver a publicar 6ada366c (copias en APPs/_PARA BORRAR/2026-10-27-mantenimiento-diario-teoria-arriba-y-ritmo-2.1/).
 - 27-oct 04:46 · La cabaña / Atonalidad (la conversación del Blues) · HECHO · lmpro 9f0c6d7 (solo index.html: Atonalidad sin «?» en
   Protester). Deshacer: el index.html de APPs/_PARA BORRAR/27-oct-2026-antes-de-Atonalidad-sin-interrogacion-en-Protester/lmpro/.
 - 27-oct 04:40 · La cabaña / Atonalidad (la conversación del Blues) · EN CURSO · solo index.html: la medalla de Atonalidad (u3) se ve ya
