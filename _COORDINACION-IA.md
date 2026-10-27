@@ -30,6 +30,8 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   ♭/♯) y se corrige. Todo pasa por LM_ACO (arriba/bajo/raizRueda) en index.html.
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 27-oct 04:40 · La cabaña / Atonalidad (la conversación del Blues) · EN CURSO · solo index.html: la medalla de Atonalidad (u3) se ve ya
+  abierta en Protester (fuera «misterio:true» de su entrada en PRUEBAS). A los alumnos no les cambia nada: siguen por hitos.
 - 25-oct 09:35 · Fichas y rediseño · HECHO (con el ok de Iago: «sube lo de las cartas»; ritmoathome comprobado justo antes) · RITMO AT
   HOME, FASE 2 DEL QUIZ: LA CAPA DE LAS CARTAS SE LLAMA capaCartas (Sentry PORTALES-5 «Vigía · cartas-invisibles», 14 y 24-oct,
   Windows y Chrome 155). ritmoathome 68b26cf (solo quiz_fase2_puzzle.html): #floatLayer → #capaCartas (CSS, el div, makeFloatCard,
