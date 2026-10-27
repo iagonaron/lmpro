@@ -30,6 +30,14 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   ♭/♯) y se corrige. Todo pasa por LM_ACO (arriba/bajo/raizRueda) en index.html.
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 27-oct 21:15 · 4 Sabores (C1, la coordinadora del portal nuevo del Afrolatin) · HECHO, comprobado en vivo · (1) afrolatin: carpeta
+  NUEVA sabores/ = el portal 4 Sabores con el Sabor 1 (322 ficheros, commits «4 Sabores (C1): sabores/…», de 071bebd a la subida de
+  index.html), en https://afrolatin.gp.lmathome.es/sabores/; el index.html de la raíz y lo demás, sin tocar. (2) lmpro f1c7e6d (solo
+  index.html): la medalla u7n (AfroLatin: conga, maracas y güiro en la playa) junto a la del Blues y su anticipo en PRUEBAS, SOLO
+  Protester y con misterio:true: se ve cerrada con la «?» y al pulsarla abre el portal con #c=. A los alumnos no les cambia nada (su
+  u7 sigue llevando al Afrolatin de siempre). DESHACER: (1) lmpro → subir el index.html de APPs/_PARA BORRAR/27-oct-2026-antes-
+  de-4-sabores-en-Protester/lmpro/ (o quitar la entrada u7 de PRUEBAS); (2) afrolatin → borrar la carpeta sabores/ (no la usa nadie
+  más). Espejo: APPs/LMATHOME GP (github lmpro)/TEORIA INTERACTIVA 2GP (github x8)/AFROLATIN/sabores/ y LMPRO/index.html.
 - 27-oct 20:50 · 4 Sabores (C1, la coordinadora del portal nuevo del Afrolatin) · EN CURSO (Iago, 20:31: «súbelo ya y habilita a
   Protester… que me siga saliendo en el medallero la interrogación») · (1) repo afrolatin: carpeta NUEVA sabores/ (el portal 4
   Sabores con el Sabor 1), sin tocar su index.html ni nada de lo que ya había. (2) lmpro, solo index.html: la medalla u7n (icono
