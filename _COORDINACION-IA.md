@@ -30,6 +30,11 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   ♭/♯) y se corrige. Todo pasa por LM_ACO (arriba/bajo/raizRueda) en index.html.
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 27-oct 20:50 · 4 Sabores (C1, la coordinadora del portal nuevo del Afrolatin) · EN CURSO (Iago, 20:31: «súbelo ya y habilita a
+  Protester… que me siga saliendo en el medallero la interrogación») · (1) repo afrolatin: carpeta NUEVA sabores/ (el portal 4
+  Sabores con el Sabor 1), sin tocar su index.html ni nada de lo que ya había. (2) lmpro, solo index.html: la medalla u7n (icono
+  nuevo, junto a las de u5n) y su anticipo en PRUEBAS, SOLO Protester y con misterio:true (cerrada con la «?», se abre al pulsar). A
+  los alumnos no les cambia nada.
 - 27-oct 04:39 · Mantenimiento · HECHO (encargo nocturno de Iago del 26-oct; cada repo y el Diario comprobados justo antes y en vivo
   después) · (1) RITMO AT HOME, CARTA 2.1: ritmoathome e649414 (index.html: la ficha de la INTRO 2.1 ya no pregunta «¿En qué compás
   estamos?» —m2Slides solo la pone si la carta trae meters; 2.2 y 2.3 igual—; quiz_fase1_pulso.html: con pulso de blanca el cartel
