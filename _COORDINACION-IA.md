@@ -30,6 +30,10 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   ♭/♯) y se corrige. Todo pasa por LM_ACO (arriba/bajo/raizRueda) en index.html.
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 28-oct 18:48 · Blues (coordinadora) · EN CURSO · COMPAT94, LA PANTALLA DEL AULA (Linux + Google Chrome 94, sin actualizaciones).
+  Iago: «arregla todo para que funcione en esta pantalla… sin afectar a los alumnos, cuando ellos tengan su experiencia en sus casas».
+  LMEAVathome, solo piel/: compat94.js NUEVO + una línea «COMPAT94» al principio de piel/lm-piel.js y de piel/latido.js (el
+  cargador; el resto de los dos ficheros, igual). No toco escaleta.js (c3a174b) ni nada de lmpro.
 - 28-oct 18:45 · Mantenimiento · HECHO, comprobado en vivo · LMEAVathome c3a174b (solo piel/escaleta.js): el DESCANSO dura lo suyo; la
   cuenta atrás ya no le suma el margen guardado y, al acabar, el margen pasa entero a la actividad siguiente (Iago: en la C1 de 4A
   salió de 8 min en vez de 5). DESHACER: DESCANSO_SIN_MARGEN = false, o subir la versión de 2c25d5b (= espejo de Dropbox, sin tocar).
