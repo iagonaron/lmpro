@@ -6,6 +6,13 @@ esto, apunta abajo fecha, quién eres, qué vas a tocar y «EN CURSO» (en un co
 SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «HECHO · commit xxxxxxx».
 
 ## Normas fijas de Iago para los portales
+- (28-oct-2026) PANTALLA DEL AULA = Linux + GOOGLE CHROME 94 (no se actualiza). piel/compat94.js (lo carga la primera línea
+  de piel/lm-piel.js y de piel/latido.js, SOLO en un Chrome antiguo) le da :has(), color-mix(), dvh/svh, mask sin -webkit-,
+  @container y cqw/cqh, roundRect, structuredClone y findLast/toSorted. NO cubre: CSS anidado (&), @layer, @scope, popover,
+  :has dentro de :is()/:where(), container style(), color-mix con variables dentro de @keyframes, ni JS más nuevo que esa
+  lista: eso, no usarlo en lo que se ve en clase. Lo que sale en el aula tiene que cargar lm-piel.js o latido.js. Antes de
+  subir: abrir con ?compat94=forzar (lo activa en un navegador moderno), mirar que se ve igual y que
+  window.LMCompat94.errores está vacío. Detalle: LMATHOME GP (github lmpro)/LEEME-28-oct-2026-compat94-pantalla-del-aula-chrome94.txt
 - (16-oct-2026) TARJETAS DE AVISO DE LOS PORTALES TEMÁTICOS: cada portal interactivo del medallero GP (Acústica, Atonalidad,
   Fonógrafo y los que vengan) tiene que llevar sus tarjetas para la campana, con texturas HECHAS CON CHATGPT: una por día o
   capítulo, que sea el resumen de lo que se vive dentro (Acústica Día 1, fuera y de día con el árbol caído; los demás,
@@ -30,10 +37,17 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   ♭/♯) y se corrige. Todo pasa por LM_ACO (arriba/bajo/raizRueda) en index.html.
 
 ## Registro (lo más reciente arriba · hora de Galicia)
-- 28-oct 18:48 · Blues (coordinadora) · EN CURSO · COMPAT94, LA PANTALLA DEL AULA (Linux + Google Chrome 94, sin actualizaciones).
-  Iago: «arregla todo para que funcione en esta pantalla… sin afectar a los alumnos, cuando ellos tengan su experiencia en sus casas».
-  LMEAVathome, solo piel/: compat94.js NUEVO + una línea «COMPAT94» al principio de piel/lm-piel.js y de piel/latido.js (el
-  cargador; el resto de los dos ficheros, igual). No toco escaleta.js (c3a174b) ni nada de lmpro.
+- 28-oct 18:50 · Blues (coordinadora) · HECHO, comprobado en vivo (huellas iguales) · COMPAT94, LA PANTALLA DEL AULA (Linux +
+  Google Chrome 94, sin actualizaciones). Iago: «arregla todo para que funcione en esta pantalla… sin afectar a los alumnos».
+  LMEAVathome b83f87c (solo piel/): compat94.js NUEVO + una línea «COMPAT94» al principio de lm-piel.js y de latido.js (el
+  cargador; el resto igual). Solo en un Chrome/Chromium antiguo al que le falte :has, color-mix, dvh, @container o roundRect
+  se descarga compat94.js, que arregla las hojas EN SU SITIO (:has → clase .lmH<n>, color-mix → color calculado por
+  elemento, dvh → vh, mask → -webkit-mask, @container/cqw → ResizeObserver) y añade el JS que falte. En un navegador al día
+  (y en Safari/Firefox) no se descarga: comprobado en vivo en Chrome 156. Probado con Chrome 94 real (Electron 15, 17
+  páginas: 0 errores; prueba completa 78 → 0 diferencias, Blues 11 → 0) y en Chromium moderno con ?compat94=forzar (24
+  portales, iguales). DESHACER: borrar esa primera línea de lm-piel.js y latido.js, o subir los de APPs/_PARA BORRAR/28-oct-
+  2026-antes-de-compat94-pantalla-del-aula/LMEAVathome/piel/. Espejo de Dropbox al día; LEEME-28-oct-2026-compat94-
+  pantalla-del-aula-chrome94.txt en las carpetas GE y GP. Ver la norma fija nueva de arriba.
 - 28-oct 18:45 · Mantenimiento · HECHO, comprobado en vivo · LMEAVathome c3a174b (solo piel/escaleta.js): el DESCANSO dura lo suyo; la
   cuenta atrás ya no le suma el margen guardado y, al acabar, el margen pasa entero a la actividad siguiente (Iago: en la C1 de 4A
   salió de 8 min en vez de 5). DESHACER: DESCANSO_SIN_MARGEN = false, o subir la versión de 2c25d5b (= espejo de Dropbox, sin tocar).
