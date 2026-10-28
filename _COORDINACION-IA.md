@@ -30,6 +30,9 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   ♭/♯) y se corrige. Todo pasa por LM_ACO (arriba/bajo/raizRueda) en index.html.
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 28-oct 18:45 · Mantenimiento · HECHO, comprobado en vivo · LMEAVathome c3a174b (solo piel/escaleta.js): el DESCANSO dura lo suyo; la
+  cuenta atrás ya no le suma el margen guardado y, al acabar, el margen pasa entero a la actividad siguiente (Iago: en la C1 de 4A
+  salió de 8 min en vez de 5). DESHACER: DESCANSO_SIN_MARGEN = false, o subir la versión de 2c25d5b (= espejo de Dropbox, sin tocar).
 - 27-oct 21:15 · 4 Sabores (C1, la coordinadora del portal nuevo del Afrolatin) · HECHO, comprobado en vivo · (1) afrolatin: carpeta
   NUEVA sabores/ = el portal 4 Sabores con el Sabor 1 (322 ficheros, commits «4 Sabores (C1): sabores/…», de 071bebd a la subida de
   index.html), en https://afrolatin.gp.lmathome.es/sabores/; el index.html de la raíz y lo demás, sin tocar. (2) lmpro f1c7e6d (solo
