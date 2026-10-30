@@ -37,16 +37,16 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   ♭/♯) y se corrige. Todo pasa por LM_ACO (arriba/bajo/raizRueda) en index.html.
 
 ## Registro (lo más reciente arriba · hora de Galicia)
-- 30-oct 13:15 · 4 Sabores (C1, la coordinadora del portal nuevo del Afrolatin) · EN CURSO · lmpro: index.html (HITO_TEMAS.sabores y su tema
-  .hito-sabores en HITO_CSS + F() de sus letras; medalla u7 de los alumnos → afrolatin.gp.lmathome.es/sabores/, SOLO por hitos: cerrada hasta
-  que Iago marque el primer sabor; HITO_WEB.sabores) y hitos/ (sabores-1…4.webp, sabores-portada.webp, f-shrikhand.woff2, f-nunito-800.woff2).
-  Ya hecho hoy fuera de lmpro (con el «sí» de Iago): Supabase migración suite_hitos_afrolatin_4_sabores (_suite_hito_meta + _suite_hito_de_texto;
-  deshacer: Dropbox DIARIO PROFESOR/SQL-BD/30-oct-2026-hitos-afrolatin-4-sabores-DESHACER.sql) y Diario deploy 6ae4800f (los 4 sabores en el
-  desplegable «Vídeo»; deshacer: publicar 6ae01c96). ⚠ AVISO a quien lleve Hamilton: el paquete «_SUBIDA-22-OCT-noche-hamilton-en-la-campana
-  (SIN PUBLICAR)» del Diario NO arranca tal cual: const HAM_TEX (suite-campana.js ~l.1070) usa HITOS_URL antes de declararlo (~l.1488) →
-  «Cannot access HITOS_URL before initialization» y se cae toda la campana. Además voy a publicar en el Diario suite-campana.js con 4 Sabores
-  (?v s52): ese paquete habrá que rehacerlo encima (versión ya fusionada y arreglada, con ?v s53, en Dropbox DIARIO PROFESOR/
-  _SUBIDA-30-OCT-afrolatin-en-la-campana-del-diario/para-quien-publique-hamilton/). No tocar lmpro index.html ni hitos/ hasta mi HECHO.
+- 30-oct 13:30 · 4 Sabores (C1, la coordinadora del portal nuevo del Afrolatin) · HECHO, comprobado en vivo · lmpro dd7bbbb (hitos/: sabores-1…4.webp,
+  texturas de ChatGPT; sabores-portada.webp; f-shrikhand.woff2 y f-nunito-800.woff2) y 94a30b4 (index.html: HITO_TEMAS.sabores + .hito-sabores en HITO_CSS + F();
+  MEDALLAS u7 → https://afrolatin.gp.lmathome.es/sabores/ con el icono u7n, HITO_WEB.sabores y, en arrancar, u7 abierta SOLO si diasDe(hh,'sabores')
+  trae algún sabor: cerrada para los alumnos hasta que Iago marque el primero en el Diario; el Protester, como estaba). En vivo: index nuevo,
+  texturas 200, compat94 sin errores, sin errores de consola. Ya hecho hoy fuera de lmpro: Supabase suite_hitos_afrolatin_4_sabores (deshacer:
+  DIARIO PROFESOR/SQL-BD/30-oct-2026-hitos-afrolatin-4-sabores-DESHACER.sql) y Diario deploy 6ae4800f (desplegable «Vídeo»; deshacer: 6ae01c96).
+  PENDIENTE del «sí» de Iago: en el Diario, suite-campana.js con Afro Latin en «Actividad de los alumnos» (?v s52). ⚠ A quien lleve Hamilton: su
+  paquete del Diario «_SUBIDA-22-OCT-noche-hamilton-en-la-campana (SIN PUBLICAR)» NO arranca tal cual (const HAM_TEX usa HITOS_URL antes de
+  declararlo → se cae toda la campana). DESHACER lmpro: subir el index.html de APPs/_PARA BORRAR/30-oct-2026-antes-de-4-sabores-en-la-campana/lmpro/
+  (= a582721); hitos/ puede quedarse.
 - 28-oct 18:50 · Blues (coordinadora) · HECHO, comprobado en vivo (huellas iguales) · COMPAT94, LA PANTALLA DEL AULA (Linux +
   Google Chrome 94, sin actualizaciones). Iago: «arregla todo para que funcione en esta pantalla… sin afectar a los alumnos».
   LMEAVathome b83f87c (solo piel/): compat94.js NUEVO + una línea «COMPAT94» al principio de lm-piel.js y de latido.js (el
