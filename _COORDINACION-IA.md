@@ -37,6 +37,9 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   ♭/♯) y se corrige. Todo pasa por LM_ACO (arriba/bajo/raizRueda) en index.html.
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 30-oct 17:15 · Mantenimiento · HECHO · LMEAVathome 152bc8d + 99f74b6 + 48224e4 (solo piel/escaleta.js): NOTAS_FIJAS en el cartel: en 4B,
+  en el Dictado, «Siro y Álex separados» grande, amarillo y parpadeando (sin resplandor). DESHACER: borrar su línea de NOTAS_FIJAS,
+  o subir la versión de 26d876a.
 - 30-oct 16:45 · Mantenimiento · HECHO, comprobado en vivo · LMEAVathome 26d876a (solo piel/escaleta.js): con la lección de la semana
   abierta desde la campana (#ts-visor, con anotaciones) la escaleta quedaba debajo; ahora va en una línea en el hueco de la barra del
   visor. DESHACER: VISOR_LECCIONES = false, o subir la versión de c3a174b.
