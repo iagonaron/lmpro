@@ -40,6 +40,20 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
 - 30-oct 16:45 · Mantenimiento · HECHO, comprobado en vivo · LMEAVathome 26d876a (solo piel/escaleta.js): con la lección de la semana
   abierta desde la campana (#ts-visor, con anotaciones) la escaleta quedaba debajo; ahora va en una línea en el hueco de la barra del
   visor. DESHACER: VISOR_LECCIONES = false, o subir la versión de c3a174b.
+- 30-oct 16:40 · 4 Sabores (C1, la coordinadora del portal nuevo del Afrolatin) · HECHO, comprobado en vivo · afrolatin sabores/ (solo esa carpeta):
+  r19 (Iago 14:39–14:41): sol con destello y polvo que brilla en 23 láminas y motitas más visibles en los 74 fondos (vl/), partículas en los
+  clips de samba, salsa y kizomba (vc/s3 vc_s_*, vc/s4), la comprobación de «pierde fotogramas» ya no apaga los vídeos por una medida mala
+  (clave nueva sabores_vc_no2; la vieja se borra) + botón «Vídeos apagados» en la portada, bucle del plano siguiente leído antes (y de la red
+  si aún no está en la caché), «Ver todos los sabores». 23 commits, de bbdf1f2 a 3d95d2d (index.html el último); 143 ficheros. En vivo
+  versión 202610301600, compat94 sin errores; en el Chrome de Iago: Río con su bucle desde el primer instante, concierto de la samba con
+  vídeos, 0 fotogramas perdidos. Espejo de Dropbox (AFROLATIN/sabores) idéntico por md5 (1275 ficheros). DESHACER: volver sabores/ a
+  9de6e36; en Dropbox, APPs/_PARA BORRAR/27-oct-2026-antes-de-4-sabores-en-Protester/antes_r19.tar.
+- 30-oct 14:45 · 4 Sabores (C1, la coordinadora del portal nuevo del Afrolatin) · HECHO, comprobado en vivo · Diario deploy 6ae49e6f (sobre 6ae4800f,
+  con el «sí» de Iago de las 14:37): suite-campana.js?v=s52 con Afro Latin en «Actividad de los alumnos» (PORTAL_LIBRE['sabores-gp'], alias
+  'sabores' y 'afrolatin-gp' con detalle sabor-N/portada) + index.html, ipad.html e iphone.html solo con el ?v s50→s52. En vivo: sha1 de
+  suite-campana.js = a3016370…, las tres páginas piden s52. DESHACER: Netlify › diariodeiagocmus › Deploys › 6ae4800f › «Publish deploy».
+  ⚠ A quien lleve Hamilton: lo vivo ya trae Afro Latin; publicad la carpeta «para-quien-publique-hamilton/» de
+  DIARIO PROFESOR/_SUBIDA-30-OCT-afrolatin-en-la-campana-del-diario (deploy 6ae49e6f)/ (Hamilton + Afro Latin + el arreglo de HAM_TEX, ?v s53), no la vuestra original.
 - 30-oct 14:20 · 4 Sabores (C1, la coordinadora del portal nuevo del Afrolatin) · HECHO, comprobado en vivo · afrolatin sabores/ (solo esa carpeta):
   r18 (repaso de Iago de las 12:28–12:43): polvo que brilla junto a lámparas, velas y sol en los fondos (54 bucles vl/), la cumbia sin hojas y «los
   metales» con una cara para cada músico (21 clips vc/s1 + img/s1/vc_c_39_metales.webp), el «hmm» de verdad de Antónico con su gesto, resúmenes con
