@@ -37,6 +37,9 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   ♭/♯) y se corrige. Todo pasa por LM_ACO (arriba/bajo/raizRueda) en index.html.
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 30-oct 16:45 · Mantenimiento · HECHO, comprobado en vivo · LMEAVathome 26d876a (solo piel/escaleta.js): con la lección de la semana
+  abierta desde la campana (#ts-visor, con anotaciones) la escaleta quedaba debajo; ahora va en una línea en el hueco de la barra del
+  visor. DESHACER: VISOR_LECCIONES = false, o subir la versión de c3a174b.
 - 30-oct 14:20 · 4 Sabores (C1, la coordinadora del portal nuevo del Afrolatin) · HECHO, comprobado en vivo · afrolatin sabores/ (solo esa carpeta):
   r18 (repaso de Iago de las 12:28–12:43): polvo que brilla junto a lámparas, velas y sol en los fondos (54 bucles vl/), la cumbia sin hojas y «los
   metales» con una cara para cada músico (21 clips vc/s1 + img/s1/vc_c_39_metales.webp), el «hmm» de verdad de Antónico con su gesto, resúmenes con
