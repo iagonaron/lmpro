@@ -37,6 +37,12 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   ♭/♯) y se corrige. Todo pasa por LM_ACO (arriba/bajo/raizRueda) en index.html.
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 31-oct 23:40 · 4 Sabores (C1, la coordinadora del portal nuevo del Afrolatin) · HECHO, comprobado en vivo · afrolatin sabores/ (solo esa carpeta):
+  r21, la portada animada en bucle (imagen de ChatGPT animada con Runway, Kling 3 Pro, 259 créditos; bucle de 9,4 s sin salto): vl/portada/fondo.mp4
+  (nuevo, 4 MB, en el manifiesto como lam:img/portada/fondo.webp), img/portada/fondo.webp = su primer fotograma, js/motor.js (fondoVivo: el vídeo
+  encima de la foto si los vídeos están encendidos; de la caché o de la red; se suelta al salir de la portada), css/sabores.css, data, index.html.
+  6 commits, de bcbee01 a 8452321. En vivo versión 202610312321, compat94 sin errores; en el Chrome de Iago el vídeo suena en bucle. Espejo de
+  Dropbox idéntico por md5 (1276 ficheros). DESHACER: volver sabores/ a 8f3f562; en Dropbox, APPs/_PARA BORRAR/27-oct-2026-antes-de-4-sabores-en-Protester/antes_r21.tar.
 - 30-oct 19:25 · 4 Sabores (C1, la coordinadora del portal nuevo del Afrolatin) · HECHO, comprobado en vivo · afrolatin sabores/ (solo esa carpeta):
   r20 (Iago 18:19–18:28, en el aula: los cambios de plano de los videoclips no eran limpios): la capa del plano siguiente se monta antes con
   su clip parado en el primer fotograma y armado (y la imagen de las franjas, ya descodificada); entra entera en un solo fotograma. 3 commits:
