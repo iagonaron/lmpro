@@ -37,6 +37,8 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   ♭/♯) y se corrige. Todo pasa por LM_ACO (arriba/bajo/raizRueda) en index.html.
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 1-nov 11:50 · Modulación (C1, la coordinadora de la U8) · EN CURSO · solo index.html: icono nuevo u8n (__MED_IMG__, ChatGPT) y entrada u8 en PRUEBAS
+  (solo Protester, con «?») hacia https://modulacion.gp.lmathome.es/prueba.html. A los alumnos no les cambia nada.
 - 31-oct 23:40 · 4 Sabores (C1, la coordinadora del portal nuevo del Afrolatin) · HECHO, comprobado en vivo · afrolatin sabores/ (solo esa carpeta):
   r21, la portada animada en bucle (imagen de ChatGPT animada con Runway, Kling 3 Pro, 259 créditos; bucle de 9,4 s sin salto): vl/portada/fondo.mp4
   (nuevo, 4 MB, en el manifiesto como lam:img/portada/fondo.webp), img/portada/fondo.webp = su primer fotograma, js/motor.js (fondoVivo: el vídeo
