@@ -48,7 +48,7 @@
 (function () {
   'use strict';
   if (window.LMVoluntarios) return;
-  const VERSION = 6;   // (22-oct-2026) v5: una animación por día, capítulo o bobina (temaDe) · (17-oct-2026) v2: el tema «cinta» del Magnetófono · (18-oct-2026) v3: el cilindro del Fonógrafo y el botón que surge al empezar · (20-oct-2026) v4: los temas del Blues y un tema por oferta
+  const VERSION = 7;   // (2-nov-2026) v7: «modjugador», selección de personaje con los retratos de los alumnos · (22-oct-2026) v5: una animación por día, capítulo o bobina (temaDe) · (17-oct-2026) v2: el tema «cinta» del Magnetófono · (18-oct-2026) v3: el cilindro del Fonógrafo y el botón que surge al empezar · (20-oct-2026) v4: los temas del Blues y un tema por oferta
   const SB = 'https://woiptkyrxkbpnvioypit.supabase.co';
   const CLAVE_PUB = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndvaXB0a3lyeGticG52aW95cGl0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0NzI2ODYsImV4cCI6MjA5MjA0ODY4Nn0.B2nKgj5rD0rkdLeMIrd9KgD8lUPWsBT4Y7aCtmnvbjA';
   const CLAVE = 'lm_vol_cuenta';
@@ -5417,6 +5417,673 @@
             st.luz = eo(u, 2); st.destello = RM ? 0 : Math.sin(Math.PI * Math.min(1, u * 1.5)) * (1 - u * .5); if (u < 1) requestAnimationFrame(p_); else { st.destello = 0; ok(); } })(); });
         },
         quita() { vivo = false; cancelAnimationFrame(raf); }
+      };
+    }
+  };
+
+  /* ═════════ (2-nov-2026, v7) MODULACIÓN (U8): «modjugador», el mismo en las 4 sesiones. Pantalla de SELECCIÓN DE PERSONAJE con el
+     RETRATO pixel art de cada alumno (suite_vol_avatares; sin retrato → genérico de su instrumento): en gris salvo el que pisa la
+     flecha del ratón, clic, el elegido grande en su marco dorado y música chiptune 8-bit. C1 de Modulación. ═════════ */
+  /* ── «modjugador» · Modulación · las CUATRO sesiones: SELECCIÓN DE PERSONAJE, con el retrato de cada alumno ──
+     (2-nov-2026, v3) Una pantalla de «elige jugador» de videojuego, sobre el paisaje de píxel de «modpixel» (cielo de anochecer
+     por franjas, estrellas, luna, nubes, colinas y suelo de baldosas). Salen TODOS los alumnos del grupo en una rejilla de
+     tarjetas: el retrato (busto de frente, pixel art) arriba y el nombre debajo. Todos en BLANCO Y NEGRO y algo apagados, menos
+     el que tiene encima la flecha del ratón, que se enciende en COLOR, con marco dorado, halo y un brillo al entrar. Cada retrato
+     «respira»: alterna sus dos fotogramas (f2 = f1 bajado 2 px) cada 0,6 s, desfasado entre tarjetas. Se dibujan sin suavizar
+     y a escala entera (×2 si caben pocos alumnos —hasta 8—, si no ×1); solo si a ×1 no cupieran, a una escala ≥ 0,75 con
+     suavizado de calidad alta.
+     La flecha (un puntero de ordenador de píxel, blanco con borde negro) pasea por la rejilla con una trayectoria curva y
+     natural (acelera, va y viene, va frenando): cada tarjeta por la que pasa se colorea con un «blip» suave y vuelve al gris al
+     irse. Se para sobre el elegido, duda un instante, hace CLIC (la flecha se hunde, suena el clic, destello) y el retrato
+     elegido SUBE al centro en grande (×3) y en color, dentro de un marco dorado pixelado de retrato de RPG, con unos destellos
+     alrededor; el resto se oscurece bajo un velo y abajo se abre el cuadro «¡TE TOCA!» con el nombre (el marco no lo tapa).
+     Música: un bucle chiptune de 8 bits ORIGINAL (pulso para la melodía y el arpegio, triangular para el bajo, ruido para la
+     batería; 140 por minuto, 8 compases) que empieza al abrir la pantalla, suena durante el paseo y, al clic, se corta y remata
+     con una fanfarria corta. Todo con el sintetizador `A` del módulo (sin ficheros).
+     Los retratos salen de Supabase (suite_vol_avatares, con la cuenta Protester): el de cada alumno; si no tiene, el genérico de
+     su instrumento («gen:piano»…); si tampoco, «gen:otro». Si la llamada falla o tarda (se espera como mucho 0,8 s antes de
+     empezar), las tarjetas se pintan como en «modpixel», sin retrato, y el elegido se queda en su tarjeta, dorado: nunca se
+     rompe. Con movimiento reducido: sin paseo, sin parpadeos ni destellos; el elegido aparece ya en su marco. */
+  TEMAS.modjugador = {
+    fuentes: ['700 40px "Pixelify Sans"', '400 22px DotGothic16', '400 90px DotGothic16'],
+    nombreFit: { min: 44 },
+    css: `
+.lmv-t-modjugador .lmv-velo{background:linear-gradient(#0b1140 0%,#0b1140 50%,#151a3e 50%,#151a3e 100%)}
+.lmv-t-modjugador .lmv-cab{top:22px}
+.lmv-t-modjugador .lmv-ceja{font:700 58px/1 "Pixelify Sans",DotGothic16,monospace;letter-spacing:.14em;text-transform:uppercase;color:#ffd23f;text-shadow:4px 4px 0 #e0452b,8px 8px 0 #1a0820}
+.lmv-t-modjugador .lmv-grupo{margin-top:16px;font:400 24px/1 DotGothic16,"Pixelify Sans",monospace;letter-spacing:.06em;color:#e8ecff;text-shadow:3px 3px 0 #070a1c}
+.lmv-t-modjugador .lmv-nombre{top:780px;left:420px;right:420px;height:124px;display:flex;align-items:center;justify-content:center;font:400 90px/1.05 DotGothic16,"Pixelify Sans",monospace;color:#ffe066;text-shadow:5px 5px 0 #e0452b,10px 10px 0 #1a0820}
+.lmv-t-modjugador .lmv-nombre.ve{animation:lmv-pj-sale .42s steps(6,end) forwards}
+@keyframes lmv-pj-sale{0%{opacity:1;transform:scale(.2)}100%{opacity:1;transform:none}}
+.lmv-t-modjugador .lmv-nota{top:922px;font:400 22px/1.3 DotGothic16,"Pixelify Sans",monospace;letter-spacing:.04em;color:#e8ecff;text-shadow:2px 2px 0 #070a1c}
+.lmv-t-modjugador .lmv-pie{bottom:34px;gap:40px}
+.lmv-t-modjugador .lmv-b{display:inline-flex;align-items:center;gap:12px;padding:14px 30px;border:none;border-radius:0;background:#1a2470;color:#f4f6ff;font:400 28px/1 DotGothic16,"Pixelify Sans",monospace;letter-spacing:.12em;text-transform:uppercase;box-shadow:0 -4px 0 #f4f6ff,0 4px 0 #f4f6ff,-4px 0 0 #f4f6ff,4px 0 0 #f4f6ff,inset 0 -6px 0 rgba(0,0,0,.35);transition:background .15s,transform .1s}
+.lmv-t-modjugador .lmv-b:hover{background:#26338c;transform:translateY(-4px)}
+.lmv-t-modjugador .lmv-b.lmv-otra{background:#ffd23f;color:#1a0820;box-shadow:0 -4px 0 #070a1c,0 4px 0 #070a1c,-4px 0 0 #070a1c,4px 0 0 #070a1c,inset 0 -6px 0 rgba(160,80,0,.45),inset 0 4px 0 rgba(255,255,255,.5)}
+.lmv-t-modjugador .lmv-b.lmv-otra:hover{background:#ffe066}
+.lmv-t-modjugador .lmv-b:focus-visible{outline:4px dashed #ffd23f;outline-offset:10px}
+.lmv-t-modjugador .lmv-cargando{color:#ffd23f}
+.lmv-of-modjugador .lmv-ob{font-family:DotGothic16,"Pixelify Sans",monospace;font-weight:400;letter-spacing:.1em;text-transform:uppercase;border:none;border-radius:0;background:#ffd23f;color:#1a0820;box-shadow:0 -6px 0 #f4f6ff,0 6px 0 #f4f6ff,-6px 0 0 #f4f6ff,6px 0 0 #f4f6ff,inset 0 -8px 0 rgba(160,80,0,.45),inset 0 5px 0 rgba(255,255,255,.5),0 26px 60px rgba(0,0,0,.6)}
+.lmv-of-modjugador .lmv-ob:focus-visible{outline:4px dashed #ffd23f;outline-offset:12px}
+.lmv-of-modjugador .lmv-og{font-family:DotGothic16,"Pixelify Sans",monospace;letter-spacing:.12em;color:#ffe066;text-shadow:3px 3px 0 #1a0820}
+.lmv-of-modjugador .lmv-no{font-family:DotGothic16,"Pixelify Sans",monospace;font-weight:400;color:#e8ecff}
+@media (prefers-reduced-motion:reduce){.lmv-t-modjugador .lmv-nombre.ve{animation:none;opacity:1}}`,
+    crea(esc, o) {
+      const L = lienzo(esc), g = L.g, RM = reducido(), mov = RM ? 0 : 1;
+      const DG = px => `400 ${px}px DotGothic16, "Pixelify Sans", monospace`;
+      const U = 4, Q = v => Math.round(v / U) * U;                       // el «píxel» del dibujo
+      const ZX = 40, ZW = 1840, ZY = 150, ZH = 774, SUELO = 952;        // la zona de la rejilla de retratos y la línea del suelo
+      const AMA = '#ffd23f', ORO = '#e8b52c', ORO_L = '#fff0a0', ORO_S = '#9c6410', BLANCO = '#f4f6ff', TINTA = '#070a1c', AZUL = '#141c52';
+      const MARCO = '#c9d2f5', APAGADO = '#4a5378';
+      const COL = ['#ff5a5a', '#ff9f1c', '#ffd23f', '#3ddc84', '#38c6f4', '#b07cff'];   // el color de cada jugador (rejilla sin retratos)
+      const PIE_MARCO = 712, ALTO_FIN = 440;                             // el borde de abajo del marco del elegido (encima del «¡TE TOCA!») y su alto máximo
+      // la línea de tiempo del giro, en segundos desde que salen las tarjetas: la flecha empieza a moverse, se para, hace clic,
+      // el retrato sube, se abre el cuadro y se acaba (gira() se resuelve)
+      const TL = RM ? { mueve: 0, para: 0, clic: 0, sube: 0, dSube: .01, caja: 0, fin: .45 }
+        : { mueve: .25, para: 4.3, clic: 4.75, sube: 4.88, dSube: .78, caja: 5.3, fin: 5.78 };
+      const st = { t: 0, items: [], n: 0, lay: null, spr: [], luz: [], fase0: [], entra: [], hov: -1, k: -1, elegido: null, fin: 0, gen: 0,
+        fase: 'nada', tP0: 0, tAp: -99, ruta: null, clic: false, subeSon: false, llega: false, cx: 1480, cy: 990, acaba: null, chispas: [], tBlip: -9 };
+      let fondo = null, frente = null, nubes = [], raf = 0, vivo = true;
+
+      /* ── los retratos: se piden a Supabase al abrir; cada imagen se carga una vez (y el bucle la pinta en cuanto está) ── */
+      const av = { alumnos: null, gen: null, listo: false };
+      const imgs = new Map();
+      function img(src) {
+        if (!src || typeof src !== 'string') return null;
+        if (!imgs.has(src)) {
+          const im = new Image(), o_ = { im, ok: false, mal: false, gris: undefined };
+          o_.pr = new Promise(r => { im.onload = () => { o_.ok = !!im.naturalWidth; r(); }; im.onerror = () => { o_.mal = true; r(); }; });
+          im.src = src; imgs.set(src, o_);
+        }
+        return imgs.get(src);
+      }
+      const prAv = (() => {
+        let cuenta = null; try { cuenta = leeCuenta(); } catch (e) {}
+        if (!cuenta) return Promise.resolve();
+        return rpc('suite_vol_avatares', { p_cuenta_id: cuenta }).then(r => {
+          if (Array.isArray(r)) r = r[0];
+          if (!r || r.ok === false || typeof r.alumnos !== 'object') return;
+          av.alumnos = r.alumnos || {}; av.gen = r.gen || {}; av.listo = true;
+          av.norm = {}; Object.keys(av.alumnos).forEach(k => { av.norm[String(k).trim().toLowerCase()] = av.alumnos[k]; });
+        }).catch(() => {});
+      })();
+      // el retrato de un alumno: el suyo; si no tiene, el genérico de su instrumento; si tampoco, «gen:otro»
+      function pjDe(nombre) {
+        if (!av.listo) return null;
+        const a = av.alumnos[nombre] || av.norm[String(nombre).trim().toLowerCase()] || null;
+        const par = p => p && p.f1 ? { f1: img(p.f1), f2: img(p.f2 || p.f1) } : null;
+        return par(a) || (a && a.instr ? par(av.gen['gen:' + String(a.instr).trim().toLowerCase()]) : null) || par(av.gen['gen:otro']);
+      }
+      const usable = p => p && p.f1 && p.f1.ok;
+      // la versión en blanco y negro (y algo apagada) de una imagen: se hace una vez, sin leer píxeles (vale con imágenes de otro dominio)
+      function gris(a) {
+        if (a.gris !== undefined) return a.gris;
+        try {
+          const im = a.im, c = document.createElement('canvas'), w = c.width = im.naturalWidth, h = c.height = im.naturalHeight, x = c.getContext('2d');
+          x.drawImage(im, 0, 0);
+          x.globalCompositeOperation = 'saturation'; x.fillStyle = '#808080'; x.fillRect(0, 0, w, h);
+          x.globalCompositeOperation = 'source-atop'; x.fillStyle = 'rgba(16,20,46,.34)'; x.fillRect(0, 0, w, h);
+          x.globalCompositeOperation = 'destination-in'; x.drawImage(im, 0, 0);
+          a.gris = c;
+        } catch (e) { a.gris = null; }
+        return a.gris;
+      }
+
+      // un rectángulo con las esquinas en escalón (e escalones de un píxel)
+      function caja(g, x, y, w, h, e) { e = e == null ? 1 : e; for (let i = 0; i <= e; i++) g.fillRect(x + (e - i) * U, y + i * U, w - 2 * (e - i) * U, h - 2 * i * U); }
+      // un dibujo de píxeles: filas de letras y su paleta
+      function sprite(g, filas, x, y, p, pal) { filas.forEach((f, j) => { for (let i = 0; i < f.length; i++) { const c = pal[f[i]]; if (c) { g.fillStyle = c; g.fillRect(x + i * p, y + j * p, p, p); } } }); }
+      // la flecha del ratón (la punta arriba a la izquierda): blanca, con su borde negro y un poco de sombreado
+      const FLECHA = ['X...........', 'XX..........', 'XWX.........', 'XWWX........', 'XWWWX.......', 'XWWWWX......', 'XWWWWWX.....', 'XWWWWWWX....',
+        'XWWWWWWWX...', 'XWWWWWWWWX..', 'XWWWWWWWSSX.', 'XWWWWWWXXXXX', 'XWWWXWSX....', 'XWWX.XWSX...', 'XWX..XWSX...', 'XX....XWSX..',
+        'X.....XWSX..', '.......XWSX.', '.......XWSX.', '........XX..'];
+      const PAL_F = { X: '#05060f', W: '#ffffff', S: '#c4cbe4' }, PAL_FP = { X: '#05060f', W: '#dfe4f4', S: '#9ea8cc' };
+      const PAL_SOMBRA = { X: 'rgba(3,4,16,.38)', W: 'rgba(3,4,16,.38)', S: 'rgba(3,4,16,.38)' };
+
+      /* la rejilla sin retratos (la de «modpixel»): tarjetas apaisadas */
+      function rejillaPx(n) {
+        const Y0 = 196, H0 = 536, W0 = 1680;
+        n = Math.max(1, n); const gap = n > 24 ? 16 : 24; let mejor = null;
+        for (let c = 1; c <= Math.min(n, 10); c++) {
+          const r = Math.ceil(n / c); let w = (W0 - (c - 1) * gap) / c, h = (H0 - (r - 1) * gap) / r;
+          h = Math.min(h, n <= 2 ? 210 : 160); w = Math.min(w, n <= 2 ? 620 : 440, h * 3.4);
+          const sc = Math.min(w, h * 2.6) - (c * r - n) * 2 - Math.abs(Math.log((c * w) / (r * h) / (W0 / H0))) * 8;
+          if (!mejor || sc > mejor.sc) mejor = { c, r, w, h, sc };
+        }
+        const { c, r } = mejor, w = Q(mejor.w), h = Q(mejor.h);
+        return coloca(n, c, r, w, h, gap, Y0, H0, { pj: false });
+      }
+      /* la rejilla con retratos: tarjetas en vertical, el retrato arriba (en su «ventana», apoyado abajo) y el nombre debajo.
+         Se prueba ×2 y luego ×1 (escala entera, sin suavizar); si ni a ×1 cabe, la escala más grande que quepa (≥ 0,75, suavizada) */
+      function rejillaPj(n, mw, mh) {
+        n = Math.max(1, n);
+        const mide = sc => {
+          const pw = Math.ceil(mw * sc), ph = Math.ceil(mh * sc), nomH = sc >= 1 ? 48 : 40, gap = sc >= 2 || n > 14 ? 16 : 24;
+          const w = Q(Math.max(pw + 2 * U, sc >= 2 ? 260 : 152) + 6 * U), winY = 3 * U, winH = ph + 2 * U, nomY = winY + winH + U;
+          return { sc, pw, ph, nomH, w, h: Q(nomY + nomH + 3 * U), winY, winH, nomY, gap };
+        };
+        const elige = m => {
+          let mejor = null;
+          for (let c = 1; c <= n; c++) {
+            const r = Math.ceil(n / c), W = c * m.w + (c - 1) * m.gap, H = r * m.h + (r - 1) * m.gap;
+            if (W > ZW || H > ZH) continue;
+            const pt = -(c * r - n) * 3 - Math.abs(Math.log((W / H) / 2.4)) * 4;
+            if (!mejor || pt > mejor.pt) mejor = { c, r, pt };
+          }
+          return mejor;
+        };
+        for (const sc of [2, 1]) { const m = mide(sc), e = elige(m); if (e) return coloca(n, e.c, e.r, m.w, m.h, m.gap, ZY, ZH, Object.assign({ pj: true, mw, mh, liso: false }, m)); }
+        let best = null; const gap = 16;
+        for (let c = 1; c <= n; c++) {
+          const r = Math.ceil(n / c), s1 = ((ZW - (c - 1) * gap) / c - 10 * U) / mw, s2 = ((ZH - (r - 1) * gap) / r - 9 * U - 40) / mh, s = Math.min(s1, s2, 1);
+          if (!best || s > best.s) best = { c, r, s };
+        }
+        const m = mide(Math.max(.75, Math.floor(best.s * 100) / 100));
+        return coloca(n, best.c, best.r, m.w, m.h, m.gap, ZY, ZH, Object.assign({ pj: true, mw, mh, liso: true }, m));
+      }
+      function coloca(n, c, r, w, h, gap, Y0, H0, extra) {
+        const alto = r * h + (r - 1) * gap, y0 = Q(Y0 + (H0 - alto) / 2), pos = [];
+        for (let i = 0; i < n; i++) {
+          const fi = Math.floor(i / c), co = i % c, enFila = fi === r - 1 ? n - fi * c : c, ancho = enFila * w + (enFila - 1) * gap;
+          pos.push({ x: Q(960 - ancho / 2 + co * (w + gap)), y: y0 + fi * (h + gap) });
+        }
+        return Object.assign({ c, r, w, h, pos }, extra);
+      }
+
+      /* el cielo: franjas con su tramado, estrellas y la luna */
+      const FRANJAS = [[0, '#0b1140'], [140, '#0f174e'], [250, '#141f5c'], [350, '#1a296c'], [440, '#21337d'], [520, '#293e8e'], [592, '#33499f'], [656, '#3e56ae'], [712, '#4a64bb'], [764, '#5672c6'], [810, '#6380cf']];
+      function pintaFondo(g) {
+        const r = semilla(31);
+        FRANJAS.forEach(([y, c], i) => { const y2 = i < FRANJAS.length - 1 ? FRANJAS[i + 1][0] : 1080; g.fillStyle = c; g.fillRect(0, y, 1920, y2 - y); });
+        FRANJAS.forEach(([y, c], i) => { if (!i) return; g.fillStyle = c;
+          for (let x = 0; x < 1920; x += U) { const cx = x / U; if (cx % 2 === 0) g.fillRect(x, y - U, U, U); if (cx % 4 === 1) g.fillRect(x, y - 2 * U, U, U); } });
+        for (let i = 0; i < 90; i++) {
+          const x = Q(r() * 1920), y = Q(r() * 560), c = r() < .3 ? '#cdd8ff' : '#ffffff', a = 1 - y / 700;
+          g.globalAlpha = clamp(a, .25, 1); g.fillStyle = c; g.fillRect(x, y, U, U);
+          if (r() < .18) { g.globalAlpha *= .55; g.fillRect(x - U, y, U, U); g.fillRect(x + U, y, U, U); g.fillRect(x, y - U, U, U); g.fillRect(x, y + U, U, U); }
+        }
+        g.globalAlpha = 1;
+        const MX = 1700, MY = 112, MR = 46;
+        for (let y = -MR - 3 * U; y <= MR + 3 * U; y += U) for (let x = -MR - 3 * U; x <= MR + 3 * U; x += U) {
+          const d = Math.hypot(x + U / 2, y + U / 2);
+          if (d <= MR) { const sombra = Math.hypot(x + U / 2 - 16, y + U / 2 + 10) > MR - 4; g.fillStyle = sombra ? '#d8d0aa' : '#f5f0d8'; g.fillRect(MX + x, MY + y, U, U); }
+          else if (d <= MR + 2 * U) { g.fillStyle = 'rgba(255,248,214,.10)'; g.fillRect(MX + x, MY + y, U, U); }
+          else if (d <= MR + 3 * U && ((x + y) / U) % 2 === 0) { g.fillStyle = 'rgba(255,248,214,.07)'; g.fillRect(MX + x, MY + y, U, U); }
+        }
+        g.fillStyle = '#e2dbb8'; [[-20, -12, 3], [8, 14, 4], [-6, 22, 2], [14, -20, 2]].forEach(([x, y, s]) => g.fillRect(MX + Q(x), MY + Q(y), s * U, s * U));
+      }
+      /* lo de delante: colinas lejanas y cercanas (con sus árboles) y el suelo de baldosas */
+      function pintaFrente(g) {
+        const r = semilla(77), P = 2 * U;
+        for (let x = 0; x < 1920; x += P) { const h = Q(806 + 28 * Math.sin(x * .0042 + 1) + 16 * Math.sin(x * .011 + 2) + 8 * Math.sin(x * .027));
+          g.fillStyle = '#2c3d8e'; g.fillRect(x, h, P, 1080 - h); g.fillStyle = '#3a4fa3'; g.fillRect(x, h, P, U); }
+        const cerca = []; for (let x = 0; x < 1920; x += P) { const h = Q(872 + 30 * Math.sin(x * .0057 + .4) + 14 * Math.sin(x * .016 + 1.3)); cerca.push(h);
+          g.fillStyle = '#1b2666'; g.fillRect(x, h, P, 1080 - h); g.fillStyle = '#253280'; g.fillRect(x, h, P, U); }
+        for (let i = 0; i < 26; i++) {
+          const x = Q(r() * 1880 + 20), b = cerca[Math.floor(x / P)] + 2 * U, s = r() < .4 ? 2 : 1, pisos = 2 + Math.floor(r() * 2);
+          g.fillStyle = '#111a4a'; let y = b - 2 * U * s;
+          for (let p = pisos - 1; p >= 0; p--) for (let j = 3; j >= 0; j--) { const a = (1 + j + p) * s; g.fillRect(x - a * U, y, (2 * a + 1) * U, U * s); y -= U * s; }
+          g.fillRect(x - (s - 1) * U, b - 2 * U * s, (2 * s - 1) * U + U, 2 * U * s);
+        }
+        g.fillStyle = '#121636'; g.fillRect(0, SUELO, 1920, 1080 - SUELO);
+        const baldosa = (x, y, w, h, base, luz, som) => {
+          g.fillStyle = base; g.fillRect(x + U, y + U, w - 2 * U, h - 2 * U);
+          g.fillStyle = luz; g.fillRect(x + U, y + U, w - 2 * U, U); g.fillRect(x + U, y + U, U, h - 2 * U);
+          g.fillStyle = som; g.fillRect(x + U, y + h - 2 * U, w - 2 * U, U); g.fillRect(x + w - 2 * U, y + U, U, h - 2 * U);
+          for (let q = 0; q < 2; q++) { g.fillStyle = r() < .5 ? luz : som; g.fillRect(Q(x + 3 * U + r() * (w - 7 * U)), Q(y + 3 * U + r() * (h - 7 * U)), U, U); }
+        };
+        for (let x = 0; x < 1920; x += 32) baldosa(x, SUELO, 32, 28, '#5361ad', '#8592da', '#36418a');
+        [[SUELO + 28, 0, '#3a4387', '#5762a8', '#262d63'], [SUELO + 78, 32, '#2f376f', '#454f90', '#1e2350']].forEach(([y, off, b, l, s]) => {
+          for (let x = -off; x < 1920; x += 64) baldosa(x, y, 64, 50, b, l, s); });
+        g.fillStyle = 'rgba(7,10,28,.35)'; g.fillRect(0, SUELO + 28, 1920, U);
+      }
+      /* las nubes: dibujos de píxeles que pasan despacio (por detrás de las tarjetas) */
+      function nube(k, sem, ancho) {
+        const r = semilla(sem), alto = Q(ancho * .4), bol = [], nb = 4 + Math.floor(r() * 2);
+        for (let i = 0; i < nb; i++) { const u = (i + .5) / nb, rad = alto * (.24 + .32 * Math.sin(Math.PI * u) + (r() - .5) * .06); bol.push([ancho * (.1 + .8 * u), alto - rad * .62 - U, rad]); }
+        const lleno = (x, y) => y < alto && bol.some(([bx, by, br]) => Math.hypot(x - bx, y - by) < br) && x > 0 && x < ancho;
+        return capaFija(k, g => {
+          for (let y = 0; y < alto; y += U) for (let x = 0; x < ancho; x += U) {
+            if (!lleno(x + U / 2, y + U / 2)) continue;
+            g.fillStyle = !lleno(x + U / 2, y - U / 2) ? '#b4c3f1' : y >= alto - 2 * U ? '#5c70c2' : !lleno(x + U / 2, y - 2 * U - U / 2) ? '#9aaceb' : '#7d92dc';
+            g.fillRect(x, y, U, U);
+          }
+        }, 0, 0, ancho, alto);
+      }
+      const NUBES = [[120, 214, 9, 11], [470, 760, 7, 12], [1180, 128, 6, 13], [1500, 790, 10, 14], [820, 470, 5, 15], [1640, 300, 8, 16], [260, 640, 6, 17]];
+      function ajusta(s) {
+        if (L.ajusta(s) || !fondo) {
+          g.imageSmoothingEnabled = false;
+          fondo = capaFija(L.k, pintaFondo); frente = capaFija(L.k, pintaFrente, 0, 760, 1920, 320);
+          nubes = NUBES.map(([x, y, v, sem], i) => ({ c: nube(L.k, sem, [200, 260, 170, 300, 150, 230, 190][i]), x, y, v }));
+        }
+      }
+
+      /* un retrato apoyado abajo y centrado en (cx, base), a escala sc; `color` de 0 (gris) a 1 (color). Si la imagen no ha
+         llegado, una silueta de busto. Fotograma 2 (la respiración) si `fot` */
+      function pintaRetrato(i, cx, base, sc, color, fot, liso) {
+        const p = st.spr[i], Ly = st.lay;
+        if (!usable(p)) {
+          const w = Ly.mw * sc * .78, h = Ly.mh * sc * .92, y0 = base - h;
+          g.fillStyle = color > .5 ? '#3a4a9a' : '#262c52';
+          g.beginPath(); g.arc(cx, y0 + h * .3, h * .2, 0, 6.29); g.fill();
+          g.fillRect(Math.round(cx - w / 2), Math.round(base - h * .42), Math.round(w), Math.round(h * .42));
+          g.font = DG(Math.round(h * .22)); g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillStyle = color > .5 ? AMA : '#8890b0'; g.fillText('?', cx, y0 + h * .31);
+          return;
+        }
+        const a = fot && p.f2 && p.f2.ok ? p.f2 : p.f1, im = a.im, nw = im.naturalWidth, nh = im.naturalHeight;
+        const ent = Number.isInteger(sc), w = nw * sc, h = nh * sc;
+        const x = ent ? Math.round(cx) - Math.floor(nw / 2) * sc : Math.round(cx - w / 2), y = Math.round(base - h);
+        g.imageSmoothingEnabled = !!liso; if (liso) g.imageSmoothingQuality = 'high';
+        if (color < 1) { const gr = gris(a); if (gr) g.drawImage(gr, x, y, w, h); }
+        if (color > 0) { const ga = g.globalAlpha; g.globalAlpha = ga * color; g.drawImage(im, x, y, w, h); g.globalAlpha = ga; }
+        g.imageSmoothingEnabled = false;
+      }
+      const respira = i => mov ? Math.floor((st.t + (st.fase0[i] || 0)) / .6) % 2 : 0;
+      const aparece = i => clamp((st.t - st.tAp - i * .022) / .2, 0, 1);
+
+      /* una tarjeta con retrato: halo, sombra, contorno (dorado si está la flecha), la ventana del retrato y el nombre */
+      function pintaTarjetaPj(i) {
+        const Ly = st.lay, P = Ly.pos[i], w = Ly.w, h = Ly.h, luz = st.luz[i] || 0, ap = mov ? aparece(i) : 1;
+        if (ap <= 0) return;
+        const sube = st.elegido === i && st.clic;
+        const x = P.x, y = P.y - (luz > .6 ? 2 * U : luz > .15 ? U : 0);
+        g.save();
+        if (ap < 1) { const s = .82 + .18 * eo(ap, 2); g.globalAlpha = ap; g.translate(x + w / 2, y + h / 2); g.scale(s, s); g.translate(-x - w / 2, -y - h / 2); }
+        if (luz > .02) {                                    // el halo dorado
+          const ga = g.globalAlpha; g.fillStyle = AMA;
+          g.globalAlpha = ga * .14 * luz; caja(g, x - 4 * U, y - 4 * U, w + 8 * U, h + 8 * U, 4);
+          g.globalAlpha = ga * .26 * luz; caja(g, x - 2 * U, y - 2 * U, w + 4 * U, h + 4 * U, 3);
+          g.globalAlpha = ga;
+        }
+        g.fillStyle = 'rgba(4,6,20,.45)'; caja(g, x + 2 * U, y + 2 * U + (P.y - y), w, h, 2);
+        g.fillStyle = TINTA; caja(g, x, y, w, h, 2);
+        if (luz > .5) {                                     // el marco dorado, con su luz y su sombra
+          g.fillStyle = ORO; caja(g, x + U, y + U, w - 2 * U, h - 2 * U, 1);
+          g.fillStyle = ORO_L; g.fillRect(x + 2 * U, y + U, w - 4 * U, U); g.fillRect(x + U, y + 2 * U, U, h - 4 * U);
+          g.fillStyle = ORO_S; g.fillRect(x + 2 * U, y + h - 2 * U, w - 4 * U, U); g.fillRect(x + w - 2 * U, y + 2 * U, U, h - 4 * U);
+        } else { g.fillStyle = APAGADO; caja(g, x + U, y + U, w - 2 * U, h - 2 * U, 1); }
+        g.fillStyle = TINTA; g.fillRect(x + 2 * U, y + 2 * U, w - 4 * U, h - 4 * U);
+        g.fillStyle = '#121836'; g.fillRect(x + 3 * U, y + 3 * U, w - 6 * U, h - 6 * U);
+        if (luz > 0) { const ga = g.globalAlpha; g.globalAlpha = ga * luz; g.fillStyle = '#1a2470'; g.fillRect(x + 3 * U, y + 3 * U, w - 6 * U, h - 6 * U); g.globalAlpha = ga; }
+        // la ventana del retrato: fondo algo más claro, con una franja de luz arriba, y el busto apoyado abajo
+        const vx = x + 3 * U, vy = y + Ly.winY, vw = w - 6 * U, vh = Ly.winH;
+        g.fillStyle = '#0b0f2a'; g.fillRect(vx, vy, vw, vh);
+        g.fillStyle = 'rgba(150,160,200,.06)'; g.fillRect(vx, vy, vw, Q(vh * .45));
+        if (luz > 0) {
+          const ga = g.globalAlpha; g.globalAlpha = ga * luz;
+          g.fillStyle = '#22307e'; g.fillRect(vx, vy, vw, vh); g.fillStyle = '#2c3d96'; g.fillRect(vx, vy, vw, Q(vh * .45));
+          g.fillStyle = 'rgba(255,214,90,.10)'; g.fillRect(vx, vy + vh - 6 * U, vw, 6 * U);
+          g.globalAlpha = ga;
+        }
+        if (!sube) {
+          g.save(); g.beginPath(); g.rect(vx, vy, vw, vh); g.clip();
+          pintaRetrato(i, x + w / 2, vy + vh, Ly.sc, luz, respira(i), Ly.liso);
+          const br = mov ? clamp(1 - (st.t - (st.entra[i] || -9)) / .2, 0, 1) : 0;          // el brillo al entrar la flecha
+          if (br > 0) { g.fillStyle = `rgba(255,250,220,${.3 * br})`; g.fillRect(vx, vy, vw, vh); }
+          g.restore();
+        }
+        g.fillStyle = 'rgba(0,0,0,.35)'; g.fillRect(vx, vy + vh, vw, U);
+        // el nombre
+        const nom = st.items[i] || '', tw = w - 7 * U, th = Ly.nomH, ty = y + Ly.nomY;
+        const mx = Ly.sc >= 2 ? 30 : Ly.sc >= 1 ? 24 : 20;
+        const Rt = rotula(g, DG, nom, tw, th, mx, 12, true), lh = Rt.px * 1.08, cy = ty + th / 2;
+        g.font = DG(Rt.px); g.textAlign = 'center'; g.textBaseline = 'middle';
+        Rt.lineas.forEach((t, q) => { const yy = Math.round(cy + (q - (Rt.lineas.length - 1) / 2) * lh + Rt.px * .04);
+          g.fillStyle = TINTA; textoCabe(g, t, x + w / 2 + 2, yy + 2, tw); g.fillStyle = luz > .5 ? '#fff4c4' : '#8d93b4'; textoCabe(g, t, x + w / 2, yy, tw); });
+        g.restore();
+      }
+      /* una tarjeta sin retrato (si no han llegado): la de «modpixel», apagada salvo bajo la flecha */
+      function pintaTarjetaPx(i, fuerte) {
+        const Ly = st.lay, P = Ly.pos[i], w = Ly.w, h = Ly.h, luz = st.luz[i] || 0, eleg = st.elegido === i && st.clic, ap = mov ? aparece(i) : 1;
+        if (ap <= 0) return;
+        let x = P.x, y = P.y - (luz > .6 ? 2 * U : 0);
+        g.save();
+        if (ap < 1) { const s = .82 + .18 * eo(ap, 2); g.globalAlpha = ap; g.translate(x + w / 2, y + h / 2); g.scale(s, s); g.translate(-x - w / 2, -y - h / 2); }
+        if (eleg && st.fin > 0) { const s = 1 + .07 * eo(st.fin, 2); g.translate(x + w / 2, y + h / 2); g.scale(s, s); g.translate(-x - w / 2, -y - h / 2); }
+        g.fillStyle = 'rgba(4,6,20,.45)'; caja(g, x + 2 * U, y + 2 * U, w, h, 2);
+        g.fillStyle = TINTA; caja(g, x, y, w, h, 2);
+        let mc = luz > .5 || eleg ? AMA : MARCO;
+        if (eleg && mov && st.t - st.tClic < 1.05) mc = Math.floor((st.t - st.tClic) / .085) % 2 ? BLANCO : AMA;
+        g.fillStyle = mc; caja(g, x + U, y + U, w - 2 * U, h - 2 * U, 1);
+        g.fillStyle = luz > .5 || eleg ? '#28368f' : AZUL; g.fillRect(x + 3 * U, y + 3 * U, w - 6 * U, h - 6 * U);
+        g.fillStyle = 'rgba(255,255,255,.09)'; g.fillRect(x + 3 * U, y + 3 * U, w - 6 * U, U);
+        g.fillStyle = COL[i % COL.length]; g.fillRect(x + 3 * U, y + h - 5 * U, w - 6 * U, 2 * U);
+        g.fillStyle = 'rgba(0,0,0,.25)'; g.fillRect(x + 3 * U, y + h - 4 * U, w - 6 * U, U);
+        const num = h >= 92;
+        if (num) { g.font = DG(18); g.textAlign = 'left'; g.textBaseline = 'top'; g.fillStyle = COL[i % COL.length]; g.fillText(String(i + 1).padStart(2, '0'), x + 5 * U, y + 4 * U); }
+        const ty = y + (num ? 7 * U : 3 * U), th = h - (num ? 13 * U : 9 * U);
+        const nom = st.items[i] || '', tw = w - 10 * U, mx = Math.min(h > 180 ? 60 : 46, h * .36);
+        const Rt = rotula(g, DG, nom, tw, th, mx, 15, true), lh = Rt.px * 1.08, cy = ty + th / 2;
+        g.font = DG(Rt.px); g.textAlign = 'center'; g.textBaseline = 'middle';
+        Rt.lineas.forEach((t, q) => { const yy = cy + (q - (Rt.lineas.length - 1) / 2) * lh + Rt.px * .04;
+          g.fillStyle = TINTA; textoCabe(g, t, x + w / 2 + 3, yy + 3, tw); g.fillStyle = luz > .5 ? '#fff8d8' : BLANCO; textoCabe(g, t, x + w / 2, yy, tw); });
+        // apagada: un velo gris encima (se quita con la luz)
+        if (!fuerte && luz < 1) { g.fillStyle = `rgba(22,24,44,${.42 * (1 - luz)})`; caja(g, x, y, w, h, 2); }
+        g.restore();
+      }
+      function pintaRejilla() {
+        const n = st.n, Ly = st.lay; if (!n || !Ly) return;
+        const pinta = Ly.pj ? pintaTarjetaPj : pintaTarjetaPx;
+        const orden = []; for (let i = 0; i < n; i++) orden.push(i);
+        orden.sort((a, b) => (st.luz[a] || 0) - (st.luz[b] || 0));          // la encendida, por encima
+        orden.forEach(i => pinta(i));
+        // tras el clic, un velo sobre toda la rejilla; sin retratos, el elegido se queda por encima, dorado
+        if (st.clic) {
+          const v = RM ? 1 : clamp((st.t - st.tClic) / .35, 0, 1);
+          g.fillStyle = `rgba(4,6,22,${.62 * v})`; g.fillRect(0, 0, 1920, 1080);
+          if (!Ly.pj && st.elegido != null) pintaTarjetaPx(st.elegido, true);
+        }
+      }
+
+      /* el marco dorado de retrato de RPG alrededor del panel (x, y, w, h), con un grosor B */
+      function marcoOro(x, y, w, h, B) {
+        const X = x - B, Y = y - B, W = w + 2 * B, H = h + 2 * B;
+        g.fillStyle = 'rgba(4,6,20,.5)'; caja(g, X + 3 * U, Y + 3 * U, W, H, 2);
+        g.fillStyle = TINTA; caja(g, X, Y, W, H, 2);
+        g.fillStyle = ORO; caja(g, X + U, Y + U, W - 2 * U, H - 2 * U, 1);
+        if (B >= 3 * U) {
+          g.fillStyle = ORO_L; g.fillRect(X + 2 * U, Y + U, W - 4 * U, U); g.fillRect(X + U, Y + 2 * U, U, H - 4 * U);
+          g.fillStyle = ORO_S; g.fillRect(X + 2 * U, Y + H - 2 * U, W - 4 * U, U); g.fillRect(X + W - 2 * U, Y + 2 * U, U, H - 4 * U);
+          g.fillStyle = ORO_S; g.fillRect(x - 2 * U, y - 2 * U, w + 4 * U, U); g.fillRect(x - 2 * U, y - 2 * U, U, h + 4 * U);
+          g.fillStyle = ORO_L; g.fillRect(x - 2 * U, y + h + U, w + 4 * U, U); g.fillRect(x + w + U, y - 2 * U, U, h + 4 * U);
+        }
+        g.fillStyle = TINTA; g.fillRect(x - U, y - U, w + 2 * U, h + 2 * U);
+        if (B >= 4 * U) {
+          // las esquinas (un rombo claro) y una gema roja arriba en el centro
+          const m = Math.round(B / 2), gema = (cx, cy, c1, c2) => { g.fillStyle = TINTA; g.fillRect(cx - 2 * U, cy - U, 4 * U, 2 * U); g.fillRect(cx - U, cy - 2 * U, 2 * U, 4 * U);
+            g.fillStyle = c1; g.fillRect(cx - U, cy - U, 2 * U, 2 * U); g.fillStyle = c2; g.fillRect(cx - U, cy - U, U, U); };
+          [[X + m, Y + m], [X + W - m, Y + m], [X + m, Y + H - m], [X + W - m, Y + H - m]].forEach(([a, b]) => gema(Q(a), Q(b), ORO_L, '#ffffff'));
+          gema(Q(x + w / 2), Q(Y + m), '#e0452b', '#ffb4a0');
+        }
+      }
+      /* el elegido: sube desde su tarjeta al centro, crece hasta ×3 dentro del marco dorado y sigue respirando */
+      function pintaElegido() {
+        const Ly = st.lay; if (!st.clic || st.elegido == null || !Ly || !Ly.pj) return;
+        const i = st.elegido, p = st.spr[i], P = Ly.pos[i];
+        const nw = usable(p) ? p.f1.im.naturalWidth : Ly.mw, nh = usable(p) ? p.f1.im.naturalHeight : Ly.mh;
+        const scF = nh * 3 <= ALTO_FIN + 12 ? 3 : ALTO_FIN / nh, B = 7 * U;
+        const panW = Q(Math.max(nw * scF + 10 * U, 300)), panH = Math.ceil(nh * scF) + 4 * U;
+        const fx = 960 - panW / 2, fy = PIE_MARCO - B - panH;
+        const ix = P.x + 3 * U, iy = P.y + Ly.winY, iw = Ly.w - 6 * U, ih = Ly.winH;
+        const u = RM ? 1 : clamp((st.t - st.tClic - (TL.sube - TL.clic)) / TL.dSube, 0, 1);
+        const c1 = .9, v = u >= 1 ? 1 : 1 + (c1 + 1) * Math.pow(u - 1, 3) + c1 * Math.pow(u - 1, 2);   // con un pelín de rebote al llegar
+        const x = Math.round(lerp(ix, fx, v)), y = Math.round(lerp(iy, fy, v)), w = Math.round(lerp(iw, panW, v)), h = Math.round(lerp(ih, panH, v));
+        const sc = u >= 1 ? scF : lerp(Ly.sc, scF, v), Bv = Math.max(U, Q(lerp(U, B, clamp(v, 0, 1))));
+        // el resplandor de detrás (palpita despacio)
+        if (u >= 1 || v > .6) {
+          const pal = mov ? .5 + .5 * Math.sin((st.t - st.tClic) * 3.2) : .5, a = clamp((v - .6) / .4, 0, 1);
+          g.fillStyle = AMA;
+          [[10, .05], [7, .08], [4, .12]].forEach(([e, al]) => { g.globalAlpha = al * a * (.7 + .3 * pal); caja(g, x - B - e * U, y - B - e * U, w + 2 * B + 2 * e * U, h + 2 * B + 2 * e * U, Math.min(e, 6)); });
+          g.globalAlpha = 1;
+        }
+        marcoOro(x, y, w, h, Bv);
+        // el panel: azul de noche, más claro arriba, con su tramado
+        const bandas = ['#2b3b98', '#25348a', '#1f2c7c', '#1a256e', '#151f60', '#111a52'];
+        bandas.forEach((c, q) => { const y1 = y + Math.round(h * q / bandas.length), y2 = y + Math.round(h * (q + 1) / bandas.length); g.fillStyle = c; g.fillRect(x, y1, w, y2 - y1);
+          if (q) { g.fillStyle = bandas[q - 1]; for (let xx = x; xx < x + w; xx += 2 * U) g.fillRect(xx, y1, U, U); } });
+        g.fillStyle = 'rgba(255,214,90,.12)'; g.fillRect(x, y + h - 10 * U, w, 10 * U);
+        g.save(); g.beginPath(); g.rect(x, y, w, h); g.clip();
+        pintaRetrato(i, x + w / 2, y + h, sc, 1, u >= 1 ? respira(i) : 0, u >= 1 && !Number.isInteger(sc));
+        // el destello al llegar
+        const tl = st.t - st.tClic - (TL.sube - TL.clic) - TL.dSube;
+        if (mov && tl >= 0 && tl < .3) { g.fillStyle = `rgba(255,252,230,${.55 * (1 - tl / .3)})`; g.fillRect(x, y, w, h); }
+        g.restore();
+        st.marco = { x: x - B, y: y - B, w: w + 2 * B, h: h + 2 * B };
+        if (u >= 1 && !st.llega) { st.llega = true; if (mov) chispasEn(st.marco, 18); }
+      }
+      /* el destello del clic: la ventana de la tarjeta se pone blanca y un cuadro de luz se abre hacia fuera */
+      function pintaDestello() {
+        if (!mov || !st.clic || st.elegido == null || !st.lay) return;
+        const tl = st.t - st.tClic; if (tl > .45) return;
+        const Ly = st.lay, P = Ly.pos[st.elegido], e = Q(eo(tl / .45, 2) * 26 * U), a = 1 - tl / .45;
+        g.strokeStyle = `rgba(255,240,170,${a})`; g.lineWidth = 2 * U;
+        g.strokeRect(P.x - e, P.y - e, Ly.w + 2 * e, Ly.h + 2 * e);
+        g.strokeStyle = `rgba(255,255,255,${a * .7})`; g.lineWidth = U;
+        const e2 = Q(e * .55); g.strokeRect(P.x - e2, P.y - e2, Ly.w + 2 * e2, Ly.h + 2 * e2);
+        if (tl < .18) { g.fillStyle = `rgba(255,255,255,${.85 * (1 - tl / .18)})`; caja(g, P.x, P.y, Ly.w, Ly.h, 2); }
+      }
+      /* los destellos: estrellitas de cuatro puntas de píxel que nacen alrededor del marco */
+      function chispasEn(r, cuantas) {
+        for (let q = 0; q < cuantas; q++) {
+          const lado = Math.floor(Math.random() * 4), u = Math.random();
+          const x = lado < 2 ? r.x + u * r.w : lado === 2 ? r.x - 4 * U : r.x + r.w + 4 * U, y = lado >= 2 ? r.y + u * r.h : lado === 0 ? r.y - 4 * U : r.y + r.h + 2 * U;
+          st.chispas.push({ x: Q(x + (Math.random() - .5) * 60), y: Q(y + (Math.random() - .5) * 40), t0: st.t + Math.random() * .5, v: .5 + Math.random() * .4, s: Math.random() < .4 ? 2 : 1 });
+        }
+      }
+      function pintaChispas() {
+        if (!mov) { st.chispas = []; return; }
+        if (st.llega && st.marco && Math.random() < .12) chispasEn(st.marco, 1);
+        st.chispas = st.chispas.filter(c => {
+          const u = (st.t - c.t0) / c.v; if (u < 0) return true; if (u >= 1) return false;
+          const a = Math.sin(Math.PI * u), b = Math.round(a * (c.s + 1));
+          g.fillStyle = u < .5 ? '#ffffff' : '#fff0a0';
+          g.fillRect(c.x, c.y, U, U);
+          for (let j = 1; j <= b; j++) { g.fillRect(c.x - j * U, c.y, U, U); g.fillRect(c.x + j * U, c.y, U, U); g.fillRect(c.x, c.y - j * U, U, U); g.fillRect(c.x, c.y + j * U, U, U); }
+          return true;
+        });
+      }
+
+      /* abajo: «ELIGE JUGADOR» parpadeando; al acabar, el cuadro de diálogo donde sale el nombre */
+      const DX = 380, DY = 766, DW = 1160, DH = 148;
+      function pintaAbajo() {
+        if (!st.clic) {
+          const ve = !mov || (st.t % 1.0) < .68;
+          if (!ve) return;
+          const yy = st.lay && !st.lay.pj ? 842 : 994;
+          g.font = DG(44); g.textAlign = 'center'; g.textBaseline = 'middle'; espaciado(g, 10);
+          g.fillStyle = TINTA; g.fillText('ELIGE JUGADOR', 960 + 4, yy + 4); g.fillStyle = BLANCO; g.fillText('ELIGE JUGADOR', 960, yy);
+          const d = mov ? (Math.floor(st.t * 4) % 2) * U : 0, w = g.measureText('ELIGE JUGADOR').width; espaciado(g, 0);
+          const P6 = 6; [-1, 1].forEach(sg => { const x0 = 960 + sg * (w / 2 + 34 + d); g.fillStyle = AMA;
+            for (let j = 0; j < 7; j++) { const a = 4 - Math.abs(3 - j); g.fillRect(sg < 0 ? x0 - 4 * P6 : x0 + (4 - a) * P6, yy - 21 + j * P6, a * P6, P6); } });
+          return;
+        }
+        if (st.fin <= 0) return;
+        const e = mov ? Math.ceil(eo(st.fin, 2) * 6) / 6 : 1, h = Q(DH * e), y = Q(DY + (DH - h) / 2);
+        g.save(); g.globalAlpha = mov ? 1 : st.fin;
+        g.fillStyle = 'rgba(4,6,20,.5)'; caja(g, DX + 3 * U, y + 3 * U, DW, h, 2);
+        g.fillStyle = TINTA; caja(g, DX, y, DW, h, 2);
+        g.fillStyle = BLANCO; caja(g, DX + U, y + U, DW - 2 * U, h - 2 * U, 1);
+        g.fillStyle = '#0e1446'; g.fillRect(DX + 3 * U, y + 3 * U, DW - 6 * U, h - 6 * U);
+        g.fillStyle = 'rgba(255,255,255,.07)'; g.fillRect(DX + 3 * U, y + 3 * U, DW - 6 * U, 2 * U);
+        if (e >= 1) {
+          g.font = DG(30); espaciado(g, 4); const tw = g.measureText('¡TE TOCA!').width + 8 * U;
+          const tx = DX + 10 * U, ty = y - 8 * U;
+          g.fillStyle = TINTA; caja(g, tx, ty, tw, 13 * U, 1); g.fillStyle = AMA; caja(g, tx + U, ty + U, tw - 2 * U, 11 * U, 1);
+          g.fillStyle = 'rgba(160,80,0,.45)'; g.fillRect(tx + 2 * U, ty + 10 * U, tw - 4 * U, U);
+          g.fillStyle = '#1a0820'; g.textAlign = 'left'; g.textBaseline = 'middle'; g.fillText('¡TE TOCA!', tx + 4 * U, ty + 6.5 * U); espaciado(g, 0);
+        }
+        g.restore();
+      }
+
+      /* la flecha del ratón: su recorrido (una curva suave que pasa por varias tarjetas y acaba en la elegida) */
+      function centro(i, jit) {
+        const Ly = st.lay, P = Ly.pos[i], cx = P.x + Ly.w / 2, cy = P.y + (Ly.pj ? Ly.winY + Ly.winH * .5 : Ly.h * .5), hh = Ly.pj ? Ly.winH : Ly.h;
+        return { x: cx + (Math.random() - .5) * Ly.w * jit, y: cy + (Math.random() - .5) * hh * jit * .8 };
+      }
+      function rutaCursor(k) {
+        const Ly = st.lay, n = st.n, pts = [{ x: st.cx, y: st.cy }];
+        if (n < 2) {
+          const c = centro(0, 0), rad = Math.max(Ly.w, Ly.h) * .72; let a = Math.atan2(st.cy - c.y, st.cx - c.x);
+          for (let j = 0; j < 3; j++) { a += 1.5 + Math.random() * .7; pts.push({ x: c.x + Math.cos(a) * rad, y: c.y + Math.sin(a) * rad * .62 }); }
+        } else {
+          const m = clamp(3 + Math.round(n / 4), 3, 7), ideal = 2.3 * Ly.w; let prev = -1, pp = pts[0];
+          for (let j = 0; j < m; j++) {
+            let cand = []; for (let i = 0; i < n; i++) if (i !== prev && !(j === m - 1 && i === k)) cand.push(i);
+            if (!cand.length) cand = [k === 0 ? 1 : 0];
+            let mejor = -1, pm = 1e9;
+            cand.forEach(i => { const c = centro(i, 0), d = Math.hypot(c.x - pp.x, c.y - pp.y), s = Math.abs(d - ideal) * (.5 + Math.random()); if (s < pm) { pm = s; mejor = i; } });
+            prev = mejor; pp = centro(mejor, .5); pts.push(pp);
+          }
+        }
+        // la parada: en la ventana del elegido, algo a la derecha y abajo del centro (la flecha no le tapa la cara)
+        const P = Ly.pos[k], hh = Ly.pj ? Ly.winH : Ly.h;
+        pts.push({ x: P.x + Ly.w * ((Ly.pj ? .6 : .84) + (Math.random() - .5) * .06), y: P.y + (Ly.pj ? Ly.winY : 0) + hh * ((Ly.pj ? .52 : .6) + (Math.random() - .5) * .06) });
+        // la curva (Catmull-Rom centrípeta) muestreada, y su longitud acumulada
+        const ext = [{ x: 2 * pts[0].x - pts[1].x, y: 2 * pts[0].y - pts[1].y }].concat(pts, [{ x: 2 * pts[pts.length - 1].x - pts[pts.length - 2].x, y: 2 * pts[pts.length - 1].y - pts[pts.length - 2].y }]);
+        const xs = [], ys = [];
+        for (let s = 1; s < ext.length - 2; s++) {
+          const p0 = ext[s - 1], p1 = ext[s], p2 = ext[s + 1], p3 = ext[s + 2], d = (a, b) => Math.pow(Math.hypot(b.x - a.x, b.y - a.y), .5) || 1e-3;
+          const t0 = 0, t1 = d(p0, p1), t2 = t1 + d(p1, p2), t3 = t2 + d(p2, p3), N = 40;
+          const mz = (a, b, ta, tb, t) => ({ x: (a.x * (tb - t) + b.x * (t - ta)) / (tb - ta), y: (a.y * (tb - t) + b.y * (t - ta)) / (tb - ta) });
+          for (let q = 0; q < N; q++) {
+            const t = t1 + (t2 - t1) * q / N;
+            const A1 = mz(p0, p1, t0, t1, t), A2 = mz(p1, p2, t1, t2, t), A3 = mz(p2, p3, t2, t3, t);
+            const B1 = mz(A1, A2, t0, t2, t), B2 = mz(A2, A3, t1, t3, t), C = mz(B1, B2, t1, t2, t);
+            xs.push(C.x); ys.push(C.y);
+          }
+        }
+        xs.push(pts[pts.length - 1].x); ys.push(pts[pts.length - 1].y);
+        const len = [0]; for (let q = 1; q < xs.length; q++) len.push(len[q - 1] + Math.hypot(xs[q] - xs[q - 1], ys[q] - ys[q - 1]));
+        // la velocidad: arranca, va lanzada y frena despacio hasta pararse
+        const M = 240, S = [0];
+        for (let q = 1; q <= M; q++) { const u = (q - .5) / M, v = (u < .12 ? Math.sin(Math.PI / 2 * u / .12) : 1) * (u < .38 ? 1 : Math.pow((1 - u) / .62, 1.65)); S.push(S[q - 1] + v); }
+        const tot = len[len.length - 1];
+        return u => {
+          u = clamp(u, 0, 1); const f = u * M, j = Math.min(M - 1, Math.floor(f)), s = (S[j] + (S[j + 1] - S[j]) * (f - j)) / S[M] * tot;
+          let lo = 0, hi = len.length - 1; while (hi - lo > 1) { const md = (lo + hi) >> 1; if (len[md] < s) lo = md; else hi = md; }
+          const a = len[hi] - len[lo] ? (s - len[lo]) / (len[hi] - len[lo]) : 0;
+          return { x: xs[lo] + (xs[hi] - xs[lo]) * a, y: ys[lo] + (ys[hi] - ys[lo]) * a };
+        };
+      }
+      function pintaCursor() {
+        let al = 1;
+        if (st.clic) al = RM ? 0 : 1 - clamp((st.t - st.tClic - .3) / .2, 0, 1);
+        if (al <= 0) return;
+        const pr = st.clic && mov && st.t - st.tClic < .15, P = pr ? 4 : 5, x = Math.round(st.cx) + (pr ? 2 : 0), y = Math.round(st.cy) + (pr ? 3 : 0);
+        g.save(); g.globalAlpha = al;
+        sprite(g, FLECHA, x + (pr ? 3 : 7), y + (pr ? 4 : 9), P, PAL_SOMBRA);
+        sprite(g, FLECHA, x, y, P, pr ? PAL_FP : PAL_F);
+        g.restore();
+      }
+
+      /* ── el sonido: el bucle chiptune (original), el «blip», el clic, el «whoosh» y la fanfarria ── */
+      const CO = 60 / 140 / 2, mid = m => 440 * Math.pow(2, (m - 69) / 12);
+      // 8 compases de corcheas (0 = se alarga la anterior; null = silencio). Do: C · Mim · Fa · Sol · C · Lam · Rem · Sol
+      const MEL = [[76, 79, 84, 79, 81, 79, 76, 79], [79, 0, 83, 0, 81, 79, 76, 0], [77, 81, 84, 81, 86, 84, 81, 77], [79, 0, 86, 0, 83, 0, 79, 81],
+        [84, 0, 83, 84, 88, 0, 86, 84], [81, 0, 76, 0, 81, 83, 84, 0], [86, 84, 81, 77, 74, 77, 81, 84], [83, 0, 79, 0, 74, 0, 79, null]];
+      const ACO = [[60, 64, 67], [59, 64, 67], [60, 65, 69], [59, 62, 67], [60, 64, 67], [60, 64, 69], [62, 65, 69], [59, 62, 67]];
+      const BAJ = [36, 40, 41, 43, 36, 45, 38, 43], PENTA = [84, 86, 88, 91, 93];
+      const mus = { on: false, t0: 0, i: 0, fin: Infinity };
+      function corchea(i, dt) {
+        const c = Math.floor(i / 8) % 8, e = i % 8, m = MEL[c][e];
+        if (m) { let l = 1; while (e + l < 8 && MEL[c][e + l] === 0) l++; A.nota(mid(m), { tipo: 'square', t: dt, dur: l * CO * .9, gan: .048, ataque: .004, filtro: { f: 2900 } }); }
+        const ac = ACO[c]; for (let s = 0; s < 2; s++) A.nota(mid(ac[(e * 2 + s) % 3] + 12), { tipo: 'square', t: dt + s * CO / 2, dur: CO * .42, gan: .014, filtro: { f: 1800 } });
+        A.nota(mid(BAJ[c] + (e % 2 ? 12 : 0)), { tipo: 'triangle', t: dt, dur: CO * .85, gan: .2 });
+        if (e === 0 || e === 4 || (e === 7 && c % 2)) A.nota(150, { tipo: 'sine', t: dt, dur: .13, gan: .38, desliza: 42 });
+        if (e === 2 || e === 6) { A.clic({ f: 1800, q: .6, gan: .2, dur: .1, t: dt }); A.nota(196, { tipo: 'triangle', t: dt, dur: .05, gan: .07 }); }
+        A.clic({ f: 8200, q: 1.1, gan: e % 2 ? .065 : .036, dur: .022, t: dt });
+      }
+      function musica() {
+        if (!mus.on || !A.ac) return;
+        const ahora = A.ac.currentTime;
+        while (mus.on) {
+          const ta = mus.t0 + mus.i * CO;
+          if (ta > ahora + .14) break;
+          if (ta >= mus.fin - .01) { mus.on = false; break; }
+          if (ta >= ahora - .03) corchea(mus.i, Math.max(0, ta - ahora));
+          mus.i++;
+        }
+      }
+      function empiezaMusica() { if (!A.ac || mus.on) return; mus.on = true; mus.t0 = A.ac.currentTime + .05; mus.i = 0; mus.fin = Infinity; musica(); }
+      const blip = i => A.nota(mid(PENTA[i % PENTA.length]), { tipo: 'square', dur: .055, gan: .02, filtro: { f: 2400 } });
+      function sonClic() {
+        A.clic({ f: 3200, q: 5, gan: .5, dur: .01 }); A.nota(900, { tipo: 'square', dur: .018, gan: .03, filtro: { f: 1500 } });
+        A.clic({ f: 2100, q: 4, gan: .32, dur: .012, t: .09 });
+      }
+      function fanfarria(T) {
+        const n = (m, t, d, gn) => A.nota(mid(m), { tipo: 'square', t: T + t, dur: d, gan: gn, filtro: { f: 3200 } });
+        [67, 72, 76].forEach((m, i) => { n(m, i * .075, .1, .04); n(m - 12, i * .075, .1, .016); });
+        n(84, .225, .72, .046); n(79, .225, .72, .02); n(76, .225, .72, .017);
+        A.nota(mid(36), { tipo: 'triangle', t: T + .225, dur: .72, gan: .17 }); A.nota(mid(48), { tipo: 'triangle', t: T + .225, dur: .5, gan: .08 });
+        A.nota(150, { tipo: 'sine', t: T + .225, dur: .16, gan: .34, desliza: 40 });
+        A.clic({ f: 5200, q: .5, gan: .13, dur: .6, t: T + .225 });
+        [0, .075, .15].forEach(t => A.clic({ f: 1800, q: .6, gan: .1, dur: .07, t: T + t }));
+      }
+
+      /* la línea de tiempo: dónde está la flecha, qué tarjeta tiene encima, el clic, la subida y el cuadro */
+      function avanza(dt) {
+        const Ly = st.lay;
+        if (st.fase === 'paseo' && Ly) {
+          const tp = st.t - st.tP0;
+          if (st.ruta && !st.clic) {
+            if (tp >= TL.mueve) {
+              const p = st.ruta((tp - TL.mueve) / (TL.para - TL.mueve));
+              let ox = 0, oy = 0;
+              if (tp > TL.para) { const h = clamp((tp - TL.para) / (TL.clic - TL.para), 0, 1), s = Math.pow(Math.sin(Math.PI * h), 2); ox = -6 * s; oy = -4 * s; }   // la duda
+              st.cx = p.x + ox; st.cy = p.y + oy;
+            }
+          } else if (!st.ruta && !st.clic) { const c = centro(st.k, 0); st.cx = c.x + Ly.w * .1; st.cy = c.y + 10; }
+          // la tarjeta que tiene la flecha encima
+          if (!st.clic) {
+            let h = -1; for (let i = 0; i < st.n; i++) { const P = Ly.pos[i]; if (st.cx >= P.x && st.cx < P.x + Ly.w && st.cy >= P.y && st.cy < P.y + Ly.h) { h = i; break; } }
+            if (h !== st.hov) { st.hov = h; if (h >= 0) { st.entra[h] = st.t; if (mov && A.ac && st.t - st.tBlip > .045 && tp > TL.mueve) { st.tBlip = st.t; blip(h); } } }
+          }
+          if (!st.clic && tp >= TL.clic) {
+            st.clic = true; st.elegido = st.k; st.hov = st.k; st.tClic = st.t; st.subeSon = false; st.llega = false;
+            mus.fin = Math.min(mus.fin, A.ac ? A.ac.currentTime : 0); mus.on = false;
+            if (A.ac) { if (mov) sonClic(); fanfarria(mov ? .12 : 0); }
+          }
+          if (st.clic && Ly.pj && mov && !st.subeSon && tp >= TL.sube) { st.subeSon = true; if (A.ac) { A.nota(260, { tipo: 'triangle', dur: .55, gan: .06, desliza: 1040 }); A.nota(520, { tipo: 'square', dur: .45, gan: .01, desliza: 2080, filtro: { f: 2400 } }); } }
+          st.fin = st.clic ? (RM ? 1 : clamp((tp - TL.caja) / .4, 0, 1)) : 0;
+          if (tp >= TL.fin && st.acaba) { const f = st.acaba; st.acaba = null; f(); }
+        }
+        // la luz de cada tarjeta: se enciende deprisa y se apaga más despacio
+        for (let i = 0; i < st.n; i++) {
+          const meta = !st.clic && i === st.hov ? 1 : 0, l = st.luz[i] || 0;
+          st.luz[i] = !mov ? meta : meta > l ? Math.min(1, l + dt / .07) : Math.max(0, l - dt / .3);
+        }
+      }
+
+      let tAnt = performance.now();
+      const TINT = (() => { const r = semilla(5); return Array.from({ length: 16 }, () => ({ x: Q(r() * 1920), y: Q(r() * 520), f: r() * 6.28, v: 1.2 + r() * 2 })); })();
+      function bucle(ahora) {
+        if (!vivo) return;
+        const dt = Math.min(.05, Math.max(0, (ahora - tAnt) / 1000)); tAnt = ahora; st.t += dt;
+        musica(); avanza(dt);
+        L.borra(); g.imageSmoothingEnabled = false; if (fondo) ponCapa(g, fondo);
+        TINT.forEach(s => { const b = mov ? Math.sin(st.t * s.v + s.f) : .5; if (b < .2) return; g.fillStyle = b > .8 ? '#ffffff' : '#aebdf5';
+          g.fillRect(s.x, s.y, U, U); if (b > .8) { g.fillRect(s.x - U, s.y, U, U); g.fillRect(s.x + U, s.y, U, U); g.fillRect(s.x, s.y - U, U, U); g.fillRect(s.x, s.y + U, U, U); } });
+        nubes.forEach(nb => { const w = nb.c.w, x = Q(((nb.x + st.t * nb.v * mov) % (1920 + w + 160) + (1920 + w + 160)) % (1920 + w + 160) - w - 80);
+          g.drawImage(nb.c.c, x, nb.y, w, nb.c.h); });
+        if (frente) ponCapa(g, frente);
+        pintaRejilla(); pintaDestello(); pintaElegido(); pintaAbajo(); pintaChispas(); pintaCursor();
+        raf = requestAnimationFrame(bucle);
+      }
+      g.imageSmoothingEnabled = false;
+      raf = requestAnimationFrame(bucle);
+      tras(TEMAS.modjugador.fuentes, () => {});
+
+      return {
+        ajusta,
+        espera() {
+          st.elegido = null; st.clic = false; st.fin = 0; st.chispas = []; st.llega = false; st.marco = null; st.fase = 'espera'; st.ruta = null; st.hov = -1;
+          if (A.crea()) empiezaMusica();
+        },
+        async gira(bombo, k) {
+          const gen = ++st.gen, n = bombo.length;
+          if (st.acaba) { const f = st.acaba; st.acaba = null; f(); }
+          st.elegido = null; st.clic = false; st.fin = 0; st.chispas = []; st.llega = false; st.marco = null; st.ruta = null; st.fase = 'carga';
+          if (A.crea()) empiezaMusica();
+          // los retratos: como mucho 0,8 s de espera (la llamada y que las imágenes se carguen); si no, sin retratos
+          const t0e = performance.now();
+          await Promise.race([prAv, new Promise(r => setTimeout(r, 800))]);
+          const spr = bombo.map(pjDe), prs = [];
+          spr.forEach(p => { if (p) [p.f1, p.f2].forEach(a => { if (a && !a.ok && !a.mal) prs.push(a.pr); }); });
+          if (prs.length) await Promise.race([Promise.all(prs), new Promise(r => setTimeout(r, Math.max(60, 800 - (performance.now() - t0e))))]);
+          if (gen !== st.gen || !vivo) return;
+          // la rejilla con retratos se mide con el retrato más ancho y el más alto (si no ha llegado ninguno, la de «modpixel»)
+          let mw = 0, mh = 0;
+          spr.forEach(p => { if (!usable(p)) return; [p.f1, p.f2].forEach(a => { if (a && a.ok) { mw = Math.max(mw, a.im.naturalWidth); mh = Math.max(mh, a.im.naturalHeight); } }); });
+          const igual = st.lay && st.n === n && st.items.join('\n') === bombo.join('\n') && st.lay.pj === mh > 0;
+          st.items = bombo.slice(); st.n = n; st.spr = spr;
+          st.luz = Array(n).fill(0); st.entra = Array(n).fill(-9); st.fase0 = bombo.map((_, i) => (i * .37) % 1.2);
+          if (!igual) { st.lay = mh ? rejillaPj(n, mw, mh) : rejillaPx(n); st.tAp = st.t; }
+          st.k = k; st.hov = -1; st.ruta = RM ? null : rutaCursor(k); st.tP0 = st.t + (igual ? -.2 : 0); st.fase = 'paseo';
+          if (A.ac && mus.on) mus.fin = A.ac.currentTime + (TL.clic - (igual ? .2 : 0));
+          await new Promise(ok => { st.acaba = ok; });
+        },
+        quita() { vivo = false; mus.on = false; cancelAnimationFrame(raf); if (st.acaba) { const f = st.acaba; st.acaba = null; f(); } }
       };
     }
   };

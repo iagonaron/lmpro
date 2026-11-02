@@ -2,6 +2,19 @@
 
 Hecho por Claude para Iago (conversación Cowork del escape room «Atonalidad»). Solo lo ve la cuenta **Iago González Protester**.
 
+## v7 (2-nov-2026): «modjugador», la pantalla de selección de personaje (Modulación)
+Iago (2-nov): el selector de los 4 días de Modulación, igual, «como un selector de personajes»: todos los alumnos con su RETRATO
+pixel art de busto (de frente, con su instrumento; hecho por descripción, ropa al azar), en blanco y negro salvo el que pisa la
+flecha del ratón; el ratón pasea, se para, hace clic y el elegido sube al centro en color en un marco dorado, con «¡TE TOCA!»;
+de fondo, música 8-bit «rollo MIDI, retro total». `VERSION = 7`. Los demás temas, igual (los v6 de Modulación siguen, sin uso).
+- Retratos: `suite_vol_avatares(p_cuenta_id)` → `{alumnos:{<nombre>:{instr,f1,f2}}, gen:{'gen:<instrumento>':{f1,f2}}}` (PNG de
+  144 px de alto en Supabase, tabla `suite_vol_avatares`; f2 = f1 bajado 2 px, respiración). Sin retrato → `gen:<instrumento>`
+  → `gen:otro`. Si la llamada falla, tarjetas sin retrato (como modpixel).
+- Música: bucle chiptune original (8 compases, 140) con el sintetizador A; fanfarria al clic.
+- Cómo se hacen los retratos (y cada curso): Dropbox `APPs/LMATHOME GP (github lmpro)/VOLUNTARIOS (fuentes)/v7-personajes/LEEME.md`;
+  lo recuerda un aviso del Diario al guardar la semana en la U8.
+- Deshacer: lm-voluntarios.js y LEEME.md del commit bb63dba (v6), o en el portal devolver el mapa de temas de integra_sesion.
+
 ## v6 (2-nov-2026): los cuatro temas de Modulación
 Iago (2-nov): el portal de Modulación (modulacion.gp.lmathome.es, U8) lleva selector de voluntarios con «un tipo de generador aleatorio…
 de cada una de las sesiones». `VERSION = 6`. Los temas de antes, **igual**. Cuatro temas nuevos (1920×1080 escalado, sin dependencias;
