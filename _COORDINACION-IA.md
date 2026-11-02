@@ -37,6 +37,7 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   ♭/♯) y se corrige. Todo pasa por LM_ACO (arriba/bajo/raizRueda) en index.html.
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 2-nov 15:58 · C1 Modulación · HECHO · en este mismo commit (index.html; parto de a7cb628) y el anterior (hitos/modulacion-1..4.webp, hitos/f-marcellus-sc.woff2, hitos/f-pixelify-700.woff2) · MODULACIÓN POR HITOS, como 4 Sabores (Iago 2-nov: bloquear cada sesión hasta darla en clase, con su tira). HITO_TEMAS.modulacion (tema «mod»: noche azul y oro, Marcellus SC y «Sesión N» en píxel) y su CSS al final de HITO_CSS; fuentes LM Marcellus y LM Pixelify; HITO_WEB.modulacion; en arrancar, u8 SOLO por hitos; MEDALLAS u8 → https://modulacion.gp.lmathome.es/prueba.html (antes iagonaron.github.io/modulacion/) y el icono u8n también para los alumnos. Supabase: _suite_hito_de_texto y _suite_hito_meta con 'modulacion' (copias en suite_backups_funciones 13 y 14). El portal (repo modulacion) ya lee #cu=&dias=&dia= y pone candados. DESHACER: index.html de a7cb628 (las texturas y fuentes pueden quedarse).
 - 2-nov 09:50 · Mantenimiento · HECHO · LMEAVathome e9f49fb + a0c5cde · 10-nov (2Gp): «Votación consejo escolar» abre sola
   piel/avisos/votacion-consejo-escolar.html (cartel con cuenta atrás de 5 min; la votación es en papel) y quitaMinutos() resta 1 min a cada
   actividad salvo teoría y descanso (de la más larga a la más corta) hasta 5: la clase dura lo mismo. lm-piel: escaleta.js?v=2026-11-02b.
