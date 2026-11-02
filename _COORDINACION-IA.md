@@ -37,6 +37,10 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   ♭/♯) y se corrige. Todo pasa por LM_ACO (arriba/bajo/raizRueda) en index.html.
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 2-nov 09:25 · Mantenimiento · HECHO · LMEAVathome 0fa727d + aebae25 (piel/avisos/consejo-escolar-2026.html/.webp, piel/escaleta.js, lm-piel.js
+  escaleta.js?v=2026-11-02) · Elecciones al Consello Escolar en la escaleta de 2Gp: EXTRAS_FIJOS añade al principio «Explicar elecciones
+  consejo escolar» (3-nov, 4 min, abre sola la circular a los 4 s) y «Votación consejo escolar» (10-nov, 5 min). Sin tocar el Diario. OJO quien
+  toque la escaleta: conExtras() envuelve el return de escaleta(c). DESHACER: vaciar EXTRAS_FIJOS o revertir aebae25.
 - 1-nov 11:55 · Modulación (C1, la coordinadora de la U8) · HECHO · commit 7bd7813, comprobado en vivo (Protester: u8 cerrada con «?», img u8n, se abre al pulsar) · solo index.html: icono nuevo u8n (__MED_IMG__, ChatGPT) y entrada u8 en PRUEBAS
   (solo Protester, con «?») hacia https://modulacion.gp.lmathome.es/prueba.html. A los alumnos no les cambia nada.
   DESHACER: borrar la entrada u8 de PRUEBAS (y la línea de la medalla u8n), o subir APPs/_PARA BORRAR/MODULACIÓN/1-nov/lmpro_index_antes_de_u8n_82b008d.html como index.html.
