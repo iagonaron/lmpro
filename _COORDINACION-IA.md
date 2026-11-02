@@ -37,6 +37,9 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   ♭/♯) y se corrige. Todo pasa por LM_ACO (arriba/bajo/raizRueda) en index.html.
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 2-nov 09:50 · Mantenimiento · HECHO · LMEAVathome e9f49fb + a0c5cde · 10-nov (2Gp): «Votación consejo escolar» abre sola
+  piel/avisos/votacion-consejo-escolar.html (cartel con cuenta atrás de 5 min; la votación es en papel) y quitaMinutos() resta 1 min a cada
+  actividad salvo teoría y descanso (de la más larga a la más corta) hasta 5: la clase dura lo mismo. lm-piel: escaleta.js?v=2026-11-02b.
 - 2-nov 09:25 · Mantenimiento · HECHO · LMEAVathome 0fa727d + aebae25 (piel/avisos/consejo-escolar-2026.html/.webp, piel/escaleta.js, lm-piel.js
   escaleta.js?v=2026-11-02) · Elecciones al Consello Escolar en la escaleta de 2Gp: EXTRAS_FIJOS añade al principio «Explicar elecciones
   consejo escolar» (3-nov, 4 min, abre sola la circular a los 4 s) y «Votación consejo escolar» (10-nov, 5 min). Sin tocar el Diario. OJO quien
