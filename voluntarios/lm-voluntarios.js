@@ -48,7 +48,7 @@
 (function () {
   'use strict';
   if (window.LMVoluntarios) return;
-  const VERSION = 5;   // (22-oct-2026) v5: una animación por día, capítulo o bobina (temaDe) · (17-oct-2026) v2: el tema «cinta» del Magnetófono · (18-oct-2026) v3: el cilindro del Fonógrafo y el botón que surge al empezar · (20-oct-2026) v4: los temas del Blues y un tema por oferta
+  const VERSION = 6;   // (22-oct-2026) v5: una animación por día, capítulo o bobina (temaDe) · (17-oct-2026) v2: el tema «cinta» del Magnetófono · (18-oct-2026) v3: el cilindro del Fonógrafo y el botón que surge al empezar · (20-oct-2026) v4: los temas del Blues y un tema por oferta
   const SB = 'https://woiptkyrxkbpnvioypit.supabase.co';
   const CLAVE_PUB = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndvaXB0a3lyeGticG52aW95cGl0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0NzI2ODYsImV4cCI6MjA5MjA0ODY4Nn0.B2nKgj5rD0rkdLeMIrd9KgD8lUPWsBT4Y7aCtmnvbjA';
   const CLAVE = 'lm_vol_cuenta';
@@ -4124,6 +4124,1297 @@
           st.elegido = k; st.cerca = k;
           if (ac) { clac(.02, 900); clac(.17, 1100); [196, 246.94, 293.66, 392].forEach((fr, j) => A.nota(fr, { tipo: 'triangle', t: .32 + j * .04, dur: 1.9, gan: .055, ataque: .08, wet: .45 })); A.nota(98, { tipo: 'sine', t: .3, dur: 1.6, gan: .07, ataque: .06 }); }
           await new Promise(ok => { const t0 = performance.now(), d = RM ? 1 : 620; (function p_() { if (gen !== st.gen) return ok(); const u = clamp((performance.now() - t0) / d, 0, 1), e = eo(u, 2); st.luzFin = e; st.alza = mov * Math.sin(Math.PI * u) * .9; st.zoom = MAG + (RM ? 0 : .32) * e; if (u < 1) requestAnimationFrame(p_); else ok(); })(); });
+        },
+        quita() { vivo = false; cancelAnimationFrame(raf); }
+      };
+    }
+  };
+
+  /* ═════════ (2-nov-2026, v6) MODULACIÓN (U8): una animación por sesión. S1 «modpixel» (elige jugador, en píxel) · S2 «modmapa»
+     (el mapa de pergamino) · S3 «modpuente» (los tablones del puente) · S4 «modrueda» (la rueda de armaduras). C1 de Modulación. ═════════ */
+  /* ── «modpixel» · Modulación · Sesión 1 «Viajar entre tonalidades»: ELIGE JUGADOR ──
+     (2-nov-2026) La pantalla de «elige jugador» de un juego de plataformas en píxel, como el nivel de la sesión 1: cielo de
+     anochecer por franjas (con su tramado), estrellas, luna, nubes que pasan, colinas y suelo de baldosas (genéricas, nada de
+     ningún juego conocido). Los nombres van en tarjetas-marco pixeladas, en rejilla (más densa cuantos más nombres). Un
+     cursor-flecha parpadeante salta de tarjeta en tarjeta con un «blip» de onda cuadrada, rapidísimo al principio y cada vez
+     más despacio; al pararse, la tarjeta parpadea, salta confeti de píxeles, suena una fanfarria chiptune (do-mi-sol-do) y el
+     nombre sale en el cuadro de diálogo de abajo: «¡TE TOCA!». */
+  TEMAS.modpixel = {
+    fuentes: ['700 40px "Pixelify Sans"', '400 22px DotGothic16', '400 90px DotGothic16'],
+    nombreFit: { min: 44 },
+    css: `
+.lmv-t-modpixel .lmv-velo{background:linear-gradient(#0b1140 0%,#0b1140 50%,#151a3e 50%,#151a3e 100%)}
+.lmv-t-modpixel .lmv-cab{top:22px}
+.lmv-t-modpixel .lmv-ceja{font:700 58px/1 "Pixelify Sans",DotGothic16,monospace;letter-spacing:.14em;text-transform:uppercase;color:#ffd23f;text-shadow:4px 4px 0 #e0452b,8px 8px 0 #1a0820}
+.lmv-t-modpixel .lmv-grupo{margin-top:16px;font:400 24px/1 DotGothic16,"Pixelify Sans",monospace;letter-spacing:.06em;color:#e8ecff;text-shadow:3px 3px 0 #070a1c}
+.lmv-t-modpixel .lmv-nombre{top:780px;left:420px;right:420px;height:124px;display:flex;align-items:center;justify-content:center;font:400 90px/1.05 DotGothic16,"Pixelify Sans",monospace;color:#ffe066;text-shadow:5px 5px 0 #e0452b,10px 10px 0 #1a0820}
+.lmv-t-modpixel .lmv-nombre.ve{animation:lmv-px-sale .42s steps(6,end) forwards}
+@keyframes lmv-px-sale{0%{opacity:1;transform:scale(.2)}100%{opacity:1;transform:none}}
+.lmv-t-modpixel .lmv-nota{top:922px;font:400 22px/1.3 DotGothic16,"Pixelify Sans",monospace;letter-spacing:.04em;color:#e8ecff;text-shadow:2px 2px 0 #070a1c}
+.lmv-t-modpixel .lmv-pie{bottom:34px;gap:40px}
+.lmv-t-modpixel .lmv-b{display:inline-flex;align-items:center;gap:12px;padding:14px 30px;border:none;border-radius:0;background:#1a2470;color:#f4f6ff;font:400 28px/1 DotGothic16,"Pixelify Sans",monospace;letter-spacing:.12em;text-transform:uppercase;box-shadow:0 -4px 0 #f4f6ff,0 4px 0 #f4f6ff,-4px 0 0 #f4f6ff,4px 0 0 #f4f6ff,inset 0 -6px 0 rgba(0,0,0,.35);transition:background .15s,transform .1s}
+.lmv-t-modpixel .lmv-b:hover{background:#26338c;transform:translateY(-4px)}
+.lmv-t-modpixel .lmv-b.lmv-otra{background:#ffd23f;color:#1a0820;box-shadow:0 -4px 0 #070a1c,0 4px 0 #070a1c,-4px 0 0 #070a1c,4px 0 0 #070a1c,inset 0 -6px 0 rgba(160,80,0,.45),inset 0 4px 0 rgba(255,255,255,.5)}
+.lmv-t-modpixel .lmv-b.lmv-otra:hover{background:#ffe066}
+.lmv-t-modpixel .lmv-b:focus-visible{outline:4px dashed #ffd23f;outline-offset:10px}
+.lmv-t-modpixel .lmv-cargando{color:#ffd23f}
+.lmv-of-modpixel .lmv-ob{font-family:DotGothic16,"Pixelify Sans",monospace;font-weight:400;letter-spacing:.1em;text-transform:uppercase;border:none;border-radius:0;background:#ffd23f;color:#1a0820;box-shadow:0 -6px 0 #f4f6ff,0 6px 0 #f4f6ff,-6px 0 0 #f4f6ff,6px 0 0 #f4f6ff,inset 0 -8px 0 rgba(160,80,0,.45),inset 0 5px 0 rgba(255,255,255,.5),0 26px 60px rgba(0,0,0,.6)}
+.lmv-of-modpixel .lmv-ob:focus-visible{outline:4px dashed #ffd23f;outline-offset:12px}
+.lmv-of-modpixel .lmv-og{font-family:DotGothic16,"Pixelify Sans",monospace;letter-spacing:.12em;color:#ffe066;text-shadow:3px 3px 0 #1a0820}
+.lmv-of-modpixel .lmv-no{font-family:DotGothic16,"Pixelify Sans",monospace;font-weight:400;color:#e8ecff}
+@media (prefers-reduced-motion:reduce){.lmv-t-modpixel .lmv-nombre.ve{animation:none;opacity:1}}`,
+    crea(esc, o) {
+      const L = lienzo(esc), g = L.g, RM = reducido(), mov = RM ? 0 : 1;
+      const PS = (px, w) => `${w || 700} ${px}px "Pixelify Sans", DotGothic16, monospace`;
+      const DG = px => `400 ${px}px DotGothic16, "Pixelify Sans", monospace`;
+      const U = 4, Q = v => Math.round(v / U) * U;                       // el «píxel» del dibujo
+      const ZX = 120, ZY = 196, ZW = 1680, ZH = 536, SUELO = 952;        // la zona de la rejilla y la línea del suelo
+      const AMA = '#ffd23f', BLANCO = '#f4f6ff', TINTA = '#070a1c', AZUL = '#141c52', MARCO = '#c9d2f5';
+      const COL = ['#ff5a5a', '#ff9f1c', '#ffd23f', '#3ddc84', '#38c6f4', '#b07cff'];   // el color de cada jugador
+      const st = { t: 0, items: [], n: 0, lay: null, cur: -1, salto: 9, elegido: null, tFin: 0, fin: 0, confeti: [], gen: 0 };
+      let fondo = null, frente = null, nubes = [], raf = 0, vivo = true;
+
+      // un rectángulo con las esquinas en escalón (e escalones de un píxel)
+      function caja(g, x, y, w, h, e) { e = e == null ? 1 : e; for (let i = 0; i <= e; i++) g.fillRect(x + (e - i) * U, y + i * U, w - 2 * (e - i) * U, h - 2 * i * U); }
+      // un dibujo de píxeles: filas de letras y su paleta
+      function sprite(g, filas, x, y, p, pal) { filas.forEach((f, j) => { for (let i = 0; i < f.length; i++) { const c = pal[f[i]]; if (c) { g.fillStyle = c; g.fillRect(x + i * p, y + j * p, p, p); } } }); }
+      const FLECHA = ['..XXXXX..', '..XHAAX..', '..XHAAX..', '..XHAAX..', 'XXXHAAXXX', 'XHHAAAADX', '.XHAAADX.', '..XAADX..', '...XDX...', '....X....'];
+      const PAL_F = { X: TINTA, H: '#fff6c8', A: AMA, D: '#d9900f' };
+
+      /* la rejilla: cuántas columnas y filas, y el tamaño de las tarjetas (la última fila, centrada) */
+      function rejilla(n) {
+        n = Math.max(1, n); const gap = n > 24 ? 16 : 24; let mejor = null;
+        for (let c = 1; c <= Math.min(n, 10); c++) {
+          const r = Math.ceil(n / c); let w = (ZW - (c - 1) * gap) / c, h = (ZH - (r - 1) * gap) / r;
+          h = Math.min(h, n <= 2 ? 210 : 160); w = Math.min(w, n <= 2 ? 620 : 440, h * 3.4);
+          const sc = Math.min(w, h * 2.6) - (c * r - n) * 2 - Math.abs(Math.log((c * w) / (r * h) / (ZW / ZH))) * 8;
+          if (!mejor || sc > mejor.sc) mejor = { c, r, w, h, sc };
+        }
+        const { c, r } = mejor, w = Q(mejor.w), h = Q(mejor.h), alto = r * h + (r - 1) * gap, y0 = Q(ZY + (ZH - alto) / 2), pos = [];
+        for (let i = 0; i < n; i++) {
+          const fi = Math.floor(i / c), co = i % c, enFila = fi === r - 1 ? n - fi * c : c, ancho = enFila * w + (enFila - 1) * gap;
+          pos.push({ x: Q(960 - ancho / 2 + co * (w + gap)), y: y0 + fi * (h + gap) });
+        }
+        return { c, r, w, h, pos };
+      }
+
+      /* el cielo: franjas con su tramado, estrellas y la luna */
+      const FRANJAS = [[0, '#0b1140'], [140, '#0f174e'], [250, '#141f5c'], [350, '#1a296c'], [440, '#21337d'], [520, '#293e8e'], [592, '#33499f'], [656, '#3e56ae'], [712, '#4a64bb'], [764, '#5672c6'], [810, '#6380cf']];
+      function pintaFondo(g) {
+        const r = semilla(31);
+        FRANJAS.forEach(([y, c], i) => { const y2 = i < FRANJAS.length - 1 ? FRANJAS[i + 1][0] : 1080; g.fillStyle = c; g.fillRect(0, y, 1920, y2 - y); });
+        // el tramado entre franjas (dos filas a cuadros con el color de abajo)
+        FRANJAS.forEach(([y, c], i) => { if (!i) return; g.fillStyle = c;
+          for (let x = 0; x < 1920; x += U) { const cx = x / U; if (cx % 2 === 0) g.fillRect(x, y - U, U, U); if (cx % 4 === 1) g.fillRect(x, y - 2 * U, U, U); } });
+        // estrellas (las que tintinean se pintan aparte)
+        for (let i = 0; i < 90; i++) {
+          const x = Q(r() * 1920), y = Q(r() * 560), c = r() < .3 ? '#cdd8ff' : '#ffffff', a = 1 - y / 700;
+          g.globalAlpha = clamp(a, .25, 1); g.fillStyle = c; g.fillRect(x, y, U, U);
+          if (r() < .18) { g.globalAlpha *= .55; g.fillRect(x - U, y, U, U); g.fillRect(x + U, y, U, U); g.fillRect(x, y - U, U, U); g.fillRect(x, y + U, U, U); }
+        }
+        g.globalAlpha = 1;
+        // la luna, de píxeles, con su halo
+        const MX = 1700, MY = 112, MR = 46;
+        for (let y = -MR - 3 * U; y <= MR + 3 * U; y += U) for (let x = -MR - 3 * U; x <= MR + 3 * U; x += U) {
+          const d = Math.hypot(x + U / 2, y + U / 2);
+          if (d <= MR) { const sombra = Math.hypot(x + U / 2 - 16, y + U / 2 + 10) > MR - 4; g.fillStyle = sombra ? '#d8d0aa' : '#f5f0d8'; g.fillRect(MX + x, MY + y, U, U); }
+          else if (d <= MR + 2 * U) { g.fillStyle = 'rgba(255,248,214,.10)'; g.fillRect(MX + x, MY + y, U, U); }
+          else if (d <= MR + 3 * U && ((x + y) / U) % 2 === 0) { g.fillStyle = 'rgba(255,248,214,.07)'; g.fillRect(MX + x, MY + y, U, U); }
+        }
+        g.fillStyle = '#e2dbb8'; [[-20, -12, 3], [8, 14, 4], [-6, 22, 2], [14, -20, 2]].forEach(([x, y, s]) => g.fillRect(MX + Q(x), MY + Q(y), s * U, s * U));
+      }
+      /* lo de delante: colinas lejanas y cercanas (con sus árboles) y el suelo de baldosas */
+      function pintaFrente(g) {
+        const r = semilla(77), P = 2 * U;
+        // colinas lejanas, en escalones
+        for (let x = 0; x < 1920; x += P) { const h = Q(806 + 28 * Math.sin(x * .0042 + 1) + 16 * Math.sin(x * .011 + 2) + 8 * Math.sin(x * .027));
+          g.fillStyle = '#2c3d8e'; g.fillRect(x, h, P, 1080 - h); g.fillStyle = '#3a4fa3'; g.fillRect(x, h, P, U); }
+        // colinas cercanas
+        const cerca = []; for (let x = 0; x < 1920; x += P) { const h = Q(872 + 30 * Math.sin(x * .0057 + .4) + 14 * Math.sin(x * .016 + 1.3)); cerca.push(h);
+          g.fillStyle = '#1b2666'; g.fillRect(x, h, P, 1080 - h); g.fillStyle = '#253280'; g.fillRect(x, h, P, U); }
+        // árboles de píxel (abetos) sobre las colinas cercanas
+        for (let i = 0; i < 26; i++) {
+          const x = Q(r() * 1880 + 20), b = cerca[Math.floor(x / P)] + 2 * U, s = r() < .4 ? 2 : 1, pisos = 2 + Math.floor(r() * 2);
+          g.fillStyle = '#111a4a'; let y = b - 2 * U * s;
+          for (let p = pisos - 1; p >= 0; p--) for (let j = 3; j >= 0; j--) { const a = (1 + j + p) * s; g.fillRect(x - a * U, y, (2 * a + 1) * U, U * s); y -= U * s; }
+          g.fillRect(x - (s - 1) * U, b - 2 * U * s, (2 * s - 1) * U + U, 2 * U * s);
+        }
+        // el suelo: una fila de remate y dos de baldosas, con su llaga oscura
+        g.fillStyle = '#121636'; g.fillRect(0, SUELO, 1920, 1080 - SUELO);
+        const baldosa = (x, y, w, h, base, luz, som) => {
+          g.fillStyle = base; g.fillRect(x + U, y + U, w - 2 * U, h - 2 * U);
+          g.fillStyle = luz; g.fillRect(x + U, y + U, w - 2 * U, U); g.fillRect(x + U, y + U, U, h - 2 * U);
+          g.fillStyle = som; g.fillRect(x + U, y + h - 2 * U, w - 2 * U, U); g.fillRect(x + w - 2 * U, y + U, U, h - 2 * U);
+          for (let q = 0; q < 2; q++) { g.fillStyle = r() < .5 ? luz : som; g.fillRect(Q(x + 3 * U + r() * (w - 7 * U)), Q(y + 3 * U + r() * (h - 7 * U)), U, U); }
+        };
+        for (let x = 0; x < 1920; x += 32) baldosa(x, SUELO, 32, 28, '#5361ad', '#8592da', '#36418a');
+        [[SUELO + 28, 0, '#3a4387', '#5762a8', '#262d63'], [SUELO + 78, 32, '#2f376f', '#454f90', '#1e2350']].forEach(([y, off, b, l, s]) => {
+          for (let x = -off; x < 1920; x += 64) baldosa(x, y, 64, 50, b, l, s); });
+        g.fillStyle = 'rgba(7,10,28,.35)'; g.fillRect(0, SUELO + 28, 1920, U);
+      }
+      /* las nubes: dibujos de píxeles que pasan despacio (por detrás de las tarjetas) */
+      function nube(k, sem, ancho) {
+        const r = semilla(sem), alto = Q(ancho * .4), bol = [], nb = 4 + Math.floor(r() * 2);
+        for (let i = 0; i < nb; i++) { const u = (i + .5) / nb, rad = alto * (.24 + .32 * Math.sin(Math.PI * u) + (r() - .5) * .06); bol.push([ancho * (.1 + .8 * u), alto - rad * .62 - U, rad]); }
+        const lleno = (x, y) => y < alto && bol.some(([bx, by, br]) => Math.hypot(x - bx, y - by) < br) && x > 0 && x < ancho;
+        return capaFija(k, g => {
+          for (let y = 0; y < alto; y += U) for (let x = 0; x < ancho; x += U) {
+            if (!lleno(x + U / 2, y + U / 2)) continue;
+            g.fillStyle = !lleno(x + U / 2, y - U / 2) ? '#b4c3f1' : y >= alto - 2 * U ? '#5c70c2' : !lleno(x + U / 2, y - 2 * U - U / 2) ? '#9aaceb' : '#7d92dc';
+            g.fillRect(x, y, U, U);
+          }
+        }, 0, 0, ancho, alto);
+      }
+      const NUBES = [[120, 214, 9, 11], [470, 760, 7, 12], [1180, 128, 6, 13], [1500, 790, 10, 14], [820, 470, 5, 15], [1640, 300, 8, 16], [260, 640, 6, 17]];
+      function ajusta(s) {
+        if (L.ajusta(s) || !fondo) {
+          g.imageSmoothingEnabled = false;
+          fondo = capaFija(L.k, pintaFondo); frente = capaFija(L.k, pintaFrente, 0, 760, 1920, 320);
+          nubes = NUBES.map(([x, y, v, sem], i) => ({ c: nube(L.k, sem, [200, 260, 170, 300, 150, 230, 190][i]), x, y, v }));
+        }
+      }
+
+      /* una tarjeta: sombra, contorno, marco (amarillo si está el cursor), fondo, su número y su color, y el nombre */
+      function pintaTarjeta(i, x, y, w, h) {
+        const enCur = st.cur === i, eleg = st.elegido === i, fin = st.elegido != null;
+        let lift = enCur ? 2 * U : 0;
+        if (enCur && !fin && st.salto < .05 && mov) lift = 3 * U;
+        g.save();
+        if (eleg && st.fin > 0) { const s = 1 + .07 * eo(st.fin, 2); g.translate(x + w / 2, y + h / 2); g.scale(s, s); g.translate(-x - w / 2, -y - h / 2); }
+        y -= lift;
+        g.fillStyle = 'rgba(4,6,20,.45)'; caja(g, x + 2 * U, y + 2 * U + lift, w, h, 2);
+        g.fillStyle = TINTA; caja(g, x, y, w, h, 2);
+        let mc = MARCO;
+        if (enCur) mc = AMA;
+        if (eleg && mov && st.t - st.tFin < 1.05) mc = Math.floor((st.t - st.tFin) / .085) % 2 ? BLANCO : AMA;
+        g.fillStyle = mc; caja(g, x + U, y + U, w - 2 * U, h - 2 * U, 1);
+        g.fillStyle = enCur ? '#28368f' : AZUL; g.fillRect(x + 3 * U, y + 3 * U, w - 6 * U, h - 6 * U);
+        g.fillStyle = 'rgba(255,255,255,.09)'; g.fillRect(x + 3 * U, y + 3 * U, w - 6 * U, U);
+        g.fillStyle = COL[i % COL.length]; g.fillRect(x + 3 * U, y + h - 5 * U, w - 6 * U, 2 * U);
+        g.fillStyle = 'rgba(0,0,0,.25)'; g.fillRect(x + 3 * U, y + h - 4 * U, w - 6 * U, U);
+        // el número del jugador
+        const num = h >= 92;
+        if (num) { g.font = DG(18); g.textAlign = 'left'; g.textBaseline = 'top'; g.fillStyle = COL[i % COL.length]; g.fillText(String(i + 1).padStart(2, '0'), x + 5 * U, y + 4 * U); }
+        // el nombre
+        const nom = st.items[i] || '', tw = w - 10 * U, ty = y + (num ? 7 * U : 3 * U), th = h - (num ? 13 * U : 9 * U);
+        const Rt = rotula(g, DG, nom, tw, th, Math.min(h > 180 ? 60 : 46, h * .36), 15, true), lh = Rt.px * 1.08, cy = ty + th / 2;
+        g.font = DG(Rt.px); g.textAlign = 'center'; g.textBaseline = 'middle';
+        Rt.lineas.forEach((t, q) => { const yy = cy + (q - (Rt.lineas.length - 1) / 2) * lh + Rt.px * .04;
+          g.fillStyle = TINTA; textoCabe(g, t, x + w / 2 + 3, yy + 3, tw); textoCabe(g, t, x + w / 2 + 1.5, yy + 1.5, tw); g.fillStyle = enCur ? '#fff8d8' : BLANCO; textoCabe(g, t, x + w / 2, yy, tw); });
+        // al acabar, las demás se apagan
+        if (fin && !eleg && st.fin > 0) { g.fillStyle = `rgba(6,9,30,${.5 * st.fin})`; caja(g, x, y, w, h, 2); }
+        g.restore();
+      }
+      function pintaRejilla() {
+        const n = st.n, Ly = st.lay; if (!n || !Ly) return;
+        for (let i = 0; i < n; i++) if (i !== st.cur) pintaTarjeta(i, Ly.pos[i].x, Ly.pos[i].y, Ly.w, Ly.h);
+        if (st.cur >= 0 && st.cur < n) pintaTarjeta(st.cur, Ly.pos[st.cur].x, Ly.pos[st.cur].y, Ly.w, Ly.h);
+      }
+      /* el cursor: una flecha de píxeles que parpadea y bota sobre la tarjeta */
+      function pintaCursor() {
+        const n = st.n, Ly = st.lay; if (!n || !Ly || st.cur < 0 || st.cur >= n) return;
+        const fin = st.elegido != null, p = 6, an = 9 * p, al = 10 * p;
+        const ve = !mov || st.salto < .12 || (fin ? true : Math.floor(st.t * 6) % 3 !== 2);
+        if (!ve) return;
+        const c = Ly.pos[st.cur], bota = mov ? (Math.sin(st.t * (fin ? 7 : 11)) > 0 ? U : 0) + (st.salto < .05 ? -2 * U : 0) : 0;
+        const ex = fin ? 1 + .07 * eo(st.fin, 2) : 1, yTop = c.y + Ly.h / 2 - Ly.h / 2 * ex - 2 * U;
+        sprite(g, FLECHA, Q(c.x + Ly.w / 2 - an / 2), Q(yTop - al + 5 * U - bota), p, PAL_F);
+      }
+      /* abajo: «ELIGE JUGADOR» parpadeando; al acabar, el cuadro de diálogo donde sale el nombre */
+      const DX = 380, DY = 766, DW = 1160, DH = 148;
+      function pintaAbajo() {
+        if (st.elegido == null) {
+          const ve = !mov || (st.t % 1.0) < .68;
+          if (!ve) return;
+          g.font = DG(48); g.textAlign = 'center'; g.textBaseline = 'middle'; espaciado(g, 10);
+          g.fillStyle = TINTA; g.fillText('ELIGE JUGADOR', 960 + 4, 842 + 4); g.fillStyle = BLANCO; g.fillText('ELIGE JUGADOR', 960, 842);
+          const d = mov ? (Math.floor(st.t * 4) % 2) * U : 0, w = g.measureText('ELIGE JUGADOR').width; espaciado(g, 0);
+          const P6 = 6; [-1, 1].forEach(sg => { const x0 = 960 + sg * (w / 2 + 34 + d); g.fillStyle = AMA;
+            for (let j = 0; j < 7; j++) { const a = 4 - Math.abs(3 - j); g.fillRect(sg < 0 ? x0 - 4 * P6 : x0 + (4 - a) * P6, 842 - 21 + j * P6, a * P6, P6); } });
+          return;
+        }
+        if (st.fin <= 0) return;
+        const e = mov ? Math.ceil(eo(st.fin, 2) * 6) / 6 : 1, h = Q(DH * e), y = Q(DY + (DH - h) / 2);
+        g.save(); g.globalAlpha = mov ? 1 : st.fin;
+        g.fillStyle = 'rgba(4,6,20,.5)'; caja(g, DX + 3 * U, y + 3 * U, DW, h, 2);
+        g.fillStyle = TINTA; caja(g, DX, y, DW, h, 2);
+        g.fillStyle = BLANCO; caja(g, DX + U, y + U, DW - 2 * U, h - 2 * U, 1);
+        g.fillStyle = '#0e1446'; g.fillRect(DX + 3 * U, y + 3 * U, DW - 6 * U, h - 6 * U);
+        g.fillStyle = 'rgba(255,255,255,.07)'; g.fillRect(DX + 3 * U, y + 3 * U, DW - 6 * U, 2 * U);
+        if (e >= 1) {
+          // la pestaña «¡TE TOCA!»
+          g.font = DG(30); espaciado(g, 4); const tw = g.measureText('¡TE TOCA!').width + 8 * U;
+          const tx = DX + 10 * U, ty = y - 8 * U;
+          g.fillStyle = TINTA; caja(g, tx, ty, tw, 13 * U, 1); g.fillStyle = AMA; caja(g, tx + U, ty + U, tw - 2 * U, 11 * U, 1);
+          g.fillStyle = 'rgba(160,80,0,.45)'; g.fillRect(tx + 2 * U, ty + 10 * U, tw - 4 * U, U);
+          g.fillStyle = '#1a0820'; g.textAlign = 'left'; g.textBaseline = 'middle'; g.fillText('¡TE TOCA!', tx + 4 * U, ty + 6.5 * U); espaciado(g, 0);
+        }
+        g.restore();
+      }
+      function pintaConfeti(dt) {
+        if (!st.confeti.length) return;
+        st.confeti = st.confeti.filter(c => {
+          c.v -= dt; if (c.v <= 0 || c.y > 1100) return false;
+          c.vx *= 1 - 1.6 * dt; c.vy = Math.min(c.vy + 1500 * dt, 420); c.x += c.vx * dt; c.y += c.vy * dt;
+          if (c.v < .3 && Math.floor(st.t * 20) % 2) return true;
+          const gira_ = Math.sin(st.t * 13 + c.f); g.fillStyle = gira_ > 0 ? c.c : c.c2;
+          g.fillRect(Q(c.x), Q(c.y), c.s, Math.abs(gira_) > .5 ? c.s : U);
+          return true;
+        });
+      }
+      let tAnt = performance.now();
+      const TINT = (() => { const r = semilla(5); return Array.from({ length: 16 }, () => ({ x: Q(r() * 1920), y: Q(r() * 520), f: r() * 6.28, v: 1.2 + r() * 2 })); })();
+      function bucle(ahora) {
+        if (!vivo) return;
+        const dt = Math.min(.05, (ahora - tAnt) / 1000); tAnt = ahora; st.t += dt; st.salto += dt;
+        L.borra(); if (fondo) ponCapa(g, fondo);
+        // estrellas que tintinean
+        TINT.forEach(s => { const b = mov ? Math.sin(st.t * s.v + s.f) : .5; if (b < .2) return; g.fillStyle = b > .8 ? '#ffffff' : '#aebdf5';
+          g.fillRect(s.x, s.y, U, U); if (b > .8) { g.fillRect(s.x - U, s.y, U, U); g.fillRect(s.x + U, s.y, U, U); g.fillRect(s.x, s.y - U, U, U); g.fillRect(s.x, s.y + U, U, U); } });
+        nubes.forEach(nb => { const w = nb.c.w, x = Q(((nb.x + st.t * nb.v * mov) % (1920 + w + 160) + (1920 + w + 160)) % (1920 + w + 160) - w - 80);
+          g.drawImage(nb.c.c, x, nb.y, w, nb.c.h); });
+        if (frente) ponCapa(g, frente);
+        pintaRejilla(); pintaCursor(); pintaAbajo(); pintaConfeti(dt);
+        raf = requestAnimationFrame(bucle);
+      }
+      g.imageSmoothingEnabled = false;
+      raf = requestAnimationFrame(bucle);
+      tras(TEMAS.modpixel.fuentes, () => {});
+
+      /* los sonidos: el arranque, el «blip» de cada salto y la fanfarria de 8 bits */
+      const blip = (f, gan) => A.nota(f, { tipo: 'square', dur: .05, gan: gan || .035, filtro: { f: 2600 } });
+      function fanfarria() {
+        if (!A.ac) return;
+        [523.25, 659.25, 783.99].forEach((f, i) => { A.nota(f, { tipo: 'square', t: i * .085, dur: .11, gan: .045, filtro: { f: 3200 } }); A.nota(f / 2, { tipo: 'square', t: i * .085, dur: .11, gan: .018, filtro: { f: 1600 } }); });
+        A.nota(1046.5, { tipo: 'square', t: .255, dur: .62, gan: .05, filtro: { f: 3400 }, wet: .12 });
+        A.nota(659.25, { tipo: 'square', t: .255, dur: .62, gan: .022, filtro: { f: 2400 } });
+        A.nota(130.81, { tipo: 'triangle', t: .255, dur: .62, gan: .16 });
+        [0, .085, .17].forEach(t => A.clic({ f: 7000, q: 1, gan: .05, dur: .02, t }));
+      }
+
+      return {
+        ajusta,
+        espera() { st.elegido = null; st.fin = 0; st.confeti = []; if (!st.n) { st.items = Array(6).fill('· · ·'); st.n = 6; st.lay = rejilla(6); } },
+        async gira(bombo, k) {
+          const gen = ++st.gen, n = bombo.length;
+          st.items = bombo.slice(); st.n = n; st.lay = rejilla(n); st.elegido = null; st.fin = 0; st.confeti = [];
+          const T = RM ? 1.6 : T_GIRO, S = n < 2 ? (RM ? 3 : 14) : RM ? Math.min(7, n + 2) : clamp(24 + Math.round(n / 3), 26, 34);
+          // los saltos: al azar (sin volver a una de las dos anteriores) y el último, al elegido
+          let seq;
+          if (n === 2) seq = Array.from({ length: S + 1 }, (_, j) => (S - j) % 2 ? 1 - k : k);
+          else {
+            seq = [st.cur >= 0 && st.cur < n && st.cur !== k ? st.cur : (k + 1) % n];
+            for (let j = 1; j < S; j++) { let c, q = 0; do { c = Math.floor(Math.random() * n); } while (n > 2 && ++q < 60 && (c === seq[j - 1] || c === seq[j - 2] || (j === S - 1 && c === k))); seq.push(n < 2 ? 0 : c); }
+            seq.push(k);
+          }
+          st.cur = seq[0]; st.salto = 0;
+          const f = recorrido(0, S, RM ? { T, amago: 0, retro: 0, sobra: 0, rebote: 0, p: 1.5 } : { p: 2.2, amago: .1, retro: 0, sobra: 0, rebote: .08 });
+          const ac = A.crea(); if (ac) A.nota(220, { tipo: 'square', dur: .18, gan: .03, desliza: 880, filtro: { f: 2400 } });
+          await new Promise(ok => {
+            const t0 = performance.now(); let ult = 0, tB = 0;
+            (function paso() {
+              if (gen !== st.gen || !vivo) return ok();
+              const t = Math.min((performance.now() - t0) / 1000, T), j = clamp(Math.floor(f(t) + 1e-6), 0, S);
+              if (j !== ult) { ult = j; st.cur = seq[j]; st.salto = 0; const ya = performance.now(); if (A.ac && ya - tB > 34) { tB = ya; blip(j === S ? 1318.5 : 880, j === S ? .045 : .032); } }
+              if (t < T) requestAnimationFrame(paso); else { st.cur = k; ok(); }
+            })();
+          });
+          if (gen !== st.gen) return;
+          // se para: la tarjeta parpadea, el confeti de píxeles, la fanfarria y el cuadro de diálogo
+          st.elegido = k; st.cur = k; st.tFin = st.t; fanfarria();
+          if (!RM) { const Ly = st.lay, c = Ly.pos[k], cx = c.x + Ly.w / 2, cy = c.y + Ly.h / 2;
+            for (let i = 0; i < 96; i++) { const a = -Math.PI / 2 + (Math.random() - .5) * 2.6, v = 420 + Math.random() * 760, col = COL[i % COL.length];
+              st.confeti.push({ x: cx + (Math.random() - .5) * Ly.w * .7, y: cy - Ly.h * .2, vx: Math.cos(a) * v, vy: Math.sin(a) * v, s: Math.random() < .55 ? 2 * U : 3 * U, c: col, c2: col === AMA ? '#d9900f' : 'rgba(255,255,255,.85)', v: 1.3 + Math.random() * 1.1, f: Math.random() * 6.28 }); } }
+          await new Promise(ok => { const t0 = performance.now(), d = RM ? 250 : 560; (function p_() { if (gen !== st.gen) return ok(); const u = clamp((performance.now() - t0) / d, 0, 1); st.fin = u; if (u < 1) requestAnimationFrame(p_); else ok(); })(); });
+        },
+        quita() { vivo = false; cancelAnimationFrame(raf); }
+      };
+    }
+  };
+
+  /* ── «modmapa» · Modulación · Sesión 2 «Tres formas de viajar»: el mapa de pergamino ──
+     (2-nov-2026) El mapa del portal: un pergamino sepia, a tinta, con el borde quemado, sus pliegues, la rosa de los vientos en
+     el medio, unas montañas, un bosque y un río con sus dos puentes. Los nombres son pueblos (un círculo de tinta y su nombre
+     en una cartela) unidos por un camino punteado que da la vuelta al mapa. La ficha del viajero (con capucha y bufanda, sin
+     cara) recorre el camino de pueblo en pueblo, con el rasgueo de la pluma y sus pasos, cada vez más despacio; al pararse, da
+     un paso atrás, el pueblo se ilumina en oro, cae el sello de lacre y suena un arpegio de arpa. */
+  TEMAS.modmapa = {
+    fuentes: ['400 28px "Marcellus SC"', '400 96px "Marcellus SC"'],
+    nombreFit: { min: 46 },
+    css: `
+.lmv-t-modmapa .lmv-velo{background:radial-gradient(ellipse at 50% 42%,rgba(52,36,22,.975) 0%,rgba(30,20,12,.988) 60%,rgba(12,8,4,.995) 100%)}
+.lmv-t-modmapa .lmv-cab{top:22px}
+.lmv-t-modmapa .lmv-ceja{font:400 46px/1 "Marcellus SC",Georgia,"Times New Roman",serif;letter-spacing:.32em;text-transform:none;color:#f1dfb2;text-shadow:0 2px 14px rgba(0,0,0,.85)}
+.lmv-t-modmapa .lmv-grupo{margin-top:10px;font:400 22px/1 "Marcellus SC",Georgia,serif;letter-spacing:.12em;color:rgba(241,223,178,.72)}
+.lmv-t-modmapa .lmv-nombre{top:806px;left:150px;right:150px;height:126px;display:flex;align-items:center;justify-content:center;font:400 96px/1.1 "Marcellus SC",Georgia,"Times New Roman",serif;letter-spacing:.04em;color:#f4d98a;text-shadow:0 0 28px rgba(230,176,64,.45),0 4px 22px rgba(0,0,0,.9)}
+.lmv-t-modmapa .lmv-nota{top:936px;font:400 24px/1.3 "Marcellus SC",Georgia,serif;color:#ead7ae}
+.lmv-t-modmapa .lmv-pie{bottom:32px}
+.lmv-t-modmapa .lmv-b{display:inline-flex;align-items:center;gap:12px;padding:15px 36px;border-radius:4px;border:2px solid #c9a35a;background:rgba(30,20,12,.9);color:#f1e2c0;font:400 26px/1 "Marcellus SC",Georgia,serif;letter-spacing:.14em;transition:background .2s,transform .15s}
+.lmv-t-modmapa .lmv-b:hover{background:rgba(62,40,22,.94);transform:translateY(-2px)}
+.lmv-t-modmapa .lmv-b.lmv-otra{background:linear-gradient(#f3e2b6,#d8bb82);color:#3a2414;border-color:#f3e2b6;box-shadow:0 0 0 3px rgba(155,31,26,.45)}
+.lmv-t-modmapa .lmv-b.lmv-otra:hover{background:linear-gradient(#fbecc6,#e2c690)}
+.lmv-t-modmapa .lmv-cargando{color:#e8b860}
+.lmv-of-modmapa .lmv-ob{font-family:"Marcellus SC",Georgia,serif;font-weight:400;letter-spacing:.14em;border:2px solid #9b1f1a;border-radius:4px;background:linear-gradient(#f3e2b6,#d8bb82);color:#3a2414;box-shadow:0 18px 50px rgba(0,0,0,.6),0 0 0 4px rgba(155,31,26,.3)}
+.lmv-of-modmapa .lmv-og,.lmv-of-modmapa .lmv-no{font-family:"Marcellus SC",Georgia,serif;color:#ead7ae}
+@media (prefers-reduced-motion:reduce){.lmv-t-modmapa .lmv-nombre.ve{animation:none;opacity:1}}`,
+    crea(esc, o) {
+      const L = lienzo(esc), g = L.g, RM = reducido(), mov = RM ? 0 : 1;
+      const MS = px => `400 ${px}px "Marcellus SC", Georgia, "Times New Roman", serif`;
+      const PX = 110, PY = 110, PW = 1700, PH = 676;                    // la hoja
+      const CX = 960, CY = 446, RX = 560, RY = 222;                       // el camino que da la vuelta
+      const TINTA = '#3a2414', ROJO = '#8c2a1e', AGUA = '96,122,130';
+      const st = { items: [], n: 0, s: 0, vel: 0, t: 0, elegido: null, luz: 0, sello: 0, brinco: 0, rastro: [], gen: 0, dir: 1 };
+      let fijo = null, raf = 0, vivo = true;
+      const circ = (g, x, y, r) => { g.beginPath(); g.arc(x, y, r, 0, 6.2832); };
+
+      /* el camino: una vuelta irregular, recorrida a velocidad constante (tabla de longitud de arco) */
+      const forma = th => 1 + .06 * Math.sin(3 * th + .7) + .035 * Math.cos(5 * th + 1.9);
+      const TAB = (() => { const M = 900, a = [0], xy = [[CX + RX * forma(0), CY]]; let l = 0;
+        for (let i = 1; i <= M; i++) { const th = i / M * 6.2832, f = forma(th), x = CX + RX * f * Math.cos(th), y = CY + RY * f * Math.sin(th); l += Math.hypot(x - xy[i - 1][0], y - xy[i - 1][1]); a.push(l); xy.push([x, y]); }
+        return { a, xy, M, P: l }; })();
+      function punto(fr) {
+        fr = ((fr % 1) + 1) % 1; const l = fr * TAB.P; let lo = 0, hi = TAB.M; while (hi - lo > 1) { const m = (lo + hi) >> 1; if (TAB.a[m] < l) lo = m; else hi = m; }
+        const u = (l - TAB.a[lo]) / ((TAB.a[hi] - TAB.a[lo]) || 1), A_ = TAB.xy[lo], B_ = TAB.xy[hi];
+        return { x: lerp(A_[0], B_[0], u), y: lerp(A_[1], B_[1], u), tx: B_[0] - A_[0], ty: B_[1] - A_[1] };
+      }
+      const OFF = .25;                                  // el pueblo 0, abajo en el medio
+      const pueblo = i => punto(OFF + i / Math.max(1, st.n));
+      // el río: baja de arriba abajo, serpenteando entre la rosa y el bosque
+      const rio = y => 1192 + 50 * Math.sin((y - PY) * .011 + .4) + 30 * Math.sin((y - PY) * .029 + 1.3);
+      const PUENTES = (() => { const out = []; for (let i = 1; i <= TAB.M; i++) { const [x0, y0] = TAB.xy[i - 1], [x1, y1] = TAB.xy[i];
+        if ((x0 - rio(y0)) * (x1 - rio(y1)) <= 0) out.push({ x: (x0 + x1) / 2, y: (y0 + y1) / 2, a: Math.atan2(y1 - y0, x1 - x0) }); } return out; })();
+
+      /* la hoja: el borde quemado (un contorno irregular), las manchas, los pliegues y el marco */
+      const BORDE = (() => { const r = semilla(61), pts = [], paso = 9, per = 2 * (PW + PH), ph = [r() * 6, r() * 6, r() * 6];
+        const mordiscos = Array.from({ length: 9 }, () => ({ s: r() * per, w: 40 + r() * 120, d: 10 + r() * 22 }));
+        for (let s = 0; s < per; s += paso) {
+          let x, y, nx, ny;
+          if (s < PW) { x = PX + s; y = PY; nx = 0; ny = 1; } else if (s < PW + PH) { x = PX + PW; y = PY + s - PW; nx = -1; ny = 0; }
+          else if (s < 2 * PW + PH) { x = PX + PW - (s - PW - PH); y = PY + PH; nx = 0; ny = -1; } else { x = PX; y = PY + PH - (s - 2 * PW - PH); nx = 1; ny = 0; }
+          let d = 7 + 5 * Math.sin(s * .013 + ph[0]) + 3.5 * Math.sin(s * .047 + ph[1]) + 2 * Math.sin(s * .13 + ph[2]) + (r() - .5) * 3;
+          mordiscos.forEach(m => { const q = Math.abs(((s - m.s + per / 2) % per + per) % per - per / 2); if (q < m.w / 2) d += m.d * Math.cos(q / (m.w / 2) * Math.PI / 2) ** 2; });
+          // las esquinas, gastadas
+          const ex = Math.min(x - PX, PX + PW - x), ey = Math.min(y - PY, PY + PH - y); if (ex < 40 && ey < 40) d += (40 - Math.max(ex, ey)) * .45; d = Math.min(d, 34);
+          pts.push([x + nx * d, y + ny * d]);
+        }
+        return pts; })();
+      const contorno = g => { g.beginPath(); BORDE.forEach((p, i) => i ? g.lineTo(p[0], p[1]) : g.moveTo(p[0], p[1])); g.closePath(); };
+
+      function pintaFijo(g) {
+        const r = semilla(48);
+        // la sombra de la hoja sobre la mesa
+        g.save(); g.shadowColor = 'rgba(0,0,0,.75)'; g.shadowBlur = 46; g.shadowOffsetY = 18; contorno(g); g.fillStyle = '#c9a66b'; g.fill(); g.restore();
+        g.save(); contorno(g); g.clip();
+        let gr = g.createRadialGradient(CX, CY, 80, CX, CY, 1000); gr.addColorStop(0, '#f1e0b4'); gr.addColorStop(.55, '#e2c793'); gr.addColorStop(1, '#bf9459'); g.fillStyle = gr; g.fillRect(PX - 20, PY - 20, PW + 40, PH + 40);
+        // manchas, aguas y motas del papel
+        for (let i = 0; i < 46; i++) { const x = PX + r() * PW, y = PY + r() * PH, rad = 30 + r() * 170, os = r() < .7;
+          const rg = g.createRadialGradient(x, y, 0, x, y, rad); rg.addColorStop(0, os ? `rgba(140,92,40,${.04 + r() * .07})` : `rgba(255,246,220,${.08 + r() * .08})`); rg.addColorStop(1, 'rgba(140,92,40,0)'); g.fillStyle = rg; g.fillRect(x - rad, y - rad, 2 * rad, 2 * rad); }
+        for (let i = 0; i < 3200; i++) { g.fillStyle = r() < .55 ? 'rgba(110,72,30,.07)' : 'rgba(255,250,232,.09)'; g.fillRect(PX + r() * PW, PY + r() * PH, 1 + r() * 2.2, 1 + r() * 2.2); }
+        // los pliegues (en tercios a lo ancho y por la mitad a lo alto)
+        const pliegue = (x0, y0, x1, y1) => { g.lineWidth = 3; g.strokeStyle = 'rgba(255,248,226,.32)'; g.beginPath(); g.moveTo(x0, y0); g.lineTo(x1, y1); g.stroke();
+          g.lineWidth = 1.6; g.strokeStyle = 'rgba(96,62,26,.2)'; g.beginPath(); g.moveTo(x0 + (y1 !== y0 ? 2.5 : 0), y0 + (y1 === y0 ? 2.5 : 0)); g.lineTo(x1 + (y1 !== y0 ? 2.5 : 0), y1 + (y1 === y0 ? 2.5 : 0)); g.stroke(); };
+        pliegue(PX + PW / 3, PY, PX + PW / 3, PY + PH); pliegue(PX + 2 * PW / 3, PY, PX + 2 * PW / 3, PY + PH); pliegue(PX, PY + PH / 2, PX + PW, PY + PH / 2);
+        // el marco a tinta (doble filete)
+        g.strokeStyle = 'rgba(58,36,20,.42)'; g.lineWidth = 2.5; g.strokeRect(PX + 36, PY + 34, PW - 72, PH - 68); g.lineWidth = 1; g.strokeRect(PX + 44, PY + 42, PW - 88, PH - 84);
+
+        // el río, con su aguada, y sus orillas a tinta
+        const orilla = (dx, w) => { g.beginPath(); for (let y = PY - 20; y <= PY + PH + 20; y += 6) { const x = rio(y) + dx * (w + 3 * Math.sin(y * .05)); y === PY - 20 ? g.moveTo(x, y) : g.lineTo(x, y); } };
+        g.beginPath(); for (let y = PY - 20; y <= PY + PH + 20; y += 6) { const w = 9 + 5 * (y - PY) / PH; y === PY - 20 ? g.moveTo(rio(y) - w, y) : g.lineTo(rio(y) - w, y); }
+        for (let y = PY + PH + 20; y >= PY - 20; y -= 6) { const w = 9 + 5 * (y - PY) / PH; g.lineTo(rio(y) + w, y); } g.closePath(); g.fillStyle = `rgba(${AGUA},.30)`; g.fill();
+        g.strokeStyle = `rgba(${AGUA},.75)`; g.lineWidth = 1.6; orilla(-1, 10); g.stroke(); orilla(1, 10); g.stroke();
+        g.strokeStyle = `rgba(${AGUA},.45)`; g.lineWidth = 1.1; for (let i = 0; i < 16; i++) { const y = PY + 40 + i * 40 + r() * 14, x = rio(y); g.beginPath(); g.moveTo(x - 5, y); g.quadraticCurveTo(x - 1, y - 3, x + 3, y); g.stroke(); }
+
+        // las montañas (a la izquierda de la rosa), con su sombreado
+        g.lineJoin = 'round'; g.lineCap = 'round';
+        [[548, 470, 46], [606, 452, 62], [676, 478, 44], [728, 462, 52], [586, 512, 34], [780, 498, 32], [650, 520, 30]].forEach(([x, y, h]) => {
+          const w = h * .95; g.beginPath(); g.moveTo(x - w, y); g.lineTo(x, y - h); g.lineTo(x + w, y); g.fillStyle = 'rgba(241,224,180,.75)'; g.fill();
+          g.strokeStyle = 'rgba(58,36,20,.78)'; g.lineWidth = 2; g.beginPath(); g.moveTo(x - w, y); g.lineTo(x, y - h); g.lineTo(x + w, y); g.stroke();
+          g.lineWidth = 1.1; g.strokeStyle = 'rgba(58,36,20,.45)'; for (let k = 1; k < 7; k++) { const u = k / 7; g.beginPath(); g.moveTo(x + 2 + w * u * .15, y - h + h * u * .9); g.lineTo(x + w * u * .95, y - 2); g.stroke(); }
+          g.beginPath(); g.moveTo(x - w * .25, y - h * .75); g.lineTo(x - w * .05, y - h * .62); g.lineTo(x + w * .12, y - h * .74); g.strokeStyle = 'rgba(58,36,20,.4)'; g.stroke(); });
+        // el bosque (a la derecha del río)
+        for (let i = 0; i < 22; i++) { const x = 1272 + (i % 6) * 32 + r() * 16 + (Math.floor(i / 6) % 2) * 14, y = 410 + Math.floor(i / 6) * 34 + r() * 10, h = 24 + r() * 10;
+          g.fillStyle = 'rgba(241,224,180,.7)'; g.beginPath(); g.moveTo(x, y - h); g.lineTo(x - h * .38, y); g.lineTo(x + h * .38, y); g.closePath(); g.fill();
+          g.strokeStyle = 'rgba(58,36,20,.7)'; g.lineWidth = 1.6; g.stroke(); g.beginPath(); g.moveTo(x, y); g.lineTo(x, y + 6); g.stroke();
+          g.lineWidth = 1; g.strokeStyle = 'rgba(58,36,20,.4)'; g.beginPath(); g.moveTo(x + 2, y - h * .6); g.lineTo(x + h * .2, y - 2); g.stroke(); }
+
+        // la rosa de los vientos, en el medio
+        g.save(); g.translate(CX, CY);
+        g.strokeStyle = 'rgba(58,36,20,.55)'; g.lineWidth = 1.6; circ(g, 0, 0, 98); g.stroke(); g.lineWidth = 1; circ(g, 0, 0, 90); g.stroke(); circ(g, 0, 0, 40); g.stroke();
+        for (let i = 0; i < 32; i++) { const a = i / 32 * 6.2832, l = i % 8 === 0 ? 12 : i % 4 === 0 ? 9 : 5; g.beginPath(); g.moveTo(Math.cos(a) * 90, Math.sin(a) * 90); g.lineTo(Math.cos(a) * (90 + l * .8), Math.sin(a) * (90 + l * .8)); g.stroke(); }
+        const punta = (a, largo, ancho, oscura) => { const c = Math.cos(a), s = Math.sin(a), px_ = -s, py_ = c;
+          g.beginPath(); g.moveTo(c * largo, s * largo); g.lineTo(px_ * ancho, py_ * ancho); g.lineTo(0, 0); g.closePath(); g.fillStyle = '#f4e6c0'; g.fill(); g.strokeStyle = 'rgba(58,36,20,.85)'; g.lineWidth = 1.3; g.stroke();
+          g.beginPath(); g.moveTo(c * largo, s * largo); g.lineTo(-px_ * ancho, -py_ * ancho); g.lineTo(0, 0); g.closePath(); g.fillStyle = oscura; g.fill(); g.stroke(); };
+        for (let i = 0; i < 8; i++) if (i % 2) punta(i / 8 * 6.2832 - Math.PI / 2, 62, 11, 'rgba(58,36,20,.85)');
+        for (let i = 0; i < 8; i++) if (!(i % 2)) punta(i / 8 * 6.2832 - Math.PI / 2, i === 0 ? 104 : 94, 15, i === 0 ? ROJO : 'rgba(58,36,20,.9)');
+        circ(g, 0, 0, 6); g.fillStyle = '#f4e6c0'; g.fill(); g.strokeStyle = TINTA; g.lineWidth = 1.5; g.stroke();
+        g.font = MS(26); g.fillStyle = 'rgba(58,36,20,.9)'; g.textAlign = 'center'; g.textBaseline = 'middle';
+        [['N', 0, -128], ['S', 0, 126], ['E', 126, 2], ['O', -126, 2]].forEach(([t, x, y]) => g.fillText(t, x, y));
+        g.restore();
+
+        // la escala de leguas
+        const ex = PX + 78, ey = PY + PH - 72; g.fillStyle = TINTA; g.strokeStyle = TINTA; g.lineWidth = 1.4;
+        for (let i = 0; i < 4; i++) { g.strokeRect(ex + i * 40, ey, 40, 8); if (i % 2 === 0) g.fillRect(ex + i * 40, ey, 40, 8); }
+        g.font = MS(16); g.textAlign = 'center'; g.textBaseline = 'top'; g.fillStyle = 'rgba(58,36,20,.85)';
+        ['0', '10', '20'].forEach((t, i) => g.fillText(t, ex + i * 80, ey + 13)); g.fillText('leguas', ex + 80, ey - 24);
+
+        // el camino punteado y los puentes
+        g.setLineDash([2, 11]); g.lineCap = 'round'; g.lineWidth = 4.5; g.strokeStyle = 'rgba(58,36,20,.78)';
+        g.beginPath(); TAB.xy.forEach((p, i) => i ? g.lineTo(p[0], p[1]) : g.moveTo(p[0], p[1])); g.closePath(); g.stroke(); g.setLineDash([]);
+        PUENTES.forEach(b => { g.save(); g.translate(b.x, b.y); g.rotate(b.a);
+          g.fillStyle = '#ecd8a8'; g.fillRect(-24, -9, 48, 18); g.strokeStyle = 'rgba(58,36,20,.9)'; g.lineWidth = 2;
+          g.beginPath(); g.moveTo(-26, -9); g.lineTo(26, -9); g.moveTo(-26, 9); g.lineTo(26, 9); g.stroke();
+          g.lineWidth = 1.2; [-1, 1].forEach(sg => { g.beginPath(); g.moveTo(-26, sg * 9); g.lineTo(-31, sg * 14); g.moveTo(26, sg * 9); g.lineTo(31, sg * 14); g.stroke(); });
+          g.lineWidth = 1; for (let x = -18; x <= 18; x += 9) { g.beginPath(); g.moveTo(x, -5); g.lineTo(x, 5); g.stroke(); }
+          g.restore(); });
+        g.restore();
+
+        // el borde quemado: tostado hacia dentro y la orilla carbonizada
+        g.save(); contorno(g); g.clip();
+        [[74, 'rgba(130,78,30,.10)'], [46, 'rgba(110,62,22,.15)'], [28, 'rgba(88,46,14,.24)'], [15, 'rgba(62,30,8,.42)'], [7, 'rgba(36,16,4,.75)']].forEach(([w, c]) => { g.lineWidth = w; g.strokeStyle = c; contorno(g); g.stroke(); });
+        g.restore();
+        g.lineWidth = 2; g.strokeStyle = '#1a0c04'; contorno(g); g.stroke();
+      }
+      function ajusta(s) { if (L.ajusta(s) || !fijo) fijo = capaFija(L.k, pintaFijo); }
+
+      /* una cartela: cinta con las puntas en cola de milano */
+      function cartela(x, y, w, h, fondo, borde, oro) {
+        const t = 11;
+        g.beginPath(); g.moveTo(x - t, y); g.lineTo(x + w + t, y); g.lineTo(x + w + t * .35, y + h / 2); g.lineTo(x + w + t, y + h); g.lineTo(x - t, y + h); g.lineTo(x - t * .35, y + h / 2); g.closePath();
+        g.save(); g.shadowColor = 'rgba(60,34,12,.35)'; g.shadowBlur = 6; g.shadowOffsetY = 2; g.fillStyle = fondo; g.fill(); g.restore();
+        g.lineWidth = 1.8; g.strokeStyle = borde; g.stroke();
+        g.lineWidth = 1; g.strokeStyle = oro ? 'rgba(120,70,10,.55)' : 'rgba(58,36,20,.35)'; g.beginPath(); g.moveTo(x, y + 4); g.lineTo(x + w, y + 4); g.moveTo(x, y + h - 4); g.lineTo(x + w, y + h - 4); g.stroke();
+      }
+      /* dónde va la cartela de cada pueblo: hacia fuera (o, si hay muchos, uno fuera y otro dentro); después se apartan unas de
+         otras y de los pueblos (si una queda lejos del suyo, una línea fina de tinta los une). Se calcula una vez por bombo. */
+      let carts = [];
+      function maqueta() {
+        const n = st.n; carts = []; if (!n) return;
+        const px = n > 16 ? 21 : n > 8 ? 25 : 28, dos = n > 8, maxW = n > 16 ? 190 : n > 8 ? 240 : 300, T_ = 11;
+        const P = []; for (let i = 0; i < n; i++) P.push(pueblo(i));
+        const cl = c => { c.bx = clamp(c.bx, PX + 62, PX + PW - 62 - c.w); c.by = clamp(c.by, PY + 56, PY + PH - 54 - c.h); };
+        for (let i = 0; i < n; i++) {
+          const e = P[i];
+          let ux = (e.x - CX) / (RX * RX), uy = (e.y - CY) / (RY * RY); const m = Math.hypot(ux, uy); ux /= m; uy /= m;
+          const sg = !dos || i % 2 === 0 ? 1 : -1, d = 26;
+          const nom = st.items[i] || '', parte = nom.length > (n > 8 ? 11 : 17) && nom.includes(' ');
+          g.font = MS(px); const lin = parte ? (n > 8 && nom.length > 26 ? lineas(nom, Math.ceil(nom.length / 3) + 4, 3) : lineas(nom, Math.ceil(nom.length / 2) + 3, 2)) : [nom];
+          const w = Math.min(maxW, Math.max(...lin.map(t => g.measureText(t).width)) + 20), h = lin.length * px * 1.06 + 14;
+          const ax = e.x + ux * sg * d, ay = e.y + uy * sg * d;
+          const c = { i, lin, w, h, px, ex: e.x, ey: e.y, bx: ax + (ux * sg > .5 ? 8 : ux * sg < -.5 ? -w - 8 : -w / 2), by: ay + (uy * sg > .4 ? 0 : uy * sg < -.4 ? -h : -h / 2) };
+          cl(c); carts.push(c);
+        }
+        for (let it = 0; it < 80; it++) {
+          let mueve = false;
+          for (let a = 0; a < n; a++) for (let b = a + 1; b < n; b++) {
+            const A_ = carts[a], B_ = carts[b];
+            const ox = Math.min(A_.bx + A_.w, B_.bx + B_.w) - Math.max(A_.bx, B_.bx) + 2 * T_ + 6, oy = Math.min(A_.by + A_.h, B_.by + B_.h) - Math.max(A_.by, B_.by) + 6;
+            if (ox > 0 && oy > 0) { mueve = true;
+              if (ox < oy) { const d = (A_.bx + A_.w / 2 < B_.bx + B_.w / 2 ? -1 : 1) * ox / 2; A_.bx += d; B_.bx -= d; }
+              else { const d = (A_.by + A_.h / 2 < B_.by + B_.h / 2 ? -1 : 1) * oy / 2; A_.by += d; B_.by -= d; } }
+          }
+          carts.forEach(c => P.forEach(e => {
+            const qx = clamp(e.x, c.bx - T_, c.bx + c.w + T_), qy = clamp(e.y, c.by, c.by + c.h), d = Math.hypot(e.x - qx, e.y - qy);
+            if (d < 18) { mueve = true; const dx = c.bx + c.w / 2 - e.x, dy = (c.by + c.h / 2 - e.y) * 2.5, m = Math.hypot(dx, dy) || 1; c.bx += dx / m * (19 - d); c.by += dy / m * (19 - d); }
+          }));
+          carts.forEach(cl);
+          if (!mueve) break;
+        }
+      }
+      /* los pueblos: su círculo de tinta (y, si la cartela quedó lejos, la línea que los une) */
+      function pintaPueblos() {
+        const n = st.n; if (!n) return;
+        carts.forEach(c => {
+          const qx = clamp(c.ex, c.bx - 4, c.bx + c.w + 4), qy = clamp(c.ey, c.by, c.by + c.h), d = Math.hypot(c.ex - qx, c.ey - qy);
+          if (d > 36) { g.beginPath(); g.moveTo(c.ex + (qx - c.ex) / d * 16, c.ey + (qy - c.ey) / d * 16); g.lineTo(qx, qy); g.strokeStyle = 'rgba(58,36,20,.55)'; g.lineWidth = 1.3; g.stroke(); }
+        });
+        for (let i = 0; i < n; i++) {
+          const e = pueblo(i), cerca = mov ? Math.max(0, 1 - Math.abs(((st.s - i) % n + n + n / 2) % n - n / 2) * 1.8) : 0;
+          circ(g, e.x, e.y, 12); g.fillStyle = '#f2e1b6'; g.fill(); g.lineWidth = 3; g.strokeStyle = TINTA; g.stroke();
+          circ(g, e.x, e.y, 4); g.fillStyle = TINTA; g.fill();
+          if (cerca > 0 && st.elegido == null) { circ(g, e.x, e.y, 12 + 7 * cerca); g.strokeStyle = `rgba(140,42,30,${.7 * cerca})`; g.lineWidth = 2.5; g.stroke(); }
+        }
+      }
+      const escalaElegida = () => 1 + .14 * eo(st.luz, 2);
+      function pintaCartela(c, luz) {
+        const { lin, w, h, bx, by, px } = c;
+        g.save();
+        if (luz > 0) { const s = escalaElegida(), cx = bx + w / 2, cy = by + h / 2; g.translate(cx, cy); g.scale(s, s); g.translate(-cx, -cy); }
+        let fondo = 'rgba(246,234,204,.97)';
+        if (luz > 0) { const gr = g.createLinearGradient(0, by, 0, by + h); gr.addColorStop(0, `rgba(252,226,140,${luz})`); gr.addColorStop(.5, `rgba(232,186,80,${luz})`); gr.addColorStop(1, `rgba(196,142,44,${luz})`); cartela(bx, by, w, h, 'rgba(246,234,204,.97)', TINTA); fondo = gr; }
+        cartela(bx, by, w, h, fondo, luz > .5 ? '#6a3e0c' : TINTA, luz > .5);
+        g.font = MS(px); g.fillStyle = luz > .5 ? '#3b1f06' : TINTA; g.textAlign = 'center'; g.textBaseline = 'middle';
+        lin.forEach((t, q) => textoCabe(g, t, bx + w / 2, by + 7 + px * .56 + q * px * 1.06, w - 12));
+        g.restore();
+      }
+      const pintaCartelas = () => carts.forEach(c => { if (c.i !== st.elegido) pintaCartela(c, 0); });
+      // la cartela elegida se aparta (al iluminarse) para no tapar al viajero, que se queda de pie en su pueblo
+      function apartaElegida(c) {
+        const k = escalaElegida(), cx = c.bx + c.w / 2, cy = c.by + c.h / 2, hw = (c.w / 2 + 11) * k, hh = c.h / 2 * k;
+        const t1 = c.ex - 26, t2 = c.ex + 26, u1 = c.ey - 84, u2 = c.ey + 12;
+        if (cx + hw < t1 || cx - hw > t2 || cy + hh < u1 || cy - hh > u2) return 0;
+        const arriba = (cy + hh) - u1 + 4, abajo = u2 - (cy - hh) + 4;
+        return (cy < c.ey ? -arriba : abajo) * eo(st.luz, 2);
+      }
+      const pintaElegida = () => { const c = carts[st.elegido]; if (!c) return; c.dy = apartaElegida(c); g.save(); g.translate(0, c.dy); pintaCartela(c, st.luz); g.restore(); };
+      /* la luz de oro del pueblo elegido */
+      function pintaLuz() {
+        if (st.elegido == null || st.luz <= 0) return;
+        const e = pueblo(st.elegido), a = st.luz;
+        g.save();
+        const rg = g.createRadialGradient(e.x, e.y, 4, e.x, e.y, 150); rg.addColorStop(0, `rgba(255,214,110,${.75 * a})`); rg.addColorStop(.4, `rgba(240,184,70,${.32 * a})`); rg.addColorStop(1, 'rgba(240,184,70,0)');
+        g.fillStyle = rg; g.fillRect(e.x - 150, e.y - 150, 300, 300);
+        g.translate(e.x, e.y); g.rotate(mov * st.t * .15);
+        for (let i = 0; i < 16; i++) { g.rotate(6.2832 / 16); g.beginPath(); g.moveTo(-3, 22); g.lineTo(3, 22); g.lineTo(0, 22 + (i % 2 ? 40 : 66) * a); g.closePath(); g.fillStyle = `rgba(214,150,40,${.55 * a})`; g.fill(); }
+        g.restore();
+        circ(g, e.x, e.y, 13); const gr = g.createRadialGradient(e.x - 4, e.y - 4, 1, e.x, e.y, 14); gr.addColorStop(0, '#fff2b8'); gr.addColorStop(1, '#d19a2c'); g.fillStyle = gr; g.fill(); g.lineWidth = 3; g.strokeStyle = '#6a3e0c'; g.stroke();
+      }
+      /* el sello de lacre: una gota irregular, su anillo y una estrella de cuatro puntas en relieve */
+      const BORDE_SELLO = (() => { const r = semilla(9); return Array.from({ length: 28 }, (_, i) => 1 + .07 * Math.sin(i * 1.9) + (r() - .5) * .08); })();
+      function pintaSello() {
+        if (st.elegido == null || st.sello <= 0) return;
+        const c = carts[st.elegido]; if (!c) return;
+        const u = st.sello, s = mov ? (u < .35 ? lerp(2.1, .94, eo(u / .35, 2)) : u < .6 ? lerp(.94, 1, (u - .35) / .25) : 1) : 1, R = 25, k = escalaElegida();
+        // en la punta derecha de la cartela (o en la izquierda, si no cabe)
+        const cx = c.bx + c.w / 2, cy = c.by + c.h / 2 + (c.dy || 0), dx = (c.w / 2 + 22) * k, dcha = cx + dx + R < PX + PW - 24, sx = cx + (dcha ? dx : -dx), sy = cy + c.h * .3 * k;
+        g.save(); g.globalAlpha = clamp(u * 3, 0, 1); g.translate(sx, sy); g.scale(s, s); g.rotate(-.2);
+        g.shadowColor = 'rgba(40,10,4,.5)'; g.shadowBlur = 8; g.shadowOffsetY = 3;
+        g.beginPath(); BORDE_SELLO.forEach((f, i) => { const a = i / BORDE_SELLO.length * 6.2832, x = Math.cos(a) * R * f, y = Math.sin(a) * R * f; i ? g.lineTo(x, y) : g.moveTo(x, y); }); g.closePath();
+        const gr = g.createRadialGradient(-8, -10, 2, 0, 0, R * 1.1); gr.addColorStop(0, '#d0463a'); gr.addColorStop(.55, '#9b1f1a'); gr.addColorStop(1, '#5c0e0b'); g.fillStyle = gr; g.fill();
+        g.shadowColor = 'transparent';
+        circ(g, 0, 0, R * .72); g.lineWidth = 2.5; g.strokeStyle = 'rgba(60,6,4,.55)'; g.stroke(); circ(g, .8, 1, R * .72); g.lineWidth = 1; g.strokeStyle = 'rgba(255,170,150,.3)'; g.stroke();
+        const estrella = (dx, dy, c) => { g.beginPath(); for (let i = 0; i < 8; i++) { const a = i / 8 * 6.2832 - Math.PI / 2, l = i % 2 ? 4.5 : 15; i ? g.lineTo(dx + Math.cos(a) * l, dy + Math.sin(a) * l) : g.moveTo(dx + Math.cos(a) * l, dy + Math.sin(a) * l); } g.closePath(); g.fillStyle = c; g.fill(); };
+        estrella(1, 1.2, 'rgba(255,170,150,.35)'); estrella(0, 0, 'rgba(70,8,6,.6)');
+        g.restore();
+      }
+      /* la ficha del viajero: una peana redonda, la capa, la capucha (sin cara: solo sombra) y la bufanda */
+      function pintaViajero() {
+        if (!st.n) return;
+        const p = punto(OFF + st.s / st.n), v = Math.abs(st.vel);
+        const paso = mov ? Math.abs(Math.sin(st.t * 16)) * clamp(v / 3, 0, 1) * 7 : 0, incl = mov ? clamp(Math.sign(p.tx * st.dir) * clamp(v / 6, 0, 1) * .12, -.12, .12) : 0;
+        g.save(); g.translate(p.x, p.y);
+        g.fillStyle = 'rgba(40,22,8,.32)'; g.beginPath(); g.ellipse(2, 3, 20, 6.5, 0, 0, 6.2832); g.fill();
+        // la peana
+        g.beginPath(); g.ellipse(0, 0, 17, 6, 0, 0, 6.2832); g.fillStyle = '#5a3a1e'; g.fill(); g.beginPath(); g.ellipse(0, -2.5, 17, 6, 0, 0, 6.2832); g.fillStyle = '#8a5d32'; g.fill(); g.lineWidth = 1.4; g.strokeStyle = '#2a1608'; g.stroke();
+        g.scale(1.22, 1.22); g.translate(0, -3 - paso - st.brinco); g.rotate(incl);
+        // la capa
+        g.beginPath(); g.moveTo(-15, 0); g.quadraticCurveTo(-16, -18, -11, -33); g.quadraticCurveTo(-12, -46, -4, -55); g.quadraticCurveTo(1, -60, 5, -57);
+        g.quadraticCurveTo(13, -48, 11, -33); g.quadraticCurveTo(16, -18, 15, 0); g.quadraticCurveTo(7, 3, 0, 1); g.quadraticCurveTo(-7, 3, -15, 0); g.closePath();
+        let gr = g.createLinearGradient(-15, 0, 15, 0); gr.addColorStop(0, '#3e5470'); gr.addColorStop(.55, '#26364a'); gr.addColorStop(1, '#162232'); g.fillStyle = gr; g.fill(); g.lineWidth = 1.6; g.strokeStyle = '#0e1620'; g.stroke();
+        // el hueco de la capucha: solo sombra, sin cara
+        g.beginPath(); g.ellipse(1.5, -42, 6, 7.5, .08, 0, 6.2832); g.fillStyle = '#0a1018'; g.fill();
+        // la bufanda, con su punta colgando
+        g.beginPath(); g.moveTo(-11, -33); g.quadraticCurveTo(0, -27, 11, -33); g.lineTo(11, -28); g.quadraticCurveTo(0, -22, -11, -28); g.closePath(); g.fillStyle = '#b5552b'; g.fill(); g.strokeStyle = '#5a240e'; g.lineWidth = 1; g.stroke();
+        g.beginPath(); g.moveTo(5, -28); g.lineTo(9, -14); g.lineTo(13, -15); g.lineTo(9, -29); g.closePath(); g.fillStyle = '#9c4422'; g.fill(); g.stroke();
+        // un brillo en el borde de la capa
+        g.beginPath(); g.moveTo(-12, -6); g.quadraticCurveTo(-13, -20, -9, -32); g.strokeStyle = 'rgba(160,190,220,.35)'; g.lineWidth = 1.5; g.stroke();
+        g.restore();
+      }
+      /* el rastro de tinta roja por donde va pasando */
+      function pintaRastro() {
+        if (st.rastro.length < 2) return;
+        g.save(); g.setLineDash([3, 8]); g.lineCap = 'round'; g.lineWidth = 3.2;
+        for (let i = 1; i < st.rastro.length; i++) { const a = st.rastro[i - 1], b = st.rastro[i], al = clamp((st.t - b.t) / .9, 0, 1);
+          if (al >= 1 || Math.hypot(b.x - a.x, b.y - a.y) > 160) continue; g.strokeStyle = `rgba(140,42,30,${.65 * (1 - al)})`; g.beginPath(); g.moveTo(a.x, a.y); g.lineTo(b.x, b.y); g.stroke(); }
+        g.restore();
+      }
+      let tAnt = performance.now();
+      function bucle(ahora) {
+        if (!vivo) return;
+        const dt = Math.min(.05, (ahora - tAnt) / 1000); tAnt = ahora; st.t += dt;
+        L.borra(); if (fijo) ponCapa(g, fijo);
+        if (mov && st.n && Math.abs(st.vel) > .05) { const p = punto(OFF + st.s / st.n); st.rastro.push({ x: p.x, y: p.y, t: st.t }); }
+        st.rastro = st.rastro.filter(q => st.t - q.t < .9);
+        pintaRastro(); pintaPueblos(); pintaLuz(); pintaCartelas(); pintaViajero(); pintaElegida(); pintaSello();
+        raf = requestAnimationFrame(bucle);
+      }
+      raf = requestAnimationFrame(bucle);
+      tras(TEMAS.modmapa.fuentes, () => { if (vivo) { fijo = capaFija(L.k || 1, pintaFijo); maqueta(); } });
+
+      /* los sonidos: el rasgueo de la pluma, los pasos (ruido filtrado), el golpe del sello y el arpa */
+      let tP = 0;
+      function pisada(v) { const ac = A.ac; if (!ac) return; const t = ac.currentTime; if (t - tP < .065) return; tP = t;
+        const gn = clamp(.1 + 6 / (v + 6) * .14, .1, .24); A.clic({ f: 240 + Math.random() * 140, q: .8, gan: gn, dur: .075 }); A.clic({ f: 1800 + Math.random() * 600, q: 1.2, gan: gn * .22, dur: .03, t: .01 }); }
+      function arpa() {
+        if (!A.ac) return;
+        [261.63, 329.63, 392, 523.25, 659.25, 783.99, 1046.5, 1318.5].forEach((f, i) => {
+          A.nota(f, { tipo: 'triangle', t: .16 + i * .065, dur: 2.4 - i * .12, gan: .075 - i * .004, ataque: .003, wet: .55, pan: -.4 + i * .1 });
+          A.nota(f * 2, { tipo: 'sine', t: .16 + i * .065, dur: .7, gan: .018, ataque: .003, wet: .5 }); });
+        A.nota(130.81, { tipo: 'triangle', t: .14, dur: 2.6, gan: .1, ataque: .004, wet: .4 });
+      }
+
+      return {
+        ajusta,
+        espera() { st.elegido = null; st.luz = 0; st.sello = 0; st.brinco = 0; if (!st.n) { st.items = ['· · ·', '· · ·', '· · ·', '· · ·', '· · ·', '· · ·']; st.n = 6; maqueta(); } },
+        async gira(bombo, k) {
+          const gen = ++st.gen, n = bombo.length; st.items = bombo.slice(); st.n = n; st.elegido = null; st.luz = 0; st.sello = 0; st.brinco = 0; st.rastro = []; st.dir = 1; maqueta();
+          const s0 = Math.round(st.s);
+          let s1 = s0 + (RM ? n : Math.max(n + 8, 14)); s1 += ((k - s1) % n + n) % n;
+          const f = recorrido(s0, s1, RM ? { T: 1.6, amago: .05, retro: 0, sobra: 0, rebote: .1, p: 2 } : { p: 2.5, amago: .3, retro: .2, sobra: .06, rebote: .24 });
+          const ac = A.crea(), pluma = ac ? A.continuo({ f: 3400, q: 1.3, tipo: 'bandpass', wet: .15 }) : null;
+          await new Promise(ok => {
+            const t0 = performance.now(); let antes = s0, rec = 0, px0 = null;
+            (function paso() {
+              if (gen !== st.gen || !vivo) { if (pluma) pluma.para(.1); return ok(); }
+              const t = (performance.now() - t0) / 1000, s = f(Math.min(t, f.T)); st.vel = (s - antes) * 60; st.dir = s >= antes ? 1 : -1; antes = s; st.s = s;
+              const p = punto(OFF + s / n); if (px0) rec += Math.hypot(p.x - px0.x, p.y - px0.y); px0 = p;
+              if (rec > 44) { rec = 0; pisada(Math.abs(st.vel)); }
+              if (pluma) { A.pon(pluma.g.gain, clamp(Math.abs(st.vel) / 8, 0, 1) * (.035 + Math.random() * .03), .03); A.pon(pluma.f.frequency, 2800 + Math.random() * 1500, .03); }
+              if (t < f.T) requestAnimationFrame(paso); else { st.s = s1; st.vel = 0; if (pluma) pluma.para(.2); ok(); }
+            })();
+          });
+          if (gen !== st.gen) return;
+          // se para: un paso atrás, la luz de oro, el sello de lacre (¡pum!) y el arpa
+          st.elegido = ((s1 % n) + n) % n;
+          if (A.ac) { A.nota(105, { tipo: 'sine', t: .2, dur: .32, gan: .38, desliza: 52 }); A.clic({ f: 380, q: .6, gan: .45, dur: .1, t: .2 }); A.clic({ f: 2400, q: 1, gan: .08, dur: .04, t: .21 }); arpa(); }
+          await new Promise(ok => { const t0 = performance.now(), d = RM ? 300 : 800; (function p_() { if (gen !== st.gen) return ok(); const u = clamp((performance.now() - t0) / d, 0, 1);
+            st.brinco = mov * 16 * Math.sin(Math.PI * clamp(u * 2.6, 0, 1)); st.luz = eo(clamp(u * 1.6, 0, 1), 2); st.sello = clamp((u - (RM ? 0 : .2)) / .8, 0, 1);
+            if (u < 1) requestAnimationFrame(p_); else ok(); })(); });
+        },
+        quita() { vivo = false; cancelAnimationFrame(raf); }
+      };
+    }
+  };
+
+  /* ── «modpuente» · Modulación · Sesión 3 «Construye el puente»: el puente colgante del barranco ──
+     (2-nov-2026, v5) El puente de tablones y cuerdas que cruza el barranco al atardecer, visto desde encima, como si fueras
+     tú quien lo cruza: al fondo, el sol se pone detrás del otro lado (con su ciudad y su cascada) y abajo, la niebla del
+     barranco. Cada tablón lleva un nombre pintado (el bombo se repite a lo largo del puente: con muchos nombres, el puente es
+     más largo). Un farol cuelga de la cuerda; los tablones van pasando por debajo de su luz de uno en uno, deprisa y luego
+     frenando, cada uno con su crujido de madera; al pararse, el tablón que queda bajo el farol se ilumina en oro y suena la
+     cadencia del puente: dominante con séptima → tónica (sol7 → do mayor). Viento suave de fondo. */
+  TEMAS.modpuente = {
+    fuentes: ['400 108px "Marcellus SC"', '400 34px "Marcellus SC"', '400 22px "Atkinson Hyperlegible"', '700 22px "Atkinson Hyperlegible"'],
+    nombreFit: { min: 52 },
+    css: `
+.lmv-t-modpuente .lmv-velo{background:radial-gradient(ellipse at 50% 38%,rgba(58,34,52,.975) 0%,rgba(28,18,30,.988) 60%,rgba(10,6,12,.995) 100%)}
+.lmv-t-modpuente .lmv-cab{top:26px}
+.lmv-t-modpuente .lmv-ceja{font:400 34px/1 "Marcellus SC",Georgia,"Times New Roman",serif;letter-spacing:.34em;color:#ffe3a6;text-shadow:0 2px 14px rgba(40,10,30,.95),0 0 30px rgba(60,20,40,.6)}
+.lmv-t-modpuente .lmv-grupo{margin-top:10px;font:400 21px/1 "Atkinson Hyperlegible","Segoe UI",system-ui,sans-serif;letter-spacing:.06em;color:rgba(255,240,222,.86);text-shadow:0 2px 10px rgba(40,10,30,.95)}
+.lmv-t-modpuente .lmv-nombre{top:104px;left:420px;right:420px;height:150px;display:flex;align-items:center;justify-content:center;font:400 108px/1.08 "Marcellus SC",Georgia,"Times New Roman",serif;letter-spacing:.02em;color:#fff1c8;text-shadow:0 0 24px rgba(255,190,90,.8),0 0 70px rgba(255,150,60,.45),0 4px 18px rgba(30,8,20,.95)}
+.lmv-t-modpuente .lmv-nota{top:258px;font:400 23px/1.3 "Atkinson Hyperlegible","Segoe UI",system-ui,sans-serif;color:#ffe9d0;text-shadow:0 2px 10px rgba(30,8,20,.95)}
+.lmv-t-modpuente .lmv-pie{bottom:30px}
+.lmv-t-modpuente .lmv-b{display:inline-flex;align-items:center;gap:12px;padding:15px 32px;border-radius:8px;border:2px solid #e8b860;background:rgba(30,16,28,.84);color:#ffeccc;font:400 25px/1 "Marcellus SC",Georgia,serif;letter-spacing:.12em;box-shadow:0 10px 30px rgba(0,0,0,.45);transition:background .2s,transform .15s}
+.lmv-t-modpuente .lmv-b:hover{background:rgba(64,34,48,.92);transform:translateY(-2px)}
+.lmv-t-modpuente .lmv-b.lmv-otra{background:linear-gradient(#ffdc92,#e6a94c 60%,#b77d2c);border-color:#ffe3a6;color:#2a1608}
+.lmv-t-modpuente .lmv-b.lmv-otra:hover{background:linear-gradient(#ffe6ab,#efb55c 60%,#c48a36)}
+.lmv-t-modpuente .lmv-cargando{color:#ffc977}
+.lmv-of-modpuente .lmv-ob{font-family:"Marcellus SC",Georgia,serif;font-weight:400;letter-spacing:.1em;border:2px solid #e8b860;border-radius:8px;background:linear-gradient(#3a2236,#22131f);color:#ffe3a6;box-shadow:0 18px 50px rgba(0,0,0,.6),0 0 40px rgba(255,170,80,.22)}
+.lmv-of-modpuente .lmv-og,.lmv-of-modpuente .lmv-no{font-family:"Atkinson Hyperlegible","Segoe UI",system-ui,sans-serif;color:#f3dcc8}
+@media (prefers-reduced-motion:reduce){.lmv-t-modpuente .lmv-nombre.ve{animation:none;opacity:1}}`,
+    crea(esc, o) {
+      const L = lienzo(esc), g = L.g, RM = reducido(), mov = RM ? 0 : 1;
+      const MA = px => `400 ${px}px "Marcellus SC", Georgia, "Times New Roman", serif`;
+      // la cámara (en metros): de pie sobre el puente, mirando hacia el otro lado
+      const CX = 960, Y0 = 404, F = 1400, HC = .7;            // horizonte, focal, altura de los ojos sobre los tablones
+      const SP = .78, PD = .5, BW = .86, HR = 1.05, ZF = 2.2;  // paso entre tablones, fondo del tablón, medio ancho, cuerda de la mano, el tablón del farol
+      const ZMAX = 84, SOLX = 960, SOLY = 386;
+      const st = { t: 0, items: [], n: 0, pos: 0, vel: 0, gen: 0, elegido: null, oro: 0, destello: 0, balanceo: 0, motas: [], chispas: [], nieblas: [] };
+      for (let i = 0; i < 46; i++) st.motas.push({ x: Math.random() * 1920, y: 300 + Math.random() * 780, r: .7 + Math.random() * 1.8, v: 5 + Math.random() * 12, f: Math.random() * 6.3 });
+      for (let i = 0; i < 8; i++) st.nieblas.push({ x: Math.random() * 2200 - 140, y: 640 + Math.random() * 380, rx: 260 + Math.random() * 260, ry: 40 + Math.random() * 46, v: (6 + Math.random() * 12) * (i % 2 ? 1 : -1), a: .1 + Math.random() * .1 });
+      let fijo = null, raf = 0, vivo = true;
+      const circ = (g, x, y, r) => { g.beginPath(); g.arc(x, y, r, 0, 6.283); };
+      const hash = j => { const r = semilla(((j * 2654435761) ^ 0x5bd1e995) >>> 0); return [r(), r(), r(), r(), r()]; };
+      const mezcla = (a, b, u) => [lerp(a[0], b[0], u), lerp(a[1], b[1], u), lerp(a[2], b[2], u)];
+      const rgb = (c, a) => `rgba(${Math.round(clamp(c[0], 0, 255))},${Math.round(clamp(c[1], 0, 255))},${Math.round(clamp(c[2], 0, 255))},${a == null ? 1 : a})`;
+      const NIEBLA = [214, 142, 130];
+
+      /* ── lo que no se mueve: el cielo del atardecer, las montañas, el otro lado del barranco (con su ciudad y su cascada), las paredes y la niebla ── */
+      function pintaFondo(g) {
+        const r = semilla(77);
+        let gr = g.createLinearGradient(0, 0, 0, 470);
+        gr.addColorStop(0, '#271f4c'); gr.addColorStop(.3, '#5a336a'); gr.addColorStop(.56, '#b8566a'); gr.addColorStop(.76, '#ee8f54'); gr.addColorStop(.92, '#ffc477'); gr.addColorStop(1, '#ffdc98');
+        g.fillStyle = gr; g.fillRect(0, 0, 1920, 1080);
+        // el resplandor del sol
+        gr = g.createRadialGradient(SOLX, SOLY, 10, SOLX, SOLY, 820); gr.addColorStop(0, 'rgba(255,236,170,.75)'); gr.addColorStop(.25, 'rgba(255,196,120,.32)'); gr.addColorStop(1, 'rgba(255,170,110,0)');
+        g.fillStyle = gr; g.fillRect(0, 0, 1920, 1080);
+        // nubes alargadas, encendidas por debajo
+        for (let i = 0; i < 16; i++) {
+          const x = r() * 2100 - 90, y = 50 + Math.pow(r(), 1.3) * 290, w = 220 + r() * 420, h = 10 + r() * 18, cerca = clamp(1 - Math.abs(x - SOLX) / 1100, 0, 1);
+          g.save(); g.translate(x, y); g.scale(1, h / w);
+          let rg = g.createRadialGradient(0, -w * .25, 0, 0, 0, w); rg.addColorStop(0, `rgba(${lerp(120, 255, cerca)},${lerp(70, 170, cerca)},${lerp(110, 120, cerca)},.42)`); rg.addColorStop(1, 'rgba(120,70,110,0)');
+          g.fillStyle = rg; circ(g, 0, 0, w); g.fill();
+          rg = g.createRadialGradient(0, w * .35, 0, 0, w * .35, w * .8); rg.addColorStop(0, `rgba(255,${lerp(150, 214, cerca)},${lerp(120, 150, cerca)},.38)`); rg.addColorStop(1, 'rgba(255,170,130,0)');
+          g.fillStyle = rg; circ(g, 0, w * .35, w * .8); g.fill();
+          g.restore();
+        }
+        // montañas lejanas (dos capas, violeta y malva, con el filo encendido)
+        const sierra = (base, alt, paso, col, filo, sem) => {
+          const q = semilla(sem); g.beginPath(); g.moveTo(-20, 470);
+          let y = base; for (let x = -20; x <= 1940; x += paso) { y = clamp(y + (q() - .5) * alt, base - alt * 1.6, base + alt * .4); const lejos = Math.abs(x - SOLX) < 300 ? Math.pow(1 - Math.abs(x - SOLX) / 300, 1.5) * 44 : 0; g.lineTo(x, y + lejos); }
+          g.lineTo(1940, 470); g.closePath(); g.fillStyle = col; g.fill(); g.strokeStyle = filo; g.lineWidth = 2; g.stroke();
+        };
+        sierra(338, 38, 46, 'rgba(150,92,132,.78)', 'rgba(255,190,150,.35)', 5);
+        // el sol, medio escondido detrás del otro lado
+        gr = g.createRadialGradient(SOLX, SOLY, 0, SOLX, SOLY, 64); gr.addColorStop(0, '#fffbe8'); gr.addColorStop(.72, '#ffe6a8'); gr.addColorStop(1, 'rgba(255,214,140,0)');
+        g.fillStyle = gr; circ(g, SOLX, SOLY, 64); g.fill();
+        sierra(372, 30, 34, 'rgba(104,64,104,.9)', 'rgba(255,170,120,.4)', 9);
+        // el otro lado: la meseta, con su ciudad (torres y ventanas encendidas) y el borde encendido por el sol
+        const meseta = x => 400 + 10 * Math.exp(-Math.pow((x - CX) / 150, 2)) + 6 * Math.sin(x * .011) + 4 * Math.sin(x * .037 + 1) + (x < 420 ? (420 - x) * -.09 : 0) + (x > 1500 ? (x - 1500) * -.08 : 0);
+        const torre = (x, w, h, punta) => { const y = meseta(x); g.fillRect(x - w / 2, y - h, w, h + 4); if (punta) { g.beginPath(); g.moveTo(x - w / 2 - 3, y - h); g.lineTo(x, y - h - punta); g.lineTo(x + w / 2 + 3, y - h); g.closePath(); g.fill(); } };
+        g.fillStyle = 'rgba(74,44,78,.96)';
+        [[1112, 14, 34, 16], [1136, 22, 22, 0], [1160, 12, 46, 20], [1186, 26, 18, 0], [1210, 12, 30, 12], [742, 10, 24, 12], [760, 18, 14, 0], [690, 8, 18, 10]].forEach(([x, w, h, p]) => torre(x, w, h, p));
+        g.fillStyle = 'rgba(255,214,140,.9)'; [[1160, -30], [1112, -22], [1136, -12], [1210, -18], [742, -14]].forEach(([x, dy]) => g.fillRect(x - 1.5, meseta(x) + dy, 3, 4));
+        g.beginPath(); g.moveTo(-20, 1080); for (let x = -20; x <= 1940; x += 10) g.lineTo(x, meseta(x)); g.lineTo(1940, 1080); g.closePath();
+        gr = g.createLinearGradient(0, 390, 0, 760); gr.addColorStop(0, '#4b2f52'); gr.addColorStop(.5, '#3a2546'); gr.addColorStop(1, '#2c1d3a'); g.fillStyle = gr; g.fill();
+        g.beginPath(); for (let x = -20; x <= 1940; x += 10) { const y = meseta(x); if (x === -20) g.moveTo(x, y); else g.lineTo(x, y); }
+        g.strokeStyle = 'rgba(255,178,104,.75)'; g.lineWidth = 3; g.stroke();
+        // la pared del otro lado: estratos y grietas, en sombra (el sol está detrás)
+        g.save(); g.beginPath(); g.moveTo(-20, 1080); for (let x = -20; x <= 1940; x += 10) g.lineTo(x, meseta(x) + 2); g.lineTo(1940, 1080); g.closePath(); g.clip();
+        for (let i = 0; i < 26; i++) { const y = 420 + i * 13 + r() * 8; g.strokeStyle = `rgba(${r() < .5 ? '20,10,30' : '150,96,120'},${.12 + r() * .14})`; g.lineWidth = 1 + r() * 2.5; g.beginPath(); for (let x = -20; x <= 1940; x += 40) g.lineTo(x, y + Math.sin(x * .006 + i) * 6 + (r() - .5) * 4); g.stroke(); }
+        for (let i = 0; i < 40; i++) { const x = r() * 1920, y = 410 + r() * 200; g.strokeStyle = 'rgba(20,10,28,.28)'; g.lineWidth = 1.2; g.beginPath(); g.moveTo(x, y); g.lineTo(x + (r() - .5) * 16, y + 30 + r() * 70); g.stroke(); }
+        // la cascada que cae del otro lado a la niebla
+        const cx0 = 560; gr = g.createLinearGradient(cx0 - 26, 0, cx0 + 26, 0); gr.addColorStop(0, 'rgba(220,200,230,0)'); gr.addColorStop(.3, 'rgba(240,220,236,.55)'); gr.addColorStop(.5, 'rgba(255,240,240,.75)'); gr.addColorStop(.7, 'rgba(240,220,236,.55)'); gr.addColorStop(1, 'rgba(220,200,230,0)');
+        const y0c = meseta(cx0); g.fillStyle = gr; g.beginPath(); g.moveTo(cx0 - 16, y0c - 2); g.quadraticCurveTo(cx0, y0c - 7, cx0 + 16, y0c - 2); g.bezierCurveTo(cx0 + 22, y0c + 60, cx0 + 30, 600, cx0 + 44, 740); g.lineTo(cx0 - 44, 740); g.bezierCurveTo(cx0 - 30, 600, cx0 - 22, y0c + 60, cx0 - 16, y0c - 2); g.closePath(); g.globalAlpha = .7; g.fill(); g.globalAlpha = 1;
+        for (let i = 0; i < 46; i++) { const u = r(), y = y0c + 6 + r() * 300, half = 16 + (y - y0c) * .07, x = cx0 + (u - .5) * 2 * half * .8; g.fillStyle = `rgba(255,246,246,${.12 + r() * .25})`; g.fillRect(x, y, 1.2, 16 + r() * 60); }
+        gr = g.createRadialGradient(cx0, 690, 4, cx0, 690, 120); gr.addColorStop(0, 'rgba(255,236,236,.5)'); gr.addColorStop(1, 'rgba(255,236,236,0)'); g.fillStyle = gr; g.save(); g.translate(cx0, 690); g.scale(1, .45); g.translate(-cx0, -690); g.fillRect(cx0 - 130, 560, 260, 260); g.restore();
+        g.restore();
+        // las paredes del barranco a izquierda y derecha, que se van hacia el fondo
+        const pared = (lado) => {
+          const q = semilla(lado > 0 ? 31 : 17), xb = lado > 0 ? 1920 : 0, pts = [];
+          for (let k = 0; k <= 14; k++) { const u = k / 14, y = lerp(meseta(lado > 0 ? 1700 : 220) - 6, 1100, Math.pow(u, 1.25)); pts.push([xb - lado * (lerp(lado > 0 ? 470 : 520, 150, u) + (q() - .5) * 70), y]); }
+          g.beginPath(); g.moveTo(xb + lado * 20, pts[0][1] - 40); pts.forEach(p => g.lineTo(p[0], p[1])); g.lineTo(xb + lado * 20, 1100); g.closePath();
+          gr = g.createLinearGradient(xb, 0, xb - lado * 520, 0); gr.addColorStop(0, '#24172c'); gr.addColorStop(.7, '#3d2742'); gr.addColorStop(1, '#5a3448'); g.fillStyle = gr; g.fill();
+          g.save(); g.clip();
+          for (let i = 0; i < 22; i++) { const y = pts[0][1] + i * 32 + q() * 12; g.strokeStyle = `rgba(${q() < .5 ? '14,8,20' : '170,100,110'},${.14 + q() * .16})`; g.lineWidth = 1.5 + q() * 3; g.beginPath(); g.moveTo(xb, y + lado * 0); g.lineTo(xb - lado * 600, y - 30 + q() * 20); g.stroke(); }
+          g.restore();
+          g.beginPath(); pts.forEach((p, i) => i ? g.lineTo(p[0], p[1]) : g.moveTo(p[0], p[1])); g.strokeStyle = 'rgba(255,170,120,.16)'; g.lineWidth = 2; g.stroke();
+          // facetas de roca, con el canto encendido arriba
+          for (let i = 0; i < 9; i++) { const u = i / 9, p = pts[Math.floor(u * 12)], w = 80 + q() * 160, h = 40 + q() * 70, x = p[0] + lado * (20 + q() * 140), y = p[1] + 10;
+            g.beginPath(); g.moveTo(x, y); g.lineTo(x + lado * w * .45, y - 6 - q() * 10); g.lineTo(x + lado * w, y + 4); g.lineTo(x + lado * w * (.7 + q() * .3), y + h); g.lineTo(x + lado * w * .3, y + h * (.7 + q() * .4)); g.lineTo(x - lado * 6, y + h * .5); g.closePath();
+            g.fillStyle = `rgba(${q() < .5 ? '28,16,34' : '86,52,74'},${.16 + q() * .16})`; g.fill();
+            g.strokeStyle = 'rgba(255,170,120,.12)'; g.lineWidth = 1.2; g.beginPath(); g.moveTo(x, y); g.lineTo(x + lado * w * .45, y - 6); g.stroke(); }
+          // cipreses en lo alto, recortados contra el cielo
+          for (let i = 0; i < 7; i++) { const x = xb - lado * (40 + i * 62 + q() * 30), y = pts[0][1] - 30 + i * 3, h = 70 + q() * 80, w = 14 + q() * 10;
+            g.fillStyle = 'rgba(38,26,44,.97)'; g.beginPath(); g.moveTo(x, y - h); g.quadraticCurveTo(x + w, y - h * .45, x + w * .6, y + 10); g.lineTo(x - w * .6, y + 10); g.quadraticCurveTo(x - w, y - h * .45, x, y - h); g.fill(); }
+        };
+        pared(-1); pared(1);
+        // la niebla del fondo del barranco, encendida por el atardecer
+        gr = g.createLinearGradient(0, 560, 0, 1080); gr.addColorStop(0, 'rgba(240,160,140,0)'); gr.addColorStop(.3, 'rgba(236,160,146,.62)'); gr.addColorStop(.65, 'rgba(206,134,138,.86)'); gr.addColorStop(1, 'rgba(150,92,120,.92)');
+        g.fillStyle = gr; g.fillRect(0, 560, 1920, 520);
+        gr = g.createRadialGradient(SOLX, 700, 20, SOLX, 700, 760); gr.addColorStop(0, 'rgba(255,214,160,.38)'); gr.addColorStop(1, 'rgba(255,214,160,0)'); g.fillStyle = gr; g.fillRect(0, 420, 1920, 660);
+        // viñeta
+        gr = g.createRadialGradient(CX, 520, 380, CX, 520, 1200); gr.addColorStop(0, 'rgba(0,0,0,0)'); gr.addColorStop(1, 'rgba(20,6,24,.62)'); g.fillStyle = gr; g.fillRect(0, 0, 1920, 1080);
+      }
+      function ajusta(s) { if (L.ajusta(s) || !fijo) fijo = capaFija(L.k, pintaFondo); }
+
+      /* ── el puente: las cuerdas de abajo, los tablones (con sus nombres), los tirantes y las cuerdas de la mano ── */
+      const caben = new Map();
+      function rotulo(nom, ancho, alto) {                 // cuánto cabe un nombre en un tablón (guardado por tamaños)
+        const kk = nom + '|' + Math.round(ancho / 8) + '|' + Math.round(alto / 3);
+        let r = caben.get(kk); if (!r) { if (caben.size > 600) caben.clear(); r = rotula(g, MA, nom, ancho, alto, alto * .62, Math.max(8, alto * .3), true); caben.set(kk, r); }
+        return r;
+      }
+      function pintaPuente() {
+        const camZ = st.pos * SP - ZF, sw = st.balanceo;
+        const P = (x, y, z) => { const s = F / z; return [CX + (x + sw * Math.min(1, z / 26)) * s, Y0 + (HC - y) * s, s]; };
+        const niebla = z => 1 - Math.exp(-z / 24);
+        const j0 = Math.floor((camZ + .62) / SP), j1 = Math.ceil((camZ + ZMAX) / SP);
+        const zDe = j => j * SP - camZ;
+        // las dos cuerdas de abajo (se ven entre los tablones)
+        g.lineCap = 'round';
+        [-1, 1].forEach(sg => { for (let j = j1; j > j0; j--) { const za = Math.max(.75, zDe(j - 1)), zb = zDe(j); if (zb < .8) continue; const a = P(sg * (BW - .06), -.05, za), b = P(sg * (BW - .06), -.05, zb);
+          g.strokeStyle = rgb(mezcla([70, 46, 34], NIEBLA, niebla(zb))); g.lineWidth = Math.max(1, .035 * b[2]); g.beginPath(); g.moveTo(a[0], a[1]); g.lineTo(b[0], b[1]); g.stroke(); } });
+        // los tablones, de lejos a cerca
+        const n = st.n, v = Math.abs(st.vel), borro = clamp(1 - (v - 7) / 18, .28, 1);
+        for (let j = j1; j >= j0; j--) {
+          const zc = zDe(j), z1 = zc - PD / 2, z2 = zc + PD / 2; if (z1 < .62 || zc > ZMAX) continue;
+          const h = hash(j), dl = (h[0] - .5) * .1, dr = (h[1] - .5) * .1, sk = (h[2] - .5) * .05, fo = niebla(zc);
+          g.globalAlpha = clamp(1 - (zc - 30) / 40, 0, 1);
+          const A_ = P(-BW - dl, 0, z1 + sk), B_ = P(BW + dr, 0, z1 - sk), C_ = P(BW + dr, 0, z2 - sk), D_ = P(-BW - dl, 0, z2 + sk);
+          const A2 = P(-BW - dl, -.055, z1 + sk), B2 = P(BW + dr, -.055, z1 - sk);
+          const elegido = st.elegido != null && j === st.elegido, luz = Math.exp(-Math.pow(j - st.pos, 2) / (2 * .3 * .3)) * (1 - st.oro * .6), oro = elegido ? st.oro : 0;
+          const cerca = clamp((ZF - zc) / (SP * .85), 0, 1), apaga = (elegido ? 1 : 1 - .42 * st.oro) * (1 - .4 * cerca);
+          let base = [112 + h[3] * 30, 74 + h[3] * 18, 48 + h[4] * 12];
+          base = mezcla(base, [255, 196, 120], .1 + .12 * (1 - fo));                     // el atardecer que roza la madera
+          base = base.map((c, q) => c * (1 + .55 * luz) + [70, 44, 12][q] * luz);       // la luz del farol
+          base = mezcla(base.map(c => c * apaga), [255, 214, 120], oro * .85);
+          const lejos = mezcla(NIEBLA, [255, 206, 150], clamp((zc - 20) / 50, 0, 1)), cima = mezcla(base, lejos, fo * .94), canto = mezcla(base.map(c => c * .5), lejos, fo * .94);
+          // el canto (lo que se ve del grueso del tablón)
+          g.beginPath(); g.moveTo(A_[0], A_[1]); g.lineTo(B_[0], B_[1]); g.lineTo(B2[0], B2[1]); g.lineTo(A2[0], A2[1]); g.closePath(); g.fillStyle = rgb(canto); g.fill();
+          // la cara de arriba
+          g.beginPath(); g.moveTo(A_[0], A_[1]); g.lineTo(B_[0], B_[1]); g.lineTo(C_[0], C_[1]); g.lineTo(D_[0], D_[1]); g.closePath();
+          const gr = g.createLinearGradient(A_[0], 0, B_[0], 0); gr.addColorStop(0, rgb(cima.map(c => c * .86))); gr.addColorStop(.55, rgb(cima)); gr.addColorStop(1, rgb(cima.map(c => c * (.9 + .25 * luz))));
+          g.fillStyle = gr; g.fill();
+          const th = A_[1] - D_[1], ancho = B_[0] - A_[0];
+          if (th > 5) {
+            g.save(); g.clip();
+            // vetas de la madera y desgaste
+            const q = semilla(j * 31 + 7); g.lineWidth = Math.max(.6, th / 60);
+            for (let i = 0; i < 6; i++) { const u = .12 + q() * .76, y = lerp(A_[1], D_[1], u); g.strokeStyle = `rgba(40,22,10,${(.12 + q() * .14) * (1 - fo)})`; g.beginPath(); g.moveTo(A_[0], y); g.bezierCurveTo(A_[0] + ancho * .3, y + (q() - .5) * th * .2, A_[0] + ancho * .7, y + (q() - .5) * th * .2, B_[0], y + (q() - .5) * th * .1); g.stroke(); }
+            if (q() < .5) { g.fillStyle = `rgba(30,16,8,${.25 * (1 - fo)})`; g.beginPath(); g.ellipse(A_[0] + ancho * (.15 + q() * .7), lerp(A_[1], D_[1], .5), th * .12, th * .07, 0, 0, 6.283); g.fill(); }
+            // el brillo del borde de delante
+            g.fillStyle = `rgba(255,220,170,${(.1 + .25 * luz + .4 * oro) * (1 - fo)})`; g.fillRect(A_[0], A_[1] - Math.max(1, th * .06), ancho, Math.max(1, th * .06));
+            g.restore();
+            // las ataduras de cuerda en los dos extremos
+            if (th > 9) [-1, 1].forEach(sg => { const a = P(sg * (BW - .06), 0, z1 - sk * sg), b = P(sg * (BW - .06), 0, z2 - sk * sg), w = Math.max(1.2, .032 * a[2]);
+              g.lineCap = 'butt'; g.strokeStyle = rgb(mezcla([84, 58, 38], NIEBLA, fo * .9), .9); g.lineWidth = w; g.beginPath(); g.moveTo(a[0], a[1] + 2); g.lineTo(b[0], b[1] - 1); g.stroke();
+              g.strokeStyle = `rgba(40,24,14,${.55 * (1 - fo)})`; g.lineWidth = Math.max(.8, w * .12); for (let i = 1; i < 4; i++) { const x = lerp(a[0], b[0], i / 4), y = lerp(a[1], b[1], i / 4); g.beginPath(); g.moveTo(x - w / 2, y + w * .12); g.lineTo(x + w / 2, y - w * .12); g.stroke(); } g.lineCap = 'round'; });
+          }
+          // el nombre, pintado
+          if (th > 12 && n && cerca < 1) {
+            const nom = st.items[((j % n) + n) % n], R = rotulo(nom, ancho * .74, th * .84), lh = R.px * 1.02, yc = (A_[1] + D_[1]) / 2 + R.px * .05, xc = (A_[0] + B_[0] + C_[0] + D_[0]) / 4;
+            const al = (1 - fo * 1.1) * (1 - cerca) * (elegido ? 1 : borro * (1 - .35 * st.oro));
+            if (al > .04) {
+              g.save(); g.font = MA(R.px); g.textAlign = 'center'; g.textBaseline = 'middle';
+              R.lineas.forEach((t, i) => { const y = yc + (i - (R.lineas.length - 1) / 2) * lh;
+                if (oro > 0) { g.shadowColor = `rgba(255,236,170,${oro})`; g.shadowBlur = R.px * .5; g.fillStyle = `rgba(${Math.round(lerp(246, 58, oro))},${Math.round(lerp(232, 32, oro))},${Math.round(lerp(204, 10, oro))},${al})`; }
+                else { g.fillStyle = `rgba(30,14,6,${al * .45})`; textoCabe(g, t, xc + R.px * .03, y + R.px * .05, ancho * .76); g.fillStyle = `rgba(${Math.round(244 + 11 * luz)},${Math.round(230 + 10 * luz)},${Math.round(200 - 30 * luz)},${al * (.84 + .16 * luz)})`; }
+                textoCabe(g, t, xc, y, ancho * .76); });
+              g.restore();
+            }
+          }
+        }
+        g.globalAlpha = 1;
+        // los tirantes y las cuerdas de la mano (con su comba entre tirante y tirante)
+        [-1, 1].forEach(sg => {
+          const xr = sg * (BW + .03);
+          for (let j = j1; j >= j0; j--) {
+            const za = zDe(j), zb = zDe(j + 1); if (za < .5 || za > ZMAX) continue;
+            g.globalAlpha = clamp(1 - (za - 22) / 30, 0, 1); if (!g.globalAlpha) continue;
+            const fo = niebla(za), col = mezcla([96, 68, 46], NIEBLA, fo * .9), a = P(xr, HR, za), b = P(xr, HR, zb), c = P(xr, HR - .05, (za + zb) / 2), d = P(sg * (BW - .1), 0, za);
+            g.strokeStyle = rgb(col); g.lineWidth = Math.max(.8, .015 * a[2]); g.beginPath(); g.moveTo(a[0], a[1]); g.lineTo(d[0], d[1]); g.stroke();
+            g.lineWidth = Math.max(1.2, .04 * a[2]); g.beginPath(); g.moveTo(a[0], a[1]); g.quadraticCurveTo(c[0], c[1], b[0], b[1]); g.stroke();
+            g.strokeStyle = `rgba(255,196,130,${.45 * (1 - fo)})`; g.lineWidth = Math.max(.6, .014 * a[2]); g.beginPath(); g.moveTo(a[0], a[1] - .016 * a[2]); g.quadraticCurveTo(c[0], c[1] - .016 * a[2], b[0], b[1] - .016 * b[2]); g.stroke();
+          }
+        });
+        g.globalAlpha = 1;
+        return P;
+      }
+
+      /* ── el farol: cuelga de la cuerda de la derecha, encima del tablón que se lee ── */
+      function pintaFarol(P) {
+        const a = P(BW + .03, HR, ZF), x = a[0], y = a[1] - 4, ang = st.farolAng || 0, brillo = .85 + .15 * Math.sin(st.t * 13) * Math.sin(st.t * 7.3) * mov + .6 * st.destello;
+        // la luz sobre el tablón
+        const yT = P(0, 0, ZF)[1];
+        g.save(); g.globalCompositeOperation = 'lighter';
+        let gr = g.createRadialGradient(x - 160, yT, 30, x - 160, yT, 760); gr.addColorStop(0, `rgba(255,190,90,${.26 * brillo})`); gr.addColorStop(.5, `rgba(255,150,60,${.1 * brillo})`); gr.addColorStop(1, 'rgba(255,150,60,0)');
+        g.fillStyle = gr; g.save(); g.translate(x - 160, yT); g.scale(1, .32); g.translate(-(x - 160), -yT); g.fillRect(x - 960, yT - 800, 1920, 1600); g.restore();
+        g.restore();
+        g.save(); g.translate(x, y); g.rotate(ang);
+        // la polea en la cuerda y la cadena
+        g.fillStyle = '#2a1c14'; circ(g, 0, 0, 13); g.fill(); g.strokeStyle = '#c99a52'; g.lineWidth = 3; circ(g, 0, 0, 10); g.stroke();
+        g.strokeStyle = '#3a2a1c'; g.lineWidth = 3; for (let i = 0; i < 6; i++) { g.beginPath(); g.ellipse(0, 18 + i * 12, i % 2 ? 2 : 4, 6, 0, 0, 6.283); g.stroke(); }
+        g.translate(0, 92);
+        // el resplandor
+        g.save(); g.globalCompositeOperation = 'lighter';
+        gr = g.createRadialGradient(0, 54, 6, 0, 54, 230); gr.addColorStop(0, `rgba(255,214,130,${.55 * brillo})`); gr.addColorStop(.35, `rgba(255,170,80,${.2 * brillo})`); gr.addColorStop(1, 'rgba(255,150,60,0)');
+        g.fillStyle = gr; g.fillRect(-240, -180, 480, 480); g.restore();
+        // el cuerpo: tapa, cristales, rejilla y base (hierro con remates de latón)
+        g.fillStyle = '#2b2018'; g.beginPath(); g.moveTo(-10, 0); g.lineTo(10, 0); g.lineTo(34, 22); g.lineTo(-34, 22); g.closePath(); g.fill();
+        g.strokeStyle = '#d4a65c'; g.lineWidth = 2; g.beginPath(); g.moveTo(-34, 22); g.lineTo(34, 22); g.stroke();
+        g.beginPath(); g.arc(0, -4, 7, Math.PI, 0); g.strokeStyle = '#2b2018'; g.lineWidth = 4; g.stroke();
+        gr = g.createLinearGradient(0, 24, 0, 96); gr.addColorStop(0, `rgba(255,236,170,${.75 + .25 * brillo})`); gr.addColorStop(.5, `rgba(255,190,90,${.85})`); gr.addColorStop(1, 'rgba(220,120,40,.9)');
+        g.fillStyle = gr; rr(g, -27, 24, 54, 72, 6); g.fill();
+        // la llama
+        gr = g.createRadialGradient(0, 66, 2, 0, 62, 20); gr.addColorStop(0, '#fffef0'); gr.addColorStop(.5, 'rgba(255,230,150,.9)'); gr.addColorStop(1, 'rgba(255,190,90,0)');
+        g.fillStyle = gr; g.beginPath(); g.ellipse(0, 62 + Math.sin(st.t * 9) * mov, 7 + 2 * st.destello, 15 + 4 * st.destello, 0, 0, 6.283); g.fill();
+        g.strokeStyle = '#2b2018'; g.lineWidth = 4; rr(g, -27, 24, 54, 72, 6); g.stroke();
+        g.lineWidth = 3; g.beginPath(); g.moveTo(0, 24); g.lineTo(0, 96); g.moveTo(-27, 60); g.lineTo(27, 60); g.stroke();
+        g.fillStyle = '#2b2018'; rr(g, -32, 94, 64, 12, 4); g.fill(); g.strokeStyle = '#d4a65c'; g.lineWidth = 2; g.beginPath(); g.moveTo(-32, 96); g.lineTo(32, 96); g.stroke();
+        g.restore();
+      }
+      function pintaBruma() {                              // la luz del sol se come el final del puente
+        g.save(); g.globalCompositeOperation = 'lighter';
+        const gr = g.createRadialGradient(CX, 412, 4, CX, 412, 200); gr.addColorStop(0, 'rgba(255,224,170,.7)'); gr.addColorStop(.35, 'rgba(255,196,130,.24)'); gr.addColorStop(1, 'rgba(255,170,120,0)');
+        g.translate(CX, 412); g.scale(1, .55); g.translate(-CX, -412); g.fillStyle = gr; g.fillRect(CX - 210, 200, 420, 420); g.restore();
+      }
+      function pintaRayos() {
+        g.save(); g.globalCompositeOperation = 'lighter';
+        const a = .045 + .1 * st.oro, giro = st.t * .02 * mov;
+        for (let i = 0; i < 14; i++) {
+          const ang = Math.PI + .1 + i * (Math.PI - .2) / 13 + Math.sin(giro + i) * .03, w = .025 + .02 * Math.sin(i * 5.3);
+          const gr = g.createRadialGradient(SOLX, SOLY, 40, SOLX, SOLY, 1100); gr.addColorStop(0, `rgba(255,220,150,${a})`); gr.addColorStop(1, 'rgba(255,220,150,0)');
+          g.fillStyle = gr; g.beginPath(); g.moveTo(SOLX, SOLY); g.arc(SOLX, SOLY, 1100, ang - w, ang + w); g.closePath(); g.fill();
+        }
+        g.restore();
+      }
+      function pintaNieblas(dt) {
+        g.save();
+        st.nieblas.forEach(nb => { nb.x += nb.v * dt * mov; if (nb.x > 2200) nb.x = -300; if (nb.x < -300) nb.x = 2200;
+          g.save(); g.translate(nb.x, nb.y); g.scale(1, nb.ry / nb.rx); const gr = g.createRadialGradient(0, 0, 0, 0, 0, nb.rx); gr.addColorStop(0, `rgba(255,214,200,${nb.a})`); gr.addColorStop(1, 'rgba(255,214,200,0)');
+          g.fillStyle = gr; circ(g, 0, 0, nb.rx); g.fill(); g.restore(); });
+        g.restore();
+      }
+      function pintaMotas(dt) {
+        g.save(); g.globalCompositeOperation = 'lighter';
+        if (mov) st.motas.forEach(p => { p.y -= p.v * dt; p.x += Math.sin(st.t * .5 + p.f) * 8 * dt; if (p.y < 260) { p.y = 1090; p.x = Math.random() * 1920; }
+          const a = clamp(.2 + .18 * Math.sin(st.t * 1.4 + p.f) + .3 * st.oro, 0, .7); g.fillStyle = `rgba(255,214,150,${a})`; circ(g, p.x, p.y, p.r); g.fill(); });
+        st.chispas = st.chispas.filter(c => { c.v -= dt; if (c.v <= 0) return false; c.x += c.vx * dt; c.y += c.vy * dt; c.vy += 40 * dt; c.vx *= .985;
+          g.fillStyle = `rgba(255,${Math.round(200 + 40 * c.v)},120,${clamp(c.v / 1.2, 0, 1)})`; circ(g, c.x, c.y, c.r); g.fill(); return true; });
+        g.restore();
+      }
+      function pintaOro(P) {
+        if (st.oro <= 0 || st.elegido == null) return;
+        const zc = st.elegido * SP - (st.pos * SP - ZF), a = P(0, 0, zc);
+        g.save(); g.globalCompositeOperation = 'lighter';
+        const gr = g.createRadialGradient(a[0], a[1], 20, a[0], a[1], 760); gr.addColorStop(0, `rgba(255,220,130,${.4 * st.oro + .35 * st.destello})`); gr.addColorStop(.4, `rgba(255,180,80,${.14 * st.oro})`); gr.addColorStop(1, 'rgba(255,170,70,0)');
+        g.translate(a[0], a[1]); g.scale(1, .42); g.translate(-a[0], -a[1]); g.fillStyle = gr; g.fillRect(a[0] - 800, a[1] - 800, 1600, 1600);
+        g.restore();
+      }
+      let tAnt = performance.now();
+      function bucle(ahora) {
+        if (!vivo) return;
+        const dt = Math.min(.05, (ahora - tAnt) / 1000); tAnt = ahora; st.t += dt;
+        // el puente se mece con el viento (y un poco más cuando corre); el farol, con él
+        st.balanceo = mov * (.05 * Math.sin(st.t * .9) + .02 * Math.sin(st.t * 2.3) + clamp(Math.abs(st.vel) / 25, 0, 1) * .05 * Math.sin(st.t * 3.1));
+        st.farolAng = mov * (.05 * Math.sin(st.t * 1.6) + clamp(Math.abs(st.vel) / 25, 0, 1) * .09 * Math.sin(st.t * 5.2));
+        L.borra(); if (fijo) ponCapa(g, fijo);
+        pintaRayos(); pintaNieblas(dt);
+        const P = pintaPuente(); pintaBruma(); pintaOro(P); pintaFarol(P); pintaMotas(dt);
+        raf = requestAnimationFrame(bucle);
+      }
+      raf = requestAnimationFrame(bucle);
+      tras(TEMAS.modpuente.fuentes, () => caben.clear());
+
+      /* ── los sonidos: el viento, el crujido de cada tablón y la cadencia del puente (piano: triangular + seno) ── */
+      let tC = 0;
+      function cruje(v) {
+        const ac = A.ac; if (!ac) return; const t = ac.currentTime; if (t - tC < .05) return; tC = t;
+        const k = clamp(1 - v / 30, .35, 1), f = 92 + Math.random() * 50;
+        A.nota(f, { tipo: 'sawtooth', dur: .07 + .07 * k, gan: .03 + .05 * k, ataque: .014, desliza: f * .8, filtro: { tipo: 'bandpass', f: 560 + Math.random() * 420, q: 6 }, wet: .25, pan: .22 });
+        A.clic({ f: 1200 + Math.random() * 700, q: 3.5, gan: .05 + .05 * k, dur: .02, wet: .2, pan: .2 });
+      }
+      function piano(f, t, dur, gan) {
+        A.nota(f, { tipo: 'triangle', t, dur, gan, ataque: .005, wet: .38 });
+        A.nota(f * 2, { tipo: 'sine', t, dur: dur * .45, gan: gan * .32, ataque: .004, wet: .38 });
+        A.nota(f * 3.003, { tipo: 'sine', t, dur: dur * .2, gan: gan * .1, ataque: .003, wet: .3 });
+      }
+      function cadencia() {
+        if (!A.ac) return;
+        // sol7 (sol · fa si re sol) → do mayor (do · mi do mi sol), con las voces bien llevadas
+        piano(98, 0, 1.3, .1); [174.61, 246.94, 293.66, 392].forEach((f, i) => piano(f, .015 * (i + 1), 1.1, .06));
+        piano(65.41, .66, 3.4, .08); piano(130.81, .66, 3.2, .1); [164.81, 261.63, 329.63, 392].forEach((f, i) => piano(f, .67 + .02 * (i + 1), 3, .065));
+      }
+
+      return {
+        ajusta,
+        espera() { if (!st.n) { st.items = ['· · ·']; st.n = 1; } st.oro = 0; st.destello = 0; },
+        async gira(bombo, k) {
+          const gen = ++st.gen; st.items = bombo.slice(); st.n = bombo.length; st.elegido = null; st.oro = 0; st.destello = 0; st.chispas = [];
+          const n = st.n, p0 = Math.round(st.pos);
+          let p1 = p0 + (RM ? Math.max(n, 6) : Math.max(2 * n, 28)); p1 += ((k - p1) % n + n) % n;     // p1 ≡ k (mód. n)
+          st.pos = p0;
+          const f = recorrido(p0, p1, RM ? { T: 1.6, amago: .06, retro: 0, sobra: 0, rebote: .1, p: 2.2 } : { p: 2.6, amago: .3, retro: .3, sobra: .08, rebote: .26 });
+          const ac = A.crea(), viento = ac ? A.continuo({ tipo: 'bandpass', f: 380, q: .55, wet: .35 }) : null;
+          await new Promise(ok => {
+            const t0 = performance.now(); let ult = Math.round(p0), antes = p0;
+            (function paso() {
+              if (gen !== st.gen || !vivo) { if (viento) viento.para(.3); return ok(); }
+              const t = Math.min((performance.now() - t0) / 1000, f.T), p = f(t);
+              st.vel = (p - antes) * 60; antes = p; st.pos = p;
+              const cel = Math.round(p); if (cel !== ult) { ult = cel; cruje(Math.abs(st.vel)); }
+              if (viento) { A.pon(viento.g.gain, .05 + .025 * Math.sin(t * .8) + clamp(Math.abs(st.vel) / 25, 0, 1) * .07, .08); A.pon(viento.f.frequency, 330 + 120 * Math.sin(t * .37) + Math.abs(st.vel) * 16, .08); }
+              if (t < f.T) requestAnimationFrame(paso); else { st.pos = p1; st.vel = 0; ok(); }
+            })();
+          });
+          if (gen !== st.gen) return;
+          // se para bajo el farol: el tablón se ilumina en oro y suena la cadencia
+          st.elegido = p1; cadencia();
+          if (A.ac) { A.nota(70, { tipo: 'sine', dur: .35, gan: .22, desliza: 52 }); A.clic({ f: 700, q: 2, gan: .2, dur: .05, wet: .3 }); }
+          if (!RM) { const a = P0(); for (let i = 0; i < 60; i++) st.chispas.push({ x: a[0] + (Math.random() - .5) * a[1], y: a[2] + (Math.random() - .5) * 30, vx: (Math.random() - .5) * 120, vy: -60 - Math.random() * 200, r: 1 + Math.random() * 2.6, v: .8 + Math.random() * 1.2 }); }
+          if (viento) setTimeout(() => viento.para(2.6), 900);
+          await new Promise(ok => { const t0 = performance.now(), d = RM ? 300 : 900; (function p_() { if (gen !== st.gen) return ok(); const u = clamp((performance.now() - t0) / d, 0, 1);
+            st.oro = eo(u, 2); st.destello = RM ? 0 : Math.sin(Math.PI * Math.min(1, u * 1.4)) * (1 - u * .5); if (u < 1) requestAnimationFrame(p_); else { st.destello = 0; ok(); } })(); });
+        },
+        quita() { vivo = false; cancelAnimationFrame(raf); }
+      };
+      // dónde está el tablón del farol en la pantalla: [x del centro, ancho, y]
+      function P0() { const s = F / ZF; return [CX, 2 * BW * s, Y0 + HC * s]; }
+    }
+  };
+
+  /* ── «modrueda» · Modulación · Sesión 4 «Práctica libre»: la rueda de armaduras del taller, hecha tambor ──
+     (2-nov-2026, v5) La rueda vertical de armaduras del taller convertida en un tambor grande, como el rodillo de una tragaperras
+     elegante: mueble de madera oscura con remates de latón, el tambor de esmalte azul noche (el de la rueda del portal) con los
+     nombres grabados en oro, y a los lados las placas de latón con la escala de la rueda: hacia arriba sostenidos, hacia abajo
+     bemoles, y el 0 en la ventana. Se tira de la palanca, el tambor gira hacia abajo, frena con un «tic» por nombre y se para con
+     el elegido en la ventana central, entre las dos marcas de latón; la ventana se ilumina y suena la dominante con séptima que
+     resuelve en la tónica (sol7 → do mayor). */
+  TEMAS.modrueda = {
+    fuentes: ['700 64px "Atkinson Hyperlegible"', '700 92px "Atkinson Hyperlegible"', '400 20px "Atkinson Hyperlegible"', '400 32px "Marcellus SC"', '600 22px "IBM Plex Mono"'],
+    nombreFit: { min: 46 },
+    css: `
+.lmv-t-modrueda .lmv-velo{background:radial-gradient(ellipse at 50% 40%,rgba(24,26,42,.975) 0%,rgba(12,13,22,.988) 60%,rgba(4,4,8,.995) 100%)}
+.lmv-t-modrueda .lmv-cab{top:20px}
+.lmv-t-modrueda .lmv-ceja{font:400 32px/1 "Marcellus SC",Georgia,"Times New Roman",serif;letter-spacing:.34em;color:#ffd98a;text-shadow:0 2px 14px rgba(0,0,0,.9)}
+.lmv-t-modrueda .lmv-grupo{margin-top:9px;font:400 20px/1 "Atkinson Hyperlegible","Segoe UI",system-ui,sans-serif;letter-spacing:.06em;color:rgba(226,230,246,.78);text-shadow:0 2px 10px rgba(0,0,0,.9)}
+.lmv-t-modrueda .lmv-nombre{top:828px;left:300px;right:300px;height:118px;display:flex;align-items:center;justify-content:center;font:700 92px/1.08 "Atkinson Hyperlegible","Segoe UI",system-ui,sans-serif;letter-spacing:.01em;color:#ffe6a8;text-shadow:0 0 26px rgba(255,200,100,.6),0 0 70px rgba(255,190,90,.25),0 4px 18px rgba(0,0,0,.9)}
+.lmv-t-modrueda .lmv-nota{top:944px;font:400 22px/1.3 "Atkinson Hyperlegible","Segoe UI",system-ui,sans-serif;color:#d8dcf0;text-shadow:0 2px 10px rgba(0,0,0,.9)}
+.lmv-t-modrueda .lmv-pie{bottom:22px}
+.lmv-t-modrueda .lmv-b{display:inline-flex;align-items:center;gap:12px;padding:15px 32px;border-radius:8px;border:2px solid #c9a24f;background:rgba(12,14,26,.88);color:#f2e6c8;font:700 22px/1 "Atkinson Hyperlegible","Segoe UI",system-ui,sans-serif;letter-spacing:.06em;transition:background .2s,transform .15s}
+.lmv-t-modrueda .lmv-b:hover{background:rgba(34,38,64,.94);transform:translateY(-2px)}
+.lmv-t-modrueda .lmv-b.lmv-otra{background:linear-gradient(#ffe39a,#d9b25a 55%,#9c7428);border-color:#ffe39a;color:#1c1408}
+.lmv-t-modrueda .lmv-b.lmv-otra:hover{background:linear-gradient(#fff0b8,#e4c06a 55%,#aa8232)}
+.lmv-t-modrueda .lmv-cargando{color:#ffd98a}
+.lmv-of-modrueda .lmv-ob{font-family:"Atkinson Hyperlegible","Segoe UI",system-ui,sans-serif;font-weight:700;letter-spacing:.04em;border:2px solid #c9a24f;border-radius:8px;background:linear-gradient(#1a2246,#0c1024);color:#ffd98a;box-shadow:0 18px 50px rgba(0,0,0,.6),0 0 40px rgba(255,217,138,.18)}
+.lmv-of-modrueda .lmv-og,.lmv-of-modrueda .lmv-no{font-family:"Atkinson Hyperlegible","Segoe UI",system-ui,sans-serif;color:#d8dcf0}
+@media (prefers-reduced-motion:reduce){.lmv-t-modrueda .lmv-nombre.ve{animation:none;opacity:1}}`,
+    crea(esc, o) {
+      const L = lienzo(esc), g = L.g, RM = reducido(), mov = RM ? 0 : 1;
+      const AT = (px, w) => `${w || 700} ${px}px "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif`;
+      const MO = (px, w) => `${w || 600} ${px}px "IBM Plex Mono", ui-monospace, Menlo, monospace`;
+      const MA = px => `400 ${px}px "Marcellus SC", Georgia, serif`;
+      // el tambor (eje horizontal) visto de frente, con su perspectiva: R radio, D distancia del ojo al eje
+      const CX = 960, SEL = 452, R = 380, D = 1140, DA = .3, HW = 340, TM = Math.acos(R / D) - .015;
+      const MX0 = 500, MX1 = 1420, MY0 = 88, MY1 = 816;                   // el mueble
+      const VX0 = 612, VX1 = 1308, VY0 = 176, VY1 = 728;                   // la ventana
+      const LATON = ['#fff0bf', '#e2bd68', '#a77d30', '#5e4214'];
+      const st = { t: 0, items: [], n: 0, pos: 0, vel: 0, gen: 0, elegido: null, luz: 0, destello: 0, palanca: 0, motas: [], chispas: [] };
+      for (let i = 0; i < 40; i++) st.motas.push({ x: Math.random() * 1920, y: Math.random() * 1080, r: .6 + Math.random() * 1.6, v: 3 + Math.random() * 8, f: Math.random() * 6.3 });
+      let fondo = null, raf = 0, vivo = true;
+      const circ = (g, x, y, r) => { g.beginPath(); g.arc(x, y, r, 0, 6.283); };
+      const laton = (g, x0, y0, x1, y1) => { const gr = g.createLinearGradient(x0, y0, x1, y1); gr.addColorStop(0, LATON[0]); gr.addColorStop(.35, LATON[1]); gr.addColorStop(.75, LATON[2]); gr.addColorStop(1, LATON[3]); return gr; };
+      // dónde cae en la pantalla un punto del tambor a un ángulo th (0 = de frente; positivo, hacia abajo)
+      const kk = th => (D - R) / (D - R * Math.cos(th));
+      const yDe = th => SEL + R * Math.sin(th) * kk(th);
+      const vy = th => (yDe(th + .004) - yDe(th - .004)) / (.008 * R);       // cuánto se aplasta en vertical
+      // los signos, dibujados (no dependen de la letra): sostenido y bemol
+      function sost(g, x, y, s) {
+        g.save(); g.translate(x, y); g.scale(s, s); g.lineCap = 'butt';
+        g.lineWidth = .11; g.beginPath(); g.moveTo(-.17, -.62); g.lineTo(-.17, .52); g.moveTo(.17, -.52); g.lineTo(.17, .62); g.stroke();
+        g.lineWidth = .17; g.beginPath(); g.moveTo(-.38, -.12); g.lineTo(.38, -.3); g.moveTo(-.38, .3); g.lineTo(.38, .12); g.stroke();
+        g.restore();
+      }
+      function bemol(g, x, y, s) {
+        g.save(); g.translate(x, y); g.scale(s, s); g.lineCap = 'butt';
+        g.lineWidth = .11; g.beginPath(); g.moveTo(-.2, -.78); g.lineTo(-.2, .5); g.stroke();
+        g.lineWidth = .13; g.beginPath(); g.moveTo(-.2, .5); g.bezierCurveTo(.2, .28, .46, .02, .3, -.12); g.bezierCurveTo(.16, -.25, -.08, -.12, -.2, 0); g.stroke();
+        g.restore();
+      }
+      function tornillo(g, x, y, r, a) {
+        circ(g, x, y, r); g.fillStyle = laton(g, x - r, y - r, x + r, y + r); g.fill(); g.strokeStyle = 'rgba(50,32,8,.6)'; g.lineWidth = 1; g.stroke();
+        g.strokeStyle = 'rgba(50,32,8,.75)'; g.lineWidth = Math.max(1, r * .3); g.beginPath(); g.moveTo(x - Math.cos(a) * r * .7, y - Math.sin(a) * r * .7); g.lineTo(x + Math.cos(a) * r * .7, y + Math.sin(a) * r * .7); g.stroke();
+      }
+
+      /* ── lo que no se mueve: la pared del taller, el mueble de madera oscura con su latón, las placas con la escala y el cuerpo del tambor ── */
+      function pintaFondo(g) {
+        const r = semilla(64);
+        // la pared del taller (azul noche y madera), con la luz de la lámpara arriba
+        let gr = g.createLinearGradient(0, 0, 0, 1080); gr.addColorStop(0, '#141a2c'); gr.addColorStop(.6, '#0d1120'); gr.addColorStop(1, '#07080f'); g.fillStyle = gr; g.fillRect(0, 0, 1920, 1080);
+        for (let x = 0; x < 1920; x += 120) { g.fillStyle = x % 240 ? 'rgba(255,255,255,.012)' : 'rgba(0,0,0,.08)'; g.fillRect(x, 0, 120, 1080); g.fillStyle = 'rgba(0,0,0,.25)'; g.fillRect(x, 0, 2, 1080); }
+        gr = g.createRadialGradient(CX, 60, 20, CX, 60, 980); gr.addColorStop(0, 'rgba(255,214,150,.22)'); gr.addColorStop(1, 'rgba(255,214,150,0)'); g.fillStyle = gr; g.fillRect(0, 0, 1920, 1080);
+        // el círculo de quintas grabado en la pared, muy tenue (las armaduras: arriba sostenidos, abajo bemoles)
+        g.save(); g.strokeStyle = 'rgba(255,217,138,.07)'; g.fillStyle = 'rgba(255,217,138,.09)'; g.lineWidth = 2;
+        [640, 600, 520].forEach(rr_ => { circ(g, CX, SEL, rr_); g.stroke(); });
+        for (let i = 0; i < 12; i++) { const a = -Math.PI / 2 + i * Math.PI / 6, x = CX + Math.cos(a) * 620, y = SEL + Math.sin(a) * 620;
+          g.beginPath(); g.moveTo(CX + Math.cos(a) * 600, SEL + Math.sin(a) * 600); g.lineTo(CX + Math.cos(a) * 640, SEL + Math.sin(a) * 640); g.stroke();
+          const nArm = i <= 6 ? i : 12 - i, s = i <= 6 ? 1 : -1;
+          if (x > 300 && x < 1620) continue;
+          g.font = MO(24); g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(String(nArm), x + Math.cos(a) * 52 - 12, y + Math.sin(a) * 52);
+          g.strokeStyle = 'rgba(255,217,138,.12)'; if (nArm) (s > 0 ? sost : bemol)(g, x + Math.cos(a) * 52 + 12, y + Math.sin(a) * 52, 24); g.strokeStyle = 'rgba(255,217,138,.07)'; }
+        g.restore();
+        // la sombra del mueble
+        g.save(); g.shadowColor = 'rgba(0,0,0,.8)'; g.shadowBlur = 70; g.shadowOffsetY = 30; rr(g, MX0, MY0, MX1 - MX0, MY1 - MY0, 22); g.fillStyle = '#1a0f09'; g.fill(); g.restore();
+        // la madera oscura, con sus vetas
+        gr = g.createLinearGradient(MX0, 0, MX1, 0); gr.addColorStop(0, '#1b0f09'); gr.addColorStop(.18, '#34200f'); gr.addColorStop(.5, '#2a190d'); gr.addColorStop(.82, '#33200f'); gr.addColorStop(1, '#170d07');
+        rr(g, MX0, MY0, MX1 - MX0, MY1 - MY0, 22); g.fillStyle = gr; g.fill();
+        g.save(); rr(g, MX0, MY0, MX1 - MX0, MY1 - MY0, 22); g.clip();
+        for (let j = 0; j < 140; j++) { const x0 = MX0 + r() * (MX1 - MX0), amp = 3 + r() * 10, fr = .006 + r() * .012, ph = r() * 6;
+          g.strokeStyle = r() < .55 ? `rgba(8,4,2,${.12 + r() * .2})` : `rgba(150,96,50,${.04 + r() * .08})`; g.lineWidth = .6 + r() * 2; g.beginPath();
+          for (let y = MY0; y <= MY1; y += 10) { const x = x0 + Math.sin(y * fr + ph) * amp + Math.sin(y * fr * 3.3 + ph) * amp * .3; if (y === MY0) g.moveTo(x, y); else g.lineTo(x, y); } g.stroke(); }
+        gr = g.createRadialGradient(CX, MY0 - 60, 40, CX, MY0 - 60, 900); gr.addColorStop(0, 'rgba(255,210,150,.16)'); gr.addColorStop(1, 'rgba(255,210,150,0)'); g.fillStyle = gr; g.fillRect(MX0, MY0, MX1 - MX0, MY1 - MY0);
+        g.restore();
+        // los filetes de latón del mueble
+        rr(g, MX0 + 2, MY0 + 2, MX1 - MX0 - 4, MY1 - MY0 - 4, 20); g.lineWidth = 4; g.strokeStyle = laton(g, 0, MY0, 0, MY1); g.stroke();
+        rr(g, MX0 + 14, MY0 + 14, MX1 - MX0 - 28, MY1 - MY0 - 28, 12); g.lineWidth = 1.5; g.strokeStyle = 'rgba(226,189,104,.4)'; g.stroke();
+        // las esquinas de latón
+        [[MX0, MY0, 1, 1], [MX1, MY0, -1, 1], [MX0, MY1, 1, -1], [MX1, MY1, -1, -1]].forEach(([x, y, sx, sy]) => {
+          g.beginPath(); g.moveTo(x + sx * 4, y + sy * 4); g.lineTo(x + sx * 62, y + sy * 4); g.quadraticCurveTo(x + sx * 30, y + sy * 14, x + sx * 16, y + sy * 30); g.quadraticCurveTo(x + sx * 12, y + sy * 44, x + sx * 4, y + sy * 62); g.closePath();
+          g.fillStyle = laton(g, x, y, x + sx * 60, y + sy * 60); g.fill(); g.strokeStyle = 'rgba(60,40,10,.6)'; g.lineWidth = 1; g.stroke(); tornillo(g, x + sx * 18, y + sy * 18, 5, .6); });
+        // las placas de la escala (izquierda y derecha): hacia arriba sostenidos, hacia abajo bemoles, el 0 en la ventana
+        [[528, 596], [1324, 1392]].forEach(([x0, x1]) => {
+          const xc = (x0 + x1) / 2;
+          rr(g, x0, VY0 - 6, x1 - x0, VY1 - VY0 + 12, 10); g.fillStyle = laton(g, x0, VY0, x1, VY1); g.fill();
+          rr(g, x0, VY0 - 6, x1 - x0, VY1 - VY0 + 12, 10); g.strokeStyle = 'rgba(60,40,10,.7)'; g.lineWidth = 1.5; g.stroke();
+          rr(g, x0 + 6, VY0, x1 - x0 - 12, VY1 - VY0, 6); g.strokeStyle = 'rgba(80,54,14,.45)'; g.lineWidth = 1; g.stroke();
+          g.fillStyle = '#3a2508'; g.strokeStyle = '#3a2508'; g.textAlign = 'center'; g.textBaseline = 'middle';
+          for (let i = -3; i <= 3; i++) {
+            const y = yDe(i * DA);
+            if (!i) { g.font = MO(30, 700); g.fillText('0', xc, y + 1); continue; }
+            g.font = MO(Math.round(22 + 4 * (1 - Math.abs(i) / 3)), 600); g.fillText(String(Math.abs(i)), xc - 9, y + 1);
+            (i < 0 ? sost : bemol)(g, xc + 11, y, 20 + 4 * (1 - Math.abs(i) / 3));
+            g.fillStyle = 'rgba(58,37,8,.5)'; g.fillRect(x0 + 10, (y + yDe((i + Math.sign(i) * .5) * DA)) / 2, x1 - x0 - 20, 1); g.fillStyle = '#3a2508';
+          }
+        });
+        // los medallones de arriba (♯) y de abajo (♭)
+        [[(MY0 + VY0 - 18) / 2, sost], [(MY1 + VY1 + 18) / 2, bemol]].forEach(([y, f]) => {
+          rr(g, CX - 92, y - 22, 184, 44, 10); g.fillStyle = laton(g, 0, y - 22, 0, y + 22); g.fill(); g.strokeStyle = 'rgba(60,40,10,.7)'; g.lineWidth = 1.5; g.stroke();
+          g.strokeStyle = '#3a2508'; f(g, CX + (f === bemol ? 3 : 0), y + (f === bemol ? 1 : 0), 28);
+          // flechas: ▲ hacia arriba, sostenidos · ▼ hacia abajo, bemoles
+          const arriba = f === sost; g.fillStyle = '#3a2508';
+          [-1, 1].forEach(s => { tornillo(g, CX + s * 74, y, 5, .9); const x = CX + s * 44; g.beginPath(); g.moveTo(x, y + (arriba ? -8 : 8)); g.lineTo(x + 9, y + (arriba ? 6 : -6)); g.lineTo(x - 9, y + (arriba ? 6 : -6)); g.closePath(); g.fill(); });
+        });
+        // el marco de la ventana (latón, con bisel) y el hueco oscuro de dentro
+        rr(g, VX0 - 18, VY0 - 18, VX1 - VX0 + 36, VY1 - VY0 + 36, 18); g.fillStyle = laton(g, VX0, VY0 - 18, VX1, VY1 + 18); g.fill();
+        rr(g, VX0 - 18, VY0 - 18, VX1 - VX0 + 36, VY1 - VY0 + 36, 18); g.strokeStyle = 'rgba(60,40,10,.75)'; g.lineWidth = 2; g.stroke();
+        rr(g, VX0 - 7, VY0 - 7, VX1 - VX0 + 14, VY1 - VY0 + 14, 10); g.fillStyle = '#4a3310'; g.fill();
+        rr(g, VX0, VY0, VX1 - VX0, VY1 - VY0, 6); g.fillStyle = '#04050a'; g.fill();
+        [[VX0 - 9, VY0 - 9], [VX1 + 9, VY0 - 9], [VX0 - 9, VY1 + 9], [VX1 + 9, VY1 + 9]].forEach(([x, y]) => tornillo(g, x, y, 4.5, .3));
+        // el cuerpo del tambor: esmalte azul noche (el de la rueda del portal) con su luz y sus aros de latón
+        g.save(); rr(g, VX0, VY0, VX1 - VX0, VY1 - VY0, 6); g.clip();
+        const N = 160;
+        for (let q = 0; q < N; q++) {
+          const a0 = -TM + 2 * TM * q / N, a1 = -TM + 2 * TM * (q + 1) / N, am = (a0 + a1) / 2, y0 = yDe(a0), y1 = yDe(a1), w = HW * kk(am);
+          const dif = Math.pow(clamp(Math.cos(am + .42), 0, 1), 1.4), esp = Math.exp(-Math.pow((am + .4) / .09, 2)), bor = clamp((TM - Math.abs(am)) / .35, 0, 1);
+          const c = [16 + 22 * dif + 90 * esp, 22 + 30 * dif + 100 * esp, 46 + 54 * dif + 130 * esp].map(v => v * (.25 + .75 * bor));
+          g.fillStyle = `rgb(${c.map(Math.round).join(',')})`; g.fillRect(CX - w + 30 * kk(am), y0, 2 * w - 60 * kk(am), y1 - y0 + 1);
+          // los aros de latón de los dos extremos
+          const b = (.35 + .65 * dif) * (.3 + .7 * bor), cl = [226 * b + 60 * esp, 180 * b + 50 * esp, 96 * b + 30 * esp];
+          g.fillStyle = `rgb(${cl.map(v => Math.round(clamp(v, 0, 255))).join(',')})`; g.fillRect(CX - w, y0, 30 * kk(am), y1 - y0 + 1); g.fillRect(CX + w - 30 * kk(am), y0, 30 * kk(am), y1 - y0 + 1);
+          g.fillStyle = `rgba(20,12,4,${.5})`; g.fillRect(CX - w + 30 * kk(am) - 1.5, y0, 1.5, y1 - y0 + 1); g.fillRect(CX + w - 30 * kk(am), y0, 1.5, y1 - y0 + 1);
+        }
+        g.restore();
+      }
+      function ajusta(s) { if (L.ajusta(s) || !fondo) fondo = capaFija(L.k, pintaFondo); }
+
+      /* ── lo que gira: las juntas, los remaches de los aros y los nombres grabados ── */
+      const caben = new Map();
+      function rotulo(nom) {
+        let r = caben.get(nom); if (!r) { r = rotula(g, AT, nom, 2 * HW - 120, R * DA * .9, 64, 30, true); caben.set(nom, r); }
+        return r;
+      }
+      function pintaTambor() {
+        g.save(); rr(g, VX0, VY0, VX1 - VX0, VY1 - VY0, 6); g.clip();
+        const n = st.n, v = Math.abs(st.vel), copias = mov && v > 5 ? Math.min(6, 1 + Math.floor(v / 5)) : 1;
+        const i0 = Math.floor(st.pos - TM / DA) - 1, i1 = Math.ceil(st.pos + TM / DA) + 1;
+        for (let i = i0; i <= i1; i++) {
+          // la junta (ranura grabada) y los remaches de los aros
+          const tj = (st.pos - i + .5) * DA;
+          if (Math.abs(tj) < TM) { const y = yDe(tj), k = kk(tj), w = HW * k, b = clamp((TM - Math.abs(tj)) / .4, 0, 1);
+            g.fillStyle = `rgba(0,0,0,${.6 * b})`; g.fillRect(CX - w + 32 * k, y - 1.5, 2 * w - 64 * k, 2.2); g.fillStyle = `rgba(255,217,138,${.22 * b})`; g.fillRect(CX - w + 32 * k, y + .8, 2 * w - 64 * k, 1.2);
+            [-1, 1].forEach(sg => { const rv = 4.5 * k * Math.max(.3, vy(tj)); g.fillStyle = `rgba(30,18,4,${.7 * b})`; circ(g, CX + sg * (w - 15 * k), y + 1, rv + 1); g.fill(); g.fillStyle = `rgba(255,236,180,${.8 * b})`; circ(g, CX + sg * (w - 15 * k) - .8, y - .5, rv); g.fill(); }); }
+          if (!n) continue;
+          const nom = st.items[((i % n) + n) % n], Rt = rotulo(nom), elegido = st.elegido != null && i === st.elegido;
+          for (let c = 0; c < copias; c++) {
+            const pp = st.pos - (copias > 1 ? (c / copias) * st.vel / 60 : 0), th = (pp - i) * DA;
+            if (Math.abs(th) > TM - .04) continue;
+            const k = kk(th), sv = vy(th), y = yDe(th), cerca = Math.exp(-Math.pow(th / (DA * .55), 2)), b = clamp((TM - Math.abs(th)) / .45, 0, 1);
+            const peso = copias > 1 ? Math.pow(1 - c / copias, 1.5) * 2.2 / copias : 1, al = Math.min(1, peso) * b;
+            if (al < .02) continue;
+            g.save(); g.translate(CX, y); g.scale(k, sv);
+            g.font = AT(Rt.px); g.textAlign = 'center'; g.textBaseline = 'middle';
+            const lh = Rt.px * 1.04, ancho = 2 * HW - 110, luz = elegido ? st.luz : 0;
+            Rt.lineas.forEach((t, q) => { const yy = (q - (Rt.lineas.length - 1) / 2) * lh + Rt.px * .04;
+              // grabado: la sombra del corte arriba, el brillo del borde abajo, y el oro dentro
+              if (c === 0) { g.globalAlpha = al * .85; g.fillStyle = '#000'; textoCabe(g, t, -1, yy - 2, ancho);
+                g.globalAlpha = al * .5; g.fillStyle = '#9fb0ff'; textoCabe(g, t, 0, yy + 1.5, ancho); }
+              g.globalAlpha = al;
+              if (luz > 0) { g.shadowColor = `rgba(255,214,120,${.9 * luz})`; g.shadowBlur = 26 * luz; }
+              const cc = [lerp(150, 255, cerca), lerp(124, 217, cerca), lerp(70, 138, cerca)].map((x, j) => lerp(x, [255, 246, 214][j], luz));
+              g.fillStyle = `rgb(${cc.map(Math.round).join(',')})`; textoCabe(g, t, 0, yy, ancho); g.shadowColor = 'transparent'; });
+            g.restore();
+          }
+        }
+        // la ventana central: las dos rayas de latón que la marcan, el cristal y su luz
+        const yA = yDe(-DA / 2), yB = yDe(DA / 2), wA = HW * kk(-DA / 2);
+        if (st.luz > 0) { g.save(); g.globalCompositeOperation = 'lighter';
+          let gr = g.createLinearGradient(0, yA, 0, yB); gr.addColorStop(0, `rgba(255,217,138,${.06 * st.luz})`); gr.addColorStop(.5, `rgba(255,217,138,${.2 * st.luz + .2 * st.destello})`); gr.addColorStop(1, `rgba(255,217,138,${.06 * st.luz})`);
+          g.fillStyle = gr; g.fillRect(CX - wA, yA, 2 * wA, yB - yA);
+          gr = g.createRadialGradient(CX, SEL, 30, CX, SEL, 640); gr.addColorStop(0, `rgba(255,200,110,${.22 * st.luz + .25 * st.destello})`); gr.addColorStop(1, 'rgba(255,200,110,0)'); g.fillStyle = gr; g.fillRect(VX0, VY0, VX1 - VX0, VY1 - VY0);
+          g.restore(); }
+        [yA, yB].forEach(y => { g.fillStyle = `rgba(255,217,138,${.45 + .5 * st.luz})`; g.fillRect(VX0, y - 1, VX1 - VX0, 2); g.fillStyle = 'rgba(0,0,0,.45)'; g.fillRect(VX0, y + 1, VX1 - VX0, 1.5); });
+        // el cristal: un reflejo arriba y otro fino, y las sombras dentro del marco
+        let gr = g.createLinearGradient(0, VY0, 0, VY0 + 170); gr.addColorStop(0, 'rgba(210,225,255,.13)'); gr.addColorStop(1, 'rgba(210,225,255,0)'); g.fillStyle = gr; g.fillRect(VX0, VY0, VX1 - VX0, 170);
+        g.save(); g.globalCompositeOperation = 'lighter'; g.translate(VX0 + 120, VY0); g.rotate(.32); g.fillStyle = 'rgba(200,215,255,.05)'; g.fillRect(0, -40, 60, 900); g.fillRect(84, -40, 16, 900); g.restore();
+        gr = g.createLinearGradient(0, VY0, 0, VY0 + 26); gr.addColorStop(0, 'rgba(0,0,0,.7)'); gr.addColorStop(1, 'rgba(0,0,0,0)'); g.fillStyle = gr; g.fillRect(VX0, VY0, VX1 - VX0, 26);
+        g.restore();
+        // las dos marcas de latón (que se encienden al pararse)
+        [[VX0 - 4, 1], [VX1 + 4, -1]].forEach(([x, s]) => {
+          if (st.luz > 0) { g.save(); g.globalCompositeOperation = 'lighter'; const rg = g.createRadialGradient(x, SEL, 2, x, SEL, 70); rg.addColorStop(0, `rgba(255,217,138,${.6 * st.luz})`); rg.addColorStop(1, 'rgba(255,217,138,0)'); g.fillStyle = rg; g.fillRect(x - 70, SEL - 70, 140, 140); g.restore(); }
+          g.beginPath(); g.moveTo(x - s * 30, SEL - 20); g.lineTo(x + s * 8, SEL); g.lineTo(x - s * 30, SEL + 20); g.closePath();
+          g.fillStyle = laton(g, x - 30, SEL - 20, x + 8, SEL + 20); g.fill(); g.strokeStyle = 'rgba(50,32,8,.8)'; g.lineWidth = 1.5; g.stroke();
+          g.fillStyle = `rgba(255,246,214,${.35 + .6 * st.luz})`; g.beginPath(); g.moveTo(x - s * 26, SEL - 15); g.lineTo(x + s * 2, SEL - 1); g.lineTo(x - s * 26, SEL - 9); g.closePath(); g.fill();
+        });
+      }
+      /* ── la palanca, a la derecha del mueble ── */
+      function pintaPalanca() {
+        const px = 1446, py = 470, ang = lerp(-1.32, .75, st.palanca), l = 214;
+        // la caja del eje
+        rr(g, 1416, 420, 52, 100, 10); g.fillStyle = laton(g, 1416, 420, 1468, 520); g.fill(); g.strokeStyle = 'rgba(50,32,8,.7)'; g.lineWidth = 1.5; g.stroke();
+        tornillo(g, 1430, 434, 4, .4); tornillo(g, 1430, 506, 4, 1.2);
+        const ex = px + Math.cos(ang) * l, ey = py + Math.sin(ang) * l;
+        g.save(); g.lineCap = 'round';
+        g.strokeStyle = 'rgba(0,0,0,.4)'; g.lineWidth = 16; g.beginPath(); g.moveTo(px + 6, py + 8); g.lineTo(ex + 6, ey + 8); g.stroke();
+        const gr = g.createLinearGradient(px - 8 * Math.sin(ang), py + 8 * Math.cos(ang), px + 8 * Math.sin(ang), py - 8 * Math.cos(ang)); gr.addColorStop(0, LATON[3]); gr.addColorStop(.5, LATON[0]); gr.addColorStop(1, LATON[2]);
+        g.strokeStyle = gr; g.lineWidth = 12; g.beginPath(); g.moveTo(px, py); g.lineTo(ex, ey); g.stroke();
+        g.restore();
+        circ(g, px, py, 17); g.fillStyle = laton(g, px - 17, py - 17, px + 17, py + 17); g.fill(); g.strokeStyle = 'rgba(50,32,8,.8)'; g.lineWidth = 1.5; g.stroke(); circ(g, px, py, 5); g.fillStyle = '#3a2508'; g.fill();
+        // el pomo: madera oscura con su casquillo de latón
+        g.save(); g.translate(ex, ey); g.rotate(ang);
+        rr(g, -10, -11, 18, 22, 4); g.fillStyle = laton(g, 0, -11, 0, 11); g.fill();
+        const rg = g.createRadialGradient(12, -9, 3, 20, 0, 28); rg.addColorStop(0, '#8a5a34'); rg.addColorStop(.55, '#3a2112'); rg.addColorStop(1, '#170c06');
+        circ(g, 22, 0, 25); g.fillStyle = rg; g.fill(); g.strokeStyle = 'rgba(255,217,138,.35)'; g.lineWidth = 1.5; g.stroke();
+        g.restore();
+      }
+      function pintaMotas(dt) {
+        g.save(); g.globalCompositeOperation = 'lighter';
+        if (mov) st.motas.forEach(p => { p.y -= p.v * dt; p.x += Math.sin(st.t * .5 + p.f) * 6 * dt; if (p.y < -10) { p.y = 1090; p.x = Math.random() * 1920; }
+          const a = clamp(.14 + .12 * Math.sin(st.t * 1.3 + p.f) + .2 * st.luz, 0, .5); g.fillStyle = `rgba(255,217,138,${a})`; circ(g, p.x, p.y, p.r); g.fill(); });
+        st.chispas = st.chispas.filter(c => { c.v -= dt; if (c.v <= 0) return false; c.x += c.vx * dt; c.y += c.vy * dt; c.vy += 260 * dt;
+          g.fillStyle = `rgba(255,${Math.round(200 + 40 * c.v)},130,${clamp(c.v / .8, 0, 1)})`; circ(g, c.x, c.y, c.r); g.fill(); return true; });
+        g.restore();
+      }
+      let tAnt = performance.now();
+      function bucle(ahora) {
+        if (!vivo) return;
+        const dt = Math.min(.05, (ahora - tAnt) / 1000); tAnt = ahora; st.t += dt;
+        L.borra(); if (fondo) ponCapa(g, fondo);
+        pintaTambor(); pintaPalanca(); pintaMotas(dt);
+        raf = requestAnimationFrame(bucle);
+      }
+      raf = requestAnimationFrame(bucle);
+      tras(TEMAS.modrueda.fuentes, () => { caben.clear(); if (vivo) fondo = capaFija(L.k || 1, pintaFondo); });
+
+      /* ── los sonidos: la palanca, el zumbido del tambor, un «tic» por nombre y la cadencia (sol7 → do) ── */
+      let tT = 0;
+      function tic(v) {
+        const ac = A.ac; if (!ac) return; const t = ac.currentTime; if (t - tT < .034) return; tT = t;
+        const k = clamp(1 - v / 30, .3, 1);
+        A.nota(330, { tipo: 'sine', dur: .07, gan: .08 + .1 * k, ataque: .003, desliza: 180, filtro: { f: 1400 } });
+        A.clic({ f: 3000 + Math.random() * 800, q: 4, gan: .06 + .1 * k, dur: .014, wet: .25 });
+      }
+      function tecla(f, t, dur, gan) {
+        A.nota(f, { tipo: 'triangle', t, dur, gan, ataque: .004, wet: .4 });
+        A.nota(f * 2, { tipo: 'sine', t, dur: dur * .5, gan: gan * .35, ataque: .003, wet: .4 });
+        A.nota(f * 4.02, { tipo: 'sine', t, dur: .3, gan: gan * .07, ataque: .002, wet: .35 });
+      }
+      function cadencia() {
+        if (!A.ac) return;
+        tecla(98, 0, 1.2, .1); [174.61, 246.94, 293.66, 392].forEach((f, i) => tecla(f, .012 * (i + 1), 1.05, .06));
+        tecla(65.41, .62, 3.4, .08); tecla(130.81, .62, 3.2, .1); [164.81, 261.63, 329.63, 392, 523.25].forEach((f, i) => tecla(f, .63 + .018 * (i + 1), 3, .058));
+      }
+
+      return {
+        ajusta,
+        espera() { if (!st.n) { st.items = ['· · ·']; st.n = 1; } st.luz = 0; st.destello = 0; },
+        async gira(bombo, k) {
+          const gen = ++st.gen; st.items = bombo.slice(); st.n = bombo.length; st.elegido = null; st.luz = 0; st.destello = 0; st.chispas = [];
+          const n = st.n, p0 = Math.round(st.pos);
+          let p1 = p0 + (RM ? Math.max(n, 6) : Math.max(2 * n, 30)); p1 += ((k - p1) % n + n) % n;    // p1 ≡ k (mód. n)
+          st.pos = p0;
+          const f = recorrido(p0, p1, RM ? { T: 1.6, amago: .06, retro: 0, sobra: 0, rebote: .1, p: 2.2 } : { p: 2.5, amago: .34, retro: .3, sobra: .1, rebote: .24 });
+          const ac = A.crea(), zumbido = ac ? A.continuo({ f: 700, q: .8, wet: .25 }) : null;
+          if (ac) { A.clic({ f: 600, q: 1.4, gan: .45, dur: .07, wet: .3 }); A.nota(90, { tipo: 'sine', dur: .25, gan: .3, desliza: 55 }); A.clic({ f: 1800, q: 2.5, gan: .3, dur: .04, t: .3, wet: .3 }); }
+          await new Promise(ok => {
+            const t0 = performance.now(); let ult = Math.round(p0), antes = p0;
+            (function paso() {
+              if (gen !== st.gen || !vivo) { if (zumbido) zumbido.para(.1); return ok(); }
+              const t = Math.min((performance.now() - t0) / 1000, f.T), p = f(t);
+              st.vel = (p - antes) * 60; antes = p; st.pos = p;
+              // la palanca: baja con el amago y vuelve con un muelle
+              st.palanca = RM ? 0 : t < .3 ? eo(t / .3, 2) : Math.max(0, Math.exp(-(t - .3) * 6) * Math.cos((t - .3) * 9));
+              const cel = Math.round(p); if (cel !== ult) { ult = cel; tic(Math.abs(st.vel)); }
+              if (zumbido) { A.pon(zumbido.g.gain, clamp(Math.abs(st.vel) / 24, 0, 1) * .1, .05); A.pon(zumbido.f.frequency, 380 + 40 * Math.abs(st.vel), .05); }
+              if (t < f.T) requestAnimationFrame(paso); else { st.pos = p1; st.vel = 0; st.palanca = 0; if (zumbido) zumbido.para(.2); ok(); }
+            })();
+          });
+          if (gen !== st.gen) return;
+          // encaja en la ventana: se ilumina y suena la dominante que resuelve
+          st.elegido = p1; cadencia();
+          if (A.ac) { A.clic({ f: 1300, q: 1.6, gan: .5, dur: .06, wet: .4 }); A.nota(62, { tipo: 'sine', dur: .4, gan: .3, desliza: 44 }); }
+          if (!RM) for (let i = 0; i < 40; i++) { const s = i % 2 ? 1 : -1; st.chispas.push({ x: CX + s * (HW - 10), y: SEL + (Math.random() - .5) * 60, vx: s * (60 + Math.random() * 260), vy: -120 - Math.random() * 260, r: 1 + Math.random() * 2.4, v: .5 + Math.random() * .7 }); }
+          await new Promise(ok => { const t0 = performance.now(), d = RM ? 300 : 800; (function p_() { if (gen !== st.gen) return ok(); const u = clamp((performance.now() - t0) / d, 0, 1);
+            st.luz = eo(u, 2); st.destello = RM ? 0 : Math.sin(Math.PI * Math.min(1, u * 1.5)) * (1 - u * .5); if (u < 1) requestAnimationFrame(p_); else { st.destello = 0; ok(); } })(); });
         },
         quita() { vivo = false; cancelAnimationFrame(raf); }
       };

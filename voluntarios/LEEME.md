@@ -2,6 +2,22 @@
 
 Hecho por Claude para Iago (conversación Cowork del escape room «Atonalidad»). Solo lo ve la cuenta **Iago González Protester**.
 
+## v6 (2-nov-2026): los cuatro temas de Modulación
+Iago (2-nov): el portal de Modulación (modulacion.gp.lmathome.es, U8) lleva selector de voluntarios con «un tipo de generador aleatorio…
+de cada una de las sesiones». `VERSION = 6`. Los temas de antes, **igual**. Cuatro temas nuevos (1920×1080 escalado, sin dependencias;
+solo las letras que carga el portal: Marcellus SC, Pixelify Sans, DotGothic16, Atkinson Hyperlegible, IBM Plex Mono):
+- `modpixel` (Sesión 1, «Viajar entre tonalidades»): pantalla «ELIGE JUGADOR» en píxel, de noche (los azules del nivel 2D); el cursor salta
+  de tarjeta en tarjeta con su «blip» de onda cuadrada, frena, la elegida parpadea, confeti de píxeles, fanfarria chiptune y «¡TE TOCA!».
+- `modmapa` (Sesión 2, «Tres formas de viajar»): el mapa de pergamino con su rosa de los vientos; los nombres son pueblos en un circuito
+  y la ficha del viajero (capucha, sin cara) los recorre frenando; el elegido, en oro, con su sello de lacre y un arpegio de arpa.
+- `modpuente` (Sesión 3, «Construye el puente»): el puente colgante al atardecer, un nombre en cada tablón; la luz del farol los recorre
+  frenando y el elegido se enciende en oro con la cadencia sol7 → do.
+- `modrueda` (Sesión 4, «Práctica libre»): la rueda de armaduras convertida en tambor (escala 3♯…0…3♭ en latón); gira hacia abajo con
+  un «tic» por nombre y se para en la ventana central, con la misma cadencia.
+- El portal: un cargador en cada sesión (s1–s4) con `tema` según la sesión y `empezar: ['#inicio']` (sale al «Pulsa para empezar»).
+- Fuentes y capturas: Dropbox `APPs/LMATHOME GP (github lmpro)/VOLUNTARIOS (fuentes)/v6-2-nov-2026/`.
+- Deshacer: volver a subir la v5 (`lm-voluntarios.js` del commit anterior); el portal de Modulación cae al tema `museo`.
+
 ## v5 (22-oct-2026): una animación por día, capítulo, bobina o sección
 Iago (22-oct): «pedí que cada día de un portal… tenga su propia animación de aleatoriedad de alumnos… hoy me encontré en el día 3
 de la cabaña la misma animación… que el del día 2» y «que las dos secciones de trabajo del fonógrafo también tienen cada uno un
