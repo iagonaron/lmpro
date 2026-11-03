@@ -7217,7 +7217,7 @@ window.DictadoClase = (function(){
     setTimeout(function(){ try{ pintaRepsDur(); }catch(e){} }, 180);   // (24-sep) la duración se ve nada más abrir, sin tener que girar las ruedas
   }
   /* (3-nov-2026, Iago: «un botón del ojo… que se vea un cuadrito muy muy pequeñito solo para verlo yo en pantalla, que dure
-     un segundo… y luego ya se va») la partitura del dictado (la misma del revelado) en miniatura bajo el ojo, 1 s. */
+     un segundo… y luego ya se va») la partitura del dictado (la misma del revelado) en miniatura bajo el ojo, 2 s. */
   var _ojeadaSvg=null, _ojeadaT=null, _ojeadaDe=null;
   function ojeada(){
     try{
@@ -7234,7 +7234,7 @@ window.DictadoClase = (function(){
       if(!_ojeadaSvg) return;
       var o=mid.querySelector('.dc-ojeada'); if(!o){ o=document.createElement('div'); o.className='dc-ojeada'; mid.appendChild(o); }
       o.innerHTML=_ojeadaSvg; o.style.display='block';
-      clearTimeout(_ojeadaT); _ojeadaT=setTimeout(function(){ o.style.display='none'; }, 1000);
+      clearTimeout(_ojeadaT); _ojeadaT=setTimeout(function(){ o.style.display='none'; }, 2000);   /* (3-nov-2026, 19:29, Iago) 2 s */
     }catch(e){ console.warn('[dictado] ojeada', e); }
   }
   function pintaRepsDur(){
