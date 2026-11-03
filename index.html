@@ -5800,6 +5800,12 @@ function showEnig(kind){
 .dc-rueda-pad{height:44px;scroll-snap-align:none}
 .dc-rueda-it{height:44px;line-height:44px;font-size:26px;font-weight:900;color:#64748b;scroll-snap-align:center;cursor:pointer;transition:color .15s,transform .15s}
 .dc-rueda-it.on{color:#fbbf24;transform:scale(1.15)}
+.dc-reps-mid{display:flex;align-items:center;justify-content:center;position:relative}
+/* (3-nov-2026, Iago) ojeada de 1 s al dictado en la ventana de repeticiones (solo para el profe: cuadrito pequeño) */
+.dc-reps-ojo{width:44px;height:44px;border-radius:10px;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.05);font-size:20px;cursor:pointer;margin-top:28px}
+.dc-reps-ojo:active{background:rgba(255,255,255,.14)}
+.dc-ojeada{position:absolute;left:50%;top:100%;transform:translate(-50%,6px);width:170px;background:#fff;border-radius:6px;padding:3px;box-shadow:0 8px 24px rgba(0,0,0,.5);z-index:5;pointer-events:none}
+.dc-ojeada svg{display:block;width:100%;height:auto}
 .dc-reps-ok{margin-top:18px;border:0;border-radius:12px;padding:13px 30px;font-size:17px;font-weight:800;color:#0b1220;background:linear-gradient(120deg,#fbbf24,#f97316);cursor:pointer;box-shadow:0 8px 24px rgba(249,115,22,.35)}
 /* ===== DICTADO ACTIVO · ajustes portal (Iago 15-jul-2026) ===== */
 #dcOverlay{z-index:99990}
@@ -7191,6 +7197,7 @@ window.DictadoClase = (function(){
         '<div class="dc-reps-dur" id="dcRepsDur"></div>'+
         '<div class="dc-reps-cols">'+
           '<div class="dc-reps-col"><div class="dc-reps-lbl">𝄞 Clave de sol</div>'+ruedaReps('dcRuedaSol', repsSol)+'</div>'+
+          '<div class="dc-reps-mid"><button class="dc-reps-ojo" type="button" onclick="DictadoClase.ojeada()" title="Ver el dictado un segundo">👁</button></div>'+   /* (3-nov-2026, Iago) */
           '<div class="dc-reps-col"><div class="dc-reps-lbl">𝄢 Clave de fa</div>'+ruedaReps('dcRuedaFa', repsFa)+'</div>'+
         '</div>'+
         '<button class="dc-reps-ok" onclick="DictadoClase.repsOk()">▶ Empezar</button>'+
@@ -7205,6 +7212,27 @@ window.DictadoClase = (function(){
     w.classList.add('on');
     requestAnimationFrame(function(){ ruedaColoca('dcRuedaSol', repsSol); ruedaColoca('dcRuedaFa', repsFa); pintaRepsDur(); });
     setTimeout(function(){ try{ pintaRepsDur(); }catch(e){} }, 180);   // (24-sep) la duración se ve nada más abrir, sin tener que girar las ruedas
+  }
+  /* (3-nov-2026, Iago: «un botón del ojo… que se vea un cuadrito muy muy pequeñito solo para verlo yo en pantalla, que dure
+     un segundo… y luego ya se va») la partitura del dictado (la misma del revelado) en miniatura bajo el ojo, 1 s. */
+  var _ojeadaSvg=null, _ojeadaT=null, _ojeadaDe=null;
+  function ojeada(){
+    try{
+      var mid=document.querySelector('#dcReps .dc-reps-mid'); if(!mid) return;
+      if(!_ojeadaSvg || _ojeadaDe!==anim){ _ojeadaSvg=null; _ojeadaDe=anim;
+        var tmp=document.createElement('div'); tmp.style.cssText='position:fixed;left:-99999px;top:0;width:1100px';
+        document.body.appendChild(tmp);
+        dibujaDictado(tmp, 1100);
+        var svg=tmp.querySelector('svg');
+        if(svg){ if(!svg.getAttribute('viewBox')){ var w=parseFloat(svg.getAttribute('width')||svg.style.width)||1100, h=parseFloat(svg.getAttribute('height')||svg.style.height)||300; svg.setAttribute('viewBox','0 0 '+w+' '+h); }
+          svg.removeAttribute('width'); svg.removeAttribute('height'); svg.setAttribute('style','display:block;width:100%;height:auto'); _ojeadaSvg=svg.outerHTML; }
+        tmp.remove();
+      }
+      if(!_ojeadaSvg) return;
+      var o=mid.querySelector('.dc-ojeada'); if(!o){ o=document.createElement('div'); o.className='dc-ojeada'; mid.appendChild(o); }
+      o.innerHTML=_ojeadaSvg; o.style.display='block';
+      clearTimeout(_ojeadaT); _ojeadaT=setTimeout(function(){ o.style.display='none'; }, 1000);
+    }catch(e){ console.warn('[dictado] ojeada', e); }
   }
   function pintaRepsDur(){
     var e=el('dcRepsDur'); if(!e) return;
@@ -7354,7 +7382,7 @@ window.DictadoClase = (function(){
     if(ov && ov.classList.contains('abierto')) dibujaVacio();
   });
 
-  return { open:open, play:play, repsOk:repsOk, final:final, tempo:cambiaTempo, gap:cambiaGap,
+  return { open:open, play:play, repsOk:repsOk, ojeada:ojeada, final:final, tempo:cambiaTempo, gap:cambiaGap,
            revelar:revelar, verResultados:verResultados, ver:ver, revTon:revelaTonalidad, revComp:revelaCompas,
            fs:pantallaCompleta, close:cierra, _verStop:_verStop, _verPlay:_verTogglePlay };
 })();
