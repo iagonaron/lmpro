@@ -7590,7 +7590,10 @@ window.DictadoClase = (function(){
        capítulos: se destapa con el primero que se ve en clase y entra con los ya vistos. Antes: 'Atonalidad' · 'Atonalidad y series'
        · https://iagonaron.github.io/atonalidad/ (el Taller, que sigue en su dirección). */
     { u:'u3', n:'Atonalidad · El museo', sub:'El escape room, en tres capítulos', url:'https://atonalidad.gp.lmathome.es/prueba.html' },
-    { u:'u4', n:'Magnetófono',          sub:'El sonido en imanes',      url:'https://iagonaron.github.io/magnetofono/' },
+    /* (5-nov-2026, Iago: «la semana que viene voy a empezar ya el del magnetófono… que ya esté completo») Magnetófono = «París, 1951», la
+       interactiva de tres bobinas; se destapa SOLO por hitos, bobina a bobina (como Modulación). Antes: 'Magnetófono' · 'El sonido en imanes' ·
+       https://iagonaron.github.io/magnetofono/ (el simulador antiguo, que sigue en su dirección). */
+    { u:'u4', n:'Magnetófono · París, 1951', sub:'Tres bobinas, en interactiva', url:'https://magnetofono.gp.lmathome.es/prueba.html' },
     /* (22-oct-2026) Hamilton ya no lleva al vídeo de YouTube (https://www.youtube.com/watch?v=MploZ2urlwo): lleva al portal nuevo, con su
        cuenta (#cu=, conCuentaVol). Se abre cuando Iago marca «Exámenes 1T» en el Diario: ese jueves al acabar su clase (Supabase,
        _suite_hamilton_ventana). */
@@ -7619,7 +7622,8 @@ window.DictadoClase = (function(){
   if((IMG.on||{}).u5n && (IMG.off||{}).u5n){ IMG.on.u5 = IMG.on.u5n; IMG.off.u5 = IMG.off.u5n; }
   /* (30-oct-2026, Iago) 4 SABORES: el icono nuevo (conga, maracas y güiro en la playa) también para los alumnos, como el Blues: cerrada, su sombra con la «?»; abierta, el icono. Volver al antiguo: borrar la línea siguiente. */
   if((IMG.on||{}).u7n && (IMG.off||{}).u7n){ IMG.on.u7 = IMG.on.u7n; IMG.off.u7 = IMG.off.u7n; }
-  if((IMG.on||{}).u8n && (IMG.off||{}).u8n){ IMG.on.u8 = IMG.on.u8n; IMG.off.u8 = IMG.off.u8n; }   /* (2-nov-2026) Modulación: el icono nuevo también para los alumnos */
+  if((IMG.on||{}).u8n && (IMG.off||{}).u8n){ IMG.on.u8 = IMG.on.u8n; IMG.off.u8 = IMG.off.u8n; }
+  if((IMG.on||{}).u4n && (IMG.off||{}).u4n){ IMG.on.u4 = IMG.on.u4n; IMG.off.u4 = IMG.off.u4n; }   /* (5-nov-2026) Magnetófono: el icono nuevo (la caja de Alemania) también para los alumnos */   /* (2-nov-2026) Modulación: el icono nuevo también para los alumnos */
   var CLAVE_VISTAS = 'lmpro_medallas_vistas';
 
   /* ── ANTICIPO de Acústica para las cuentas Tester/Protester (6-oct-2026; desde el 8-oct-2026, solo esto) ──────
@@ -8003,7 +8007,7 @@ window.DictadoClase = (function(){
     return Object.keys(o).map(Number).sort(function(a, b){ return a - b; });
   }
   /* (16-oct-2026, tarde) cada portal por hitos, con su dirección: la cabaña (Acústica) y el museo (Atonalidad) */
-  var HITO_WEB = { cabana: /^https:\/\/acustica\.gp\.lmathome\.es\//, atonalidad: /^https:\/\/atonalidad\.gp\.lmathome\.es\//, blues: /^https:\/\/blues\.gp\.lmathome\.es\//, sabores: /^https:\/\/afrolatin\.gp\.lmathome\.es\/sabores\//, modulacion: /^https:\/\/modulacion\.gp\.lmathome\.es\// };   /* (2-nov-2026) + Modulación */   /* (20-oct-2026) + el Blues · (30-oct-2026) + 4 Sabores */
+  var HITO_WEB = { cabana: /^https:\/\/acustica\.gp\.lmathome\.es\//, atonalidad: /^https:\/\/atonalidad\.gp\.lmathome\.es\//, blues: /^https:\/\/blues\.gp\.lmathome\.es\//, magnetofono: /^https:\/\/magnetofono\.gp\.lmathome\.es\//, sabores: /^https:\/\/afrolatin\.gp\.lmathome\.es\/sabores\//, modulacion: /^https:\/\/modulacion\.gp\.lmathome\.es\// };   /* (2-nov-2026) + Modulación */   /* (20-oct-2026) + el Blues · (30-oct-2026) + 4 Sabores */
   function conHitos(u){
     var s = ses(); if(!(s && s.id) || !_hitos) return null;
     var p = null; Object.keys(HITO_WEB).forEach(function(k){ if(!p && HITO_WEB[k].test(String(u))) p = k; });
@@ -8034,6 +8038,8 @@ window.DictadoClase = (function(){
     if(hh && diasDe(hh, 'sabores').length) _abiertas.u7 = true; else delete _abiertas.u7;
     /* (2-nov-2026, Iago) MODULACIÓN (u8), igual que 4 Sabores: SOLO por hitos, sesión a sesión. Volver a lo de antes: borrar esta línea. */
     if(hh && diasDe(hh, 'modulacion').length) _abiertas.u8 = true; else delete _abiertas.u8;
+    /* (5-nov-2026, Iago) MAGNETÓFONO (u4), igual: SOLO por hitos, bobina a bobina. Volver a lo de antes: borrar esta línea. */
+    if(hh && diasDe(hh, 'magnetofono').length) _abiertas.u4 = true; else delete _abiertas.u4;
     /* (3-sep-2026) el tester ya NO fuerza todas las insignias abiertas: ve
        exactamente lo que ve un alumno. Para verlas todas sigue ?demo= */
 
