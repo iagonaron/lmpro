@@ -44,11 +44,13 @@
    ofrece({ tema }) trae tema, manda ese. Temas nuevos: «cordon» y «dado» (Atonalidad, capítulos 1 y 2; el 3 sigue con
    «museo»), «caza» y «maquina» (Magnetófono, bobinas 2 y 3; la 1 sigue con «cinta»), «arbol» y «sinte» (Acústica, días 1 y
    3; el 2 sigue con «radio») y «taller» (Fonógrafo, el montaje; la grabación, con el cilindro «disco»).
+
+   v8 (5-nov-2026, Iago, portal Transporte): trpulsera (T1), trpluma (T2), trfoco (T3), trconsola (T4).
    ═════════════════════════════════════════════════════════════════════════════════════════════════════════════════ */
 (function () {
   'use strict';
   if (window.LMVoluntarios) return;
-  const VERSION = 7;   // (2-nov-2026) v7: «modjugador», selección de personaje con los retratos de los alumnos · (22-oct-2026) v5: una animación por día, capítulo o bobina (temaDe) · (17-oct-2026) v2: el tema «cinta» del Magnetófono · (18-oct-2026) v3: el cilindro del Fonógrafo y el botón que surge al empezar · (20-oct-2026) v4: los temas del Blues y un tema por oferta
+  const VERSION = 8;   // (5-nov-2026) v8: los cuatro temas de Transporte (trpulsera, trpluma, trfoco, trconsola) · (2-nov-2026) v7: «modjugador», selección de personaje con los retratos de los alumnos · (22-oct-2026) v5: una animación por día, capítulo o bobina (temaDe) · (17-oct-2026) v2: el tema «cinta» del Magnetófono · (18-oct-2026) v3: el cilindro del Fonógrafo y el botón que surge al empezar · (20-oct-2026) v4: los temas del Blues y un tema por oferta
   const SB = 'https://woiptkyrxkbpnvioypit.supabase.co';
   const CLAVE_PUB = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndvaXB0a3lyeGticG52aW95cGl0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0NzI2ODYsImV4cCI6MjA5MjA0ODY4Nn0.B2nKgj5rD0rkdLeMIrd9KgD8lUPWsBT4Y7aCtmnvbjA';
   const CLAVE = 'lm_vol_cuenta';
@@ -6084,6 +6086,923 @@
           await new Promise(ok => { st.acaba = ok; });
         },
         quita() { vivo = false; mus.on = false; cancelAnimationFrame(raf); if (st.acaba) { const f = st.acaba; st.acaba = null; f(); } }
+      };
+    }
+  };
+
+  /* ═════════ (5-nov-2026, v8) TRANSPORTE (U9): una animación por sesión. S1 «trpulsera» (la pulsera holográfica de Noa, el aula
+     del 2100) · S2 «trpluma» (la pluma del copista, la capilla de 1730) · S3 «trfoco» (el foco del teatro Rosalía, 2026) · S4
+     «trconsola» (la consola del videojuego, María Pita 2070). Solo canvas y el sintetizador `A` (no piden muestras en `sonidos`);
+     las letras son las que ya carga el portal (Saira SC, Plex, IM Fell). ═════════ */
+  // una transición de `ms` milisegundos: fn(u) con u de 0 a 1 en cada fotograma (se corta si vale() deja de ser cierto)
+  function trTween(ms, fn, vale) {
+    return new Promise(ok => { const t0 = performance.now(); (function p_() { if (vale && !vale()) return ok(); const u = ms > 0 ? clamp((performance.now() - t0) / ms, 0, 1) : 1; fn(u); if (u < 1) requestAnimationFrame(p_); else ok(); })(); });
+  }
+  // el giro: recorre f(t) durante f.T y llama en cada fotograma a fn(p, t, vel) (vel: posiciones por segundo)
+  function trGiro(f, fn, vale) {
+    return new Promise(ok => { const t0 = performance.now(); let antes = f(0), ta = 0; (function p_() { if (vale && !vale()) return ok(false); const t = Math.min(f.T, (performance.now() - t0) / 1000), p = f(t), dt = t - ta; fn(p, t, dt > 1e-4 ? (p - antes) / dt : 0); antes = p; ta = t; if (t < f.T) requestAnimationFrame(p_); else ok(true); })(); });
+  }
+
+  /* ── «trpulsera» · Transporte · Sesión 1 (el aula del 2100): la pulsera holográfica de Noa ──
+     Sobre la muñeca de Noa (la manga azul petróleo con su raya mostaza), la pulsera proyecta un holograma cian: la lista del grupo
+     corre hacia arriba con interferencias (cortes que se desplazan, aberración de color, parpadeos y destellos), frena con un «blip»
+     por nombre y se para en uno; los corchetes se cierran sobre él, suena el pitido de confirmación y el nombre se vuelve ámbar. */
+  TEMAS.trpulsera = {
+    fuentes: ['600 56px "Saira SC"', '700 92px "Saira SC"', '500 18px "Plex"', '400 20px "Plex"'],
+    nombreFit: { min: 46 },
+    css: `
+.lmv-t-trpulsera .lmv-velo{background:radial-gradient(ellipse at 50% 38%,rgba(10,26,48,.975) 0%,rgba(6,12,29,.988) 58%,rgba(2,4,10,.995) 100%)}
+.lmv-t-trpulsera .lmv-cab{top:22px}
+.lmv-t-trpulsera .lmv-ceja{font:600 30px/1 "Saira SC","Jost",system-ui,sans-serif;letter-spacing:.42em;text-transform:uppercase;color:#63e6ff;text-shadow:0 0 16px rgba(99,230,255,.55)}
+.lmv-t-trpulsera .lmv-grupo{margin-top:10px;font:400 20px/1 "Plex","DM Sans",system-ui,sans-serif;letter-spacing:.08em;color:rgba(200,236,255,.78)}
+.lmv-t-trpulsera .lmv-nombre{top:806px;left:240px;right:240px;height:116px;display:flex;align-items:center;justify-content:center;font:700 92px/1.05 "Saira SC","Jost",system-ui,sans-serif;letter-spacing:.02em;color:#ffb547;text-shadow:0 0 22px rgba(255,181,71,.6),0 0 60px rgba(255,160,40,.25),0 4px 16px rgba(0,0,0,.9)}
+.lmv-t-trpulsera .lmv-nota{top:928px;font:400 22px/1.3 "Plex","DM Sans",system-ui,sans-serif;color:#cfeaff}
+.lmv-t-trpulsera .lmv-pie{bottom:24px}
+.lmv-t-trpulsera .lmv-b{display:inline-flex;align-items:center;gap:12px;padding:14px 32px;border-radius:10px;border:2px solid rgba(99,230,255,.55);background:rgba(6,12,29,.86);color:#eaf3ff;font:600 24px/1 "Saira SC","Jost",system-ui,sans-serif;letter-spacing:.08em;transition:background .2s,transform .15s}
+.lmv-t-trpulsera .lmv-b:hover{background:rgba(16,40,64,.92);transform:translateY(-2px)}
+.lmv-t-trpulsera .lmv-b.lmv-otra{background:#63e6ff;border-color:#9ff0ff;color:#061226}
+.lmv-t-trpulsera .lmv-b.lmv-otra:hover{background:#9ff0ff}
+.lmv-t-trpulsera .lmv-cargando{color:#63e6ff}
+.lmv-of-trpulsera .lmv-ob{font-family:"Saira SC","Jost",system-ui,sans-serif;font-weight:600;letter-spacing:.06em;border:2px solid #63e6ff;border-radius:10px;background:rgba(6,12,29,.94);color:#eaf3ff;box-shadow:0 18px 50px rgba(0,0,0,.6),0 0 40px rgba(99,230,255,.25)}
+.lmv-of-trpulsera .lmv-og,.lmv-of-trpulsera .lmv-no{font-family:"Plex","DM Sans",system-ui,sans-serif;color:#cfeaff}
+@media (prefers-reduced-motion:reduce){.lmv-t-trpulsera .lmv-nombre.ve{animation:none;opacity:1}}`,
+    crea(esc, o) {
+      const L = lienzo(esc), g = L.g, RM = reducido(), mov = RM ? 0 : 1;
+      const SA = (px, w) => `${w || 600} ${px}px "Saira SC", "Jost", system-ui, sans-serif`;
+      const PL = (px, w) => `${w || 500} ${px}px "Plex", "DM Sans", system-ui, sans-serif`;
+      const PX0 = 470, PX1 = 1450, PY0 = 100, PY1 = 548, LY0 = PY0 + 50, LY1 = PY1 - 40, SEL = (LY0 + LY1) / 2, RH = 76, EX = 948, EY = 656;
+      const st = { t: 0, items: [], n: 0, pos: 0, vel: 0, gen: 0, luz: 0, cierra: 0, destello: 0, ruido: 0, act: 0, wN: 600, elegido: null, aviso: 'EN ESPERA', motas: [], bandas: [] };
+      for (let i = 0; i < 44; i++) st.motas.push({ x: EX + (Math.random() - .5) * 700, y: 160 + Math.random() * 500, r: .6 + Math.random() * 1.6, v: 6 + Math.random() * 16, f: Math.random() * 6.3 });
+      let fondo = null, rayas = null, raf = 0, vivo = true, zumb = null;
+
+      /* ── lo que no se mueve: el aula del 2100 a oscuras, la manga, el brazo y la pulsera apagada ── */
+      function pintaBrazo(g) {
+        // la manga: punto azul petróleo con su raya mostaza, que sale de la oscuridad por la izquierda
+        g.beginPath(); g.moveTo(-20, 624); g.bezierCurveTo(200, 628, 420, 640, 640, 652); g.lineTo(640, 778); g.bezierCurveTo(420, 790, 200, 812, -20, 826); g.closePath();
+        let gr = g.createLinearGradient(0, 628, 0, 826); gr.addColorStop(0, '#2e5866'); gr.addColorStop(.35, '#1c3c47'); gr.addColorStop(1, '#091820'); g.fillStyle = gr; g.fill();
+        g.save(); g.clip();
+        g.strokeStyle = 'rgba(0,0,0,.2)'; g.lineWidth = 2; for (let x = -10; x < 640; x += 9) { g.beginPath(); g.moveTo(x, 600); g.lineTo(x + 5, 840); g.stroke(); }
+        g.fillStyle = 'rgba(214,170,60,.82)'; g.fillRect(468, 600, 24, 240); g.fillStyle = 'rgba(214,170,60,.35)'; g.fillRect(498, 600, 6, 240);
+        g.fillStyle = 'rgba(255,255,255,.05)'; g.fillRect(588, 600, 52, 240);
+        g.strokeStyle = 'rgba(0,0,0,.32)'; g.lineWidth = 2; for (let x = 590; x < 640; x += 6) { g.beginPath(); g.moveTo(x, 600); g.lineTo(x, 840); g.stroke(); }
+        gr = g.createLinearGradient(-20, 0, 360, 0); gr.addColorStop(0, 'rgba(6,12,29,1)'); gr.addColorStop(1, 'rgba(6,12,29,0)'); g.fillStyle = gr; g.fillRect(-20, 600, 380, 240);
+        g.restore();
+        // el antebrazo y la mano (de lado, la palma hacia abajo)
+        g.beginPath(); g.moveTo(636, 662);
+        g.bezierCurveTo(760, 666, 880, 673, 995, 679); g.bezierCurveTo(1060, 677, 1120, 661, 1172, 663); g.bezierCurveTo(1232, 665, 1292, 690, 1336, 712);
+        g.bezierCurveTo(1348, 718, 1342, 730, 1326, 730); g.bezierCurveTo(1280, 730, 1232, 736, 1198, 744); g.bezierCurveTo(1140, 756, 1060, 764, 995, 758);
+        g.bezierCurveTo(880, 758, 760, 768, 636, 774); g.closePath();
+        gr = g.createLinearGradient(0, 660, 0, 774); gr.addColorStop(0, '#dca587'); gr.addColorStop(.45, '#b4755a'); gr.addColorStop(1, '#5d3426'); g.fillStyle = gr; g.fill();
+        g.strokeStyle = 'rgba(40,16,8,.6)'; g.lineWidth = 1.5; g.stroke();
+        g.save(); g.clip();
+        gr = g.createLinearGradient(636, 0, 1340, 0); gr.addColorStop(0, 'rgba(6,12,29,.55)'); gr.addColorStop(.25, 'rgba(6,12,29,0)'); gr.addColorStop(.8, 'rgba(6,12,29,0)'); gr.addColorStop(1, 'rgba(6,12,29,.35)'); g.fillStyle = gr; g.fillRect(630, 650, 720, 130);
+        g.strokeStyle = 'rgba(70,32,20,.45)'; g.lineWidth = 1.6;
+        g.beginPath(); g.moveTo(1206, 702); g.bezierCurveTo(1250, 708, 1290, 716, 1324, 724); g.stroke();
+        g.beginPath(); g.moveTo(1150, 668); g.quadraticCurveTo(1160, 676, 1156, 688); g.stroke();
+        g.beginPath(); g.moveTo(1198, 672); g.quadraticCurveTo(1206, 680, 1200, 692); g.stroke();
+        g.fillStyle = 'rgba(255,214,196,.45)'; g.beginPath(); g.ellipse(1328, 718, 9, 5, .45, 0, 6.283); g.fill();
+        g.restore();
+        // el pulgar, por delante
+        g.beginPath(); g.moveTo(1000, 738); g.bezierCurveTo(1050, 726, 1122, 724, 1168, 736); g.bezierCurveTo(1182, 742, 1174, 754, 1158, 754); g.bezierCurveTo(1110, 756, 1050, 762, 1004, 760); g.closePath();
+        gr = g.createLinearGradient(0, 724, 0, 760); gr.addColorStop(0, '#d29676'); gr.addColorStop(1, '#7a4532'); g.fillStyle = gr; g.fill(); g.strokeStyle = 'rgba(40,16,8,.55)'; g.lineWidth = 1.3; g.stroke();
+        g.fillStyle = 'rgba(255,214,196,.4)'; g.beginPath(); g.ellipse(1164, 740, 7, 4, .2, 0, 6.283); g.fill();
+        // la pulsera: grafito, con su franja de luz y el emisor arriba
+        g.save(); g.shadowColor = 'rgba(0,0,0,.6)'; g.shadowBlur = 14; g.shadowOffsetY = 4;
+        rr(g, 900, 664, 96, 104, 18); gr = g.createLinearGradient(0, 664, 0, 768); gr.addColorStop(0, '#2a3646'); gr.addColorStop(.5, '#141c27'); gr.addColorStop(1, '#070b11'); g.fillStyle = gr; g.fill(); g.restore();
+        rr(g, 900, 664, 96, 104, 18); g.strokeStyle = 'rgba(160,220,255,.25)'; g.lineWidth = 1.5; g.stroke();
+        rr(g, 908, 703, 80, 16, 6); g.fillStyle = '#082029'; g.fill();
+        rr(g, 926, 650, 44, 16, 6); g.fillStyle = '#16303c'; g.fill(); g.strokeStyle = 'rgba(99,230,255,.5)'; g.lineWidth = 1.2; g.stroke();
+      }
+      function pintaFondo(g) {
+        const r = semilla(2100);
+        let gr = g.createLinearGradient(0, 0, 0, 1080); gr.addColorStop(0, '#081530'); gr.addColorStop(.55, '#060c1d'); gr.addColorStop(1, '#03060f'); g.fillStyle = gr; g.fillRect(0, 0, 1920, 1080);
+        // el ventanal del aula: la ciudad del 2100 de noche, muy desenfocada (luces cian y ámbar)
+        for (let i = 0; i < 70; i++) { const x = r() * 1920, y = 60 + r() * 520, rad = 6 + r() * 26, c = r() < .6 ? '99,230,255' : '255,181,71', a = .025 + r() * .05;
+          const rg = g.createRadialGradient(x, y, 0, x, y, rad); rg.addColorStop(0, `rgba(${c},${a * 2})`); rg.addColorStop(1, `rgba(${c},0)`); g.fillStyle = rg; g.fillRect(x - rad, y - rad, 2 * rad, 2 * rad); }
+        // el suelo del aula: una rejilla tenue en perspectiva
+        g.save(); g.strokeStyle = 'rgba(99,230,255,.05)'; g.lineWidth = 1.2;
+        for (let i = -14; i <= 14; i++) { g.beginPath(); g.moveTo(960 + i * 40, 600); g.lineTo(960 + i * 260, 1080); g.stroke(); }
+        for (let j = 0; j < 9; j++) { const y = 600 + Math.pow(j / 8, 1.8) * 480; g.beginPath(); g.moveTo(0, y); g.lineTo(1920, y); g.stroke(); }
+        g.restore();
+        pintaBrazo(g);
+      }
+      function pintaRayas(g) { g.fillStyle = 'rgba(0,8,16,.22)'; for (let y = PY0; y < PY1; y += 3) g.fillRect(PX0, y, PX1 - PX0, 1); }
+      function ajusta(s) { if (L.ajusta(s) || !fondo) { fondo = capaFija(L.k, pintaFondo); rayas = capaFija(L.k, pintaRayas, PX0, PY0, PX1 - PX0, PY1 - PY0); } }
+
+      const caben = new Map();
+      function rotulo(nom) { let r = caben.get(nom); if (!r) { r = rotula(g, px => SA(px), nom, PX1 - PX0 - 200, RH * .78, 56, 30, false); caben.set(nom, r); } return r; }
+      const mezcla = (a, b, u) => a.map((x, i) => Math.round(lerp(x, b[i], u)));
+      /* ── lo que se mueve: el haz, el panel del holograma con la lista, los corchetes y las interferencias ── */
+      function pintaHolo(dt) {
+        const fl = mov ? clamp(.92 + .06 * Math.sin(st.t * 37) * Math.sin(st.t * 11.3) - (Math.random() < st.ruido * .1 ? .3 : 0), .5, 1) : 1;
+        const am = st.luz, col = mezcla([99, 230, 255], [255, 181, 71], am * .55);
+        g.save(); g.globalCompositeOperation = 'lighter';
+        // el haz: un abanico tenue hasta todo el panel y otro más vivo hasta su borde de abajo
+        let gr = g.createLinearGradient(0, EY, 0, PY0); gr.addColorStop(0, `rgba(${col},${.16 * fl})`); gr.addColorStop(1, `rgba(${col},0)`);
+        g.beginPath(); g.moveTo(EX - 12, EY - 4); g.lineTo(EX + 12, EY - 4); g.lineTo(PX1, PY0 + 30); g.lineTo(PX0, PY0 + 30); g.closePath(); g.fillStyle = gr; g.fill();
+        gr = g.createLinearGradient(0, EY, 0, PY1); gr.addColorStop(0, `rgba(${col},${.42 * fl})`); gr.addColorStop(1, `rgba(${col},${.08 * fl})`);
+        g.beginPath(); g.moveTo(EX - 14, EY - 4); g.lineTo(EX + 14, EY - 4); g.lineTo(PX1 - 70, PY1); g.lineTo(PX0 + 70, PY1); g.closePath(); g.fillStyle = gr; g.fill();
+        // las motas que suben por el haz
+        st.motas.forEach(p => { if (mov) { p.y -= p.v * dt * (1 + st.act * 2); if (p.y < PY0) { p.y = EY - 10; p.x = EX + (Math.random() - .5) * 60; } p.x += (p.x - EX) * dt * .6; }
+          const a = clamp(.2 + .15 * Math.sin(st.t * 3 + p.f), 0, .5) * fl; g.fillStyle = `rgba(${col},${a})`; g.beginPath(); g.arc(p.x, p.y, p.r, 0, 6.283); g.fill(); });
+        // el panel
+        gr = g.createLinearGradient(0, PY0, 0, PY1); gr.addColorStop(0, `rgba(30,120,170,${.16 * fl})`); gr.addColorStop(.5, `rgba(40,150,200,${.09 * fl})`); gr.addColorStop(1, `rgba(30,120,170,${.2 * fl})`);
+        rr(g, PX0, PY0, PX1 - PX0, PY1 - PY0, 14); g.fillStyle = gr; g.fill();
+        // la franja central, donde se fija el nombre
+        gr = g.createLinearGradient(0, SEL - RH / 2, 0, SEL + RH / 2); gr.addColorStop(0, `rgba(${col},0)`); gr.addColorStop(.5, `rgba(${col},${(.1 + .12 * am) * fl})`); gr.addColorStop(1, `rgba(${col},0)`);
+        g.fillStyle = gr; g.fillRect(PX0 + 4, SEL - RH / 2, PX1 - PX0 - 8, RH);
+        g.restore();
+        // los nombres
+        g.save(); g.beginPath(); g.rect(PX0 + 4, LY0, PX1 - PX0 - 8, LY1 - LY0); g.clip();
+        const n = st.n, v = Math.abs(st.vel), copias = mov && v > 7 ? Math.min(5, 1 + Math.floor(v / 7)) : 1, vis = (LY1 - LY0) / 2 / RH + .4;
+        const ANCHO = PX1 - PX0 - 150;
+        if (n) for (let i = Math.floor(st.pos - vis) - 1; i <= Math.ceil(st.pos + vis) + 1; i++) {
+          const nom = st.items[((i % n) + n) % n], Rt = rotulo(nom), eleg = st.elegido != null && i === st.elegido;
+          let dx = 0; if (mov && st.ruido > .05 && Math.random() < st.ruido * .3) dx = (Math.random() - .5) * 70 * st.ruido;
+          for (let c = 0; c < copias; c++) {
+            const pp = st.pos - (copias > 1 ? c / copias * st.vel / 45 : 0), d = i - pp, y = SEL + d * RH, ad = Math.abs(d);
+            if (ad > vis) continue;
+            const peso = copias > 1 ? Math.pow(1 - c / copias, 1.5) * 2 / copias : 1, al = Math.pow(clamp(1 - ad / vis, 0, 1), 1.1) * Math.min(1, peso) * fl;
+            if (al < .02) continue;
+            const cerca = Math.exp(-Math.pow(d / .6, 2)), luz = eleg ? am : 0;
+            g.save(); g.translate(960 + dx, y); g.scale(1, 1 - .1 * Math.min(1, ad));
+            g.font = SA(Rt.px); g.textAlign = 'center'; g.textBaseline = 'middle';
+            if (c === 0 && st.ruido > .15) { g.globalCompositeOperation = 'lighter'; g.globalAlpha = al * .45 * st.ruido; g.fillStyle = '#ff3a8a'; textoCabe(g, nom, -5, 2, ANCHO); g.fillStyle = '#3ab8ff'; textoCabe(g, nom, 5, 2, ANCHO); g.globalCompositeOperation = 'source-over'; }
+            g.globalAlpha = al;
+            const cc = mezcla(mezcla([120, 200, 230], [225, 250, 255], cerca), [255, 181, 71], luz);
+            g.shadowColor = luz > 0 ? `rgba(255,170,60,${.85 * luz})` : `rgba(99,230,255,${.5 + .4 * cerca})`; g.shadowBlur = 14 + 12 * cerca;
+            g.fillStyle = `rgb(${cc.join(',')})`; textoCabe(g, nom, 0, Rt.px * .04, ANCHO);
+            g.restore();
+          }
+        }
+        g.restore();
+        // las interferencias: franjas del propio holograma que se desplazan, y rayas de luz
+        if (mov && st.ruido > .25) { const k = L.k; for (let q = 0; q < 3; q++) if (Math.random() < st.ruido * .7) { const y = LY0 + Math.random() * (LY1 - LY0 - 20), h = 4 + Math.random() * 22, dx = (Math.random() - .5) * 90 * st.ruido;
+          try { g.drawImage(L.c, PX0 * k, y * k, (PX1 - PX0) * k, h * k, PX0 + dx, y, PX1 - PX0, h); } catch (e) {} } }
+        if (mov && Math.random() < .04 + st.ruido * .3) st.bandas.push({ y: PY0 + Math.random() * 60, v: 300 + Math.random() * 600, a: .1 + Math.random() * .25, h: 1 + Math.random() * 4 });
+        g.save(); g.globalCompositeOperation = 'lighter'; g.beginPath(); g.rect(PX0, PY0, PX1 - PX0, PY1 - PY0); g.clip();
+        st.bandas = st.bandas.filter(b => { b.y += b.v * dt; if (b.y > PY1) return false; g.fillStyle = `rgba(${col},${b.a})`; g.fillRect(PX0, b.y, PX1 - PX0, b.h); return true; });
+        g.restore();
+        if (rayas) ponCapa(g, rayas);
+        // el marco del panel, sus esquinas y sus textos
+        g.save(); g.globalCompositeOperation = 'lighter';
+        rr(g, PX0, PY0, PX1 - PX0, PY1 - PY0, 14); g.strokeStyle = `rgba(${col},${.55 * fl})`; g.lineWidth = 2; g.stroke();
+        g.strokeStyle = `rgba(${col},${.95 * fl})`; g.lineWidth = 4; g.lineCap = 'square';
+        [[PX0, PY0, 1, 1], [PX1, PY0, -1, 1], [PX0, PY1, 1, -1], [PX1, PY1, -1, -1]].forEach(([x, y, sx, sy]) => { g.beginPath(); g.moveTo(x + sx * 4, y + sy * 44); g.lineTo(x + sx * 4, y + sy * 4); g.lineTo(x + sx * 44, y + sy * 4); g.stroke(); });
+        g.fillStyle = `rgba(${col},${.5 * fl})`; g.fillRect(PX0 + 20, PY0 + 40, PX1 - PX0 - 40, 1.5); g.fillRect(PX0 + 20, PY1 - 32, PX1 - PX0 - 40, 1.5);
+        g.font = PL(18); g.textBaseline = 'middle'; g.fillStyle = `rgba(${col},${.9 * fl})`;
+        g.textAlign = 'left'; g.fillText('◉ PULSERA · NOA', PX0 + 26, PY0 + 22);
+        g.textAlign = 'right'; g.fillText('LISTA DEL GRUPO' + (st.n > 1 ? ' · ' + st.n : ''), PX1 - 26, PY0 + 22);
+        g.textAlign = 'center'; g.fillText(st.aviso + (st.aviso === 'BUSCANDO' ? '.'.repeat(1 + Math.floor(st.t * 4) % 3) : ''), 960, PY1 - 15);
+        // los corchetes de la franja central: se cierran sobre el nombre al fijarlo
+        const hw = lerp((PX1 - PX0) / 2 - 26, st.wN / 2, st.cierra), hh = RH * .46, cs = mezcla([99, 230, 255], [255, 181, 71], am);
+        g.strokeStyle = `rgba(${cs.join(',')},${.9 * fl})`; g.lineWidth = 4;
+        [-1, 1].forEach(s => { const x = 960 + s * hw; g.beginPath(); g.moveTo(x - s * 22, SEL - hh); g.lineTo(x, SEL - hh); g.lineTo(x, SEL + hh); g.lineTo(x - s * 22, SEL + hh); g.stroke(); });
+        if (st.destello > 0) { g.fillStyle = `rgba(255,200,120,${.25 * st.destello})`; rr(g, PX0, PY0, PX1 - PX0, PY1 - PY0, 14); g.fill();
+          const rg = g.createRadialGradient(960, SEL, 10, 960, SEL, 520); rg.addColorStop(0, `rgba(255,190,90,${.45 * st.destello})`); rg.addColorStop(1, 'rgba(255,190,90,0)'); g.fillStyle = rg; g.fillRect(PX0, PY0, PX1 - PX0, PY1 - PY0); }
+        g.restore();
+        // la pulsera encendida: el emisor y la franja de luz
+        g.save(); g.globalCompositeOperation = 'lighter';
+        const pul = .55 + .25 * Math.sin(st.t * 4) + .4 * st.act;
+        let rg = g.createRadialGradient(EX, EY - 2, 2, EX, EY - 2, 90); rg.addColorStop(0, `rgba(${col},${.7 * fl})`); rg.addColorStop(1, `rgba(${col},0)`); g.fillStyle = rg; g.fillRect(EX - 90, EY - 92, 180, 180);
+        rr(g, 930, 654, 36, 8, 4); g.fillStyle = `rgba(${col},${.9 * fl})`; g.fill();
+        rr(g, 910, 705, 76, 12, 5); g.fillStyle = `rgba(${col},${clamp(pul, 0, 1) * .75})`; g.fill();
+        rg = g.createRadialGradient(948, 711, 2, 948, 711, 70); rg.addColorStop(0, `rgba(${col},${.3 * clamp(pul, 0, 1)})`); rg.addColorStop(1, `rgba(${col},0)`); g.fillStyle = rg; g.fillRect(878, 641, 140, 140);
+        // el reflejo del holograma en el borde de arriba del brazo
+        gr = g.createLinearGradient(700, 0, 1340, 0); gr.addColorStop(0, `rgba(${col},0)`); gr.addColorStop(.45, `rgba(${col},${.22 * fl})`); gr.addColorStop(1, `rgba(${col},0)`);
+        g.strokeStyle = gr; g.lineWidth = 3; g.beginPath(); g.moveTo(700, 665); g.bezierCurveTo(800, 668, 880, 673, 995, 679); g.bezierCurveTo(1060, 677, 1120, 661, 1172, 663); g.bezierCurveTo(1232, 665, 1292, 690, 1336, 712); g.stroke();
+        g.restore();
+      }
+      let tAnt = performance.now();
+      function bucle(ahora) {
+        if (!vivo) return;
+        const dt = Math.min(.05, (ahora - tAnt) / 1000); tAnt = ahora; st.t += dt;
+        st.act = lerp(st.act, clamp(Math.abs(st.vel) / 14, 0, 1), clamp(dt * 6, 0, 1));
+        L.borra(); if (fondo) ponCapa(g, fondo);
+        pintaHolo(dt);
+        raf = requestAnimationFrame(bucle);
+      }
+      raf = requestAnimationFrame(bucle);
+      tras(TEMAS.trpulsera.fuentes, () => caben.clear());
+
+      /* ── los sonidos: el arranque, el zumbido del holograma, un «blip» por nombre, los chasquidos de las interferencias y el pitido ── */
+      let tB = 0;
+      function blip(v) { const ac = A.ac; if (!ac) return; const t = ac.currentTime; if (t - tB < .03) return; tB = t; const k = clamp(1 - v / 30, .25, 1);
+        A.nota(1700 + 600 * (1 - k), { tipo: 'sine', dur: .05, gan: .04 + .07 * k, ataque: .002, wet: .2 }); A.clic({ f: 5200, q: 3, gan: .02 + .05 * k, dur: .01, wet: .1 }); }
+      function chasquido() { if (!A.ac) return; A.clic({ f: 2500 + Math.random() * 5000, q: .8, gan: .05 + Math.random() * .08, dur: .02 + Math.random() * .05, wet: .1, pan: (Math.random() - .5) * .6 }); }
+      function pitido() {
+        if (!A.ac) return;
+        A.nota(1568, { tipo: 'square', dur: .1, gan: .045, ataque: .003, filtro: { f: 3800 }, wet: .2 });
+        A.nota(2093, { tipo: 'square', t: .13, dur: .18, gan: .045, ataque: .003, filtro: { f: 4200 }, wet: .25 });
+        [1046.5, 1318.5, 1568, 2093].forEach((f, i) => A.nota(f, { tipo: 'sine', t: .3 + i * .03, dur: 1.5, gan: .045, ataque: .02, wet: .45 }));
+        A.nota(130.8, { tipo: 'sine', t: .3, dur: 1, gan: .12, desliza: 98 });
+      }
+      return {
+        ajusta,
+        espera() { if (!st.n) { st.items = ['· · ·']; st.n = 1; } st.luz = 0; st.cierra = 0; st.destello = 0; st.elegido = null; st.aviso = 'SINCRONIZANDO'; },
+        async gira(bombo, k) {
+          const gen = ++st.gen, vale = () => gen === st.gen && vivo;
+          st.items = bombo.slice(); st.n = bombo.length; st.elegido = null; st.luz = 0; st.cierra = 0; st.destello = 0; st.aviso = 'BUSCANDO';
+          const n = st.n, p0 = Math.round(st.pos);
+          let p1 = p0 + (RM ? Math.max(n, 6) : Math.max(2 * n, 30)); p1 += ((k - p1) % n + n) % n;
+          st.pos = p0;
+          const f = recorrido(p0, p1, RM ? { T: 1.6, amago: .06, retro: 0, sobra: 0, rebote: .1, p: 2.2 } : { p: 2.5, amago: .3, retro: .35, sobra: .12, rebote: .24 });
+          const ac = A.crea();
+          if (zumb) zumb.para(.05);
+          zumb = ac ? A.continuo({ f: 1200, q: 5, wet: .2 }) : null;
+          if (ac) { A.nota(380, { tipo: 'sine', dur: .3, gan: .08, desliza: 1500, wet: .3 }); A.clic({ f: 4200, q: 1.5, gan: .12, dur: .05, wet: .2 }); }
+          let ult = p0;
+          await trGiro(f, (p, t, v) => {
+            st.pos = p; st.vel = v; st.ruido = mov ? clamp(Math.abs(v) / 16, 0, 1) : 0;
+            const cel = Math.round(p); if (cel !== ult) { ult = cel; blip(Math.abs(v)); }
+            if (zumb) { A.pon(zumb.g.gain, clamp(Math.abs(v) / 20, 0, 1) * .045 + .008, .05); A.pon(zumb.f.frequency, 900 + 110 * Math.abs(v), .05); }
+            if (mov && Math.random() < st.ruido * .12) chasquido();
+          }, vale);
+          if (zumb) { zumb.para(.25); zumb = null; }
+          if (!vale()) return;
+          st.pos = p1; st.vel = 0; st.ruido = 0; st.elegido = p1; st.aviso = 'FIJANDO';
+          const nom = st.items[((p1 % n) + n) % n], Rt = rotulo(nom); g.font = SA(Rt.px); st.wN = Math.min(PX1 - PX0 - 60, Math.min(g.measureText(nom).width, PX1 - PX0 - 150) + 90);
+          pitido();
+          await trTween(RM ? 0 : 260, u => { st.cierra = eo(u, 3); }, vale);
+          st.aviso = 'CONFIRMADO';
+          await trTween(RM ? 0 : 560, u => { st.luz = eo(u, 2); st.destello = RM ? 0 : Math.sin(Math.PI * Math.min(1, u * 1.4)) * (1 - u * .5); }, vale);
+          st.cierra = 1; st.luz = 1; st.destello = 0;
+        },
+        quita() { vivo = false; cancelAnimationFrame(raf); if (zumb) { zumb.para(.1); zumb = null; } }
+      };
+    }
+  };
+
+  /* ── «trpluma» · Transporte · Sesión 2 (la capilla de 1730): la pluma del copista ──
+     Sobre la mesa del archivo, a la luz de la vela, un pergamino con la nómina del grupo escrita a mano (IM Fell, en cursiva, con
+     su número en almagre). La pluma recorre los nombres uno a uno, de arriba abajo y de una columna a otra, cada vez más despacio;
+     cuando ya va lenta, tacha los que va dejando atrás. Se para en uno, lo subraya de un trazo con un borrón de tinta al final, y
+     el nombre se vuelve a entintar en almagre. Rasgueo de pluma, un «toc» por nombre y un arpegio de clave al final. */
+  TEMAS.trpluma = {
+    fuentes: ['italic 400 40px "IM Fell"', '400 40px "IM Fell"'],
+    nombreFit: { min: 46 },
+    css: `
+.lmv-t-trpluma .lmv-velo{background:radial-gradient(ellipse at 30% 30%,rgba(46,28,14,.975) 0%,rgba(22,13,7,.988) 60%,rgba(8,5,3,.995) 100%)}
+.lmv-t-trpluma .lmv-cab{top:20px}
+.lmv-t-trpluma .lmv-ceja{font:italic 400 34px/1 "IM Fell",Georgia,"Times New Roman",serif;letter-spacing:.2em;color:#f3e6c6;text-shadow:0 2px 12px rgba(0,0,0,.9)}
+.lmv-t-trpluma .lmv-grupo{margin-top:8px;font:400 20px/1 "Plex","DM Sans",system-ui,sans-serif;letter-spacing:.06em;color:rgba(243,230,198,.72);text-shadow:0 2px 8px rgba(0,0,0,.9)}
+.lmv-t-trpluma .lmv-nombre{top:806px;left:240px;right:240px;height:118px;display:flex;align-items:center;justify-content:center;font:italic 400 100px/1.05 "IM Fell",Georgia,"Times New Roman",serif;color:#f6e7c4;text-shadow:0 0 26px rgba(255,190,110,.45),0 4px 18px rgba(0,0,0,.95)}
+.lmv-t-trpluma .lmv-nota{top:930px;font:italic 400 24px/1.3 "IM Fell",Georgia,serif;color:#ecdcb6;text-shadow:0 2px 8px rgba(0,0,0,.9)}
+.lmv-t-trpluma .lmv-pie{bottom:24px}
+.lmv-t-trpluma .lmv-b{display:inline-flex;align-items:center;gap:12px;padding:13px 32px;border-radius:8px;border:2px solid #a8321b;background:rgba(26,15,8,.9);color:#f3e6c6;font:italic 400 28px/1 "IM Fell",Georgia,serif;letter-spacing:.03em;transition:background .2s,transform .15s}
+.lmv-t-trpluma .lmv-b:hover{background:rgba(52,30,16,.94);transform:translateY(-2px)}
+.lmv-t-trpluma .lmv-b.lmv-otra{background:#f3e6c6;border-color:#f3e6c6;color:#26180c}
+.lmv-t-trpluma .lmv-b.lmv-otra:hover{background:#fff4da}
+.lmv-t-trpluma .lmv-cargando{color:#e8a27a}
+.lmv-of-trpluma .lmv-ob{font-family:"IM Fell",Georgia,serif;font-style:italic;font-weight:400;letter-spacing:.02em;font-size:clamp(24px,2.5vw,36px);border:2px solid #a8321b;border-radius:8px;background:#f3e6c6;color:#26180c;box-shadow:0 18px 50px rgba(0,0,0,.6),0 0 40px rgba(243,230,198,.18)}
+.lmv-of-trpluma .lmv-og,.lmv-of-trpluma .lmv-no{font-family:"IM Fell",Georgia,serif;font-style:italic;letter-spacing:.06em;text-transform:none;color:#f3e6c6}
+@media (prefers-reduced-motion:reduce){.lmv-t-trpluma .lmv-nombre.ve{animation:none;opacity:1}}`,
+    crea(esc, o) {
+      const L = lienzo(esc), g = L.g, RM = reducido(), mov = RM ? 0 : 1;
+      const FE = (px, it) => `${it === false ? '' : 'italic '}400 ${px}px "IM Fell", Georgia, "Times New Roman", serif`;
+      const TINTA = '#26180c', ALMAGRE = '#a8321b', PERG = '#f3e6c6';
+      const QX0 = 300, QX1 = 1620, QY0 = 100, QY1 = 786;                       // el pergamino
+      const st = { t: 0, items: [], n: 0, cel: [], ruta: [], px: 40, s: 0, vel: 0, gen: 0, tach: new Map(), sub: null, borron: 0, luz: 0, pen: { x: 1690, y: 600, alza: 60 }, objetivo: null, lapso: 0 };
+      let fondo = null, raf = 0, vivo = true;
+      const ANG = -1.02;                                                    // la pluma, inclinada hacia arriba a la derecha
+
+      /* ── lo que no se mueve: la mesa de madera, el pergamino (con sus manchas y su título) y el tintero ── */
+      function borde(r, x0, y0, x1, y1) {                                    // el contorno irregular del pergamino
+        const pts = [], paso = 26;
+        for (let x = x0; x < x1; x += paso) pts.push([x, y0 + (r() - .5) * 7]);
+        for (let y = y0; y < y1; y += paso) pts.push([x1 + (r() - .5) * 7, y]);
+        for (let x = x1; x > x0; x -= paso) pts.push([x, y1 + (r() - .5) * 7]);
+        for (let y = y1; y > y0; y -= paso) pts.push([x0 + (r() - .5) * 7, y]);
+        return pts;
+      }
+      function pintaFondo(g) {
+        const r = semilla(1730);
+        // la mesa
+        let gr = g.createLinearGradient(0, 0, 0, 1080); gr.addColorStop(0, '#2c190c'); gr.addColorStop(1, '#140a05'); g.fillStyle = gr; g.fillRect(0, 0, 1920, 1080);
+        for (let j = 0; j < 120; j++) { const y0 = r() * 1080, amp = 4 + r() * 10, fr = .002 + r() * .004, ph = r() * 6; g.strokeStyle = r() < .6 ? `rgba(0,0,0,${.08 + r() * .14})` : `rgba(140,90,50,${.03 + r() * .05})`; g.lineWidth = .6 + r() * 2;
+          g.beginPath(); for (let x = 0; x <= 1920; x += 16) { const y = y0 + Math.sin(x * fr + ph) * amp; if (!x) g.moveTo(x, y); else g.lineTo(x, y); } g.stroke(); }
+        gr = g.createRadialGradient(190, 250, 20, 190, 250, 1300); gr.addColorStop(0, 'rgba(255,180,90,.26)'); gr.addColorStop(.5, 'rgba(255,160,80,.08)'); gr.addColorStop(1, 'rgba(0,0,0,.35)'); g.fillStyle = gr; g.fillRect(0, 0, 1920, 1080);
+        // la sombra y el pergamino
+        const pts = borde(r, QX0, QY0, QX1, QY1);
+        const traza = () => { g.beginPath(); pts.forEach(([x, y], i) => i ? g.lineTo(x, y) : g.moveTo(x, y)); g.closePath(); };
+        g.save(); g.shadowColor = 'rgba(0,0,0,.7)'; g.shadowBlur = 40; g.shadowOffsetY = 16; traza(); g.fillStyle = '#e8d6ad'; g.fill(); g.restore();
+        g.save(); traza(); g.clip();
+        gr = g.createRadialGradient(900, 380, 60, 960, 440, 900); gr.addColorStop(0, '#f7ecd2'); gr.addColorStop(.6, PERG); gr.addColorStop(1, '#d8c091'); g.fillStyle = gr; g.fillRect(QX0 - 10, QY0 - 10, QX1 - QX0 + 20, QY1 - QY0 + 20);
+        for (let i = 0; i < 26; i++) { const x = QX0 + r() * (QX1 - QX0), y = QY0 + r() * (QY1 - QY0), rad = 20 + r() * 110; const rg = g.createRadialGradient(x, y, 0, x, y, rad); rg.addColorStop(0, `rgba(150,100,40,${.03 + r() * .06})`); rg.addColorStop(1, 'rgba(150,100,40,0)'); g.fillStyle = rg; g.fillRect(x - rad, y - rad, 2 * rad, 2 * rad); }
+        g.strokeStyle = 'rgba(120,80,30,.06)'; g.lineWidth = 1; for (let i = 0; i < 260; i++) { const x = QX0 + r() * (QX1 - QX0), y = QY0 + r() * (QY1 - QY0), l = 10 + r() * 40, a = r() * 6.28; g.beginPath(); g.moveTo(x, y); g.lineTo(x + Math.cos(a) * l, y + Math.sin(a) * l); g.stroke(); }
+        gr = g.createLinearGradient(QX0, 0, QX1, 0); gr.addColorStop(0, 'rgba(110,70,25,.22)'); gr.addColorStop(.06, 'rgba(110,70,25,0)'); gr.addColorStop(.94, 'rgba(110,70,25,0)'); gr.addColorStop(1, 'rgba(110,70,25,.25)'); g.fillStyle = gr; g.fillRect(QX0 - 10, QY0 - 10, QX1 - QX0 + 20, QY1 - QY0 + 20);
+        gr = g.createLinearGradient(0, QY0, 0, QY1); gr.addColorStop(0, 'rgba(110,70,25,.2)'); gr.addColorStop(.08, 'rgba(110,70,25,0)'); gr.addColorStop(.92, 'rgba(110,70,25,0)'); gr.addColorStop(1, 'rgba(110,70,25,.24)'); g.fillStyle = gr; g.fillRect(QX0 - 10, QY0 - 10, QX1 - QX0 + 20, QY1 - QY0 + 20);
+        // el pliegue del medio
+        g.fillStyle = 'rgba(120,80,30,.07)'; g.fillRect(958, QY0, 3, QY1 - QY0); g.fillStyle = 'rgba(255,250,235,.12)'; g.fillRect(962, QY0, 2, QY1 - QY0);
+        g.restore();
+        // el título, en almagre, con su doble raya
+        g.fillStyle = ALMAGRE; g.textAlign = 'center'; g.textBaseline = 'alphabetic'; g.font = FE(46); g.fillText('Nómina de voluntarios', 960, 172);
+        g.strokeStyle = ALMAGRE; g.lineWidth = 1.6; g.globalAlpha = .75;
+        [190, 197].forEach(y => { g.beginPath(); g.moveTo(560, y); g.quadraticCurveTo(960, y + 3, 1360, y); g.stroke(); });
+        g.globalAlpha = 1;
+        [[530, 193], [1390, 193]].forEach(([x, y]) => { g.beginPath(); g.moveTo(x - 10, y); g.lineTo(x, y - 6); g.lineTo(x + 10, y); g.lineTo(x, y + 6); g.closePath(); g.fillStyle = ALMAGRE; g.fill(); });
+        // la vela (a la izquierda) con su palmatoria de latón
+        gr = g.createLinearGradient(160, 0, 220, 0); gr.addColorStop(0, '#d8c8a0'); gr.addColorStop(.5, '#fff2d0'); gr.addColorStop(1, '#bca77c'); rr(g, 168, 300, 44, 260, 6); g.fillStyle = gr; g.fill();
+        g.fillStyle = 'rgba(255,240,200,.5)'; g.beginPath(); g.moveTo(170, 304); g.quadraticCurveTo(178, 330, 172, 350); g.lineTo(168, 330); g.closePath(); g.fill();
+        g.beginPath(); g.ellipse(190, 566, 84, 20, 0, 0, 6.283); gr = g.createLinearGradient(106, 0, 274, 0); gr.addColorStop(0, '#6b4a16'); gr.addColorStop(.45, '#e2bd68'); gr.addColorStop(1, '#5e4214'); g.fillStyle = gr; g.fill();
+        g.beginPath(); g.ellipse(190, 558, 40, 10, 0, 0, 6.283); g.fillStyle = '#a77d30'; g.fill();
+        // el tintero (a la derecha)
+        g.save(); g.shadowColor = 'rgba(0,0,0,.6)'; g.shadowBlur = 18; g.shadowOffsetY = 8;
+        g.beginPath(); g.moveTo(1660, 640); g.lineTo(1660, 600); g.quadraticCurveTo(1660, 580, 1690, 578); g.lineTo(1730, 578); g.quadraticCurveTo(1760, 580, 1760, 600); g.lineTo(1760, 640); g.quadraticCurveTo(1760, 660, 1740, 662); g.lineTo(1680, 662); g.quadraticCurveTo(1660, 660, 1660, 640); g.closePath();
+        gr = g.createLinearGradient(1660, 0, 1760, 0); gr.addColorStop(0, '#0c0806'); gr.addColorStop(.35, '#2c2420'); gr.addColorStop(1, '#070504'); g.fillStyle = gr; g.fill(); g.restore();
+        rr(g, 1688, 560, 44, 22, 4); g.fillStyle = '#a77d30'; g.fill(); g.beginPath(); g.ellipse(1710, 560, 22, 6, 0, 0, 6.283); g.fillStyle = '#1a120c'; g.fill();
+        g.fillStyle = 'rgba(255,220,170,.25)'; g.fillRect(1672, 592, 6, 52);
+      }
+      function ajusta(s) { if (L.ajusta(s) || !fondo) fondo = capaFija(L.k, pintaFondo); }
+
+      /* ── la nómina: columnas, el tamaño de la letra y el recorrido en zigzag (bajando por una columna y subiendo por la otra) ── */
+      function prepara(bombo) {
+        const n = bombo.length, cols = n <= 9 ? 1 : n <= 26 ? 2 : 3, filas = Math.ceil(n / cols);
+        const X0 = 360, X1 = 1560, Y0 = 222, Y1 = 768, cw = (X1 - X0) / cols, rh = Math.min(86, (Y1 - Y0) / filas);
+        g.font = FE(100); const wMax = Math.max(...bombo.map(s => g.measureText(s).width)) / 100 || 1;
+        const px = Math.floor(clamp(Math.min(rh * .76, (cw - 110) / wMax), 26, 58)); g.font = FE(px);
+        const bloque = wMax * px + 54, yTop = Y0 + ((Y1 - Y0) - filas * rh) / 2;
+        st.cel = bombo.map((nom, i) => { const c = Math.floor(i / filas), f = i % filas, x = X0 + c * cw + Math.max(10, (cw - bloque) / 2) + 54;
+          return { nom, x, y: yTop + (f + .5) * rh + px * .3, w: g.measureText(nom).width, num: String(i + 1) + '.' }; });
+        st.ruta = []; for (let c = 0; c < cols; c++) { const ids = []; for (let f = 0; f < filas; f++) { const i = c * filas + f; if (i < n) ids.push(i); } if (c % 2) ids.reverse(); st.ruta.push(...ids); }
+        st.px = px;
+      }
+      const ancla = i => { const c = st.cel[i]; return c ? { x: c.x + Math.min(c.w, 320) * .5, y: c.y - st.px * .2 } : { x: 1690, y: 600 }; };
+      /* ── la pluma: el cálamo, el plumón con sus barbas y la punta mojada de tinta; la punta en (x, y) ── */
+      function pintaPluma(x, y, alza) {
+        const vane = g => { g.beginPath(); g.moveTo(92, -2); g.bezierCurveTo(150, -30, 280, -40, 376, -8); g.lineTo(380, 0); g.bezierCurveTo(330, 12, 200, 18, 92, 3); g.closePath(); };
+        // la sombra en el pergamino
+        g.save(); g.translate(x + 14 + alza * .7, y + 20 + alza * .9); g.rotate(ANG); g.globalAlpha = clamp(.24 - alza * .0018, .08, .24); g.fillStyle = '#2a1608'; vane(g); g.fill();
+        g.beginPath(); g.moveTo(0, 0); g.lineTo(380, 0); g.lineWidth = 6; g.strokeStyle = '#2a1608'; g.stroke(); g.restore();
+        g.save(); g.translate(x, y - alza); g.rotate(ANG);
+        // el plumón
+        vane(g); let gr = g.createLinearGradient(0, -40, 0, 18); gr.addColorStop(0, '#fbf7ee'); gr.addColorStop(.5, '#e4dccd'); gr.addColorStop(1, '#b8ad9b'); g.fillStyle = gr; g.fill();
+        g.save(); vane(g); g.clip(); g.strokeStyle = 'rgba(110,95,75,.28)'; g.lineWidth = 1;
+        for (let s = 96; s < 380; s += 6) { g.beginPath(); g.moveTo(s, 0); g.lineTo(s + 26, -44); g.moveTo(s, 0); g.lineTo(s + 14, 22); g.stroke(); }
+        g.fillStyle = 'rgba(40,24,12,.25)'; g.beginPath(); g.moveTo(232, -1); g.lineTo(262, -36); g.lineTo(268, -34); g.lineTo(240, -1); g.closePath(); g.fill();
+        g.restore();
+        vane(g); g.strokeStyle = 'rgba(90,70,50,.45)'; g.lineWidth = 1.2; g.stroke();
+        // el cañón (cálamo) y la punta
+        g.lineCap = 'round'; gr = g.createLinearGradient(0, -4, 0, 4); gr.addColorStop(0, '#fff8e8'); gr.addColorStop(1, '#bfae8c');
+        g.strokeStyle = gr; g.lineWidth = 6; g.beginPath(); g.moveTo(26, 0); g.lineTo(392, -2); g.stroke();
+        g.beginPath(); g.moveTo(0, 0); g.lineTo(34, -4.5); g.lineTo(34, 4.5); g.closePath(); g.fillStyle = '#3a2614'; g.fill();
+        g.beginPath(); g.moveTo(0, 0); g.lineTo(16, -2); g.lineTo(16, 2); g.closePath(); g.fillStyle = TINTA; g.fill();
+        g.restore();
+      }
+      function trazoTachado(c, u) {                                         // la raya que tacha un nombre (u: lo que lleva hecho)
+        const y = c.y - st.px * .28, x0 = c.x - 8, x1 = c.x + c.w + 8, xe = lerp(x0, x1, u);
+        g.beginPath(); g.moveTo(x0, y + 2); for (let x = x0; x <= xe; x += 12) g.lineTo(x, y + Math.sin(x * .05) * 1.6 - (x - x0) * .012); g.stroke();
+      }
+      function pintaNomina() {
+        const n = st.n; if (!n) return;
+        g.textBaseline = 'alphabetic';
+        st.cel.forEach((c, i) => {
+          const eleg = st.objetivo === i && st.luz > 0;
+          g.textAlign = 'right'; g.font = FE(Math.round(st.px * .62), false); g.fillStyle = 'rgba(168,50,27,.85)'; g.fillText(c.num, c.x - 14, c.y);
+          g.textAlign = 'left'; g.font = FE(st.px);
+          if (eleg) { g.save(); g.globalCompositeOperation = 'multiply'; g.translate(c.x + c.w / 2, c.y - st.px * .3); g.scale(1, (st.px * 1.1) / (c.w * .6 + 50)); const R = c.w * .6 + 50, rg = g.createRadialGradient(0, 0, 4, 0, 0, R); rg.addColorStop(0, `rgba(255,196,120,${.4 * st.luz})`); rg.addColorStop(1, 'rgba(255,196,120,0)'); g.fillStyle = rg; g.beginPath(); g.arc(0, 0, R, 0, 6.283); g.fill(); g.restore(); }
+          g.fillStyle = eleg ? `rgb(${Math.round(lerp(38, 168, st.luz))},${Math.round(lerp(24, 50, st.luz))},${Math.round(lerp(12, 27, st.luz))})` : TINTA;
+          g.globalAlpha = st.tach.has(i) ? .72 : .93; g.fillText(c.nom, c.x, c.y);
+          if (eleg) { g.globalAlpha = .55 * st.luz; g.fillText(c.nom, c.x + .8, c.y + .3); }                    // entintado otra vez: más grueso
+          g.globalAlpha = 1;
+        });
+        // los tachados
+        g.strokeStyle = TINTA; g.lineCap = 'round'; g.lineWidth = Math.max(2.4, st.px * .085);
+        st.tach.forEach((t0, i) => { const c = st.cel[i]; if (c) trazoTachado(c, clamp((st.t - t0) / .16, 0, 1)); });
+        // el subrayado del elegido, con su borrón
+        if (st.sub) { const s = st.sub; if (s.pts.length > 1) { g.strokeStyle = TINTA; g.lineWidth = Math.max(3, st.px * .1); g.beginPath(); s.pts.forEach(([x, y], j) => j ? g.lineTo(x, y) : g.moveTo(x, y)); g.stroke(); }
+          if (st.borron > 0) { const [bx, by] = s.pts[s.pts.length - 1], b = st.borron, rr_ = st.px * .36 * b; g.fillStyle = TINTA; g.globalAlpha = .93;
+            g.beginPath(); for (let a = 0; a <= 6.3; a += .35) { const q = rr_ * (1 + .25 * Math.sin(a * 3 + 1) + .15 * Math.sin(a * 5)); g.lineTo(bx + rr_ * .7 + Math.cos(a) * q, by + Math.sin(a) * q * .9); } g.closePath(); g.fill();
+            s.gotas.forEach(d => { g.beginPath(); g.arc(bx + 6 + d.x * b, by + d.y * b, d.r * b, 0, 6.283); g.fill(); }); g.globalAlpha = 1; } }
+      }
+      function pintaVela() {
+        const fl = mov ? 1 + .08 * Math.sin(st.t * 9) + .05 * Math.sin(st.t * 23 + 1) : 1, sw = mov ? Math.sin(st.t * 3.1) * 3 : 0;
+        g.save(); g.globalCompositeOperation = 'lighter';
+        let rg = g.createRadialGradient(190, 268, 4, 190, 268, 360 * fl); rg.addColorStop(0, 'rgba(255,190,100,.32)'); rg.addColorStop(1, 'rgba(255,170,80,0)'); g.fillStyle = rg; g.fillRect(-200, -100, 800, 760);
+        g.translate(190, 296); g.scale(1, fl);
+        g.beginPath(); g.moveTo(0, 0); g.bezierCurveTo(-14, -14, -10, -40, sw, -64); g.bezierCurveTo(10, -40, 14, -14, 0, 0); g.closePath();
+        rg = g.createRadialGradient(0, -16, 2, 0, -24, 40); rg.addColorStop(0, 'rgba(255,255,235,1)'); rg.addColorStop(.5, 'rgba(255,200,90,.9)'); rg.addColorStop(1, 'rgba(255,120,30,.1)'); g.fillStyle = rg; g.fill();
+        g.restore();
+        g.fillStyle = '#2a1a0e'; g.fillRect(189, 292, 2.4, 10);
+      }
+      let tAnt = performance.now();
+      function bucle(ahora) {
+        if (!vivo) return;
+        const dt = Math.min(.05, (ahora - tAnt) / 1000); tAnt = ahora; st.t += dt;
+        L.borra(); if (fondo) ponCapa(g, fondo);
+        pintaNomina();
+        // la pluma sigue su objetivo (sin saltos)
+        const P = st.pen, T = st.dest || { x: 1690, y: 600, alza: 60 }, kq = clamp(dt * 30, 0, 1);
+        P.x = lerp(P.x, T.x, kq); P.y = lerp(P.y, T.y, kq); P.alza = lerp(P.alza, T.alza, clamp(dt * 18, 0, 1));
+        pintaPluma(P.x, P.y, P.alza);
+        pintaVela();
+        raf = requestAnimationFrame(bucle);
+      }
+      raf = requestAnimationFrame(bucle);
+      tras(TEMAS.trpluma.fuentes, () => { if (!vivo) return; fondo = capaFija(L.k || 1, pintaFondo); if (st.n > 1) prepara(st.items); });
+
+      /* ── los sonidos: el «toc» de la punta en cada nombre, el rasgueo al tachar y al subrayar, el borrón y un arpegio de clave ── */
+      let tT = 0;
+      function toc(v) { const ac = A.ac; if (!ac) return; const t = ac.currentTime; if (t - tT < .035) return; tT = t; const k = clamp(1 - v / 24, .3, 1);
+        A.clic({ f: 2600 + Math.random() * 900, q: 2, gan: .05 + .12 * k, dur: .02, wet: .25 }); if (k > .6) A.clic({ f: 4800, q: 1, gan: .08 * k, dur: .06, t: .01, wet: .15 }); }
+      const rasgueo = (dur, gan, t) => { if (A.ac) A.clic({ t: t || 0, f: 3800 + Math.random() * 1500, q: 1.1, gan, dur, wet: .18 }); };
+      function clave() {
+        if (!A.ac) return;
+        [196, 246.94, 293.66, 392, 493.88, 587.33].forEach((f, i) => { A.nota(f, { tipo: 'sawtooth', t: .05 + i * .065, dur: .9 + i * .1, gan: .05, ataque: .002, filtro: { f: 2400, q: .8 }, wet: .45 }); A.nota(f * 2, { tipo: 'triangle', t: .05 + i * .065, dur: .4, gan: .02, ataque: .002, wet: .4 }); });
+        A.nota(98, { tipo: 'triangle', t: .05, dur: 2.2, gan: .1, ataque: .003, wet: .4 });
+      }
+      return {
+        ajusta,
+        espera() { if (!st.n) { prepara(['· · ·']); st.items = ['· · ·']; st.n = 1; } st.dest = { x: 1700, y: 590, alza: 50 }; },
+        async gira(bombo, k) {
+          const gen = ++st.gen, vale = () => gen === st.gen && vivo;
+          st.items = bombo.slice(); st.n = bombo.length; prepara(st.items); st.tach = new Map(); st.sub = null; st.borron = 0; st.luz = 0; st.objetivo = k;
+          const n = st.n, m = n - 1, ruta = st.ruta, sl = Math.max(0, ruta.indexOf(k));
+          const p0 = clamp(Math.round(st.s), 0, m), p1 = destinoVaiven(p0, m, sl, (RM ? 1.2 : 2.6) * m + 1);
+          const f = recorrido(p0, p1, RM ? { T: 1.7, amago: .06, retro: 0, sobra: 0, rebote: .1, p: 2.2 } : { p: 2.45, amago: .3, retro: .3, sobra: .12, rebote: .24 });
+          const ac = A.crea(); if (ac) { rasgueo(.12, .2); A.clic({ f: 1200, q: 1.4, gan: .18, dur: .05, wet: .3 }); }
+          let ult = ruta[Math.round(vaiven(p0, m))];
+          await trGiro(f, (p, t, v) => {
+            const q = vaiven(p, m), a = Math.floor(q), b = Math.min(m, a + 1), u = q - a, A_ = ancla(ruta[a]), B_ = ancla(ruta[b]);
+            st.s = p; st.vel = v;
+            st.dest = { x: lerp(A_.x, B_.x, u), y: lerp(A_.y, B_.y, u), alza: mov ? 6 + Math.sin(Math.PI * u) * clamp(20 - Math.abs(v) * .4, 6, 20) : 6 };
+            const cel = ruta[Math.round(q)];
+            if (cel !== ult) {
+              if (Math.abs(v) < 6.5 && ult !== k && !st.tach.has(ult) && t > 1) { st.tach.set(ult, st.t); rasgueo(.16, .22); }
+              ult = cel; toc(Math.abs(v));
+            }
+          }, vale);
+          if (!vale()) return;
+          st.s = p1;
+          // subraya el elegido: la pluma baja al principio del nombre y lo recorre de un trazo, con un borrón al final
+          const c = st.cel[k], y0 = c.y + st.px * .2, x0 = c.x - 10, x1 = c.x + c.w + 18;
+          st.dest = { x: x0, y: y0, alza: 0 };
+          await trTween(RM ? 0 : 260, () => {}, vale);
+          st.sub = { pts: [], gotas: [{ x: 18, y: -8, r: 3 }, { x: 26, y: 6, r: 2.2 }, { x: -6, y: 12, r: 1.8 }, { x: 34, y: -2, r: 1.5 }] };
+          const ras = ac && !RM ? A.continuo({ f: 4300, q: 1.3, wet: .18 }) : null;
+          await trTween(RM ? 0 : 640, u => { const e = eio(u), x = lerp(x0, x1, e), y = y0 + Math.sin(e * 9) * 2.2 - e * 4; st.sub.pts.push([x, y]); st.dest = { x, y, alza: 0 };
+            if (ras) A.pon(ras.g.gain, .05 + .05 * Math.abs(Math.sin(u * 40)), .02); }, vale);
+          if (ras) ras.para(.08);
+          if (!st.sub.pts.length) st.sub.pts.push([x0, y0], [x1, y0 - 4]);
+          if (!vale()) return;
+          if (A.ac) { A.nota(200, { tipo: 'sine', dur: .2, gan: .2, desliza: 80 }); A.clic({ f: 700, q: 1, gan: .2, dur: .06, wet: .3 }); }
+          clave();
+          st.dest = { x: 1712, y: 566, alza: 0 };                            // y vuelve al tintero
+          await trTween(RM ? 0 : 520, u => { st.borron = eo(Math.min(1, u * 2.2), 3); st.luz = eo(u, 2); }, vale);
+          st.borron = 1; st.luz = 1;
+        },
+        quita() { vivo = false; cancelAnimationFrame(raf); }
+      };
+    }
+  };
+
+  /* ── «trfoco» · Transporte · Sesión 3 (el teatro Rosalía, 2026): el foco sobre las tablas ──
+     El escenario del Rosalía con su telón rojo y dorado recogido a los lados y la bambalina de flecos. Los nombres esperan en filas
+     sobre las tablas, en penumbra. Se enciende el foco con un golpe seco: su cono recorre las filas de un lado a otro (acelera,
+     va y viene, frena, con un «tic» del motor por nombre) y se queda sobre uno; el resto se apaga casi del todo, un destello en el
+     nombre y suena un acorde de foso con su platillo. */
+  TEMAS.trfoco = {
+    fuentes: ['600 40px "Saira SC"', '700 92px "Saira SC"', '400 20px "Plex"'],
+    nombreFit: { min: 46 },
+    css: `
+.lmv-t-trfoco .lmv-velo{background:radial-gradient(ellipse at 50% 40%,rgba(30,10,12,.975) 0%,rgba(14,5,6,.988) 60%,rgba(4,1,2,.995) 100%)}
+.lmv-t-trfoco .lmv-cab{top:18px}
+.lmv-t-trfoco .lmv-ceja{font:600 30px/1 "Saira SC","Jost",system-ui,sans-serif;letter-spacing:.42em;text-transform:uppercase;color:#f2cf7a;text-shadow:0 2px 14px rgba(0,0,0,.9)}
+.lmv-t-trfoco .lmv-grupo{margin-top:9px;font:400 20px/1 "Plex","DM Sans",system-ui,sans-serif;letter-spacing:.06em;color:rgba(246,230,200,.74);text-shadow:0 2px 8px rgba(0,0,0,.9)}
+.lmv-t-trfoco .lmv-nombre{top:810px;left:240px;right:240px;height:116px;display:flex;align-items:center;justify-content:center;font:700 92px/1.05 "Saira SC","Jost",system-ui,sans-serif;letter-spacing:.02em;color:#fff3d6;text-shadow:0 0 26px rgba(255,214,140,.6),0 0 70px rgba(255,190,90,.25),0 4px 18px rgba(0,0,0,.95)}
+.lmv-t-trfoco .lmv-nota{top:930px;font:400 22px/1.3 "Plex","DM Sans",system-ui,sans-serif;color:#f1dfc0;text-shadow:0 2px 8px rgba(0,0,0,.9)}
+.lmv-t-trfoco .lmv-pie{bottom:24px}
+.lmv-t-trfoco .lmv-b{display:inline-flex;align-items:center;gap:12px;padding:14px 32px;border-radius:8px;border:2px solid #d6a84a;background:rgba(30,8,10,.9);color:#f7e7c4;font:600 24px/1 "Saira SC","Jost",system-ui,sans-serif;letter-spacing:.08em;transition:background .2s,transform .15s}
+.lmv-t-trfoco .lmv-b:hover{background:rgba(70,16,20,.94);transform:translateY(-2px)}
+.lmv-t-trfoco .lmv-b.lmv-otra{background:linear-gradient(#ffe39a,#d9b25a 55%,#9c7428);border-color:#ffe39a;color:#1c1008}
+.lmv-t-trfoco .lmv-b.lmv-otra:hover{background:linear-gradient(#fff0b8,#e4c06a 55%,#aa8232)}
+.lmv-t-trfoco .lmv-cargando{color:#f2cf7a}
+.lmv-of-trfoco .lmv-ob{font-family:"Saira SC","Jost",system-ui,sans-serif;font-weight:600;letter-spacing:.06em;border:2px solid #e6c25a;border-radius:8px;background:linear-gradient(#a8262f,#8c1e26 60%,#5e1219);color:#fbe7b0;box-shadow:0 18px 50px rgba(0,0,0,.6),0 0 44px rgba(230,194,90,.25)}
+.lmv-of-trfoco .lmv-og,.lmv-of-trfoco .lmv-no{font-family:"Plex","DM Sans",system-ui,sans-serif;color:#f1dfc0}
+@media (prefers-reduced-motion:reduce){.lmv-t-trfoco .lmv-nombre.ve{animation:none;opacity:1}}`,
+    crea(esc, o) {
+      const L = lienzo(esc), g = L.g, RM = reducido(), mov = RM ? 0 : 1;
+      const SA = (px, w) => `${w || 600} ${px}px "Saira SC", "Jost", system-ui, sans-serif`;
+      const FX0 = 120, FX1 = 1800, FY0 = 92, FY1 = 800;                     // el marco dorado de la embocadura
+      const SX = 960, SY = 214;                                             // el foco, colgado bajo la bambalina
+      const ORO = ['#fff0bf', '#e2bd68', '#a77d30', '#5e4214'];
+      const st = { t: 0, items: [], n: 0, cel: [], ruta: [], s: 0, vel: 0, gen: 0, k: null, luz: 0, fin: 0, destello: 0, enc: 0, foco: { x: SX, y: 620, rx: 120 }, motas: [], chispas: [] };
+      for (let i = 0; i < 60; i++) st.motas.push({ u: Math.random(), w: Math.random() * 2 - 1, v: .02 + Math.random() * .05, r: .6 + Math.random() * 1.4, f: Math.random() * 6.3 });
+      let fondo = null, raf = 0, vivo = true, motor = null;
+      const oro = (g, x0, y0, x1, y1) => { const gr = g.createLinearGradient(x0, y0, x1, y1); gr.addColorStop(0, ORO[0]); gr.addColorStop(.35, ORO[1]); gr.addColorStop(.75, ORO[2]); gr.addColorStop(1, ORO[3]); return gr; };
+
+      /* ── lo que no se mueve: la sala a oscuras, la embocadura dorada, la bambalina, el telón recogido y las tablas ── */
+      function terciopelo(g, x0, x1, y0, y1, pliegues, sem) {
+        const r = semilla(sem), gr = g.createLinearGradient(x0, 0, x1, 0);
+        for (let i = 0; i <= pliegues * 4; i++) { const u = i / (pliegues * 4), s = .5 + .5 * Math.sin(u * pliegues * 6.283 + r() * .6); gr.addColorStop(u, `rgb(${Math.round(70 + 110 * s)},${Math.round(8 + 18 * s)},${Math.round(14 + 20 * s)})`); }
+        return gr;
+      }
+      function telonLado(g, lado) {
+        const x0 = lado < 0 ? FX0 + 26 : FX1 - 26, ancho = 230, cintura = 600, xin = x0 - lado * ancho, xc = x0 - lado * 120;
+        g.save();
+        g.beginPath(); g.moveTo(x0, 210); g.lineTo(xin, 210); g.bezierCurveTo(xin + lado * 10, 360, xc + lado * 6, 520, xc, cintura); g.bezierCurveTo(xc - lado * 20, 680, xin + lado * 40, 760, xin + lado * 30, FY1); g.lineTo(x0, FY1); g.closePath();
+        g.fillStyle = terciopelo(g, Math.min(x0, xin), Math.max(x0, xin), 0, 0, 6, lado < 0 ? 11 : 12); g.fill();
+        g.save(); g.clip(); let gr = g.createLinearGradient(0, 210, 0, FY1); gr.addColorStop(0, 'rgba(0,0,0,.55)'); gr.addColorStop(.3, 'rgba(0,0,0,.1)'); gr.addColorStop(1, 'rgba(0,0,0,.5)'); g.fillStyle = gr; g.fillRect(FX0, 200, FX1 - FX0, 620); g.restore();
+        g.strokeStyle = 'rgba(255,200,140,.18)'; g.lineWidth = 2; g.stroke();
+        // el alzapaño: un cordón dorado con su borla
+        g.lineWidth = 8; g.strokeStyle = oro(g, xc - 40, cintura - 10, xc + 40, cintura + 10); g.beginPath(); g.moveTo(x0, cintura - 16); g.quadraticCurveTo((x0 + xc) / 2, cintura + 16, xc - lado * 6, cintura); g.stroke();
+        g.beginPath(); g.moveTo(xc - lado * 6, cintura); g.lineTo(xc - lado * 14, cintura + 40); g.lineTo(xc + lado * 2, cintura + 40); g.closePath(); g.fillStyle = oro(g, xc - 20, cintura, xc + 20, cintura + 40); g.fill();
+        g.restore();
+      }
+      function pintaFondo(g) {
+        const r = semilla(26);
+        g.fillStyle = '#080304'; g.fillRect(0, 0, 1920, 1080);
+        // el fondo del escenario y las tablas
+        let gr = g.createLinearGradient(0, 210, 0, 360); gr.addColorStop(0, '#0d0506'); gr.addColorStop(1, '#170a0a'); g.fillStyle = gr; g.fillRect(FX0, 200, FX1 - FX0, 160);
+        g.fillStyle = 'rgba(80,14,20,.25)'; for (let x = FX0; x < FX1; x += 46) g.fillRect(x, 200, 22, 160);       // el telón de fondo, casi negro
+        const HY = 350, VPy = -900;
+        g.beginPath(); g.moveTo(FX0, HY); g.lineTo(FX1, HY); g.lineTo(FX1, FY1); g.lineTo(FX0, FY1); g.closePath();
+        gr = g.createLinearGradient(0, HY, 0, FY1); gr.addColorStop(0, '#1d1009'); gr.addColorStop(1, '#3a2213'); g.fillStyle = gr; g.fill();
+        g.save(); g.clip();
+        for (let i = -40; i <= 40; i++) { const xb = SX + i * 64, xt = SX + (xb - SX) * (HY - VPy) / (FY1 - VPy); g.strokeStyle = `rgba(0,0,0,${.35 + r() * .2})`; g.lineWidth = 1.6; g.beginPath(); g.moveTo(xt, HY); g.lineTo(xb, FY1); g.stroke();
+          g.strokeStyle = 'rgba(255,200,150,.035)'; g.lineWidth = 1; g.beginPath(); g.moveTo(xt + 2, HY); g.lineTo(xb + 3, FY1); g.stroke(); }
+        for (let j = 0; j < 22; j++) { const y = HY + Math.pow(j / 21, 1.6) * (FY1 - HY); g.fillStyle = 'rgba(0,0,0,.12)'; g.fillRect(FX0, y, FX1 - FX0, 1.2); }
+        g.restore();
+        // el borde del proscenio y las candilejas
+        gr = g.createLinearGradient(0, FY1 - 8, 0, FY1 + 30); gr.addColorStop(0, '#5a3a20'); gr.addColorStop(.3, '#2a170b'); gr.addColorStop(1, '#0a0403'); g.fillStyle = gr; g.fillRect(FX0 - 30, FY1 - 6, FX1 - FX0 + 60, 40);
+        for (let x = FX0 + 60; x < FX1 - 40; x += 70) { const rg = g.createRadialGradient(x, FY1 + 6, 1, x, FY1 + 6, 22); rg.addColorStop(0, 'rgba(255,200,120,.5)'); rg.addColorStop(1, 'rgba(255,200,120,0)'); g.fillStyle = rg; g.fillRect(x - 22, FY1 - 16, 44, 44); }
+        // el telón recogido a los lados
+        telonLado(g, -1); telonLado(g, 1);
+        // la bambalina: terciopelo con tres bambalinas en curva y flecos dorados
+        g.save(); g.beginPath(); g.moveTo(FX0 + 20, FY0 + 20); g.lineTo(FX1 - 20, FY0 + 20); g.lineTo(FX1 - 20, 190);
+        const sw = 3, ancho = (FX1 - FX0 - 40) / sw; for (let i = sw - 1; i >= 0; i--) { const xa = FX0 + 20 + (i + 1) * ancho, xb = FX0 + 20 + i * ancho; g.quadraticCurveTo((xa + xb) / 2, 250, xb, 190); }
+        g.closePath(); g.fillStyle = terciopelo(g, FX0, FX1, 0, 0, 18, 7); g.fill();
+        g.clip(); gr = g.createLinearGradient(0, FY0, 0, 250); gr.addColorStop(0, 'rgba(0,0,0,.45)'); gr.addColorStop(1, 'rgba(0,0,0,.05)'); g.fillStyle = gr; g.fillRect(FX0, FY0, FX1 - FX0, 170); g.restore();
+        g.lineWidth = 5; g.strokeStyle = oro(g, 0, 180, 0, 250);
+        g.beginPath(); g.moveTo(FX1 - 20, 190); for (let i = sw - 1; i >= 0; i--) { const xa = FX0 + 20 + (i + 1) * ancho, xb = FX0 + 20 + i * ancho; g.quadraticCurveTo((xa + xb) / 2, 250, xb, 190); } g.stroke();
+        g.lineWidth = 1.6; g.strokeStyle = 'rgba(226,189,104,.7)';
+        for (let i = 0; i < sw; i++) { const xa = FX0 + 20 + i * ancho, xb = xa + ancho; for (let u = .02; u < 1; u += .012) { const x = lerp(xa, xb, u), y = 190 + 120 * u * (1 - u); g.beginPath(); g.moveTo(x, y); g.lineTo(x, y + 14); g.stroke(); } }
+        g.fillStyle = oro(g, 0, FY0 + 20, 0, FY0 + 44); g.fillRect(FX0 + 20, FY0 + 22, FX1 - FX0 - 40, 10);
+        // la embocadura dorada, con su moldura
+        g.save(); g.lineWidth = 30; g.strokeStyle = oro(g, FX0, FY0, FX1, FY1); g.beginPath(); g.moveTo(FX0 + 15, FY1 + 4); g.lineTo(FX0 + 15, FY0 + 15); g.lineTo(FX1 - 15, FY0 + 15); g.lineTo(FX1 - 15, FY1 + 4); g.stroke();
+        g.lineWidth = 2; g.strokeStyle = 'rgba(60,40,10,.8)'; g.beginPath(); g.moveTo(FX0 + 30, FY1); g.lineTo(FX0 + 30, FY0 + 30); g.lineTo(FX1 - 30, FY0 + 30); g.lineTo(FX1 - 30, FY1); g.stroke();
+        g.strokeStyle = 'rgba(255,240,190,.5)'; g.beginPath(); g.moveTo(FX0 + 2, FY1); g.lineTo(FX0 + 2, FY0 + 2); g.lineTo(FX1 - 2, FY0 + 2); g.lineTo(FX1 - 2, FY1); g.stroke();
+        g.fillStyle = 'rgba(90,60,14,.6)'; for (let x = FX0 + 60; x < FX1 - 40; x += 48) { g.beginPath(); g.arc(x, FY0 + 15, 4, 0, 6.283); g.fill(); }
+        for (let y = FY0 + 60; y < FY1; y += 48) [FX0 + 15, FX1 - 15].forEach(x => { g.beginPath(); g.arc(x, y, 4, 0, 6.283); g.fill(); });
+        // el escudo del centro
+        g.translate(SX, FY0 + 14); g.beginPath(); g.moveTo(-40, -10); g.quadraticCurveTo(0, -30, 40, -10); g.lineTo(28, 22); g.quadraticCurveTo(0, 34, -28, 22); g.closePath(); g.fillStyle = oro(g, -40, -30, 40, 30); g.fill(); g.strokeStyle = 'rgba(60,40,10,.8)'; g.lineWidth = 1.5; g.stroke();
+        g.restore();
+        // la sombra de las tablas hacia el fondo
+        gr = g.createLinearGradient(0, HY, 0, HY + 160); gr.addColorStop(0, 'rgba(0,0,0,.55)'); gr.addColorStop(1, 'rgba(0,0,0,0)'); g.fillStyle = gr; g.fillRect(FX0 + 30, HY, FX1 - FX0 - 60, 160);
+      }
+      function ajusta(s) { if (L.ajusta(s) || !fondo) fondo = capaFija(L.k, pintaFondo); }
+
+      /* ── las filas de nombres: de 1 a 5 por fila, la del fondo algo más pequeña; el foco las recorre en zigzag ── */
+      function prepara(bombo) {
+        const n = bombo.length, C = n <= 5 ? n : n <= 10 ? Math.ceil(n / 2) : 5, R = Math.ceil(n / C);
+        const base = Math.floor(n / R), extra = n % R, Y0 = 420, Y1 = 742, cel = [];
+        let i = 0;
+        for (let f = 0; f < R; f++) {
+          const cuantos = base + (f < extra ? 1 : 0), z = R > 1 ? f / (R - 1) : 1, s = lerp(.8, 1, z), y = R > 1 ? lerp(Y0, Y1, Math.pow(z, .95)) : (Y0 + Y1) / 2 + 40;
+          const cw = Math.min(340, 1340 / Math.max(C, cuantos)) * s, rh = (R > 1 ? (Y1 - Y0) / (R - 1) : 200) * s;
+          for (let c = 0; c < cuantos; c++, i++) {
+            const x = SX + (c - (cuantos - 1) / 2) * cw, Rt = rotula(g, px => SA(px), bombo[i], cw - 24, Math.min(rh * 1.2, 120), 40 * s, 34 * s, true);
+            cel.push({ nom: bombo[i], x, y, s, cw, rh, Rt, f });
+          }
+        }
+        st.cel = cel;
+        st.ruta = []; let j = 0; for (let f = 0; f < R; f++) { const ids = []; while (j < n && cel[j].f === f) ids.push(j++); if (f % 2) ids.reverse(); st.ruta.push(...ids); }
+      }
+      function pintaNombres() {
+        const F = st.foco, pen = .55 - .4 * st.fin, nf = st.enc;
+        st.cel.forEach((c, i) => {
+          const dx = (c.x - F.x) / (F.rx * 1.05), dy = (c.y - F.y) / (F.rx * .62), lit = Math.exp(-(dx * dx + dy * dy) * 1.6) * nf, eleg = st.k === i && st.luz > 0;
+          const luz = eleg ? Math.max(lit, st.luz) : lit * (1 - .3 * st.fin);
+          // la marca en las tablas (una cruz de cinta)
+          g.fillStyle = `rgba(240,220,170,${.12 + .5 * luz})`; g.fillRect(c.x - 14 * c.s, c.y + 10 * c.s, 28 * c.s, 3); g.fillRect(c.x - 1.5, c.y + 3 * c.s, 3, 16 * c.s);
+          g.save(); g.translate(c.x, c.y - 22 * c.s); g.font = SA(c.Rt.px); g.textAlign = 'center'; g.textBaseline = 'alphabetic';
+          const lh = c.Rt.px * 1.02, cc = [lerp(120, 255, luz), lerp(96, 244, luz), lerp(86, 214, luz)].map(Math.round);
+          g.globalAlpha = clamp(pen + (1 - pen) * luz, .12, 1);
+          if (luz > .2) { g.shadowColor = `rgba(255,210,140,${.7 * luz})`; g.shadowBlur = 20 * luz; }
+          c.Rt.lineas.forEach((t, q) => { g.fillStyle = `rgb(${cc.join(',')})`; textoCabe(g, t, 0, (q - (c.Rt.lineas.length - 1)) * lh, c.cw - 16); });
+          g.restore();
+        });
+      }
+      function pintaFoco(dt) {
+        const F = st.foco, e = st.enc; if (e <= 0) return;
+        g.save(); g.globalCompositeOperation = 'lighter';
+        // el charco de luz en las tablas
+        g.save(); g.translate(F.x, F.y + 4); g.scale(1, .3);
+        let rg = g.createRadialGradient(0, 0, 4, 0, 0, F.rx * 1.25); rg.addColorStop(0, `rgba(255,236,190,${.55 * e})`); rg.addColorStop(.6, `rgba(255,220,160,${.25 * e})`); rg.addColorStop(1, 'rgba(255,210,150,0)');
+        g.fillStyle = rg; g.beginPath(); g.arc(0, 0, F.rx * 1.25, 0, 6.283); g.fill(); g.restore();
+        // el cono, desde el foco hasta el charco
+        const xl = F.x - F.rx * .95, xr = F.x + F.rx * .95, yb = F.y + 4;
+        let gr = g.createLinearGradient(0, SY, 0, yb); gr.addColorStop(0, `rgba(255,236,200,${.3 * e})`); gr.addColorStop(1, `rgba(255,226,180,${.1 * e})`);
+        g.beginPath(); g.moveTo(SX - 16, SY + 8); g.lineTo(SX + 16, SY + 8); g.lineTo(xr, yb); g.lineTo(xl, yb); g.closePath(); g.fillStyle = gr; g.fill();
+        gr = g.createLinearGradient(0, SY, 0, yb); gr.addColorStop(0, `rgba(255,245,220,${.18 * e})`); gr.addColorStop(1, 'rgba(255,245,220,0)');
+        g.beginPath(); g.moveTo(SX - 6, SY + 8); g.lineTo(SX + 6, SY + 8); g.lineTo(F.x + F.rx * .35, yb); g.lineTo(F.x - F.rx * .35, yb); g.closePath(); g.fillStyle = gr; g.fill();
+        // el polvo que flota en el haz
+        st.motas.forEach(p => { if (mov) { p.u -= p.v * dt; if (p.u < 0) p.u = 1; p.w += Math.sin(st.t + p.f) * dt * .2; }
+          const y = lerp(SY + 8, yb, p.u), hw = lerp(14, F.rx * .95, p.u), x = lerp(SX, F.x, p.u) + clamp(p.w, -1, 1) * hw;
+          g.fillStyle = `rgba(255,240,210,${(.25 + .2 * Math.sin(st.t * 2 + p.f)) * e})`; g.beginPath(); g.arc(x, y, p.r, 0, 6.283); g.fill(); });
+        // el destello sobre el elegido
+        if (st.destello > 0 && st.k != null) { const c = st.cel[st.k], x = c.x + Math.min(c.cw * .32, 120), y = c.y - 22 * c.s - c.Rt.px * (c.Rt.lineas.length + .2), d = st.destello;
+          g.translate(x, y); g.rotate(st.t * .8); rg = g.createRadialGradient(0, 0, 1, 0, 0, 60 * d); rg.addColorStop(0, `rgba(255,255,240,${d})`); rg.addColorStop(1, 'rgba(255,230,180,0)'); g.fillStyle = rg; g.fillRect(-60, -60, 120, 120);
+          g.fillStyle = `rgba(255,250,230,${.9 * d})`; for (let q = 0; q < 4; q++) { g.rotate(Math.PI / 2); g.beginPath(); g.moveTo(0, -4); g.lineTo(70 * d, 0); g.lineTo(0, 4); g.closePath(); g.fill(); } }
+        g.restore();
+        st.chispas = st.chispas.filter(c => { c.v -= dt; if (c.v <= 0) return false; c.x += c.vx * dt; c.y += c.vy * dt; c.vy += 200 * dt; g.fillStyle = `rgba(255,230,160,${clamp(c.v / .7, 0, 1)})`; g.beginPath(); g.arc(c.x, c.y, c.r, 0, 6.283); g.fill(); return true; });
+      }
+      function pintaLampara() {
+        // el foco colgado: el cuerpo negro con su lente encendida
+        g.save(); g.translate(SX, SY);
+        g.fillStyle = '#0c0a0a'; g.fillRect(-3, -26, 6, 18); rr(g, -26, -12, 52, 22, 6); g.fill();
+        g.strokeStyle = 'rgba(255,220,160,.25)'; g.lineWidth = 1.2; g.stroke();
+        const e = st.enc; if (e > 0) { g.globalCompositeOperation = 'lighter'; const rg = g.createRadialGradient(0, 10, 1, 0, 10, 60); rg.addColorStop(0, `rgba(255,250,230,${.95 * e})`); rg.addColorStop(1, 'rgba(255,230,180,0)'); g.fillStyle = rg; g.fillRect(-60, -50, 120, 120); }
+        g.restore();
+      }
+      let tAnt = performance.now();
+      function bucle(ahora) {
+        if (!vivo) return;
+        const dt = Math.min(.05, (ahora - tAnt) / 1000); tAnt = ahora; st.t += dt;
+        L.borra(); if (fondo) ponCapa(g, fondo);
+        // la penumbra general (más oscura al final, salvo el foco)
+        if (st.fin > 0) { g.fillStyle = `rgba(0,0,0,${.35 * st.fin})`; g.fillRect(FX0 + 30, 200, FX1 - FX0 - 60, FY1 - 200); }
+        pintaNombres(); pintaFoco(dt); pintaLampara();
+        raf = requestAnimationFrame(bucle);
+      }
+      raf = requestAnimationFrame(bucle);
+      tras(TEMAS.trfoco.fuentes, () => { if (!vivo) return; fondo = capaFija(L.k || 1, pintaFondo); if (st.n) prepara(st.items); });
+
+      /* ── los sonidos: el golpe del interruptor, el motor del foco, un «tic» por nombre y el acorde con platillo ── */
+      let tT = 0;
+      function tic(v) { const ac = A.ac; if (!ac) return; const t = ac.currentTime; if (t - tT < .04) return; tT = t; const k = clamp(1 - v / 24, .3, 1);
+        A.clic({ f: 1100 + Math.random() * 300, q: 2.5, gan: .06 + .12 * k, dur: .025, wet: .35 }); }
+      function acorde() {
+        if (!A.ac) return;
+        A.clic({ f: 7000, q: .5, gan: .35, dur: 1.4, wet: .5 }); A.clic({ f: 3200, q: .7, gan: .2, dur: .5, wet: .4 });
+        A.nota(55, { tipo: 'sine', dur: 1.2, gan: .3, desliza: 41 });
+        [130.81, 196, 261.63, 329.63, 392, 523.25].forEach((f, i) => A.nota(f, { tipo: 'sawtooth', t: .02 + i * .01, dur: 2.4, gan: .045, ataque: .04, filtro: { f: 1900, q: .7 }, wet: .5 }));
+      }
+      return {
+        ajusta,
+        espera() { if (!st.n) { st.items = ['· · ·']; st.n = 1; prepara(st.items); } st.luz = 0; st.fin = 0; st.destello = 0; st.k = null; },
+        async gira(bombo, k) {
+          const gen = ++st.gen, vale = () => gen === st.gen && vivo;
+          st.items = bombo.slice(); st.n = bombo.length; prepara(st.items); st.k = null; st.luz = 0; st.destello = 0; st.chispas = [];
+          const n = st.n, m = n - 1, ruta = st.ruta, sl = Math.max(0, ruta.indexOf(k));
+          const p0 = clamp(Math.round(st.s), 0, m), p1 = destinoVaiven(p0, m, sl, (RM ? 1.2 : 2.6) * m + 1);
+          const f = recorrido(p0, p1, RM ? { T: 1.7, amago: .06, retro: 0, sobra: 0, rebote: .1, p: 2.2 } : { p: 2.45, amago: .3, retro: .3, sobra: .12, rebote: .24 });
+          const ac = A.crea();
+          if (ac) { A.clic({ f: 260, q: .9, gan: .6, dur: .14, wet: .45 }); A.nota(68, { tipo: 'sine', dur: .35, gan: .3, desliza: 44 }); }
+          if (motor) motor.para(.05); motor = ac ? A.continuo({ f: 320, q: 1.6, wet: .3 }) : null;
+          const fin0 = st.fin, enc0 = st.enc;
+          let ult = ruta[Math.round(vaiven(p0, m))];
+          const pon = q => { const a = Math.floor(q), b = Math.min(m, a + 1), u = q - a, A_ = st.cel[ruta[a]], B_ = st.cel[ruta[b]];
+            st.foco = { x: lerp(A_.x, B_.x, u), y: lerp(A_.y, B_.y, u), rx: lerp(A_.cw, B_.cw, u) * .62 }; };
+          await trGiro(f, (p, t, v) => {
+            st.s = p; st.vel = v; st.fin = fin0 * (1 - clamp(t / .4, 0, 1)); st.enc = RM ? 1 : Math.max(enc0, clamp(t / .25, 0, 1)) * (.92 + .08 * Math.random());
+            const q = vaiven(p, m); pon(q);
+            const cel = ruta[Math.round(q)]; if (cel !== ult) { ult = cel; tic(Math.abs(v)); }
+            if (motor) { A.pon(motor.g.gain, clamp(Math.abs(v) / 18, 0, 1) * .06, .05); A.pon(motor.f.frequency, 220 + 26 * Math.abs(v), .05); }
+          }, vale);
+          if (motor) { motor.para(.3); motor = null; }
+          if (!vale()) return;
+          st.s = p1; st.enc = 1; pon(vaiven(p1, m)); st.k = k;
+          acorde();
+          const c = st.cel[k];
+          if (!RM) for (let i = 0; i < 26; i++) st.chispas.push({ x: c.x + (Math.random() - .5) * c.cw * .6, y: c.y - 30 * c.s, vx: (Math.random() - .5) * 220, vy: -80 - Math.random() * 200, r: 1 + Math.random() * 2, v: .5 + Math.random() * .6 });
+          await trTween(RM ? 0 : 760, u => { st.fin = eo(u, 2); st.luz = eo(u, 2); st.destello = RM ? 0 : Math.sin(Math.PI * Math.min(1, u * 1.3)) * (1 - u * .4); st.foco.rx = lerp(c.cw * .62, c.cw * .54, eo(u, 2)); }, vale);
+          st.fin = 1; st.luz = 1; st.destello = 0;
+        },
+        quita() { vivo = false; cancelAnimationFrame(raf); if (motor) { motor.para(.1); motor = null; } }
+      };
+    }
+  };
+
+  /* ── «trconsola» · Transporte · Sesión 4 (María Pita, 2070): la consola del videojuego ──
+     La consola portátil de cuando Noa era pequeña (crema y melocotón, con las luces cian en los mandos), en su cuarto a media luz.
+     En la pantalla, el juego del portal de Modulación: de noche, con su luna, una montaña por niveles; cada nivel, una cornisa de
+     hierba y roca con un nombre escrito en píxel. El viajero (capucha sin cara y bufanda naranja) salta de nivel en nivel, sube y
+     baja, cada vez más despacio, y se queda en uno: «¡NIVEL!», el botón A se hunde, la cornisa parpadea y suena la fanfarria. */
+  TEMAS.trconsola = {
+    fuentes: ['700 13px "Saira SC"', '700 92px "Saira SC"', '400 20px "Plex"'],
+    nombreFit: { min: 46 },
+    css: `
+.lmv-t-trconsola .lmv-velo{background:radial-gradient(ellipse at 50% 42%,rgba(46,26,44,.975) 0%,rgba(24,13,24,.988) 60%,rgba(8,4,8,.995) 100%)}
+.lmv-t-trconsola .lmv-cab{top:20px}
+.lmv-t-trconsola .lmv-ceja{font:700 32px/1 "Saira SC","Jost",system-ui,sans-serif;letter-spacing:.36em;text-transform:uppercase;color:#ffe9d6;text-shadow:0 0 18px rgba(99,230,255,.5),3px 3px 0 rgba(0,0,0,.6)}
+.lmv-t-trconsola .lmv-grupo{margin-top:9px;font:400 20px/1 "Plex","DM Sans",system-ui,sans-serif;letter-spacing:.06em;color:rgba(255,233,214,.75);text-shadow:0 2px 8px rgba(0,0,0,.9)}
+.lmv-t-trconsola .lmv-nombre{top:808px;left:240px;right:240px;height:116px;display:flex;align-items:center;justify-content:center;font:700 92px/1.05 "Saira SC","Jost",system-ui,sans-serif;letter-spacing:.02em;color:#ffe066;text-shadow:5px 5px 0 #e8705a,10px 10px 0 #1a0820}
+.lmv-t-trconsola .lmv-nombre.ve{animation:lmv-trc-sale .42s steps(6,end) forwards}
+@keyframes lmv-trc-sale{0%{opacity:1;transform:scale(.2)}100%{opacity:1;transform:none}}
+.lmv-t-trconsola .lmv-nota{top:930px;font:400 22px/1.3 "Plex","DM Sans",system-ui,sans-serif;color:#ffe9d6;text-shadow:0 2px 8px rgba(0,0,0,.9)}
+.lmv-t-trconsola .lmv-pie{bottom:24px}
+.lmv-t-trconsola .lmv-b{display:inline-flex;align-items:center;gap:12px;padding:14px 32px;border-radius:8px;border:2px solid #63e6ff;background:rgba(24,13,24,.9);color:#ffe9d6;font:700 24px/1 "Saira SC","Jost",system-ui,sans-serif;letter-spacing:.08em;transition:background .2s,transform .15s}
+.lmv-t-trconsola .lmv-b:hover{background:rgba(60,30,56,.94);transform:translateY(-2px)}
+.lmv-t-trconsola .lmv-b.lmv-otra{background:#f2a48c;border-color:#ffd2c2;color:#2a1020}
+.lmv-t-trconsola .lmv-b.lmv-otra:hover{background:#ffbba6}
+.lmv-t-trconsola .lmv-cargando{color:#63e6ff}
+.lmv-of-trconsola .lmv-ob{font-family:"Saira SC","Jost",system-ui,sans-serif;font-weight:700;letter-spacing:.06em;border:2px solid #63e6ff;border-radius:10px;background:#f6efe2;color:#3a1a2a;box-shadow:0 18px 50px rgba(0,0,0,.6),0 0 40px rgba(99,230,255,.3)}
+.lmv-of-trconsola .lmv-og,.lmv-of-trconsola .lmv-no{font-family:"Plex","DM Sans",system-ui,sans-serif;color:#ffe9d6}
+@media (prefers-reduced-motion:reduce){.lmv-t-trconsola .lmv-nombre.ve{animation:none;opacity:1}}`,
+    crea(esc, o) {
+      const L = lienzo(esc), g = L.g, RM = reducido(), mov = RM ? 0 : 1;
+      const SAx = px => `700 ${px}px "Saira SC", "Jost", system-ui, sans-serif`;
+      const BX0 = 250, BX1 = 1670, BY0 = 140, BY1 = 770;                    // el cuerpo de la consola
+      const SX0 = 590, SX1 = 1330, SY0 = 200, SY1 = 700, SXC = (SX0 + SX1) / 2;   // la pantalla
+      const P = 4, LH = 134, PH = 56, JH = 50;                                // el píxel del juego, la altura entre niveles, la cornisa y el salto
+      const CI = '99,230,255';
+      const st = { t: 0, items: [], n: 0, s: 0, vel: 0, gen: 0, k: null, luz: 0, nivel: 0, boton: 0, cam: 0, plat: [], cache: new Map(), chispas: [], dir: 1, pw: 420 };
+      let fondo = null, raf = 0, vivo = true;
+
+      /* ── lo que no se mueve: el cuarto a media luz y la consola (cuerpo crema, empuñaduras melocotón, botones y altavoces) ── */
+      const boton = (g, x, y, r, c1, c2) => { const rg = g.createRadialGradient(x - r * .35, y - r * .4, r * .1, x, y, r); rg.addColorStop(0, c1); rg.addColorStop(1, c2); g.beginPath(); g.arc(x, y, r, 0, 6.283); g.fillStyle = rg; g.fill(); g.strokeStyle = 'rgba(120,50,40,.35)'; g.lineWidth = 1.5; g.stroke(); };
+      function pintaFondo(g) {
+        const r = semilla(2070);
+        let gr = g.createLinearGradient(0, 0, 0, 1080); gr.addColorStop(0, '#2c1a2e'); gr.addColorStop(.6, '#1a0f1c'); gr.addColorStop(1, '#0c060c'); g.fillStyle = gr; g.fillRect(0, 0, 1920, 1080);
+        for (let i = 0; i < 46; i++) { const x = r() * 1920, y = r() * 1080, rad = 20 + r() * 70, c = r() < .5 ? '255,170,110' : r() < .5 ? '255,140,180' : CI, a = .03 + r() * .06;
+          const rg = g.createRadialGradient(x, y, 0, x, y, rad); rg.addColorStop(0, `rgba(${c},${a})`); rg.addColorStop(1, `rgba(${c},0)`); g.fillStyle = rg; g.fillRect(x - rad, y - rad, 2 * rad, 2 * rad); }
+        // la sombra
+        g.save(); g.shadowColor = 'rgba(0,0,0,.7)'; g.shadowBlur = 60; g.shadowOffsetY = 26; rr(g, BX0, BY0, BX1 - BX0, BY1 - BY0, 150); g.fillStyle = '#d8ccb8'; g.fill(); g.restore();
+        // las empuñaduras melocotón (abajo, a los lados)
+        [[BX0 + 170, -1], [BX1 - 170, 1]].forEach(([cx, s]) => { g.beginPath(); g.ellipse(cx, 590, 190, 230, s * .12, 0, 6.283); gr = g.createLinearGradient(cx - 190, 380, cx + 190, 820); gr.addColorStop(0, '#f7b8a2'); gr.addColorStop(.6, '#e98f78'); gr.addColorStop(1, '#b8604e'); g.fillStyle = gr; g.fill(); });
+        // el cuerpo crema
+        rr(g, BX0 + 40, BY0, BX1 - BX0 - 80, BY1 - BY0 - 70, 130); gr = g.createLinearGradient(0, BY0, 0, BY1); gr.addColorStop(0, '#fbf6ec'); gr.addColorStop(.7, '#eee5d4'); gr.addColorStop(1, '#d9cdb7'); g.fillStyle = gr; g.fill();
+        rr(g, BX0 + 40, BY0, BX1 - BX0 - 80, BY1 - BY0 - 70, 130); g.strokeStyle = 'rgba(150,120,90,.35)'; g.lineWidth = 2; g.stroke();
+        g.fillStyle = 'rgba(255,255,255,.5)'; rr(g, BX0 + 140, BY0 + 10, BX1 - BX0 - 280, 10, 5); g.fill();
+        // el marco negro de la pantalla
+        g.save(); g.shadowColor = 'rgba(0,0,0,.35)'; g.shadowBlur = 10; g.shadowOffsetY = 3; rr(g, SX0 - 26, SY0 - 24, SX1 - SX0 + 52, SY1 - SY0 + 48, 26); g.fillStyle = '#1c1a22'; g.fill(); g.restore();
+        rr(g, SX0 - 26, SY0 - 24, SX1 - SX0 + 52, SY1 - SY0 + 48, 26); g.strokeStyle = 'rgba(255,255,255,.12)'; g.lineWidth = 2; g.stroke();
+        // mando izquierdo: la palanca y la cruceta de cuatro botones
+        g.beginPath(); g.arc(BX0 + 190, 300, 62, 0, 6.283); g.fillStyle = '#ddd2bf'; g.fill(); boton(g, BX0 + 190, 300, 48, '#ffc9b6', '#e48a72');
+        g.beginPath(); g.arc(BX0 + 190, 300, 30, 0, 6.283); g.strokeStyle = 'rgba(150,70,55,.4)'; g.lineWidth = 3; g.stroke();
+        [[0, -44], [44, 0], [0, 44], [-44, 0]].forEach(([dx, dy]) => boton(g, BX0 + 200 + dx, 500 + dy, 22, '#ffc9b6', '#e48a72'));
+        // mando derecho: la palanca (los ABXY se pintan aparte, que el A se hunde)
+        g.beginPath(); g.arc(BX1 - 200, 520, 62, 0, 6.283); g.fillStyle = '#ddd2bf'; g.fill(); boton(g, BX1 - 200, 520, 48, '#ffc9b6', '#e48a72');
+        g.beginPath(); g.arc(BX1 - 200, 520, 30, 0, 6.283); g.strokeStyle = 'rgba(150,70,55,.4)'; g.lineWidth = 3; g.stroke();
+        // botones pequeños y los altavoces
+        rr(g, SX0 - 90, 236, 34, 12, 6); g.fillStyle = '#c9b9a2'; g.fill(); rr(g, SX1 + 56, 236, 34, 12, 6); g.fill(); rr(g, SX1 + 67, 225, 12, 34, 6); g.fill();
+        boton(g, SX0 - 66, 650, 16, '#f0e6d6', '#c2b39c'); rr(g, SX1 + 52, 636, 28, 28, 6); g.fillStyle = '#c9b9a2'; g.fill();
+        g.fillStyle = 'rgba(120,96,70,.45)'; for (let i = 0; i < 4; i++) for (let j = 0; j < 3; j++) { g.beginPath(); g.arc(SX0 - 120 + i * 14, 560 + j * 14, 3, 0, 6.283); g.fill(); g.beginPath(); g.arc(SX1 + 80 + i * 14, 400 + j * 14, 3, 0, 6.283); g.fill(); }
+      }
+      function ajusta(s) { if (L.ajusta(s) || !fondo) { fondo = capaFija(L.k, pintaFondo); st.cache.clear(); } }
+
+      /* ── el texto en píxel: la letra del portal a tamaño pequeño, sin suavizar (umbral) y ampliada ×3 ── */
+      function pixTxt(txt, col, base) {
+        const key = txt + '|' + col + '|' + base; let c = st.cache.get(key); if (c) return c;
+        c = document.createElement('canvas'); const x = c.getContext('2d'); x.font = SAx(base);
+        const w = Math.ceil(x.measureText(txt).width) + 4, h = Math.ceil(base * 1.35) + 2; c.width = Math.max(1, w); c.height = h;
+        x.font = SAx(base); x.textBaseline = 'middle'; x.fillStyle = '#fff'; x.fillText(txt, 2, h / 2 + 1);
+        try { const d = x.getImageData(0, 0, c.width, h), a = d.data, rgb = col.match(/\w\w/g).map(v => parseInt(v, 16));
+          for (let i = 0; i < a.length; i += 4) { const on = a[i + 3] > 96; a[i] = rgb[0]; a[i + 1] = rgb[1]; a[i + 2] = rgb[2]; a[i + 3] = on ? 255 : 0; } x.putImageData(d, 0, 0); } catch (e) {}
+        st.cache.set(key, c); return c;
+      }
+      const ponPix = (cv, x, y, esc) => { g.imageSmoothingEnabled = false; g.drawImage(cv, Math.round(x), Math.round(y), cv.width * esc, cv.height * esc); g.imageSmoothingEnabled = true; };
+      /* ── los niveles: una cornisa por nombre, en zigzag hacia arriba ── */
+      function prepara(bombo) {
+        const n = bombo.length, ESC = 3; let maxW = 0;
+        st.plat = bombo.map((nom, i) => { let base = 13, cv = pixTxt(nom, 'fff6e0', base); while (cv.width * ESC > 660 && base > 8) { base--; cv = pixTxt(nom, 'fff6e0', base); } maxW = Math.max(maxW, cv.width * ESC); return { nom, base }; });
+        st.pw = Math.ceil(clamp(maxW + 56, 300, 700) / P) * P;
+        const za = Math.max(0, Math.min(150, (SX1 - SX0 - st.pw) / 2 - 18));
+        st.plat.forEach((p, i) => { p.x = Math.round((SXC + (i % 2 ? za : -za) - st.pw / 2) / P) * P; p.y = -i * LH; });
+      }
+      function cornisa(p, i, brillo) {
+        const ky = 'c' + i + '|' + st.pw + '|' + p.nom;
+        let cv = st.cache.get(ky);
+        if (!cv) {
+          cv = capaFija(L.k || 1, gg => {
+            const W = st.pw, r = semilla(97 + i * 31);
+            for (let y = 0; y < PH; y += P) for (let x = 0; x < W; x += P) {
+              const bx = x / P, by = y / P, bw = W / P, corte = by > 11 ? (by - 11) : 0;
+              if (bx < corte || bx >= bw - corte) continue;
+              let c;
+              if (by < 3) c = by === 0 ? (r() < .2 ? '#9ff07a' : '#7fdc5a') : by === 1 ? '#5fbf4a' : (r() < .35 ? '#3d8a3a' : '#5fbf4a');
+              else { const k = r(); c = by === 3 ? '#3b2f4f' : k < .12 ? '#4c3d64' : k < .2 ? '#2b2140' : '#3a2f52'; }
+              gg.fillStyle = c; gg.fillRect(x, y, P, P);
+            }
+            gg.fillStyle = 'rgba(255,255,255,.07)'; gg.fillRect(P, 4 * P, P, PH - 6 * P);
+            const t = pixTxt(p.nom, 'fff6e0', p.base), sh = pixTxt(p.nom, '1a0f28', p.base), e = 3, tx = Math.round((W - t.width * e) / 2 / e) * e, ty = Math.round((3 * P + (PH - 3 * P - t.height * e) / 2) / e) * e;
+            gg.imageSmoothingEnabled = false; gg.drawImage(sh, tx + e, ty + e, sh.width * e, sh.height * e); gg.drawImage(t, tx, ty, t.width * e, t.height * e);
+          }, 0, 0, st.pw, PH);
+          st.cache.set(ky, cv);
+        }
+        return cv;
+      }
+      /* ── el viajero en píxel: capucha sin cara (solo sombra), capa azul y bufanda naranja; dos fotogramas (de pie y saltando) ── */
+      const VJ = {
+        pie: ['....hhhh....', '...hHHHHh...', '..hHHhhHHh..', '..hHsssshh..', '..hHsssshh..', '...hhsshh...', '..ooooooooO.', '.cooooooOOO.', '.cCcccccOOc.', '.cCcccccOcc.', '.cCccccccc..', '.cCccccccc..', '.cCccccccc..', '..cccccccc..', '...bb..bb...', '...bb..bb...'],
+        salta: ['....hhhh....', '...hHHHHh...', '..hHHhhHHh..', '..hHsssshh.O', '..hHsssshhOO', '...hhsshhOO.', '..ooooooooO.', '.coooooooo..', 'ccCccccccccc', '.cCccccccc..', '.cCccccccc..', '..cccccccc..', '..bb....bb..', '..bb....bb..', '............', '............']
+      };
+      const PALV = { h: '#2c3e5c', H: '#4a6690', s: '#0a1018', o: '#ff8a2a', O: '#c85a12', c: '#26364a', C: '#3e5470', b: '#3a2416' };
+      function viajero(x, y, fot, dir) {
+        const f = VJ[fot], q = P, w = 12 * q, h = 16 * q;
+        g.save(); g.translate(Math.round(x), Math.round(y)); if (dir < 0) g.scale(-1, 1); g.translate(-w / 2, -h);
+        f.forEach((fila, j) => { for (let i = 0; i < 12; i++) { const c = PALV[fila[i]]; if (c) { g.fillStyle = c; g.fillRect(i * q, j * q, q, q); } } });
+        g.restore();
+      }
+      function pintaPantalla(dt) {
+        g.save(); rr(g, SX0, SY0, SX1 - SX0, SY1 - SY0, 10); g.clip();
+        // el cielo de noche por franjas, las estrellas y la luna
+        const franjas = ['#0b1240', '#101a52', '#152464', '#1c2f78', '#243a88'];
+        franjas.forEach((c, i) => { g.fillStyle = c; g.fillRect(SX0, SY0 + i * (SY1 - SY0) / 5, SX1 - SX0, (SY1 - SY0) / 5 + 1); });
+        const r = semilla(7); for (let i = 0; i < 46; i++) { const x = SX0 + Math.floor(r() * (SX1 - SX0) / P) * P, y = SY0 + Math.floor(r() * (SY1 - SY0 - 140) / P) * P, tw = mov ? .5 + .5 * Math.sin(st.t * (1 + r() * 3) + i) : 1; g.fillStyle = `rgba(255,250,220,${.35 + .6 * tw})`; g.fillRect(x, y, P, P); }
+        g.fillStyle = '#fff4c8'; [[2, 0, 4], [1, 1, 6], [0, 2, 8], [0, 3, 8], [0, 4, 8], [0, 5, 8], [1, 6, 6], [2, 7, 4]].forEach(([a, b, l]) => g.fillRect(SX1 - 120 + a * P * 1.5, SY0 + 34 + b * P * 1.5, l * P * 1.5, P * 1.5));
+        g.fillStyle = '#e2d49c'; g.fillRect(SX1 - 120 + 5 * 6, SY0 + 34 + 3 * 6, 12, 6); g.fillRect(SX1 - 120 + 2 * 6, SY0 + 34 + 5 * 6, 6, 6);
+        // la montaña de fondo (se mueve más despacio que los niveles)
+        const yC = (SY0 + SY1) / 2 + 92, par = Math.min(260, st.cam * .12);
+        g.fillStyle = '#2a2a6a';
+        for (let x = SX0; x < SX1; x += P * 4) { const d = Math.abs(x + P * 2 - SXC) / 330, hy = yC - 30 - 250 * Math.max(0, 1 - d) + ((x / (P * 4)) % 3) * P * 2 + par; g.fillRect(x, Math.round(hy / P) * P, P * 4, SY1 - hy + P); }
+        const n = st.n;
+        // las cornisas con su nombre
+        for (let i = 0; i < n; i++) {
+          const p = st.plat[i], y = yC + (p.y + st.cam); if (y > SY1 + 10 || y + PH < SY0 - 10) continue;
+          const cv = cornisa(p, i), eleg = st.k === i && st.luz > 0;
+          g.drawImage(cv.c, p.x, y, cv.w, cv.h);
+          if (eleg) { const parp = mov ? (Math.sin(st.t * 18) > 0 ? 1 : .35) * (st.luz < 1 ? 1 : 0) + (st.luz >= 1 ? 1 : 0) : 1;
+            g.save(); g.globalCompositeOperation = 'lighter'; g.fillStyle = `rgba(255,224,102,${.18 * parp})`; g.fillRect(p.x, y, st.pw, PH); g.restore();
+            const t = pixTxt(p.nom, 'ffe066', p.base), e = 3, tx = p.x + Math.round((st.pw - t.width * e) / 2 / e) * e, ty = y + Math.round((3 * P + (PH - 3 * P - t.height * e) / 2) / e) * e;
+            g.globalAlpha = parp; ponPix(t, tx, ty, e); g.globalAlpha = 1; }
+        }
+        // la bandera de la cima
+        if (n > 0) { const p = st.plat[n - 1], y = yC + (p.y + st.cam), fx = p.x + st.pw - 10 * P; if (y > SY0 - 80 && y < SY1) { g.fillStyle = '#d8d0c0'; g.fillRect(fx, y - 15 * P, P, 15 * P); g.fillStyle = '#ff5a5a'; g.fillRect(fx + P, y - 15 * P, 5 * P, 3 * P); g.fillRect(fx + P, y - 12 * P, 3 * P, P); } }
+        // el viajero
+        if (n > 0) { const V = st.vj || { x: SXC, y: yC, fot: 'pie' }; viajero(V.x, V.y, V.fot, st.dir); }
+        // las chispas de «¡nivel!»
+        st.chispas = st.chispas.filter(c => { c.v -= dt; if (c.v <= 0) return false; c.x += c.vx * dt; c.y += c.vy * dt; c.vy += 300 * dt; g.fillStyle = c.c; g.fillRect(Math.round(c.x / P) * P, Math.round(c.y / P) * P, P * c.r, P * c.r); return true; });
+        // el marcador del juego
+        if (n > 1) { const txt = 'NIVEL ' + String(st.nivel + 1).padStart(2, '0'), t = pixTxt(txt, 'ffffff', 9), sh = pixTxt(txt, '101040', 9); g.fillStyle = 'rgba(10,12,48,.78)'; g.fillRect(SX0 + 8, SY0 + 8, t.width * 3 + 24, t.height * 3 + 12); ponPix(sh, SX0 + 23, SY0 + 17, 3); ponPix(t, SX0 + 20, SY0 + 14, 3); }
+        if (st.luz > 0) { const u = st.luz, esc = Math.max(2, Math.round(lerp(1, 5, Math.min(1, u * 1.6)))), t = pixTxt('¡NIVEL!', 'ffe066', 12), sh = pixTxt('¡NIVEL!', 'e8705a', 12), w = t.width * esc, h = t.height * esc, y0 = SY0 + 22;
+          const bx = Math.round((SXC - w / 2 - 24) / P) * P, bw = Math.round((w + 48) / P) * P; g.fillStyle = '#ffe066'; g.fillRect(bx - P, y0 - 8 - P, bw + 2 * P, h + 16 + 2 * P); g.fillStyle = '#0a0c30'; g.fillRect(bx, y0 - 8, bw, h + 16);
+          ponPix(sh, SXC - w / 2 + esc, y0 + esc, esc); ponPix(t, SXC - w / 2, y0, esc); }
+        // el brillo de la pantalla y las líneas de barrido, muy suaves
+        g.fillStyle = 'rgba(0,0,0,.08)'; for (let y = SY0; y < SY1; y += 3) g.fillRect(SX0, y, SX1 - SX0, 1);
+        let gr = g.createLinearGradient(SX0, SY0, SX1, SY1); gr.addColorStop(0, 'rgba(255,255,255,.08)'); gr.addColorStop(.35, 'rgba(255,255,255,0)'); g.fillStyle = gr; g.fillRect(SX0, SY0, SX1 - SX0, SY1 - SY0);
+        g.restore();
+      }
+      function pintaMandos() {
+        // los ABXY (el A, abajo a la derecha, se hunde al final)
+        const cx = BX1 - 210, cy = 290;
+        [[0, -46, 'X'], [46, 0, 'A'], [0, 46, 'B'], [-46, 0, 'Y']].forEach(([dx, dy, l]) => { const b = l === 'A' ? st.boton : 0;
+          g.beginPath(); g.arc(cx + dx, cy + dy + 3, 25, 0, 6.283); g.fillStyle = 'rgba(120,50,40,.35)'; g.fill();
+          boton(g, cx + dx, cy + dy + 3 * b, 24, b > .3 ? '#ffd9c8' : '#ffc9b6', b > .3 ? '#ffa48c' : '#e48a72');
+          g.fillStyle = 'rgba(140,60,45,.7)'; g.font = SAx(18); g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(l, cx + dx, cy + dy + 1 + 3 * b); });
+        // las luces cian de los mandos (laten, más vivas al saltar)
+        const pul = .5 + .2 * Math.sin(st.t * 3) + .3 * clamp(Math.abs(st.vel) / 12, 0, 1) + .4 * st.luz;
+        g.save(); g.globalCompositeOperation = 'lighter'; g.lineCap = 'round';
+        [[-1, BX0 + 64], [1, BX1 - 64]].forEach(([s, x]) => {
+          const traza = () => { g.beginPath(); g.moveTo(x + s * 40, 200); g.bezierCurveTo(x - s * 6, 300, x - s * 6, 520, x + s * 50, 740); };
+          g.strokeStyle = `rgba(${CI},${.18 * pul})`; g.lineWidth = 22; traza(); g.stroke();
+          g.strokeStyle = `rgba(${CI},${.85 * clamp(pul, 0, 1)})`; g.lineWidth = 5; traza(); g.stroke(); });
+        [[BX0 + 190, 300], [BX1 - 200, 520]].forEach(([x, y]) => { g.strokeStyle = `rgba(${CI},${.6 * clamp(pul, 0, 1)})`; g.lineWidth = 3; g.beginPath(); g.arc(x, y, 54, 0, 6.283); g.stroke(); });
+        g.restore();
+      }
+      let tAnt = performance.now();
+      function bucle(ahora) {
+        if (!vivo) return;
+        const dt = Math.min(.05, (ahora - tAnt) / 1000); tAnt = ahora; st.t += dt;
+        L.borra(); if (fondo) ponCapa(g, fondo);
+        pintaPantalla(dt); pintaMandos();
+        raf = requestAnimationFrame(bucle);
+      }
+      raf = requestAnimationFrame(bucle);
+      tras(TEMAS.trconsola.fuentes, () => { if (!vivo) return; st.cache.clear(); if (st.n) prepara(st.items); });
+
+      /* ── los sonidos (8 bits, con el sintetizador): un salto por nivel, el «tic» rápido y la fanfarria de «¡nivel!» ── */
+      let tS = 0;
+      function salto(v) { const ac = A.ac; if (!ac) return; const t = ac.currentTime; if (t - tS < .045) return; tS = t; const k = clamp(1 - v / 20, .25, 1);
+        A.nota(k > .5 ? 330 : 520, { tipo: 'square', dur: k > .5 ? .12 : .04, gan: .025 + .035 * k, ataque: .002, desliza: k > .5 ? 760 : 700, filtro: { f: 3000 } }); }
+      function fanfarria() {
+        if (!A.ac) return;
+        [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => A.nota(f, { tipo: 'square', t: i * .085, dur: .1, gan: .05, ataque: .002, filtro: { f: 4200 } }));
+        [1046.5, 1318.5, 1568].forEach(f => A.nota(f, { tipo: 'square', t: .36, dur: .7, gan: .035, ataque: .004, filtro: { f: 4000 }, wet: .2 }));
+        A.nota(130.81, { tipo: 'triangle', t: .36, dur: .8, gan: .16, ataque: .004 }); A.nota(65.4, { tipo: 'triangle', t: 0, dur: .3, gan: .14, ataque: .004 });
+        A.clic({ f: 6000, q: .6, gan: .12, dur: .2, t: .36 });
+      }
+      function sitio(q) {                                                    // dónde está el viajero cuando va por la posición q (de 0 a n − 1)
+        const n = st.n, m = Math.max(0, n - 1), a = clamp(Math.floor(q), 0, m), b = Math.min(m, a + 1), u = clamp(q - a, 0, 1), A_ = st.plat[a], B_ = st.plat[b] || A_;
+        const xa = A_.x + st.pw / 2, xb = B_.x + st.pw / 2, yC = (SY0 + SY1) / 2 + 92;
+        const yw = lerp(A_.y, B_.y, u); st.cam = -yw;
+        return { x: lerp(xa, xb, u), y: yC - JH * Math.sin(Math.PI * u) * (b !== a ? 1 : 0), fot: u > .06 && u < .94 ? 'salta' : 'pie', dx: xb - xa };
+      }
+      return {
+        ajusta,
+        espera() { if (!st.n) { st.items = ['· · ·']; st.n = 1; prepara(st.items); st.vj = sitio(0); } st.luz = 0; st.k = null; st.boton = 0; },
+        async gira(bombo, k) {
+          const gen = ++st.gen, vale = () => gen === st.gen && vivo;
+          st.items = bombo.slice(); st.n = bombo.length; prepara(st.items); st.k = null; st.luz = 0; st.boton = 0; st.chispas = [];
+          const n = st.n, m = n - 1, p0 = clamp(Math.round(st.s), 0, m), p1 = destinoVaiven(p0, m, k, (RM ? 1.2 : 2.6) * m + 1);
+          const f = recorrido(p0, p1, RM ? { T: 1.7, amago: .06, retro: 0, sobra: 0, rebote: .1, p: 2.2 } : { p: 2.45, amago: .3, retro: .3, sobra: .1, rebote: .24 });
+          const ac = A.crea(); if (ac) { [392, 523.25, 659.25].forEach((fq, i) => A.nota(fq, { tipo: 'square', t: i * .06, dur: .07, gan: .035, ataque: .002, filtro: { f: 3600 } })); }
+          let ult = Math.round(vaiven(p0, m)), qa = vaiven(p0, m);
+          await trGiro(f, (p, t, v) => {
+            const q = vaiven(p, m); st.s = p; st.vel = v;
+            const V = sitio(q); st.vj = V; if (Math.abs(q - qa) > 1e-4) st.dir = Math.sign((q - qa) * (V.dx || 1)) || st.dir; qa = q;
+            const cel = Math.round(q); st.nivel = cel; if (cel !== ult) { ult = cel; salto(Math.abs(v)); }
+          }, vale);
+          if (!vale()) return;
+          st.s = p1; st.vj = sitio(vaiven(p1, m)); st.vj.fot = 'pie'; st.nivel = k; st.k = k;
+          fanfarria();
+          const V = st.vj;
+          if (!RM) { const cols = ['#ffe066', '#ff8a2a', '#9ff0ff', '#ffffff']; for (let i = 0; i < 34; i++) st.chispas.push({ x: V.x + (Math.random() - .5) * 40, y: V.y - 40, vx: (Math.random() - .5) * 520, vy: -120 - Math.random() * 300, r: 1 + Math.floor(Math.random() * 2), v: .5 + Math.random() * .6, c: cols[i % 4] }); }
+          await trTween(RM ? 0 : 820, u => { st.luz = Math.min(1, u * 1.05 + .001); st.boton = u < .5 ? eo(u * 4, 2) : 1 - eo((u - .5) * 2, 2); }, vale);
+          st.luz = 1; st.boton = 0;
+        },
+        quita() { vivo = false; cancelAnimationFrame(raf); }
       };
     }
   };
