@@ -3552,6 +3552,9 @@ function showEnig(kind){
     var b=btn(); if(!b) return;
     var nuevas=(list||[]).filter(function(o){ var pj=(o&&o.payload_json)||{}; return !!pj.papel_corregida && !o.leido; });
     var pill=document.getElementById('alu-campana-papel');
+    /* (8-nov-2026, Iago) «con que ponga la campanita, el número de notificaciones, creo que es suficiente»: ya no se pinta
+       la pastilla «Ficha N corregida» bajo la campana (la ficha corregida sigue llegando como notificación). Para volver: quitar estas líneas. */
+    if(pill && pill.parentNode) pill.parentNode.removeChild(pill); return;
     if(!nuevas.length){ if(pill && pill.parentNode) pill.parentNode.removeChild(pill); return; }
     if(!pill){ pill=document.createElement('span'); pill.id='alu-campana-papel'; pill.className='portal-bell-prog portal-bell-papel'; b.appendChild(pill); }
     var n1=nuevas[0].payload_json.numero;
