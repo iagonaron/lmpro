@@ -2280,6 +2280,9 @@ function showEnig(kind){
     if(!c.btn && /cv2-btn2/.test(c.sec||'') && (String(c.sec).match(/<button/g)||[]).length===1){ c=Object.assign({},c,{btn:c.sec,sec:''}); }
     if(/cv2-btn2/.test(c.sec||'')) c=Object.assign({},c,{cls:(c.cls||'')+' cv2-b2'});   /* dos botones, uno encima del otro */
     var nS=(String(c.sec||'').match(/cv2-cuad/g)||[]).length;
+    /* (10-nov-2026, Iago: «¿por qué no se aprovecha todo el ancho?») sin botones ni nada a la derecha (el «Me gusta», p. ej.), el
+       texto ocupa también la columna de los botones */
+    if(!String(c.sec||'').trim() && !String(c.btn||'').trim()) c=Object.assign({},c,{cls:(c.cls||'')+' cv2-ancha'});
     return '<div class="alu-item cv2 '+(c.cls||'')+(nS?' cv2-s'+Math.min(nS,2):'')+'" data-id="'+esc(c.id)+'"'+(c.attrs||'')+cv2Estilo(c.col,c.colHex)+'>'
       +'<div class="cv2-izq"><span class="cv2-tile" aria-hidden="true">'+cv2Svg(c.ic,c.icCls)+'<span class="alu-dot"></span>'+(c.peligro?CV2_PELIGRO:'')+'</span>'
       +(c.fecha?'<span class="alu-item-fecha cv2-fecha">'+esc(c.fecha)+'</span>':'')+'</div>'
@@ -2338,6 +2341,7 @@ function showEnig(kind){
       C+'.cv2-tile .alu-dot.cv2-num{visibility:visible!important;width:19px!important;height:19px!important;top:-8px!important;right:-8px!important;background:#fff!important;color:#0b1320!important;font-size:11px!important;font-weight:800!important;line-height:19px!important;text-align:center!important}',
       C+'.cv2-mid{display:grid!important;grid-template-columns:minmax(0,1fr) 214px!important;grid-template-rows:auto!important;grid-template-areas:none!important;column-gap:16px!important;row-gap:0!important;align-items:stretch!important;min-width:0;margin:0!important;padding:0!important;position:static!important;height:64px;overflow:hidden}',
       '#alu-body .cv2.cv2-abierta>.cv2-mid{height:auto;overflow:visible}',
+      '#alu-body .alu-item.cv2.cv2-ancha>.cv2-mid{grid-template-columns:minmax(0,1fr)!important}#alu-body .alu-item.cv2.cv2-ancha .cv2-der{display:none!important}',
       C+'.cv2-mid>*{margin:0!important}',
       C+'.cv2-cont{grid-column:1!important;grid-row:1!important;display:flex;flex-direction:column;gap:6px;min-width:0}',
       C+'.cv2-l1{display:flex;align-items:center;flex-wrap:nowrap;gap:4px 8px;min-height:22px;min-width:0;white-space:nowrap}',
