@@ -2104,12 +2104,13 @@ function showEnig(kind){
       var col=RSM_AREA[ap][1], hay=false;
       var bs=sem.map(function(areas,i){ var v=areas?rsmNotaDe(areas,ap):null; if(v==null) return '<i class="rsm-bar rsm-bar-0"></i>'; hay=true;
         return '<i class="rsm-bar" style="height:'+Math.max(3,Math.round((Math.min(10,Math.max(3,v))-3)/7*34))+'px;background:'+col+';opacity:'+(i===n-1?1:.35)+'"></i>'; }).join('');
-      return hay?'<span class="rsm-barg">'+bs+'</span>':'';
+      return '<span class="rsm-barg">'+bs+'</span>';   /* (10-nov) los 4 siempre: el mismo ancho aunque falte alguna nota */
     }).join('')+'</span>';
   }
   function rsmTend(o,areas,ant,ver){
     /* (10-nov-2026, Iago: «que ocupe exactamente el mismo ancho que las gráficas… ocupando también la flechita de desplegar») */
-    var W=ver?187:163, cap=ant?'<svg class="rsm-tg-t" width="'+W+'" height="14" viewBox="0 0 '+W+' 14" aria-label="respecto a la semana anterior"><text x="0" y="11" textLength="'+W+'" lengthAdjust="spacing" font-size="10.5" font-weight="600" fill="rgba(255,255,255,.55)"><tspan fill="#4ade80">▲</tspan><tspan fill="#ff3b5c">▼</tspan> respecto a la semana anterior</text></svg>':'<span class="rsm-tg-t"></span>';
+    /* (10-nov, tarde) en vez de un SVG (en el iPad se salía), palabras repartidas a lo ancho exacto de las barras (+ la flecha) */
+    var W=ver?187:163, cap=ant?'<span class="rsm-tg-t" style="width:'+W+'px'+(ver?'':';font-size:9.5px')+'"><span><i class="rsm-up">▲</i><i class="rsm-dn">▼</i></span><span>respecto</span><span>a</span><span>la</span><span>semana</span><span>anterior</span></span>':'<span class="rsm-tg-t"></span>';
     return '<span class="rsm-tg">'+cap
       +'<span class="rsm-tg-a">'+rsmBarras(o)+(ver||'')+'</span></span>';
   }
@@ -2445,7 +2446,8 @@ function showEnig(kind){
       '#alu-body .alu-item.cv2.rsm .cv2-sec{display:none}',
       '#alu-body .alu-item.cv2.rsm .cv2-bot{grid-row:1;align-items:stretch}',
       C+'.rsm-tg{display:flex;flex-direction:column;justify-content:space-between;width:100%;height:64px;min-width:0}',
-      C+'.rsm-tg-t{display:block;height:14px;flex:none;align-self:flex-end;overflow:visible}',
+      C+'.rsm-tg-t{display:flex;justify-content:space-between;align-items:center;box-sizing:border-box;height:14px;max-width:100%;flex:none;align-self:flex-end;font-size:10.5px;font-weight:600;line-height:14px;color:rgba(255,255,255,.55);white-space:nowrap;overflow:hidden}',
+      C+'.rsm-tg-t i{font-style:normal}', C+'.rsm-tg-t .rsm-up{color:#4ade80}', C+'.rsm-tg-t .rsm-dn{color:#ff3b5c}',
       C+'.rsm-tg-a{display:flex;align-items:flex-end;justify-content:flex-end;gap:8px;height:40px}',
       C+'.rsm-barras{display:flex;align-items:flex-end;gap:9px;height:34px;margin-bottom:2px}',
       C+'.rsm-barg{display:flex;align-items:flex-end;gap:2px;height:34px}',
