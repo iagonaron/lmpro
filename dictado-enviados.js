@@ -15,7 +15,8 @@
    · Verde = hay un dictado de hoy de ese alumno en «dictados» (lo mandó él, o Iago desde «Corrección manual GP» con
      foto o con rúbrica). Se mira cada 4 s. La ✕ quita a quien no ha venido (solo de esta pantalla; se recuerda ese día);
      «↺ n» los devuelve.
-   · Con todos en verde: el contador pasa a «N de N ✓», suena un aviso corto y «✔ Corregir» late. Hasta entonces, no late.
+   · Cada alumno que pasa a verde suena («plin»). Con todos en verde: «N de N ✓», tres notas y «✔ Corregir» late.
+     Hasta entonces, no late. Mientras la fila está a la vista, un «aliento» inaudible mantiene despierto el altavoz.
    · Pantalla del aula (Chrome 94, pocos fotogramas): sin movimientos; los cambios, de golpe. JS y CSS sencillos.
    ===================================================================================================================== */
 (function () {
@@ -29,7 +30,7 @@
 
   var GRUPOS = ['2GpC', '2GpF'];
   var CADA = 4000;
-  var caja = null, grupo = null, manualHasta = 0, lista = [], hechos = {}, quitados = {}, mirando = null, vigia = null, sonado = false, cargando = false, listaDe = null, fallo = '';
+  var caja = null, grupo = null, manualHasta = 0, lista = [], hechos = {}, quitados = {}, mirando = null, vigia = null, sonado = false, cargando = false, listaDe = null, fallo = '', primera = true;
 
   var st = D.createElement('style');
   st.textContent =
@@ -123,7 +124,7 @@
       }
       if (quien) nuevo[quien.id] = 1;
     });
-    hechos = nuevo;
+    return nuevo;
   }
 
   /* ---------- lo quitado a mano (no ha venido): se recuerda ese día y ese grupo, en este aparato ---------- */
@@ -131,19 +132,54 @@
   function leeQ() { try { quitados = JSON.parse(localStorage.getItem(claveQ()) || '{}') || {}; } catch (e) { quitados = {}; } }
   function guardaQ() { try { localStorage.setItem(claveQ(), JSON.stringify(quitados)); } catch (e) {} }
 
-  function aviso() {
+  /* ---------- sonido ----------
+     (10-nov-2026, Iago) «que haga un sonidito cuando se ponga en verde… a veces mi altavoz suena un poquito más tarde,
+     como que no pilla los ataques si está un rato en silencio… si no, el primer alumno que lo envíe no va a sonar».
+     Mientras la fila está a la vista suena un «aliento» inaudible (60 Hz, casi a cero) que mantiene abierto el canal de
+     audio —el mismo truco que usa el dictado antes de la primera nota—, y cada sonido lleva además 0,12 s de margen. */
+  var ac = null, aliento = null, sonidos = 0;
+  function audio() {
     try {
-      var AC = W.AudioContext || W.webkitAudioContext; if (!AC) return;
-      var c = new AC(), t = c.currentTime + 0.02;
-      [[880, 0], [1318.5, 0.16]].forEach(function (n) {
+      var AC = W.AudioContext || W.webkitAudioContext; if (!AC) return null;
+      if (!ac || ac.state === 'closed') ac = new AC();
+      if (ac.state === 'suspended' && ac.resume) ac.resume();
+      return ac;
+    } catch (e) { return null; }
+  }
+  function despierta() {
+    var c = audio(); if (!c || aliento) return;
+    try {
+      var o = c.createOscillator(), g = c.createGain();
+      o.type = 'sine'; o.frequency.value = 60; g.gain.value = 0.002;
+      o.connect(g); g.connect(c.destination); o.start();
+      aliento = { o: o, g: g };
+    } catch (e) { aliento = null; }
+  }
+  function duerme() {
+    try { if (aliento) { aliento.o.stop(); aliento.o.disconnect(); aliento.g.disconnect(); } } catch (e) {}
+    aliento = null;
+    try { if (ac && ac.state !== 'closed') ac.close(); } catch (e) {}
+    ac = null;
+  }
+  function toca(notas, vol, dura) {
+    var c = audio(); if (!c) return;
+    try {
+      var t = c.currentTime + 0.12;
+      notas.forEach(function (n) {
         var o = c.createOscillator(), g = c.createGain();
         o.type = 'sine'; o.frequency.value = n[0];
-        g.gain.setValueAtTime(0.0001, t + n[1]); g.gain.exponentialRampToValueAtTime(0.22, t + n[1] + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, t + n[1] + 0.5);
-        o.connect(g); g.connect(c.destination); o.start(t + n[1]); o.stop(t + n[1] + 0.55);
+        g.gain.setValueAtTime(0.0001, t + n[1]); g.gain.exponentialRampToValueAtTime(vol, t + n[1] + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, t + n[1] + dura);
+        o.connect(g); g.connect(c.destination); o.start(t + n[1]); o.stop(t + n[1] + dura + 0.05);
       });
-      setTimeout(function () { try { c.close(); } catch (e) {} }, 1500);
+      sonidos++;
     } catch (e) {}
   }
+  function suenaUno(cuantos) {                       // un alumno más en verde: «plin» corto (hasta 3 seguidos si llegan varios a la vez)
+    var notas = [], k = Math.max(1, Math.min(3, cuantos || 1));
+    for (var i = 0; i < k; i++) notas.push([1046.5, i * 0.13]);
+    toca(notas, 0.2, 0.22);
+  }
+  function aviso() { toca([[880, 0], [1108.7, 0.15], [1318.5, 0.30]], 0.24, 0.55); }   // todos: tres notas hacia arriba
 
   function pinta() {
     var ov = D.getElementById('dcOverlay'); if (!caja || !ov) return;
@@ -171,8 +207,12 @@
     if (cargando || !grupo) return;
     cargando = true;
     try {
-      if (listaDe !== grupo) { lista = await cargaLista(grupo); listaDe = grupo; leeQ(); hechos = {}; sonado = false; }
-      await miraDictados();
+      if (listaDe !== grupo) { lista = await cargaLista(grupo); listaDe = grupo; leeQ(); hechos = {}; sonado = false; primera = true; }
+      var antes = hechos, despues = await miraDictados(), nuevos = 0;
+      lista.forEach(function (a) { if (despues[a.id] && !antes[a.id] && !quitados[a.id]) nuevos++; });
+      hechos = despues;
+      if (nuevos && primera === false) suenaUno(nuevos);      // la primera vez que se mira no suena: son los que ya estaban
+      primera = false;
       fallo = '';
     } catch (e) { fallo = 'Sin conexión: no puedo ver quién ha enviado'; }
     cargando = false;
@@ -195,6 +235,7 @@
   async function enciende(ov) {
     if (!caja || !caja.isConnected) monta(ov);
     caja.classList.add('on');
+    primera = true; despierta();
     /* el grupo, el de la hora, cada vez que se llega al final (a las 18 el C, a las 19 el F); si Iago lo cambió a mano, se respeta 45 min */
     if (!grupo || Date.now() > manualHasta) { var g = await grupoDeAhora(); if (g !== grupo) { grupo = g; lista = []; hechos = {}; listaDe = null; } }
     pinta();
@@ -206,6 +247,7 @@
     if (caja) caja.classList.remove('on', 'todos');
     var ov = D.getElementById('dcOverlay'); if (ov) ov.classList.remove('dcenv-todos', 'dcenv-espera');
     sonado = false;
+    duerme();
   }
 
   /* el dictado ha llegado al final cuando «✔ Corregir» se enciende (clase «fin»); se mira cada poco, sin tocar DictadoClase */
@@ -221,5 +263,5 @@
   function arranca() { if (!vigia) vigia = setInterval(mira, 700); }
   if (D.readyState === 'loading') D.addEventListener('DOMContentLoaded', arranca); else arranca();
 
-  W.LMDictadoEnviados = { estado: function () { return { grupo: grupo, lista: lista.length, hechos: Object.keys(hechos).length, quitados: Object.keys(quitados).length, encendido: encendido }; } };
+  W.LMDictadoEnviados = { estado: function () { return { grupo: grupo, lista: lista.length, hechos: Object.keys(hechos).length, quitados: Object.keys(quitados).length, encendido: encendido, sonidos: sonidos, aliento: !!aliento }; } };
 })();
