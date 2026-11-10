@@ -17,6 +17,10 @@
      «↺ n» los devuelve.
    · Cada alumno que pasa a verde suena («plin»). Con todos en verde: «N de N ✓», tres notas y «✔ Corregir» late.
      Hasta entonces, no late. Mientras la fila está a la vista, un «aliento» inaudible mantiene despierto el altavoz.
+   · (v3) «Una vez que estén todos en verde, que se revele el dictado solución automáticamente, sin que yo le pulse»:
+     a los 3 s de completarse se pulsa sola «✔ Corregir» (sale el rótulo naranja «Solución en 3 s…»). Solo si la fila
+     se ha visto incompleta antes en ese final (si al llegar ya estaban todos, no se abre sola: late y la pulsa Iago).
+     Si en esos 3 s deja de estar completa (↺), se anula. Una vez por final.
    · Pantalla del aula (Chrome 94, pocos fotogramas): sin movimientos; los cambios, de golpe. JS y CSS sencillos.
    ===================================================================================================================== */
 (function () {
@@ -30,7 +34,8 @@
 
   var GRUPOS = ['2GpC', '2GpF'];
   var CADA = 4000;
-  var caja = null, grupo = null, manualHasta = 0, lista = [], hechos = {}, quitados = {}, mirando = null, vigia = null, sonado = false, cargando = false, listaDe = null, fallo = '', primera = true;
+  var caja = null, grupo = null, manualHasta = 0, lista = [], hechos = {}, quitados = {}, mirando = null, vigia = null, sonado = false, cargando = false, listaDe = null, fallo = '', primera = true, vistoFaltar = false, revelado = false, autoT = null;
+  var ESPERA_AUTO = 3000;                               // ms entre «ya están todos» y abrir la solución sola
 
   var st = D.createElement('style');
   st.textContent =
@@ -44,6 +49,7 @@
     '#dcEnv .e-a button{width:26px;height:26px;border:0;border-radius:7px;background:#475569;color:#fff;font:inherit;font-size:14px;font-weight:900;line-height:1;cursor:pointer;padding:0}' +
     '#dcEnv .e-r{padding:7px 10px;border-radius:10px;background:none;border:2px dashed #475569;color:#cbd5e1;font:inherit;font-size:14px;font-weight:800;cursor:pointer}' +
     '#dcEnv .e-x{color:#fbbf24;font-size:14px;font-weight:700}' +
+    '#dcEnv .e-auto{padding:8px 12px;border-radius:10px;background:#f97316;color:#fff;font-size:18px;font-weight:900;white-space:nowrap}' +
     '#dcOverlay.dcenv-espera .dc-ver-res.fin{animation:none}' +
     '#dcOverlay.dcenv-todos .dc-ver-res{animation:dcCorregirFin 1.6s ease-in-out infinite}';
   D.head.appendChild(st);
@@ -181,6 +187,19 @@
   }
   function aviso() { toca([[880, 0], [1108.7, 0.15], [1318.5, 0.30]], 0.24, 0.55); }   // todos: tres notas hacia arriba
 
+  /* (v3) todos en verde → la solución se abre sola: se pulsa «✔ Corregir» (lo mismo que haría Iago), una vez por final */
+  function anulaAuto() { if (autoT) { clearTimeout(autoT); autoT = null; } }
+  function programaAuto() {
+    if (autoT) return;
+    autoT = setTimeout(function () {
+      autoT = null;
+      var ov = D.getElementById('dcOverlay'), vr = D.getElementById('dcVerRes');
+      var sigue = encendido && caja && caja.classList.contains('todos') && ov && ov.classList.contains('abierto') && vr && vr.classList.contains('fin');
+      if (sigue && !revelado) { revelado = true; autos++; try { vr.click(); } catch (e) {} }
+      pinta();
+    }, ESPERA_AUTO);
+  }
+
   function pinta() {
     var ov = D.getElementById('dcOverlay'); if (!caja || !ov) return;
     var vivos = lista.filter(function (a) { return !quitados[a.id]; });
@@ -195,6 +214,9 @@
     });
     if (nq) h += '<button type="button" class="e-r" data-e="vuelve" title="Volver a poner a los quitados">↺ ' + nq + '</button>';
     if (fallo) h += '<span class="e-x">' + esc(fallo) + '</span>';
+    if (todos && !sonado && vistoFaltar && !revelado) programaAuto();     // antes de pintar, para que salga el rótulo
+    if (!todos) { anulaAuto(); if (tot > 0 && primera === false) vistoFaltar = true; }   // «faltar» de verdad: ya mirado en Supabase
+    if (autoT) h += '<span class="e-auto">Solución en ' + Math.round(ESPERA_AUTO / 1000) + ' s…</span>';
     if (caja.innerHTML !== h) caja.innerHTML = h;
     caja.classList.toggle('todos', todos);
     ov.classList.toggle('dcenv-todos', todos);
@@ -207,7 +229,7 @@
     if (cargando || !grupo) return;
     cargando = true;
     try {
-      if (listaDe !== grupo) { lista = await cargaLista(grupo); listaDe = grupo; leeQ(); hechos = {}; sonado = false; primera = true; }
+      if (listaDe !== grupo) { lista = await cargaLista(grupo); listaDe = grupo; leeQ(); hechos = {}; sonado = false; primera = true; vistoFaltar = false; anulaAuto(); }
       var antes = hechos, despues = await miraDictados(), nuevos = 0;
       lista.forEach(function (a) { if (despues[a.id] && !antes[a.id] && !quitados[a.id]) nuevos++; });
       hechos = despues;
@@ -246,12 +268,12 @@
     if (mirando) { clearInterval(mirando); mirando = null; }
     if (caja) caja.classList.remove('on', 'todos');
     var ov = D.getElementById('dcOverlay'); if (ov) ov.classList.remove('dcenv-todos', 'dcenv-espera');
-    sonado = false;
+    sonado = false; vistoFaltar = false; revelado = false; anulaAuto();
     duerme();
   }
 
   /* el dictado ha llegado al final cuando «✔ Corregir» se enciende (clase «fin»); se mira cada poco, sin tocar DictadoClase */
-  var encendido = false;
+  var encendido = false, autos = 0;
   function mira() {
     var ov = D.getElementById('dcOverlay'), vr = D.getElementById('dcVerRes');
     var toca = !!(ov && ov.classList.contains('abierto') && vr && vr.classList.contains('fin') && esProtester() && cfg());
@@ -263,5 +285,5 @@
   function arranca() { if (!vigia) vigia = setInterval(mira, 700); }
   if (D.readyState === 'loading') D.addEventListener('DOMContentLoaded', arranca); else arranca();
 
-  W.LMDictadoEnviados = { estado: function () { return { grupo: grupo, lista: lista.length, hechos: Object.keys(hechos).length, quitados: Object.keys(quitados).length, encendido: encendido, sonidos: sonidos, aliento: !!aliento }; } };
+  W.LMDictadoEnviados = { estado: function () { return { grupo: grupo, lista: lista.length, hechos: Object.keys(hechos).length, quitados: Object.keys(quitados).length, encendido: encendido, sonidos: sonidos, aliento: !!aliento, auto: !!autoT, autos: autos, revelado: revelado }; } };
 })();
