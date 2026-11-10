@@ -21,6 +21,9 @@
      a los 3 s de completarse se pulsa sola «✔ Corregir» (sale el rótulo naranja «Solución en 3 s…»). Solo si la fila
      se ha visto incompleta antes en ese final (si al llegar ya estaban todos, no se abre sola: late y la pulsa Iago).
      Si en esos 3 s deja de estar completa (↺), se anula. Una vez por final.
+   · (v4, 10-nov noche) «Prefiero que aparezca en el centro, en plan revelar dictado en 3, 2, 1, y que ya aparezca»:
+     el rótulo de la esquina se cambia por una cuenta atrás grande en el CENTRO de la pantalla («REVELAR DICTADO EN» 3 · 2 · 1,
+     un número por segundo, sin animaciones). Tocar el rótulo cancela esa apertura (queda «✔ Corregir» para pulsarla a mano).
    · Pantalla del aula (Chrome 94, pocos fotogramas): sin movimientos; los cambios, de golpe. JS y CSS sencillos.
    ===================================================================================================================== */
 (function () {
@@ -35,7 +38,7 @@
   var GRUPOS = ['2GpC', '2GpF'];
   var CADA = 4000;
   var caja = null, grupo = null, manualHasta = 0, lista = [], hechos = {}, quitados = {}, mirando = null, vigia = null, sonado = false, cargando = false, listaDe = null, fallo = '', primera = true, vistoFaltar = false, revelado = false, autoT = null;
-  var ESPERA_AUTO = 3000;                               // ms entre «ya están todos» y abrir la solución sola
+  var ESPERA_AUTO = 3000;                               // ms entre «ya están todos» y abrir la solución sola (cuenta atrás 3-2-1 en el centro)
 
   var st = D.createElement('style');
   st.textContent =
@@ -49,7 +52,11 @@
     '#dcEnv .e-a button{width:26px;height:26px;border:0;border-radius:7px;background:#475569;color:#fff;font:inherit;font-size:14px;font-weight:900;line-height:1;cursor:pointer;padding:0}' +
     '#dcEnv .e-r{padding:7px 10px;border-radius:10px;background:none;border:2px dashed #475569;color:#cbd5e1;font:inherit;font-size:14px;font-weight:800;cursor:pointer}' +
     '#dcEnv .e-x{color:#fbbf24;font-size:14px;font-weight:700}' +
-    '#dcEnv .e-auto{padding:8px 12px;border-radius:10px;background:#f97316;color:#fff;font-size:18px;font-weight:900;white-space:nowrap}' +
+    '#dcEnvCuenta{position:fixed;inset:0;z-index:2147483000;display:flex;align-items:center;justify-content:center;pointer-events:none;font-family:inherit}' +
+    '#dcEnvCuenta .c-caja{pointer-events:auto;cursor:pointer;text-align:center;padding:26px 60px 20px;border-radius:28px;background:rgba(6,10,18,.92);border:2px solid rgba(255,255,255,.16);box-shadow:0 20px 80px rgba(0,0,0,.55);color:#fff}' +
+    '#dcEnvCuenta .c-t{font-size:clamp(22px,3.2vw,46px);font-weight:900;letter-spacing:.03em;text-transform:uppercase;white-space:nowrap}' +
+    '#dcEnvCuenta .c-n{font-size:clamp(120px,22vw,300px);font-weight:900;line-height:1.05;color:#f97316;font-variant-numeric:tabular-nums}' +
+    '#dcEnvCuenta .c-x{font-size:14px;font-weight:700;color:#94a3b8}' +
     '#dcOverlay.dcenv-espera .dc-ver-res.fin{animation:none}' +
     '#dcOverlay.dcenv-todos .dc-ver-res{animation:dcCorregirFin 1.6s ease-in-out infinite}';
   D.head.appendChild(st);
@@ -188,16 +195,34 @@
   function aviso() { toca([[880, 0], [1108.7, 0.15], [1318.5, 0.30]], 0.24, 0.55); }   // todos: tres notas hacia arriba
 
   /* (v3) todos en verde → la solución se abre sola: se pulsa «✔ Corregir» (lo mismo que haría Iago), una vez por final */
-  function anulaAuto() { if (autoT) { clearTimeout(autoT); autoT = null; } }
+  /* (v4) la espera se ve en el CENTRO de la pantalla: «Revelar dictado en 3 · 2 · 1» y se abre. Tocar el rótulo la cancela (queda el botón de siempre). */
+  var cuenta = null, quedan = 0;
+  function anulaAuto() {
+    if (autoT) { clearInterval(autoT); autoT = null; }
+    if (cuenta && cuenta.parentNode) cuenta.parentNode.removeChild(cuenta);
+    cuenta = null; quedan = 0;
+  }
   function programaAuto() {
     if (autoT) return;
-    autoT = setTimeout(function () {
-      autoT = null;
+    var ov0 = D.getElementById('dcOverlay'); if (!ov0) return;
+    quedan = Math.max(1, Math.round(ESPERA_AUTO / 1000));
+    cuenta = D.createElement('div'); cuenta.id = 'dcEnvCuenta';
+    cuenta.innerHTML = '<div class="c-caja" title="Tocar para cancelar"><div class="c-t">Revelar dictado en</div><div class="c-n">' + quedan + '</div><div class="c-x">toca para cancelar</div></div>';
+    cuenta.firstChild.addEventListener('click', function (e) { e.stopPropagation(); revelado = true; anulaAuto(); pinta(); });
+    ov0.appendChild(cuenta);
+    autoT = setInterval(function () {
+      quedan--;
+      if (quedan > 0) {
+        var n = cuenta && cuenta.querySelector('.c-n');
+        if (n) n.textContent = quedan;
+        return;
+      }
+      anulaAuto();
       var ov = D.getElementById('dcOverlay'), vr = D.getElementById('dcVerRes');
       var sigue = encendido && caja && caja.classList.contains('todos') && ov && ov.classList.contains('abierto') && vr && vr.classList.contains('fin');
       if (sigue && !revelado) { revelado = true; autos++; try { vr.click(); } catch (e) {} }
       pinta();
-    }, ESPERA_AUTO);
+    }, 1000);
   }
 
   function pinta() {
@@ -216,7 +241,6 @@
     if (fallo) h += '<span class="e-x">' + esc(fallo) + '</span>';
     if (todos && !sonado && vistoFaltar && !revelado) programaAuto();     // antes de pintar, para que salga el rótulo
     if (!todos) { anulaAuto(); if (tot > 0 && primera === false) vistoFaltar = true; }   // «faltar» de verdad: ya mirado en Supabase
-    if (autoT) h += '<span class="e-auto">Solución en ' + Math.round(ESPERA_AUTO / 1000) + ' s…</span>';
     if (caja.innerHTML !== h) caja.innerHTML = h;
     caja.classList.toggle('todos', todos);
     ov.classList.toggle('dcenv-todos', todos);
@@ -285,5 +309,5 @@
   function arranca() { if (!vigia) vigia = setInterval(mira, 700); }
   if (D.readyState === 'loading') D.addEventListener('DOMContentLoaded', arranca); else arranca();
 
-  W.LMDictadoEnviados = { estado: function () { return { grupo: grupo, lista: lista.length, hechos: Object.keys(hechos).length, quitados: Object.keys(quitados).length, encendido: encendido, sonidos: sonidos, aliento: !!aliento, auto: !!autoT, autos: autos, revelado: revelado }; } };
+  W.LMDictadoEnviados = { estado: function () { return { grupo: grupo, lista: lista.length, hechos: Object.keys(hechos).length, quitados: Object.keys(quitados).length, encendido: encendido, sonidos: sonidos, aliento: !!aliento, auto: !!autoT, quedan: quedan, autos: autos, revelado: revelado }; } };
 })();
