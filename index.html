@@ -2074,6 +2074,22 @@ function showEnig(kind){
   /* (17-oct-2026, noche, Iago) sin la raya de abajo y con las barras más grandes */
   CV2_IC.semana='<rect x="2" y="9" width="4.4" height="13" rx="1.4" fill="#22c55e" stroke="none"/><rect x="7.2" y="13.5" width="4.4" height="8.5" rx="1.4" fill="#4a9eff" stroke="none"/><rect x="12.4" y="4" width="4.4" height="18" rx="1.4" fill="#f97316" stroke="none"/><rect x="17.6" y="11" width="4.4" height="11" rx="1.4" fill="#ec4899" stroke="none"/>';
   var RSM_AREA={ ritmo:['Ritmo','#22c55e','#86efac'], entonacion:['Entonación','#4a9eff','#93c5fd'], audicion:['Dictado','#f97316','#fdba74'], teoria:['Teoría','#ec4899','#f9a8d4'] };
+  /* (10-nov-2026, Iago: «junto a cada apartado, un más o menos con respecto a la semana anterior… en verde» y «necesito que sea
+     el mismo tamaño de tarjeta que el resto») el +/− va dentro de cada recuadro, sin cambiar el alto de la tarjeta. RSM_HIST: los
+     resúmenes del alumno que trae la campana (antes de quitar los viejos), para saber cuál es el de la semana anterior. Para
+     quitarlo: borrar este bloque, su recogida en la campana («RSM_HIST · recoge»), «dl» en rsmTarjeta y las reglas «.rsm-dl». */
+  var RSM_HIST={}, RSM_HIST_CTA=null;
+  function rsmClave(o){ var pj=(o&&o.payload_json)||{}; return Date.parse(String(pj.desde||'')+'T12:00:00')||Date.parse((o&&o.creado_en)||'')||0; }
+  function rsmNotaDe(areas,ap){ var r=null; (areas||[]).forEach(function(a){ if(a && a.ap===ap && !a.no_entregada && a.nota!=null && a.nota!=='' && isFinite(Number(a.nota))) r=Number(a.nota); }); return r; }
+  /* el de la semana anterior: el resumen justo antes (si hay más de 3 semanas de hueco, vacaciones, no se compara) */
+  function rsmAnt(o){
+    var k=rsmClave(o), m=null;
+    Object.keys(RSM_HIST).forEach(function(i){ var x=RSM_HIST[i], kx=rsmClave(x); if(x.id!==o.id && kx<k && (!m || kx>rsmClave(m))) m=x; });
+    return (m && (k-rsmClave(m))<=22*864e5)?(m.payload_json||{}):null;
+  }
+  function rsmDif(cur,ant){ if(cur==null||ant==null||!isFinite(cur)) return ''; var d=Math.round(cur*100)-Math.round(ant*100);
+    var t=d===0?'=':((d>0?'+':'−')+(Math.abs(d)/100).toFixed(2).replace('.',','));
+    return '<i class="rsm-dl '+(d>0?'rsm-dl-up':(d<0?'rsm-dl-dn':'rsm-dl-eq'))+'" title="Respecto a la semana anterior">'+t+'</i>'; }
   var RSM_MES=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
   function rsmN(v){ if(v==null||v==='') return '—'; var n=Number(v); return isFinite(n)?(Math.round(n*100)/100).toFixed(2).replace('.',','):'—'; }
   function rsmCol(n){ n=Number(n); return n>=7?'#4ade80':(n>=5?'#facc15':'#ff7a8a'); }
@@ -2131,7 +2147,7 @@ function showEnig(kind){
      de tamaño). En los navegadores nuevos no hace nada. Para quitarlo: borrar estas tres funciones, su línea en cv2CSS y la de
      rsmMedir en el pintado. */
   function rsmCQ(){ try{ return !!(window.CSS && CSS.supports && CSS.supports('container-type','inline-size')); }catch(e){ return false; } }
-  var RSM_Q={ '(min-width:500px)':'rsmq-500', '(min-width:340px)':'rsmq-340', '(min-width:296px) and (max-width:339.98px)':'rsmq-296' };
+  var RSM_Q={ '(min-width:500px)':'rsmq-500', '(min-width:340px)':'rsmq-340', '(min-width:296px) and (max-width:339.98px)':'rsmq-296', '(min-width:296px) and (max-width:499.98px)':'rsmq-296-499' };
   function rsmSinCQ(css){
     var out='', i=0, pre='@container rsmc ';
     while((i=css.indexOf(pre,i))>=0){
@@ -2148,7 +2164,7 @@ function showEnig(kind){
     if(rsmCQ()) return;
     var cs=(raiz||document).querySelectorAll('.rsm-chips-c');
     var pon=function(c){ var w=c.clientWidth||0;
-      c.classList.toggle('rsmq-500', w>=500); c.classList.toggle('rsmq-340', w>=340); c.classList.toggle('rsmq-296', w>=296 && w<340); };
+      c.classList.toggle('rsmq-500', w>=500); c.classList.toggle('rsmq-340', w>=340); c.classList.toggle('rsmq-296', w>=296 && w<340); c.classList.toggle('rsmq-296-499', w>=296 && w<500); };
     Array.prototype.forEach.call(cs,pon);
     try{
       if(!_rsmRO && window.ResizeObserver) _rsmRO=new ResizeObserver(function(es){ es.forEach(function(e){ pon(e.target); }); });
@@ -2179,6 +2195,7 @@ function showEnig(kind){
     /* (17-oct-2026, noche, Iago) sin nota: «—». Y (Iago: «alguien que entre en zona extra… que no tenga nota de teoría… que ponga:
        no se entregó la ficha de esta semana, o algo así») si la ficha de esa semana no se entregó, el chip de teoría lo dice en rosa
        (en la misma fila, para que la tarjeta no cambie de alto; la frase entera, al pasar por encima y en «Ver mi semana») */
+    var _ant=rsmAnt(o);
     var chips=lista.map(function(a){ var A=RSM_AREA[a.ap], v=a._vacia||a.nota==null;
       /* (18-oct-2026, Iago: «que solo ponga teoría y que sea igual en todos… lo de ficha no entregada, en pequeñito dentro del
          propio recuadro, abajo a la derecha, discreto») */
@@ -2192,7 +2209,8 @@ function showEnig(kind){
       if(a.ap==='teoria'){ var fns=[]; if(a.ficha!=null && a.ficha!=='') fns.push(String(a.ficha));
         (a.items||[]).forEach(function(it){ var m=/^Ficha\s+(\S+)/.exec(String((it&&it.t)||'')); if(m && fns.indexOf(m[1])<0) fns.push(m[1]); });
         if(fns.length) fT=(fns.length===1?'Ficha ':'Fichas ')+fns.join(' y '); }
-      return '<span class="rsm-chip'+(v?' rsm-vacia':'')+'" style="--ac:'+A[1]+'"'+'><span style="color:'+A[2]+'">'+A[0]+'</span><b>'+(v?'—':rsmN(a.nota))+'</b>'+(fT?'<i class="rsm-noent-t rsm-ficha-t">'+esc(fT)+'</i>':'')+'</span>';   /* (20-oct-2026) sin «entregada tarde» */ }).map(function(h,i){ return rsmChipMapa(lista[i],gp,h); }).join('');   /* (19-oct-2026) GP: el iconito del mapa en Teoría */
+      var dl=(v||!_ant)?'':rsmDif(Number(a.nota), rsmNotaDe(_ant.areas,a.ap));   /* (10-nov-2026) +/− respecto a la semana anterior */
+      return '<span class="rsm-chip'+(v?' rsm-vacia':'')+(dl?' rsm-cdl':'')+'" style="--ac:'+A[1]+'"'+'><span style="color:'+A[2]+'">'+A[0]+'</span><b>'+(v?'—':rsmN(a.nota))+'</b>'+dl+(fT?'<i class="rsm-noent-t rsm-ficha-t">'+esc(fT)+'</i>':'')+'</span>';   /* (20-oct-2026) sin «entregada tarde» */ }).map(function(h,i){ return rsmChipMapa(lista[i],gp,h); }).join('');   /* (19-oct-2026) GP: el iconito del mapa en Teoría */
     var dias=rsmDias(pj.desde,pj.hasta);
     /* (19-oct-2026, Iago) «Ver detalle me gusta. Y una flechita sutil abajo… sin el icono (el icono ya está grande a la izquierda)» */
     var ver=gp?'':'<button type="button" class="rsm-ver" aria-expanded="false"><span class="rsm-ver-t">Ver detalle</span><svg class="rsm-flecha" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>';
@@ -2361,6 +2379,14 @@ function showEnig(kind){
       '@container rsmc (min-width:340px){'+C+'.rsm-chips{grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}'+C+'.rsm-chip{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-rows:16px 13px;align-content:center;align-items:end;column-gap:4px;row-gap:1px;height:36px;padding:0 6px;border-radius:8px}'+C+'.rsm-chip>span:first-child{grid-column:1/-1;font-size:10.5px;line-height:16px}'+C+'.rsm-chip b{grid-column:1;justify-self:start;font-size:13px;line-height:13px}'+C+'.rsm-noent-t{position:static;grid-column:2;grid-row:2;justify-self:end;align-self:end;font-size:8.5px;line-height:10px}'+C+'.rsm-chip .rsm-mapa-mini{width:16px;height:16px;margin-right:5px;border-radius:4px}'+C+'.rsm-chip .rsm-mapa-mini svg{width:12px;height:12px}}',
       '@container rsmc (min-width:296px) and (max-width:339.98px){'+C+'.rsm-chips{grid-template-columns:repeat(4,minmax(0,1fr));gap:4px}'+C+'.rsm-chip{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-rows:15px 12px;align-content:center;align-items:end;column-gap:2px;row-gap:1px;height:36px;padding:0 3px;border-radius:8px}'+C+'.rsm-chip>span:first-child{grid-column:1/-1;font-size:9.5px;line-height:15px}'+C+'.rsm-chip b{grid-column:1;justify-self:start;font-size:12px;line-height:12px}'+C+'.rsm-noent-t{position:static;grid-column:2;grid-row:2;justify-self:end;align-self:end;font-size:8px;line-height:9px}'+C+'.rsm-chip .rsm-mapa-mini{width:15px;height:15px;margin-right:4px;border-radius:4px}'+C+'.rsm-chip .rsm-mapa-mini svg{width:11px;height:11px}}',
       '@container rsmc (min-width:500px){'+C+'.rsm-chip{display:flex;align-items:center;justify-content:space-between;gap:4px;height:36px;padding:0 7px 5px}'+C+'.rsm-chip>span:first-child{font-size:12px;line-height:1}'+C+'.rsm-chip b{font-size:13px;line-height:1}'+C+'.rsm-noent-t{position:absolute;right:7px;bottom:2px;font-size:8.5px;line-height:1}'+C+'.rsm-chip .rsm-mapa-mini{width:17px;height:17px;margin-right:5px;border-radius:5px}'+C+'.rsm-chip .rsm-mapa-mini svg{width:13px;height:13px}}',
+      /* (10-nov-2026, Iago) +/− respecto a la semana anterior (verde sube, rojo baja), bajo el nombre del apartado y sin cambiar el
+         alto: en el móvil (2 × 2) y en el ordenador, abajo a la izquierda; en la fila estrecha (iPad en vertical), junto a la nota
+         (ahí no cabe con «Ficha N», que en ese ancho se ve al pasar por encima) */
+      C+'.rsm-dl{position:absolute;left:10px;bottom:4px;font-style:normal;font-size:9.5px;font-weight:800;line-height:1;letter-spacing:.01em;pointer-events:none}',
+      C+'.rsm-dl-up{color:#4ade80}', C+'.rsm-dl-dn{color:#ff7a8a}', C+'.rsm-dl-eq{color:rgba(255,255,255,.5)}',
+      C+'.rsm-chip.rsm-cdl{align-items:flex-start;padding-top:7px}',
+      '@container rsmc (min-width:296px) and (max-width:499.98px){'+C+'.rsm-chip.rsm-cdl{padding-top:0}'+C+'.rsm-dl{position:static;grid-column:2;grid-row:2;justify-self:start;align-self:end;margin-left:4px;font-size:8.5px;line-height:10px}'+C+'.rsm-cdl .rsm-ficha-t{display:none}}',
+      '@container rsmc (min-width:500px){'+C+'.rsm-chip.rsm-cdl{align-items:center;padding-top:0}'+C+'.rsm-dl{left:7px;bottom:2px;font-size:8.5px}}',
       C+'.rsm-ver{display:inline-flex!important;align-items:center;justify-content:flex-end;gap:10px;width:100%;height:34px;margin:0!important;padding:0!important;border:0!important;background:none!important;box-shadow:none!important;color:#fff!important;font-family:inherit!important;font-size:13px!important;font-weight:700!important;cursor:pointer}',
       /* (19-oct-2026) «Ver detalle» con una flechita fina hacia abajo (abierta, hacia arriba) */
       C+'.rsm-flecha{width:16px;height:16px;flex:none;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;opacity:.8;transition:transform .2s ease}',
@@ -4151,6 +4177,9 @@ function showEnig(kind){
     list=list.filter(function(o){ return !esNotifValidacion(o); });
     /* (7-nov-2026) el «Me gusta» de Iago, ya visto, a los 2 días deja de salir */
     list=list.filter(function(o){ var pj=(o&&o.payload_json)||{}; return !pj.me_gusta || !o.leido || (Date.now()-new Date(o.creado_en).getTime())<2*864e5; });
+    /* (10-nov-2026) RSM_HIST · recoge los resúmenes (antes de quitar los viejos) para el +/− de la semana anterior */
+    try{ if(RSM_HIST_CTA!==id){ RSM_HIST={}; RSM_HIST_CTA=id; }
+      list.forEach(function(o){ if(o && o.id && o.payload_json && o.payload_json.resumen_semana) RSM_HIST[o.id]=o; }); }catch(e){}
     /* (17-oct-2026, noche, Iago) el resumen de la semana, solo una semana: luego desaparece solo, sin marcarlo */
     list=list.filter(function(o){ var pj=(o&&o.payload_json)||{}; return !pj.resumen_semana || semanaDespues(o.creado_en)>Date.now(); });
     // @FORMATO · al de PAPEL no le llegan fichas digitales y solo ve el ciclo en curso

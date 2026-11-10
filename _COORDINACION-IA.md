@@ -2140,3 +2140,4 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   pentagrama. Bloques «(28-sep-2026, Iago)».
 - 28-sep 08:31 · Fichas y rediseño · HECHO · commit 6eada7a · index.html: Ojeador en iPad/Safari (modo profesor solo lectura), formato de
   reserva papel/digital, Temazo más suave y una sola vez, Pentagrama (solo Protester), y línea «LM piel» tras `<meta charset>` (solo cuentas de prueba).
+- 10-nov 13:35 · Mantenimiento (resumen semanal) · HECHO · index.html: en «Resumen de tu semana», bajo cada apartado, +/− respecto a la semana anterior (verde sube, rojo baja), sin cambiar el alto de la tarjeta. Bloque RSM_HIST/rsmAnt/rsmDif junto a RSM_MES, recogida en la campana y reglas .rsm-dl. Mismo cambio en LMEAVathome (GE). Último commit visto: 9809060.
