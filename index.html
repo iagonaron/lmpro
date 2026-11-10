@@ -2313,7 +2313,7 @@ function showEnig(kind){
   }
   function cv2Recortes(body){
     body=body||document.getElementById('alu-body'); if(!body) return;
-    Array.prototype.forEach.call(body.querySelectorAll('.alu-item.cv2:not(.cv2-tareas):not(.cv2-hito):not(.rsm)'),function(c){ cv2Mas(c, c.querySelector(':scope > .cv2-mid .cv2-l1')); });   /* (16-oct-2026) sin «Leer mensaje completo» en las de los portales: no tienen más que leer */
+    Array.prototype.forEach.call(body.querySelectorAll('.alu-item.cv2:not(.cv2-tareas):not(.cv2-hito):not(.rsm):not(.dct-det)'),function(c){ cv2Mas(c, c.querySelector(':scope > .cv2-mid .cv2-l1')); });   /* (16-oct-2026) sin «Leer mensaje completo» en las de los portales: no tienen más que leer */
     Array.prototype.forEach.call(body.querySelectorAll('.ts-parte.cv2-parte'),function(p){ cv2Mas(p, p.querySelector('.cv2-pt')); });
   }
   var _cv2RT=0;
@@ -4003,8 +4003,16 @@ function showEnig(kind){
       });
     }
     if(!figs) figs='<div class="alu-vacio" style="grid-column:1/-1">No hay imágenes disponibles de este dictado.</div>';
+    /* (10-nov-2026, Iago) «la versión de ver detalle, en la que aparecen las fotos y la información de lo que he modificado»:
+       encima de las fotos, tu nota, lo que cambió el profesor (una línea por cambio: lo escribe su pantalla de corrección) y su comentario */
+    var dvN=function(x){ if(x==null || !isFinite(+x)) return '—'; var t=(+x).toFixed(2).replace(/\.?0+$/,'').replace('.',','); return t===''?'0':t; };
+    var dvCam=(dj.cambios||[]).filter(Boolean), dvCom=(dj.comentario && String(dj.comentario).trim())?String(dj.comentario).trim():'';
+    var dvRes=(dvCam.length || dvCom)?('<div class="dv-cambios"><div class="dv-cam-nota"><span class="dv-cam-et">Tu nota</span>'+((dj.nota_alumno!=null && !dj.solo_foto && String(dj.nota_alumno)!==String(dj.nota_final))?'<s>'+esc(dvN(dj.nota_alumno))+'</s><i>→</i>':'')+'<b class="'+((+dj.nota_final>=5)?'ok':'mal')+'">'+esc(dvN(dj.nota_final))+'</b></div>'
+      +(dvCam.length?'<div class="dv-cam-lista"><span class="dv-cam-et">Lo que ha cambiado tu profesor</span>'+dvCam.map(function(c){ return '<span class="dv-cam-li">'+esc(c)+'</span>'; }).join('')+'</div>':'')
+      +(dvCom?'<div class="dv-cam-com"><span class="dv-cam-et">Comentario</span><span class="dv-cam-cita">«'+esc(dvCom)+'»</span></div>':'')+'</div>'):'';
     v.innerHTML='<div class="dv-head"><div class="dv-tit"><span class="dv-ico">'+cv2Svg('cascos')+'</span>'+(dj.numero!=null?('Dictado nº '+esc(dj.numero)):'Dictado')+'<span class="dv-sub"> · tu foto y la solución</span></div>'
       +'<button class="dv-close" aria-label="Cerrar" title="Cerrar">✕</button></div>'
+      +dvRes
       +'<div class="dv-body">'+figs+'</div>'
       +'<div class="dv-tip">↻ gira tu foto · el deslizador (o pellizcar) la amplía y, ampliada, se arrastra · toca una foto sin ampliar para abrirla a tamaño completo en otra pestaña.</div>';
     document.body.appendChild(v);
@@ -4495,15 +4503,16 @@ function showEnig(kind){
         var fotosCaducadas=!!(dj.fotos_caducan && (Date.parse(dj.fotos_caducan)||0)<=Date.now());
         var hayFotos=!fotosCaducadas && !!(dj.foto_alumno || (dj.fotos_solucion && dj.fotos_solucion.length));
         var dCom=((esCorr||esSolo) && dj.comentario && String(dj.comentario).trim())?String(dj.comentario).trim():'';
-        return cv2Tarjeta({cls:'dictado cv2-info'+(o.leido?'':' no-leido'), id:o.id, col:'naranja', ic:'cascos',
+        return cv2Tarjeta({cls:'dictado cv2-info'+(o.leido?'':' no-leido')+((hayFotos || (dj.cambios && dj.cambios.length))?' dct-det':''), id:o.id, col:'naranja', ic:'cascos',   /* dct-det (10-nov-2026, Iago: «me resulta raro lo de leer un mensaje completo… cuando le pulsas ver dictado y solución ya estás viendo todo»): con botón de detalle no sale «Leer mensaje completo» */
           tit:(dj.numero!=null?('Dictado nº '+esc(dj.numero)):'Tu último dictado'), sub:esSolo?'corregido':'nota revisada',
           chip: esSolo?'':(esCorr?'<span class="cv2-chip cor">✎ Corregida</span>':'<span class="cv2-chip ok">✓ Verificada</span>'),
           datos: cv2Nota('Tu nota', (esCorr&&!esSolo)?fmtN(dj.nota_alumno):null, fmtN(dj.nota_final))
+            +((dj.cambios && dj.cambios.length)?'<span class="cv2-nota-pie dct-ncam">'+dj.cambios.length+(dj.cambios.length===1?' cambio de tu profesor':' cambios de tu profesor')+'</span>':'')
             +(dCom?'<span class="cv2-cita dct-coment">'+esc(dCom)+'</span>':((esCorr||esSolo)?'':'<span class="dct-bien">¡Bien corregido!</span>'))
             +((!hayFotos && dj.fotos_caducan)?'<span class="cv2-nota-pie">'+cv2Svg('reloj')+'Las fotos se guardan 7 días</span>':''),
           cuerpo:'',
           sec: o.leido?'':cv2Visto(o.id),   /* (15-oct-2026, tarde, Iago: «cuando es dictado revisado o corregido, que también haya un botón V arriba a la derecha») */
-          btn: hayFotos?'<button class="alu-dictado-ver cv2-btn" data-id-notif="'+esc(o.id)+'">'+cv2Svg('ojo')+'Ver dictado y solución</button>':'',
+          btn: (hayFotos || (dj.cambios && dj.cambios.length))?'<button class="alu-dictado-ver cv2-btn" data-id-notif="'+esc(o.id)+'">'+cv2Svg('ojo')+(hayFotos?'Ver dictado y solución':'Ver detalle')+'</button>':'',
           fecha:_f});
       }
       // ---------- @RECO · RECOMENDADO PARA TI (17-sep-2026): el color de su apartado y las apps enlazadas dentro del texto
@@ -5025,6 +5034,15 @@ function showEnig(kind){
       '.dictado-visor .dv-img{display:block;width:100%;background:#060b14}'+
       '.dictado-visor .dv-img img{display:block;width:100%;height:auto;max-height:64vh;object-fit:contain;cursor:zoom-in}'+
       '.dictado-visor .dv-tip{padding:0 16px 12px;text-align:center;color:#6d84ab;font-size:11.5px}'+
+      '.dictado-visor .dv-cambios{flex:none;max-width:1100px;width:100%;box-sizing:border-box;margin:0 auto 12px;padding:0 16px;display:flex;flex-wrap:wrap;gap:10px;align-items:stretch}'+
+      '.dictado-visor .dv-cambios>div{background:rgba(6,10,18,.72);border:1.5px solid rgba(255,255,255,.16);border-radius:14px;padding:10px 14px;color:#fff;display:flex;flex-direction:column;gap:4px;justify-content:center}'+
+      '.dictado-visor .dv-cam-et{font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#94a3b8}'+
+      '.dictado-visor .dv-cam-nota{flex:none;flex-direction:row!important;align-items:center;gap:10px!important;border-color:#ea580c!important}'+
+      '.dictado-visor .dv-cam-nota s{color:#94a3b8;font-size:17px;font-weight:700}.dictado-visor .dv-cam-nota i{font-style:normal;color:#94a3b8}'+
+      '.dictado-visor .dv-cam-nota b{font-size:30px;font-weight:900;line-height:1}.dictado-visor .dv-cam-nota b.ok{color:#4ade80}.dictado-visor .dv-cam-nota b.mal{color:#f87171}'+
+      '.dictado-visor .dv-cam-lista{flex:1 1 300px}.dictado-visor .dv-cam-li{font-size:14px;font-weight:600;line-height:1.35;padding-left:14px;position:relative}'+
+      '.dictado-visor .dv-cam-li::before{content:"";position:absolute;left:1px;top:.55em;width:6px;height:6px;border-radius:2px;background:#ea580c}'+
+      '.dictado-visor .dv-cam-com{flex:1 1 240px}.dictado-visor .dv-cam-cita{font-size:14px;font-style:italic;line-height:1.35}'+
       /* (7-oct-2026, Iago) girar y ampliar las fotos del visor, como en el panel del profesor */
       '.dictado-visor figcaption{justify-content:space-between}'+
       '.dictado-visor .dv-cap{min-width:0}'+
