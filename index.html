@@ -3998,7 +3998,7 @@ function showEnig(kind){
       sols.forEach(function(u,k){
         // (8-oct-2026, Iago: «no es necesario que el alumno tenga lo de solución editable. esa siempre estará bien
         // colocada») la pizarra del profesor, sin ↻ ni deslizador: entera y, al tocarla, a tamaño completo
-        figs+='<figure><figcaption><span class="dv-cap">'+cv2Svg('check')+'Solución'+(sols.length>1?(' '+(k+1)+' de '+sols.length):'')+'<span class="dv-sub"> · la pizarra del profesor</span></span></figcaption>'
+        figs+='<figure><figcaption><span class="dv-cap">'+cv2Svg('check')+'Solución'+(sols.length>1?(' '+(k+1)+' de '+sols.length):'')+(dj.solucion_clase?'':'<span class="dv-sub"> · la pizarra del profesor</span>')+'</span></figcaption>'
           +'<a class="dv-img" href="'+esc(u)+'" target="_blank" rel="noopener"><img src="'+esc(u)+'" alt="Solución del dictado" loading="lazy"></a></figure>';
       });
     }
@@ -4489,17 +4489,17 @@ function showEnig(kind){
       // ---------- DICTADO REVISADO (Iago jul-2026; 14-oct-2026 en dos líneas): (15-oct-2026, Iago) el CORREGIDO igual que el
       // verificado: «✎ Corregida» con contorno, «Tu nota 7,4 → 5» con la suya tachada, su comentario y «Ver dictado y solución»
       if(o.payload_json && o.payload_json.dictado_revision){
-        var dj=o.payload_json, esCorr=(dj.resultado==='corregida');
+        var dj=o.payload_json, esCorr=(dj.resultado==='corregida'), esSolo=!!dj.solo_foto;   /* (10-nov-2026, Iago) dictado «solo foto»: «simplemente la nota y la foto y el dictado solución» — sin «Verificada/Corregida», sin nota tachada y sin «¡Bien corregido!» */
         var fmtN=function(v){ if(v==null || !isFinite(+v)) return '—'; var s=(+v).toFixed(2).replace(/\.?0+$/,'').replace('.',','); return s===''?'0':s; };
         // (Iago 23-jul) las fotos se guardan 7 días desde la revisión; la nota y el comentario no caducan
         var fotosCaducadas=!!(dj.fotos_caducan && (Date.parse(dj.fotos_caducan)||0)<=Date.now());
         var hayFotos=!fotosCaducadas && !!(dj.foto_alumno || (dj.fotos_solucion && dj.fotos_solucion.length));
-        var dCom=(esCorr && dj.comentario && String(dj.comentario).trim())?String(dj.comentario).trim():'';
+        var dCom=((esCorr||esSolo) && dj.comentario && String(dj.comentario).trim())?String(dj.comentario).trim():'';
         return cv2Tarjeta({cls:'dictado cv2-info'+(o.leido?'':' no-leido'), id:o.id, col:'naranja', ic:'cascos',
-          tit:(dj.numero!=null?('Dictado nº '+esc(dj.numero)):'Tu último dictado'), sub:'nota revisada',
-          chip: esCorr?'<span class="cv2-chip cor">✎ Corregida</span>':'<span class="cv2-chip ok">✓ Verificada</span>',
-          datos: cv2Nota('Tu nota', esCorr?fmtN(dj.nota_alumno):null, fmtN(dj.nota_final))
-            +(dCom?'<span class="cv2-cita dct-coment">'+esc(dCom)+'</span>':(esCorr?'':'<span class="dct-bien">¡Bien corregido!</span>'))
+          tit:(dj.numero!=null?('Dictado nº '+esc(dj.numero)):'Tu último dictado'), sub:esSolo?'corregido':'nota revisada',
+          chip: esSolo?'':(esCorr?'<span class="cv2-chip cor">✎ Corregida</span>':'<span class="cv2-chip ok">✓ Verificada</span>'),
+          datos: cv2Nota('Tu nota', (esCorr&&!esSolo)?fmtN(dj.nota_alumno):null, fmtN(dj.nota_final))
+            +(dCom?'<span class="cv2-cita dct-coment">'+esc(dCom)+'</span>':((esCorr||esSolo)?'':'<span class="dct-bien">¡Bien corregido!</span>'))
             +((!hayFotos && dj.fotos_caducan)?'<span class="cv2-nota-pie">'+cv2Svg('reloj')+'Las fotos se guardan 7 días</span>':''),
           cuerpo:'',
           sec: o.leido?'':cv2Visto(o.id),   /* (15-oct-2026, tarde, Iago: «cuando es dictado revisado o corregido, que también haya un botón V arriba a la derecha») */
