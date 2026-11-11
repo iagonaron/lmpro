@@ -6,6 +6,7 @@
 #   arriba-dcha = final de esa línea en la última barra del sistema
 #   abajo-dcha = final de la 5.ª línea (la de abajo) del pentagrama de clave de fa
 #   abajo-izq = inicio de esa línea
+# (11-nov-2026) v3: el recorte del alumno es la foto original (color, sin blanquear), solo enderezada y escalada.
 # (11-nov-2026) v2: el alumno conserva sus proporciones (ya no se aplasta a la altura de la solución) y control.json guarda las esquinas.
 # Escribe en SALIDA_DIR: sol-1.png, sol-2.png…, alu-1.jpg, alu-2.jpg…, vista.png (intercalado, para revisar) y control.json
 import sys, json, os
@@ -58,7 +59,7 @@ def control(a, t, b, w):
 def main():
     foto, solp, esq, out = sys.argv[1], sys.argv[2], json.loads(sys.argv[3]), sys.argv[4]
     os.makedirs(out, exist_ok=True)
-    im = cv2.imread(foto, cv2.IMREAD_GRAYSCALE)
+    im = cv2.imread(foto, cv2.IMREAD_COLOR)
     sol = cv2.imread(solp, cv2.IMREAD_GRAYSCALE)
     if im is None or sol is None: print(json.dumps({'error': 'no se pudo leer la foto o la solución'})); sys.exit(2)
     sol = cv2.copyMakeBorder(sol, 0, 0, PAD, PAD, cv2.BORDER_CONSTANT, value=255)
@@ -81,12 +82,14 @@ def main():
         fv = min(max(fv, 0.8), 2.2)
         T, B, Hh = t * fv, b * fv, int(round(h * fv))
         M = cv2.getPerspectiveTransform(qq, np.float32([(x0, T), (x1, T), (x1, B), (x0, B)]))
-        a = limpia(cv2.warpPerspective(im, M, (W, Hh), flags=cv2.INTER_CUBIC, borderValue=255))
-        c = control(a, T, B, W); c['fv'] = round(fv, 3); rep['control'].append(c)
+        # (11-nov-2026, Iago: «prefiero que mantengas la foto original, si no pierdo matices») el recorte va con la foto tal cual,
+        # en color y sin blanquear: solo enderezado y escalado. limpia() se usa solo por dentro, para comprobar las líneas.
+        a = cv2.warpPerspective(im, M, (W, Hh), flags=cv2.INTER_CUBIC, borderMode=cv2.BORDER_REPLICATE)
+        c = control(limpia(cv2.cvtColor(a, cv2.COLOR_BGR2GRAY)), T, B, W); c['fv'] = round(fv, 3); rep['control'].append(c)
         rep.setdefault('esquinas', []).append([[round(float(x), 1) for x in pt] for pt in q])
         cv2.imwrite(os.path.join(out, 'sol-%d.png' % (k + 1)), S)
         cv2.imwrite(os.path.join(out, 'alu-%d.jpg' % (k + 1)), a, [cv2.IMWRITE_JPEG_QUALITY, 82])
-        vista += [S, np.full((8, W), 255, np.uint8), a, np.full((40, W), 160, np.uint8)]   # a puede ser más alto que S
+        vista += [cv2.cvtColor(S, cv2.COLOR_GRAY2BGR), np.full((8, W, 3), 255, np.uint8), a, np.full((40, W, 3), 160, np.uint8)]   # a puede ser más alto que S
     cv2.imwrite(os.path.join(out, 'vista.png'), cv2.resize(np.vstack(vista[:-1]), None, fx=.5, fy=.5, interpolation=cv2.INTER_AREA))
     rep['ok'] = all(c['ok'] for c in rep['control'])
     json.dump(rep, open(os.path.join(out, 'control.json'), 'w'))
