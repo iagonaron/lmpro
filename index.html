@@ -4662,6 +4662,21 @@ function showEnig(kind){
         return cv2Tarjeta({cls:'alu-megusta cv2-info'+(o.leido?'':' no-leido'), id:o.id, col:'azul', ic:'pulgar',
           tit:'A Iago le ha gustado', cuerpo:o.cuerpo?'<div class="alu-item-cuerpo">'+esc(o.cuerpo)+'</div>':'', fecha:_f});
       }
+      /* (11-nov-2026, Iago) Iago dijo que la ficha en papel NO le llegó: en el propio aviso, otra vez «Entregada en clase»
+         (con el aviso del buzón) y «Escríbele a Iago» por si no está de acuerdo (un mensaje, le llega a la campana del Diario) */
+      if(o.payload_json && o.payload_json.papel_no_entregada){
+        var pn=o.payload_json, pnF='Ficha '+(pn.numero!=null?pn.numero:'');
+        var pnHecha=!!(pn.envio_id && pn.parte && parteHecha(pn.envio_id, pn.parte));
+        var pnResp=!!(pn.respuesta_alumno || _papelMsgEnviado[o.id]);
+        return cv2Tarjeta({cls:'alu-papel-no'+(o.leido?'':' no-leido'), id:o.id, col:'rosa', ic:'hoja',
+          tit:esc(pnF).replace(/Ficha (\d+)/g,'Ficha&nbsp;$1')+': todavía no la tengo',
+          cuerpo:'<div class="alu-item-cuerpo">'+esc(o.cuerpo||'')+'</div>',
+          sec: pnResp?'<span class="cv2-chip ok cv2-hecho">✓ Mensaje enviado</span>'
+                     :'<button type="button" class="alu-papel-escribir cv2-btn2 cv2-sobre2" data-papel-escribir="'+esc(o.id)+'">'+cv2Svg('sobre')+'Escríbele a Iago</button>',
+          btn: pnHecha?cv2Hecho('Entregada · por confirmar')
+              :((pn.envio_id&&pn.parte)?'<button type="button" class="alu-papel-reentrega cv2-btn" data-envio="'+esc(pn.envio_id)+'" data-parte="'+esc(pn.parte)+'" data-nid="'+esc(o.id)+'">'+cv2Svg('check')+'Entregada en clase</button>':''),
+          fecha:_f});
+      }
       if(o.payload_json && o.payload_json.papel_corregida){
         var pc=o.payload_json, pcF=(pc.numero!=null)?('Ficha '+pc.numero):'Ficha';
         var pcN=(pc.nota_despues!=null&&isFinite(Number(pc.nota_despues)))?Number(pc.nota_despues).toFixed(2).replace('.',','):'';
@@ -4901,6 +4916,26 @@ function showEnig(kind){
         marcar(b.getAttribute('data-recl-leido'), it);
       });
     });
+    /* (11-nov-2026) aviso «todavía no la tengo»: volver a marcarla entregada (con el aviso del buzón) o escribirle a Iago */
+    Array.prototype.forEach.call(body.querySelectorAll('.alu-papel-reentrega'),function(b){
+      b.addEventListener('click',async function(ev){
+        ev.stopPropagation(); ev.preventDefault();
+        if(window.__VISOR) return;
+        if(!(await avisoBuzonPapel())) return;
+        b.disabled=true; b.textContent='Guardando…';
+        var okR=await marcarParte(b.getAttribute('data-envio'), b.getAttribute('data-parte'));
+        if(!okR){ marcarFallo(b); return; }
+        var itR=b.closest('.alu-item'); if(itR && itR.classList.contains('no-leido')) marcar(b.getAttribute('data-nid'), itR);
+        render(); try{ refrescar(); }catch(e){}
+      });
+    });
+    Array.prototype.forEach.call(body.querySelectorAll('.alu-papel-escribir'),function(b){
+      b.addEventListener('click',function(ev){
+        ev.stopPropagation(); ev.preventDefault();
+        var itE=b.closest('.alu-item'); if(itE && itE.classList.contains('no-leido')) marcar(itE.getAttribute('data-id'), itE);
+        abrirContestar(b.getAttribute('data-papel-escribir'), itE, {rpc:'suite_alumno_papel_mensaje', cab:'Escríbele a Iago', ph:'Cuéntale a Iago lo que pasa con tu ficha…'});
+      });
+    });
     /* (10-oct-2026, Iago) «↩ Contestar a Iago» → ventana para escribirle (no marca leída la tarjeta al tocarlo) */
     Array.prototype.forEach.call(body.querySelectorAll('.alu-recl-contestar'),function(b){
       b.addEventListener('click',function(ev){
@@ -4941,7 +4976,8 @@ function showEnig(kind){
   /* (10-oct-2026, Iago) VENTANA «↩ Contestar a Iago»: el alumno contesta a la respuesta de Iago a su reclamación.
      Una respuesta por cada mensaje de Iago (lo controla la base de datos: suite_alumno_reclamacion_contestar) y le
      llega a la campana del Diario. Esc, ✕ o «Cancelar» cierran; tocar fuera también, si no ha escrito nada. */
-  function abrirContestar(nid, it){
+  var _papelMsgEnviado={};   /* (11-nov-2026) mensajes «Escríbele a Iago» ya enviados en esta sesión */
+  function abrirContestar(nid, it, op){ op=op||{};
     if(!nid) return;
     var visor=!!window.__VISOR;   /* (11-oct-2026) Ojeador del profesor: la misma ventana, pero sin enviar */
     var viejo=document.getElementById('alu-resp-modal'); if(viejo && viejo.parentNode) viejo.parentNode.removeChild(viejo);
@@ -4950,11 +4986,11 @@ function showEnig(kind){
     var m=document.createElement('div'); m.id='alu-resp-modal'; m.className='alu-resp-modal'; try{ cv2CSS(); }catch(eC){}
     m.setAttribute('role','dialog'); m.setAttribute('aria-modal','true'); m.setAttribute('aria-label','Contestar a Iago');
     m.innerHTML='<div class="alu-resp-caja">'
-      +'<div class="alu-resp-cab"><b><span class="cv2-rtile">'+cv2Svg('sobre')+'</span>Contestar a Iago</b><button type="button" class="alu-resp-x" aria-label="Cerrar">&times;</button></div>'
+      +'<div class="alu-resp-cab"><b><span class="cv2-rtile">'+cv2Svg('sobre')+'</span>'+esc(op.cab||'Contestar a Iago')+'</b><button type="button" class="alu-resp-x" aria-label="Cerrar">&times;</button></div>'
       +(visor?'<div class="alu-resp-visor">Ojeador: así lo ve el alumno. Desde aquí no se envía nada.</div>':'')
       +'<div class="alu-resp-cita"><div class="alu-resp-cita-tit">'+esc(titTxt)+'</div>'
       +(msgEl?'<div class="alu-resp-cita-txt">'+esc(msgEl.textContent)+'</div>':'')+'</div>'
-      +'<textarea class="alu-resp-txt" maxlength="1000" placeholder="Escribe aquí tu respuesta…"></textarea>'
+      +'<textarea class="alu-resp-txt" maxlength="1000" placeholder="'+esc(op.ph||'Escribe aquí tu respuesta…')+'"></textarea>'
       +'<div class="alu-resp-pie"><span class="alu-resp-info">Solo puedes contestar una vez a cada mensaje · <span class="alu-resp-n">0</span>/1000</span>'
       +'<span class="alu-resp-btns"><button type="button" class="alu-resp-cancelar">Cancelar</button><button type="button" class="alu-resp-enviar" disabled>'+cv2Svg('sobre')+'Enviar a Iago</button></span></div>'
       +'<div class="alu-resp-estado" aria-live="polite"></div>'
@@ -4972,8 +5008,8 @@ function showEnig(kind){
       var txt=ta.value.trim(); if(!txt||visor) return;
       var id=cuentaId(); if(!id){ st.textContent='Vuelve a entrar en el portal y prueba otra vez.'; return; }
       env.disabled=true; env.textContent='Enviando…';
-      var r=await rpc('suite_alumno_reclamacion_contestar',{p_cuenta_id:id,p_notif_id:nid,p_texto:txt});
-      if(r && r.ok){ cerrarC(); render(); refrescar(); return; }
+      var r=await rpc(op.rpc||'suite_alumno_reclamacion_contestar',{p_cuenta_id:id,p_notif_id:nid,p_texto:txt});
+      if(r && r.ok){ if(op.rpc) _papelMsgEnviado[nid]=true; cerrarC(); render(); refrescar(); return; }
       var er=(r&&r.error)||'';
       env.textContent='Enviar a Iago';
       if(er==='ya_contestada'){ st.textContent='Ya le habías contestado a este mensaje.'; render(); return; }
