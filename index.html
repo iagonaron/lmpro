@@ -4016,6 +4016,7 @@ function showEnig(kind){
       +'<div class="dv-body">'+figs+'</div>'
       +'<div class="dv-tip">↻ gira tu foto · el deslizador (o pellizcar) la amplía y, ampliada, se arrastra · toca una foto sin ampliar para abrirla a tamaño completo en otra pestaña.</div>';
     document.body.appendChild(v);
+    try{ dvRubricaMonta(v,dj); }catch(eRb){}   /* (11-nov-2026) el detalle «con la interfaz»: tu foto a la izquierda; solución, parámetros y nota a la derecha */
     // si un archivo ya fue borrado (limpieza de 7 días), sustituir la imagen
     // rota por una nota amable en su propia tarjeta
     v.querySelectorAll('.dv-img img').forEach(function(im){
@@ -4035,6 +4036,83 @@ function showEnig(kind){
     v.addEventListener('click',function(e){ if(e.target===v) cierra(); });
     // captura: que el Escape cierre SOLO el visor (no también la campana de detrás)
     document.addEventListener('keydown',onEsc,true);
+  }
+  /* (11-nov-2026, Iago) «cuando despliegan para ver detalle, vean toda la info… una versión visualmente parecida a esta interfaz, en la que
+     se ven las barras deslizadoras… y aquellas que he modificado yo, que aparezcan indicadas, y si no, como estaban ellos». Solo se mira (no se
+     toca nada). Lo trae el aviso en dj.rubrica = {ahora:{arm,comp,rit,ent,ck:{clave,armadura,compas,doble},cal,alt,otro,otroTxt}, alumno:{…}|null}
+     (alumno = lo que marcaste tú, solo si tu profesor cambió algo). Sin dj.rubrica el visor queda como estaba. */
+  function dvRubricaMonta(v,dj){
+    var rb=dj && dj.rubrica; if(!rb || !rb.ahora || typeof rb.ahora!=='object') return;
+    var body=v.querySelector('.dv-body'); if(!body) return;
+    var A=rb.ahora, B=(rb.alumno && typeof rb.alumno==='object')?rb.alumno:null;
+    var num=function(x){ return isFinite(+x)?+x:0; };
+    var dos=function(x){ return (Math.round(num(x)*100)/100).toFixed(2).replace('.',','); };
+    var nota=function(x){ if(x==null || !isFinite(+x)) return '—'; var t=(+x).toFixed(2).replace(/\.?0+$/,'').replace('.',','); return t===''?'0':t; };
+    var menos=function(x){ return num(x)>0?('−'+dos(x)):'0'; };
+    var OK='<svg viewBox="0 0 24 24"><path d="M5 12l5 5 9-10"/></svg>', NO='<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+    var PF='<i class="rb-pf">profesor</i>', TU='<i class="rb-tu">tú</i>';
+    var cam=function(k){ return !!B && B[k]!=null && num(B[k])!==num(A[k]); };
+    var hayCam=false;
+    var par=function(k,lab){ var c=cam(k), si=(num(A[k])===1); if(c) hayCam=true;
+      return '<div><div class="rb-lab">'+lab+'</div><div class="rb-q">'
+        +'<span class="si'+(si?' on':'')+((c&&si)?' cam':'')+'">'+OK+(c?(si?PF:TU):'')+'</span>'
+        +'<span class="no'+(!si?' on':'')+((c&&!si)?' cam':'')+'">'+NO+(c?(!si?PF:TU):'')+'</span></div></div>'; };
+    var CK=[['clave','Clave',0.5],['armadura','Armadura',0.25],['compas','Compás',0.25],['doble','Doble<br>barra',0.25]];
+    var ckA=A.ck||{}, ckB=B?(B.ck||{}):null, ckP=0;
+    var ck=CK.map(function(c){ var on=!!ckA[c[0]], ch=!!ckB && (!!ckB[c[0]])!==on; if(!on) ckP+=c[2]; if(ch) hayCam=true;
+      return '<span class="ck'+(on?' on':'')+(ch?' cam':'')+'">'+(on?OK:'')+'<small>'+c[1]+'</small>'+(ch?PF:'')+'</span>'; }).join('');
+    var tira=function(k,lab,cls,color){ var c=cam(k), a=Math.max(0,Math.min(100,num(A[k]))), b=c?Math.max(0,Math.min(100,num(B[k]))):0; if(c) hayCam=true;
+      return '<div class="rb-card rb-tira'+(c?' cam':'')+'"><div class="rb-lab '+cls+'">'+lab+'<span class="rb-pts">'+dos(a*0.04)+' / 4</span></div>'
+        +'<div class="rb-sl"><div class="tr"></div><div class="fi" style="width:'+a+'%;background:'+color+'"></div>'
+        +(c?'<div class="ma" style="left:'+b+'%"><i>tú · '+b+' %</i></div>':'')+'<div class="th" style="left:'+a+'%"></div></div>'
+        +'<div class="rb-val">'+a+' %'+(c?PF:'')+'</div></div>'; };
+    var RE=[['cal','Caligrafía y limpieza'],['alt','Alteraciones accidentales'],['otro','Otro']], reT=0;
+    var re=RE.map(function(r){ var c=cam(r[0]), a=Math.max(0,Math.min(1,num(A[r[0]]))); reT+=num(A[r[0]]); if(c) hayCam=true;
+      var txt=(r[0]==='otro' && A.otroTxt && String(A.otroTxt).trim())?(' · '+esc(String(A.otroTxt).trim())):'';
+      return '<div class="rb-rf'+(c?' cam':'')+'"><span class="rb-rn">'+r[1]+txt+'</span><div class="rb-sl rv"><div class="tr"></div><div class="fi" style="width:'+(a*100)+'%"></div><div class="th" style="left:'+(100-a*100)+'%"></div></div>'
+        +'<span class="rb-rv">'+menos(A[r[0]])+(c?PF:'')+'</span>'+(c?('<span class="rb-rt">tú habías puesto: '+menos(B[r[0]])+'</span>'):'')+'</div>'; }).join('');
+    var com=(dj.comentario && String(dj.comentario).trim())?String(dj.comentario).trim():'';
+    var cambia=(dj.nota_alumno!=null && !dj.solo_foto && String(dj.nota_alumno)!==String(dj.nota_final));
+    var html='<div class="rb-card rb-c1"><div class="rb-ac">'+par('arm','ARMADURA')+par('comp','COMPÁS')+'</div>'
+        +'<div><div class="rb-lab">CHECKLIST<span class="rb-pts">'+menos(ckP)+'</span></div><div class="rb-q k">'+ck+'</div></div></div>'
+      +tira('rit','RITMO','rit','#22c55e')+tira('ent','ENTONACIÓN','ent','#3b82f6')
+      +'<div class="rb-card rb-rs"><div class="rb-lab res">RESTAR<span class="rb-pts">'+menos(reT)+'</span></div><div class="rb-rsl">'+re+'</div></div>';
+    var pie='<div class="rb-pie"><div class="rb-card rb-com">'
+        +(com?('<span class="rb-et">Comentario de tu profesor</span><span class="rb-cita">«'+esc(com)+'»</span>')
+             :(hayCam?'<span class="rb-et">Tu profesor ha revisado tu corrección</span><span class="rb-txt">Ha cambiado lo que ves marcado en naranja.</span>'
+                     :(B||!dj.solo_foto?'<span class="rb-et rb-ok">'+OK+'Verificada</span><span class="rb-txt">Tu profesor ha dado por buena tu corrección.</span>'
+                                       :'<span class="rb-et">Corregido por tu profesor</span><span class="rb-txt">Así ha puntuado tu dictado.</span>')))
+        +(hayCam?'<span class="rb-ley"><b></b>en naranja, lo que ha cambiado tu profesor · «tú», donde lo habías puesto</span>':'')+'</div>'
+      +'<div class="rb-card rb-nota"><span class="rb-et">Tu nota</span>'+(cambia?('<s>'+esc(nota(dj.nota_alumno))+'</s><i>→</i>'):'')+'<b class="'+((+dj.nota_final>=5)?'ok':'mal')+'">'+esc(nota(dj.nota_final))+'</b></div></div>';
+    var mia=body.querySelector('figure.dv-mia');
+    var der=document.createElement('div'); der.className='dv-der';
+    Array.prototype.slice.call(body.children).forEach(function(ch){ if(ch!==mia) der.appendChild(ch); });
+    der.insertAdjacentHTML('beforeend', html+pie);
+    body.appendChild(der); body.classList.add('dv-c2'); if(!mia) body.classList.add('dv-sin-mia');
+    var tip=v.querySelector('.dv-tip');   /* la ayuda de la foto, debajo de la foto (deja toda la altura a la columna de la derecha) */
+    if(mia){ var izq=document.createElement('div'); izq.className='dv-izq'; body.insertBefore(izq,mia); izq.appendChild(mia); if(tip) izq.appendChild(tip); }
+    else if(tip){ tip.remove(); }
+    var res=v.querySelector('.dv-cambios'); if(res) res.remove();
+    var sub=v.querySelector('.dv-tit .dv-sub'); if(sub) sub.textContent=' · tu foto, la solución y tu corrección';
+    /* (11-nov-2026, Iago) «intercalado, con la columna de parámetros a la derecha»: si hay recortes (los deja la tarea de los martes),
+       a la izquierda la solución y tu dictado sistema a sistema; tu foto entera sigue a un toque */
+    var caduca=!!(dj.fotos_caducan && (Date.parse(dj.fotos_caducan)||0)<=Date.now());
+    var raiz=String(dj.foto_alumno||'').split('/storage/')[0];
+    if(!caduca && mia && raiz && dj.dictado_id!=null){
+      var bs=raiz+'/storage/v1/object/public/fotos-dictados/recortes/'+encodeURIComponent(dj.dictado_id)+'/';
+      fetch(bs+'indice.json?t='+Date.now(),{cache:'no-store'}).then(function(r){ return r.ok?r.json():null; }).then(function(j){
+        if(!j || !j.sistemas || !j.sistemas.length || !document.body.contains(v)) return;
+        var h='<figure class="dv-sis"><figcaption><span class="dv-cap">'+cv2Svg('check')+'La solución y tu dictado<span class="dv-sub"> · sistema a sistema</span></span>'
+          +'<button type="button" class="dv-vfoto">Tu foto entera</button></figcaption><div class="dv-sisc">';
+        j.sistemas.forEach(function(s,i){ h+=(i?'<div class="dv-sep"></div>':'')+'<div class="dv-sb">SOLUCIÓN · sistema '+(i+1)+'</div><img alt="" src="'+esc(bs+s.sol)+'">'
+          +'<div class="dv-sb tu">TU DICTADO · sistema '+(i+1)+'</div><img alt="" src="'+esc(bs+s.alu+'?v='+(j.v||1))+'">'; });
+        h+='</div></figure>';
+        var izq=body.querySelector('.dv-izq'); if(!izq) return;
+        izq.insertAdjacentHTML('afterbegin',h); izq.classList.add('con-sis');
+        Array.prototype.forEach.call(der.querySelectorAll('figure'),function(f){ f.classList.add('dv-sol-oculta'); });
+        izq.querySelector('.dv-vfoto').addEventListener('click',function(){ var o=izq.classList.toggle('ver-foto'); this.textContent=o?'Sistema a sistema':'Tu foto entera'; });
+      }).catch(function(){});
+    }
   }
   function modalEl(){
     var m=document.getElementById('alu-modal'); if(m) return m;
@@ -4503,16 +4581,17 @@ function showEnig(kind){
         var fotosCaducadas=!!(dj.fotos_caducan && (Date.parse(dj.fotos_caducan)||0)<=Date.now());
         var hayFotos=!fotosCaducadas && !!(dj.foto_alumno || (dj.fotos_solucion && dj.fotos_solucion.length));
         var dCom=((esCorr||esSolo) && dj.comentario && String(dj.comentario).trim())?String(dj.comentario).trim():'';
-        return cv2Tarjeta({cls:'dictado cv2-info'+(o.leido?'':' no-leido')+((hayFotos || (dj.cambios && dj.cambios.length))?' dct-det':''), id:o.id, col:'naranja', ic:'cascos',   /* dct-det (10-nov-2026, Iago: «me resulta raro lo de leer un mensaje completo… cuando le pulsas ver dictado y solución ya estás viendo todo»): con botón de detalle no sale «Leer mensaje completo» */
+        return cv2Tarjeta({cls:'dictado cv2-info'+(o.leido?'':' no-leido')+((hayFotos || dj.rubrica || (dj.cambios && dj.cambios.length))?' dct-det':''), id:o.id, col:'naranja', ic:'cascos',   /* dct-det (10-nov-2026, Iago: «me resulta raro lo de leer un mensaje completo… cuando le pulsas ver dictado y solución ya estás viendo todo»): con botón de detalle no sale «Leer mensaje completo» */
           tit:(dj.numero!=null?('Dictado nº '+esc(dj.numero)):'Tu último dictado'), sub:esSolo?'corregido':'nota revisada',
           chip: esSolo?'':(esCorr?'<span class="cv2-chip cor">✎ Corregida</span>':'<span class="cv2-chip ok">✓ Verificada</span>'),
           datos: cv2Nota('Tu nota', (esCorr&&!esSolo)?fmtN(dj.nota_alumno):null, fmtN(dj.nota_final))
-            +((dj.cambios && dj.cambios.length)?'<span class="cv2-nota-pie dct-ncam">'+dj.cambios.length+(dj.cambios.length===1?' cambio de tu profesor':' cambios de tu profesor')+'</span>':'')
-            +(dCom?'<span class="cv2-cita dct-coment">'+esc(dCom)+'</span>':((esCorr||esSolo)?'':'<span class="dct-bien">¡Bien corregido!</span>'))
+            /* (11-nov-2026, Iago) «al estar comprimido, que simplemente ponga la actualización de la nota o la verificación, sin poner cambios ni nada…
+               para fomentar el ver detalle»: con botón de detalle, ni número de cambios ni comentario ni «¡Bien corregido!» (todo eso va dentro) */
+            +((hayFotos || dj.rubrica || (dj.cambios && dj.cambios.length))?'':(dCom?'<span class="cv2-cita dct-coment">'+esc(dCom)+'</span>':((esCorr||esSolo)?'':'<span class="dct-bien">¡Bien corregido!</span>')))
             +((!hayFotos && dj.fotos_caducan)?'<span class="cv2-nota-pie">'+cv2Svg('reloj')+'Las fotos se guardan 7 días</span>':''),
           cuerpo:'',
           sec: o.leido?'':cv2Visto(o.id),   /* (15-oct-2026, tarde, Iago: «cuando es dictado revisado o corregido, que también haya un botón V arriba a la derecha») */
-          btn: (hayFotos || (dj.cambios && dj.cambios.length))?'<button class="alu-dictado-ver cv2-btn" data-id-notif="'+esc(o.id)+'">'+cv2Svg('ojo')+(hayFotos?'Ver dictado y solución':'Ver detalle')+'</button>':'',
+          btn: (hayFotos || dj.rubrica || (dj.cambios && dj.cambios.length))?'<button class="alu-dictado-ver cv2-btn" data-id-notif="'+esc(o.id)+'">'+cv2Svg('ojo')+'Ver detalle</button>':'',
           fecha:_f});
       }
       // ---------- @RECO · RECOMENDADO PARA TI (17-sep-2026): el color de su apartado y las apps enlazadas dentro del texto
@@ -5043,6 +5122,74 @@ function showEnig(kind){
       '.dictado-visor .dv-cam-lista{flex:1 1 300px}.dictado-visor .dv-cam-li{font-size:14px;font-weight:600;line-height:1.35;padding-left:14px;position:relative}'+
       '.dictado-visor .dv-cam-li::before{content:"";position:absolute;left:1px;top:.55em;width:6px;height:6px;border-radius:2px;background:#ea580c}'+
       '.dictado-visor .dv-cam-com{flex:1 1 240px}.dictado-visor .dv-cam-cita{font-size:14px;font-style:italic;line-height:1.35}'+
+      /* (11-nov-2026) el detalle «con la interfaz» (dvRubricaMonta): foto a la izquierda; solución, parámetros, comentario y nota a la derecha */
+      '.dictado-visor .dv-body.dv-c2{grid-template-columns:minmax(0,1fr) 540px;max-width:1260px;gap:12px;align-items:start;padding-bottom:14px}'+
+      '.dictado-visor .dv-body.dv-c2.dv-sin-mia{grid-template-columns:minmax(0,600px);justify-content:center}'+
+      '.dictado-visor .dv-der{display:flex;flex-direction:column;gap:8px;min-width:0}'+
+      '.dictado-visor .dv-der figure .dv-img img{max-height:180px}'+
+      '.dictado-visor .dv-izq{min-width:0}.dictado-visor .dv-izq .dv-tip{padding:9px 6px 0;text-align:left}'+
+      '.dictado-visor .rb-card{background:rgba(6,10,18,.72);border:1.5px solid rgba(255,255,255,.16);border-radius:14px;color:#fff;box-sizing:border-box;min-width:0}'+
+      '.dictado-visor .rb-card.cam,.dictado-visor .rb-rs3>div.cam{border-color:#ea580c}'+
+      '.dictado-visor .rb-lab{font-size:12px;font-weight:900;letter-spacing:.06em;display:flex;align-items:center;gap:8px;color:#fff}'+
+      '.dictado-visor .rb-pts{margin-left:auto;font-weight:800;color:#cbd5e1;letter-spacing:0;font-size:12px}'+
+      '.dictado-visor .rb-lab.rit{color:#4ade80}.dictado-visor .rb-lab.ent{color:#60a5fa}.dictado-visor .rb-lab.res{color:#f87171}'+
+      '.dictado-visor .rb-c1{display:grid;grid-template-columns:1fr 1fr;padding:9px 12px 13px}'+
+      '.dictado-visor .rb-c1>div{display:flex;flex-direction:column;gap:7px;min-width:0}'+
+      '.dictado-visor .rb-c1>div+div{border-left:1.5px solid rgba(255,255,255,.14);padding-left:12px;margin-left:12px}'+
+      '.dictado-visor .rb-ac{display:grid!important;grid-template-columns:1fr 1fr;gap:10px}.dictado-visor .rb-ac .rb-lab{margin-bottom:7px}'+
+      '.dictado-visor .rb-q{display:flex;gap:6px}'+
+      '.dictado-visor .rb-q span{width:48px;height:48px;flex:none;border-radius:11px;border:1.5px solid rgba(255,255,255,.28);display:flex;flex-direction:column;align-items:center;justify-content:center;color:#94a3b8;position:relative;line-height:1.05;text-align:center;box-sizing:border-box}'+
+      '.dictado-visor .rb-q span small{font-size:9.5px;font-weight:800;letter-spacing:-.01em}'+
+      '.dictado-visor .rb-q svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}'+
+      '.dictado-visor .rb-q .ck svg{width:15px;height:15px;margin-bottom:2px}'+
+      '.dictado-visor .rb-q .si.on,.dictado-visor .rb-q .ck.on{background:#16a34a;border-color:#16a34a;color:#fff}.dictado-visor .rb-q .no.on{background:#dc2626;border-color:#dc2626;color:#fff}'+
+      '.dictado-visor .rb-q span.cam{outline:2px solid #ea580c;outline-offset:2px}'+
+      '.dictado-visor .rb-pf,.dictado-visor .rb-tu{font-style:normal;font-size:9px;font-weight:900;border-radius:5px;padding:1px 4px;letter-spacing:.02em;line-height:1.2;white-space:nowrap}'+
+      '.dictado-visor .rb-pf{background:#ea580c;color:#fff}.dictado-visor .rb-tu{background:#fff;color:#0b1020}'+
+      '.dictado-visor .rb-q .rb-pf,.dictado-visor .rb-q .rb-tu{position:absolute;left:50%;bottom:-8px;transform:translateX(-50%)}'+
+      '.dictado-visor .rb-tira{padding:9px 14px;display:grid;grid-template-columns:118px 1fr 78px;gap:12px;align-items:center}'+
+      '.dictado-visor .rb-tira .rb-lab{flex-direction:column;align-items:flex-start;gap:2px}.dictado-visor .rb-tira .rb-pts{margin:0}'+
+      '.dictado-visor .rb-val{font-size:21px;font-weight:900;text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:3px;line-height:1}'+
+      '.dictado-visor .rb-sl{position:relative;height:30px}'+
+      '.dictado-visor .rb-sl .tr{position:absolute;left:0;right:0;top:11px;height:8px;border-radius:5px;background:rgba(255,255,255,.14)}'+
+      '.dictado-visor .rb-sl .fi{position:absolute;left:0;top:11px;height:8px;border-radius:5px}'+
+      '.dictado-visor .rb-sl .th{position:absolute;top:4px;width:22px;height:22px;border-radius:7px;background:#fff;transform:translateX(-50%);box-shadow:0 1px 4px rgba(0,0,0,.5)}'+
+      '.dictado-visor .rb-sl .ma{position:absolute;top:1px;height:28px;width:0;border-left:2px dashed #fff;transform:translateX(-1px);opacity:.9}'+
+      '.dictado-visor .rb-sl .ma i{position:absolute;left:50%;top:26px;transform:translateX(-50%);font-style:normal;background:#fff;color:#0b1020;font-size:9px;font-weight:900;border-radius:5px;padding:1px 4px;white-space:nowrap}'+
+      '.dictado-visor .rb-tira.cam{padding-bottom:17px}'+
+      '.dictado-visor .rb-sl.rv .fi{left:auto;right:0;background:#dc2626}'+
+      '.dictado-visor .rb-rs{padding:9px 14px;display:flex;flex-direction:column;gap:6px}'+
+      '.dictado-visor .rb-rs3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;align-items:start}'+
+      '.dictado-visor .rb-rs3>div{display:grid;grid-template-columns:1fr auto;gap:1px 8px;align-items:center;font-size:12px;font-weight:700;border:1.5px solid transparent;border-radius:10px;padding:3px 6px;margin:-3px -6px;min-width:0}'+
+      '.dictado-visor .rb-rn,.dictado-visor .rb-rt{grid-column:1/-1}.dictado-visor .rb-rv{font-weight:900;font-size:14px;text-align:right;min-width:38px}'+
+      '.dictado-visor .rb-rt{font-size:10.5px;color:#cbd5e1;display:flex;align-items:center;gap:5px}'+
+      '.dictado-visor .rb-pie{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:stretch}'+
+      '.dictado-visor .rb-com{padding:10px 14px;display:flex;flex-direction:column;gap:4px;justify-content:center;border-color:rgba(234,88,12,.7)}'+
+      '.dictado-visor .rb-et{font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#94a3b8;display:flex;align-items:center;gap:6px}'+
+      '.dictado-visor .rb-et.rb-ok{color:#4ade80}.dictado-visor .rb-et svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}'+
+      '.dictado-visor .rb-cita{font-size:14.5px;font-style:italic;line-height:1.35}.dictado-visor .rb-txt{font-size:14px;font-weight:600;line-height:1.35}'+
+      '.dictado-visor .rb-ley{font-size:10.5px;color:#94a3b8;display:flex;align-items:center;gap:6px;margin-top:3px}.dictado-visor .rb-ley b{flex:none;width:9px;height:9px;border-radius:3px;border:2px solid #ea580c}'+
+      '.dictado-visor .rb-nota{padding:8px 16px;display:flex;align-items:center;gap:10px;border-color:#ea580c}'+
+      '.dictado-visor .rb-nota s{color:#94a3b8;font-size:17px;font-weight:700}.dictado-visor .rb-nota i{font-style:normal;color:#94a3b8}'+
+      '.dictado-visor .rb-nota b{font-size:42px;font-weight:900;line-height:1}.dictado-visor .rb-nota b.ok{color:#4ade80}.dictado-visor .rb-nota b.mal{color:#f87171}'+
+      '.dictado-visor .rb-rsl{display:flex;flex-direction:column;gap:6px}'+
+      '.dictado-visor .rb-rf{display:grid;grid-template-columns:150px 1fr 78px;gap:2px 12px;align-items:center;border:1.5px solid transparent;border-radius:10px;padding:3px 6px;margin:0 -6px}'+
+      '.dictado-visor .rb-rn{color:#fff;font-size:13.5px;font-weight:700;line-height:1.2}'+
+      '.dictado-visor .rb-rv{font-weight:900;font-size:18px;text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:3px;line-height:1}'+
+      '.dictado-visor .rb-rf .rb-rt{grid-column:2/3;font-size:10.5px;color:#cbd5e1}.dictado-visor .rb-rf .rb-rn{grid-column:auto}'+
+      '.dictado-visor .rb-tira{grid-template-columns:150px 1fr 78px}'+
+      '.dictado-visor .dv-izq{display:flex;flex-direction:column;gap:10px}'+
+      '.dictado-visor .dv-izq.con-sis>figure.dv-mia,.dictado-visor .dv-izq.con-sis>.dv-tip{display:none}'+
+      '.dictado-visor .dv-izq.con-sis.ver-foto>figure.dv-mia{display:flex}.dictado-visor .dv-izq.con-sis.ver-foto>figure.dv-sis{display:none}'+
+      '.dictado-visor figure.dv-sis{background:#fff;border-color:rgba(234,88,12,.7)}.dictado-visor figure.dv-sis figcaption{background:#0d1626}'+
+      '.dictado-visor .dv-vfoto{flex:none;height:30px;padding:0 10px;border-radius:8px;border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.06);color:#fff;font:700 12px system-ui,sans-serif;cursor:pointer}'+
+      '.dictado-visor .dv-sisc{padding:10px 12px 12px;background:#fff}.dictado-visor .dv-sisc img{display:block;width:100%;height:auto;margin:0 0 4px}'+
+      '.dictado-visor .dv-sb{font:800 11px system-ui,sans-serif;letter-spacing:.05em;color:#0b1020;margin:2px 0}.dictado-visor .dv-sb.tu{color:#c2410c}'+
+      '.dictado-visor .rb-rf.cam{border-color:#ea580c}.dictado-visor .dv-sep{height:14px}.dictado-visor .dv-der figure.dv-sol-oculta{display:none}'+
+      '@media (max-width:900px){.dictado-visor .rb-rf,.dictado-visor .rb-tira{grid-template-columns:96px 1fr 64px}.dictado-visor .dv-izq{order:0}}'+
+      '@media (max-width:900px){.dictado-visor .dv-body.dv-c2{grid-template-columns:minmax(0,1fr)}.dictado-visor .dv-der{display:contents}.dictado-visor .rb-pie{order:-1;grid-template-columns:1fr}.dictado-visor .rb-nota{order:-1;justify-content:center;padding:10px 16px}.dictado-visor .rb-rs3{grid-template-columns:1fr}.dictado-visor .rb-nota b{font-size:40px}}'+
+      '@media (max-width:560px){.dictado-visor .dv-tit .dv-sub{display:none}}'+
+      '@media (max-width:420px){.dictado-visor .rb-c1{grid-template-columns:1fr}.dictado-visor .rb-c1>div+div{border-left:0;padding-left:0;margin-left:0;border-top:1.5px solid rgba(255,255,255,.14);padding-top:10px;margin-top:12px}.dictado-visor .rb-tira{grid-template-columns:96px 1fr 62px;gap:8px}}'+
       /* (7-oct-2026, Iago) girar y ampliar las fotos del visor, como en el panel del profesor */
       '.dictado-visor figcaption{justify-content:space-between}'+
       '.dictado-visor .dv-cap{min-width:0}'+
