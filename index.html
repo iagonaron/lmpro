@@ -2580,6 +2580,8 @@ function showEnig(kind){
       /* (11-nov-2026) «?» del «Me gusta»: discreto, arriba a la derecha */
       C+'.alu-mg-info{margin-left:auto;flex:0 0 auto;width:22px;height:22px;padding:0;border-radius:6px;border:1px solid rgba(147,197,253,.45);background:transparent;color:#93c5fd;font:800 13px/20px \'Helvetica Neue\',Arial,sans-serif;cursor:pointer;opacity:.75}',
       C+'.alu-mg-info:hover{opacity:1;border-color:#93c5fd}',
+      C+'.alu-mg-info.con-texto{width:auto;display:inline-flex;align-items:center;gap:7px;padding:0 3px 0 9px;opacity:.95;font-weight:700;font-size:12.5px}',
+      C+'.alu-mg-info.con-texto .alu-mg-info-q{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:4px;background:rgba(147,197,253,.18);font-weight:800}',
       /* (11-nov-2026, Iago: «que aparezca en verde ese texto, no en gris») aunque toda la tarjeta de tareas esté hecha: el gris va en cada pieza, no en la tarjeta */
       P+'.hecha:has(.ts-papel-ok){filter:none!important;opacity:.8!important}',
       P+'.hecha:has(.ts-papel-ok) *:not(.ts-papel-ok):not(:has(.ts-papel-ok)){filter:grayscale(1)}',
@@ -4679,13 +4681,16 @@ function showEnig(kind){
         if(!window.__lmMgInfo){ window.__lmMgInfo=1;
           document.addEventListener('click',function(e){ var q=e.target.closest && e.target.closest('.alu-mg-info'); if(!q) return;
             e.preventDefault(); e.stopPropagation();
+            /* la primera vez que lo pulsa, el «?» deja de llevar el texto (en este dispositivo; en el visor de Iago no cuenta) */
+            if(!window.__VISOR){ try{ localStorage.setItem('lm_mg_info_visto','1'); }catch(er){}
+              Array.prototype.forEach.call(document.querySelectorAll('.alu-mg-info.con-texto'),function(x){ x.classList.remove('con-texto'); x.innerHTML='?'; }); }
             var ov=document.createElement('div');
             ov.style.cssText='position:fixed;inset:0;z-index:100050;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(5,9,16,.62)';
             ov.innerHTML='<div role="dialog" aria-modal="true" style="max-width:420px;width:100%;box-sizing:border-box;padding:20px 20px 16px;border-radius:14px;'+
               'background:rgba(11,19,32,.96);border:1.5px solid #3b82f6;color:#e8eef5;font:500 15px/1.5 \'Helvetica Neue\',Arial,sans-serif;box-shadow:0 18px 50px rgba(0,0,0,.5)">'+
               '<div style="font-weight:800;font-size:16px;margin-bottom:8px">¿Qué es este «Me gusta»?</div>'+
               '<div style="opacity:.9">Las tareas y retos de cada semana son obligatorios, pero el resto del portal es tuyo: aprovéchalo como y cuando quieras.</div>'+
-              '<div style="opacity:.9;margin-top:8px">Iago no pretende evaluar cada ejercicio ni los resultados que sacas en lo que haces por libre: eso es a mayores y forma parte de tu libertad. Lo que sí puede ver es qué área has querido trabajar y cuánto tiempo le has dedicado.</div>'+
+              '<div style="opacity:.9;margin-top:8px">Iago no ve ni pretende evaluar cada ejercicio ni los resultados que sacas en lo que haces por libre: eso es a mayores y forma parte de tu libertad. Lo que sí puede ver es qué área has querido trabajar y cuánto tiempo le has dedicado.</div>'+
               '<div style="opacity:.9;margin-top:8px">Este «Me gusta» es su forma de decirte que valora que trabajes por tu cuenta, más allá de la clase.</div>'+
               '<div style="display:flex;justify-content:flex-end;margin-top:16px"><button type="button" data-r="1" style="cursor:pointer;padding:9px 16px;border-radius:8px;border:0;background:#3b82f6;color:#fff;font-weight:800;font-size:14px">Entendido</button></div></div>';
             ov.addEventListener('click',function(ev){ ev.stopPropagation(); if(ev.target===ov || (ev.target.closest && ev.target.closest('[data-r]'))) ov.remove(); });
@@ -4693,7 +4698,9 @@ function showEnig(kind){
           },true);
         }
         return cv2Tarjeta({cls:'alu-megusta cv2-info'+(o.leido?'':' no-leido'), id:o.id, col:'azul', ic:'pulgar',
-          tit:'A Iago le ha gustado', chip:'<button type="button" class="alu-mg-info" title="¿Qué es este «Me gusta»?" aria-label="¿Qué es este «Me gusta»?">?</button>',
+          tit:'A Iago le ha gustado', chip:(function(){ var v=false; try{ v=localStorage.getItem('lm_mg_info_visto')==='1'; }catch(er){}
+            /* (11-nov-2026, Iago) hasta que lo pulse por primera vez: «¿Qué es este «Me gusta»? ?»; después, solo «?» */
+            return '<button type="button" class="alu-mg-info'+(v?'':' con-texto')+'" title="¿Qué es este «Me gusta»?" aria-label="¿Qué es este «Me gusta»?">'+(v?'?':'<span class="alu-mg-info-t">¿Qué es este «Me gusta»?</span><span class="alu-mg-info-q">?</span>')+'</button>'; })(),
           cuerpo:o.cuerpo?'<div class="alu-item-cuerpo">'+esc(o.cuerpo)+'</div>':'', fecha:_f});
       }
       /* (11-nov-2026, Iago) Iago dijo que la ficha en papel NO le llegó: en el propio aviso, otra vez «Entregada en clase»
