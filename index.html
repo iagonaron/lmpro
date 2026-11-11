@@ -3523,6 +3523,25 @@ function showEnig(kind){
     }
     return ok;
   }
+  /* (11-nov-2026, Iago) «que aparezca una ventana emergente avisando que solo debe pulsar Entregada cuando ya está en el
+     buzón de la mesa de Iago… de la forma más simple, breve; que ponga Sí, ya la entregué» */
+  function avisoBuzonPapel(){
+    return new Promise(function(res){
+      var ov=document.createElement('div');
+      ov.style.cssText='position:fixed;inset:0;z-index:100050;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(5,9,16,.62)';
+      ov.innerHTML='<div role="dialog" aria-modal="true" style="max-width:380px;width:100%;box-sizing:border-box;padding:20px 20px 16px;border-radius:14px;'+
+        'background:rgba(11,19,32,.96);border:1.5px solid #db2777;color:#e8eef5;font:500 15px/1.45 \'Helvetica Neue\',Arial,sans-serif;box-shadow:0 18px 50px rgba(0,0,0,.5)">'+
+        '<div style="font-weight:800;font-size:16px;margin-bottom:6px">¿Ya está en el buzón?</div>'+
+        '<div style="opacity:.88">Pulsa «Entregada» solo cuando tu ficha ya esté en el buzón de la mesa de Iago. Él comprobará que la ha recibido.</div>'+
+        '<div style="display:flex;gap:8px;justify-content:flex-end;margin-top:16px;flex-wrap:wrap">'+
+        '<button type="button" data-r="0" style="cursor:pointer;padding:9px 14px;border-radius:8px;border:1px solid rgba(255,255,255,.22);background:transparent;color:#e8eef5;font-weight:700;font-size:14px">Todavía no</button>'+
+        '<button type="button" data-r="1" style="cursor:pointer;padding:9px 14px;border-radius:8px;border:0;background:#db2777;color:#fff;font-weight:800;font-size:14px">Sí, ya la entregué</button>'+
+        '</div></div>';
+      function fin(v){ try{ ov.remove(); }catch(e){} res(v); }
+      ov.addEventListener('click',function(e){ e.stopPropagation(); var t=e.target.closest('[data-r]'); if(t) fin(t.getAttribute('data-r')==='1'); else if(e.target===ov) fin(false); });
+      document.body.appendChild(ov);
+    });
+  }
   function marcarFallo(b){
     try{ b.disabled=false;
       if(b.classList.contains('cv2-cuad')){ b.classList.remove('cv2-guardando'); b.classList.add('cv2-fallo'); b.setAttribute('data-tip','No se guardó · pulsa otra vez'); }
@@ -4761,6 +4780,8 @@ function showEnig(kind){
     Array.prototype.forEach.call(body.querySelectorAll('.ts-marcar:not(.ts-lec-todas)'),function(b){
       b.addEventListener('click',async function(ev){
         ev.stopPropagation();
+        /* (11-nov-2026, Iago) ficha en PAPEL: antes de marcarla, recordar que solo se pulsa cuando ya está en el buzón */
+        if(b.closest('.ts-papel') && !(await avisoBuzonPapel())) return;
         b.disabled=true; if(b.classList.contains('cv2-cuad')) b.classList.add('cv2-guardando'); else b.textContent='Guardando…';
         var okM=await marcarParte(b.getAttribute('data-envio'), b.getAttribute('data-parte'));
         if(!okM){ marcarFallo(b); return; }
