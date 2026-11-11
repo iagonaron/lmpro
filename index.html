@@ -2577,6 +2577,10 @@ function showEnig(kind){
       C+'.ts-parte.cv2-parte.ts-hecha{filter:grayscale(1)!important;opacity:.5!important}',
       /* (11-nov-2026) la fila de la ficha en papel con su línea ámbar/verde: crece lo justo, y si está hecha, el gris va en sus piezas (no en la línea) */
       C+'.ts-parte.cv2-parte.ts-con-nota{height:auto!important;min-height:64px;padding-bottom:4px!important}',
+      /* (11-nov-2026, Iago: «que aparezca en verde ese texto, no en gris») aunque toda la tarjeta de tareas esté hecha: el gris va en cada pieza, no en la tarjeta */
+      P+'.hecha:has(.ts-papel-ok){filter:none!important;opacity:.8!important}',
+      P+'.hecha:has(.ts-papel-ok) *:not(.ts-papel-ok):not(:has(.ts-papel-ok)){filter:grayscale(1)}',
+      P+'.hecha:has(.ts-papel-ok) .ts-papel-ok{color:#86efac!important}',
       C+'.ts-parte.cv2-parte.ts-hecha.ts-con-nota{filter:none!important;opacity:1!important}',
       C+'.ts-parte.cv2-parte.ts-hecha.ts-con-nota .cv2-mini,'+C+'.ts-parte.cv2-parte.ts-hecha.ts-con-nota .cv2-pt,'+C+'.ts-parte.cv2-parte.ts-hecha.ts-con-nota .cv2-pder{filter:grayscale(1);opacity:.55}',
       '#alu-body .cv2.hecha .ts-parte.cv2-parte.ts-hecha{opacity:1!important}',
@@ -4579,9 +4583,10 @@ function showEnig(kind){
                Si Iago dice que no la tiene, la marca se quita y al alumno le llega un aviso. */
             var confP=!!(oh && fP && fP.ficha_id && _entregadas && _entregadas[fP.ficha_id]);
             /* (11-nov-2026, Iago) una línea discreta: en ámbar si Iago dijo que no la tiene; en verde, tranquilizadora, si ya la confirmó */
-            var rechP=!oh && (listTodas||[]).some(function(x){ var xp=(x&&x.payload_json)||{}; return xp.papel_no_entregada && String(xp.envio_id)===String(se) && (!xp.parte || xp.parte===oParte); });
-            var notaP=confP?'<span class="ts-papel-nota" style="flex-basis:100%;font-size:12.5px;line-height:16px;font-weight:500;color:#86efac">Iago confirma que la has entregado. Aún no la ha corregido, pero el plazo ya no corre.</span>'
-              :(rechP?'<span class="ts-papel-nota" style="flex-basis:100%;font-size:12.5px;line-height:16px;font-weight:500;color:#fcd34d">A Iago no le consta que la hayas entregado. Marca «Entregada en clase» cuando la hayas dejado en el buzón de su mesa.</span>':'');
+            var rechP=null; if(!oh) (listTodas||[]).forEach(function(x){ var xp=(x&&x.payload_json)||{}; if(xp.papel_no_entregada && String(xp.envio_id)===String(se) && (!xp.parte || xp.parte===oParte) && (!rechP || (Date.parse(x.creado_en||'')||0)>(Date.parse(rechP.creado_en||'')||0))) rechP=x; });
+            var rechOtra=rechP && rechP.payload_json && rechP.payload_json.entregada_otra;   /* (11-nov-2026, Iago) «Entregó otra»: la que le dio es otra ficha */
+            var notaP=confP?'<span class="ts-papel-nota ts-papel-ok" style="flex-basis:100%;font-size:12.5px;line-height:16px;font-weight:500;color:#86efac">Iago confirma que la has entregado. Aún no la ha corregido, pero el plazo ya no corre.</span>'
+              :(rechP?'<span class="ts-papel-nota" style="flex-basis:100%;font-size:12.5px;line-height:16px;font-weight:500;color:#fcd34d">'+(rechOtra?('A Iago no le consta que hayas entregado la Ficha '+esc(ot.papel_n)+': la que le entregaste es la '+esc(rechOtra)+'. Marca «Entregada en clase» cuando dejes la '+esc(ot.papel_n)+' en el buzón de su mesa.'):'A Iago no le consta que la hayas entregado. Marca «Entregada en clase» cuando la hayas dejado en el buzón de su mesa.')+'</span>':'');
             partes.push(parte({cls:'ts-otras ts-papel'+(confP?' ts-hecha':(oh?' ts-por-confirmar':''))+(notaP?' ts-con-nota':''), col:'rosa', ic:'hoja', tit:'Ficha '+esc(ot.papel_n)+' de teoría<span class="cv2-sub"> · en papel</span>',
               fila: ((!confP && fnP)?'<span class="alu-item-plazo" data-fin="'+esc(fnP)+'" data-gracia="'+esc(fgP)+'"></span>':'')+notaP,
               der: oh?cv2Hecho(confP?'Entregada · por corregir':'Entregada · por confirmar'):'<button class="ts-marcar cv2-btn" data-envio="'+esc(se)+'" data-parte="'+esc(oParte)+'">'+cv2Svg('check')+'Entregada en clase</button>'}));
