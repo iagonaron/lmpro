@@ -2575,6 +2575,10 @@ function showEnig(kind){
       C+'.cv2-pt{display:flex;align-items:center;gap:6px;min-width:0;white-space:nowrap}',
       C+'.cv2-parte.cv2-abierta .cv2-pt{flex-wrap:wrap;white-space:normal}',
       C+'.ts-parte.cv2-parte.ts-hecha{filter:grayscale(1)!important;opacity:.5!important}',
+      /* (11-nov-2026) la fila de la ficha en papel con su línea ámbar/verde: crece lo justo, y si está hecha, el gris va en sus piezas (no en la línea) */
+      C+'.ts-parte.cv2-parte.ts-con-nota{height:auto!important;min-height:64px;padding-bottom:4px!important}',
+      C+'.ts-parte.cv2-parte.ts-hecha.ts-con-nota{filter:none!important;opacity:1!important}',
+      C+'.ts-parte.cv2-parte.ts-hecha.ts-con-nota .cv2-mini,'+C+'.ts-parte.cv2-parte.ts-hecha.ts-con-nota .cv2-pt,'+C+'.ts-parte.cv2-parte.ts-hecha.ts-con-nota .cv2-pder{filter:grayscale(1);opacity:.55}',
       '#alu-body .cv2.hecha .ts-parte.cv2-parte.ts-hecha{opacity:1!important}',
       C+'.cv2-mini{position:relative;box-sizing:border-box;justify-self:center;width:30px;height:30px;border-radius:9px;border:1.5px solid var(--cc);color:var(--cc);display:flex;align-items:center;justify-content:center}',
       C+'.cv2-mini .cv2-ico{width:15px;height:15px}',
@@ -4574,8 +4578,12 @@ function showEnig(kind){
                «Entregada · por confirmar» y los plazos siguen; confirmada («Ya entregó»), «Entregada · por corregir», sin plazos.
                Si Iago dice que no la tiene, la marca se quita y al alumno le llega un aviso. */
             var confP=!!(oh && fP && fP.ficha_id && _entregadas && _entregadas[fP.ficha_id]);
-            partes.push(parte({cls:'ts-otras ts-papel'+(confP?' ts-hecha':(oh?' ts-por-confirmar':'')), col:'rosa', ic:'hoja', tit:'Ficha '+esc(ot.papel_n)+' de teoría<span class="cv2-sub"> · en papel</span>',
-              fila: (!confP && fnP)?'<span class="alu-item-plazo" data-fin="'+esc(fnP)+'" data-gracia="'+esc(fgP)+'"></span>':'',
+            /* (11-nov-2026, Iago) una línea discreta: en ámbar si Iago dijo que no la tiene; en verde, tranquilizadora, si ya la confirmó */
+            var rechP=!oh && (listTodas||[]).some(function(x){ var xp=(x&&x.payload_json)||{}; return xp.papel_no_entregada && String(xp.envio_id)===String(se) && (!xp.parte || xp.parte===oParte); });
+            var notaP=confP?'<span class="ts-papel-nota" style="flex-basis:100%;font-size:12.5px;line-height:16px;font-weight:500;color:#86efac">Iago confirma que la has entregado. Aún no la ha corregido, pero el plazo ya no corre.</span>'
+              :(rechP?'<span class="ts-papel-nota" style="flex-basis:100%;font-size:12.5px;line-height:16px;font-weight:500;color:#fcd34d">A Iago no le consta que la hayas entregado. Marca «Entregada en clase» cuando la hayas dejado en el buzón de su mesa.</span>':'');
+            partes.push(parte({cls:'ts-otras ts-papel'+(confP?' ts-hecha':(oh?' ts-por-confirmar':''))+(notaP?' ts-con-nota':''), col:'rosa', ic:'hoja', tit:'Ficha '+esc(ot.papel_n)+' de teoría<span class="cv2-sub"> · en papel</span>',
+              fila: ((!confP && fnP)?'<span class="alu-item-plazo" data-fin="'+esc(fnP)+'" data-gracia="'+esc(fgP)+'"></span>':'')+notaP,
               der: oh?cv2Hecho(confP?'Entregada · por corregir':'Entregada · por confirmar'):'<button class="ts-marcar cv2-btn" data-envio="'+esc(se)+'" data-parte="'+esc(oParte)+'">'+cv2Svg('check')+'Entregada en clase</button>'}));
             return;
           }
