@@ -6,6 +6,7 @@
 #   arriba-dcha = final de esa línea en la última barra del sistema
 #   abajo-dcha = final de la 5.ª línea (la de abajo) del pentagrama de clave de fa
 #   abajo-izq = inicio de esa línea
+# (11-nov-2026) v2: el alumno conserva sus proporciones (ya no se aplasta a la altura de la solución) y control.json guarda las esquinas.
 # Escribe en SALIDA_DIR: sol-1.png, sol-2.png…, alu-1.jpg, alu-2.jpg…, vista.png (intercalado, para revisar) y control.json
 import sys, json, os
 import cv2, numpy as np
@@ -72,12 +73,19 @@ def main():
         if not p: rep['error'] = 'no encuentro el pentagrama de la solución %d' % (k + 1); print(json.dumps(rep)); sys.exit(4)
         t, b, x0, x1 = p
         h = S.shape[0]
-        M = cv2.getPerspectiveTransform(np.float32(q), np.float32([(x0, t), (x1, t), (x1, b), (x0, b)]))
-        a = limpia(cv2.warpPerspective(im, M, (W, h), flags=cv2.INTER_CUBIC, borderValue=255))
-        rep['control'].append(control(a, t, b, W))
+        # (11-nov-2026, Iago: «lo veo achatado») el sistema del alumno conserva SUS proporciones: mismo ancho que la solución
+        # (empieza y acaba donde ella) y el alto que le corresponde según su foto, sin aplastarlo a la altura de la solución
+        qq = np.float32(q); L = lambda i, j: float(np.hypot(*(qq[i] - qq[j])))
+        fv = ((x1 - x0) * ((L(0, 3) + L(1, 2)) / 2) / ((L(0, 1) + L(3, 2)) / 2)) / float(b - t)   # factor vertical
+        fv = min(max(fv, 0.8), 2.2)
+        T, B, Hh = t * fv, b * fv, int(round(h * fv))
+        M = cv2.getPerspectiveTransform(qq, np.float32([(x0, T), (x1, T), (x1, B), (x0, B)]))
+        a = limpia(cv2.warpPerspective(im, M, (W, Hh), flags=cv2.INTER_CUBIC, borderValue=255))
+        c = control(a, T, B, W); c['fv'] = round(fv, 3); rep['control'].append(c)
+        rep.setdefault('esquinas', []).append([[round(float(x), 1) for x in pt] for pt in q])
         cv2.imwrite(os.path.join(out, 'sol-%d.png' % (k + 1)), S)
         cv2.imwrite(os.path.join(out, 'alu-%d.jpg' % (k + 1)), a, [cv2.IMWRITE_JPEG_QUALITY, 82])
-        vista += [S, np.full((8, W), 255, np.uint8), a, np.full((40, W), 160, np.uint8)]
+        vista += [S, np.full((8, W), 255, np.uint8), a, np.full((40, W), 160, np.uint8)]   # a puede ser más alto que S
     cv2.imwrite(os.path.join(out, 'vista.png'), cv2.resize(np.vstack(vista[:-1]), None, fx=.5, fy=.5, interpolation=cv2.INTER_AREA))
     rep['ok'] = all(c['ok'] for c in rep['control'])
     json.dump(rep, open(os.path.join(out, 'control.json'), 'w'))
