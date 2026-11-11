@@ -4066,11 +4066,12 @@ function showEnig(kind){
         +'<div class="rb-sl"><div class="tr"></div><div class="fi" style="width:'+a+'%;background:'+color+'"></div>'
         +(c?'<div class="ma" style="left:'+b+'%"><i>tú · '+b+' %</i></div>':'')+'<div class="th" style="left:'+a+'%"></div></div>'
         +'<div class="rb-val">'+a+' %'+(c?PF:'')+'</div></div>'; };
-    var RE=[['cal','Caligrafía y limpieza'],['alt','Alteraciones accidentales'],['otro','Otro']], reT=0;
+    var RE=[['cal','Caligrafía<br>y limpieza'],['alt','Alteraciones<br>accidentales'],['otro','Otro']], reT=0;
+    var menosR=function(x){ return num(x)>0?('−'+dos(x)):'<span class="rb-nada">–</span>'; };   /* (11-nov-2026, Iago) sin resta: guion gris, no «0» */
     var re=RE.map(function(r){ var c=cam(r[0]), a=Math.max(0,Math.min(1,num(A[r[0]]))); reT+=num(A[r[0]]); if(c) hayCam=true;
       var txt=(r[0]==='otro' && A.otroTxt && String(A.otroTxt).trim())?(' · '+esc(String(A.otroTxt).trim())):'';
       return '<div class="rb-rf'+(c?' cam':'')+'"><span class="rb-rn">'+r[1]+txt+'</span><div class="rb-sl rv"><div class="tr"></div><div class="fi" style="width:'+(a*100)+'%"></div><div class="th" style="left:'+(100-a*100)+'%"></div></div>'
-        +'<span class="rb-rv">'+menos(A[r[0]])+(c?PF:'')+'</span>'+(c?('<span class="rb-rt">tú habías puesto: '+menos(B[r[0]])+'</span>'):'')+'</div>'; }).join('');
+        +'<span class="rb-rv">'+menosR(A[r[0]])+(c?PF:'')+'</span>'+(c?('<span class="rb-rt">tú habías puesto: '+menosR(B[r[0]])+'</span>'):'')+'</div>'; }).join('');
     var com=(dj.comentario && String(dj.comentario).trim())?String(dj.comentario).trim():'';
     var cambia=(dj.nota_alumno!=null && !dj.solo_foto && String(dj.nota_alumno)!==String(dj.nota_final));
     /* (11-nov-2026, Iago) como en la pantalla de corrección del profesor: armadura y compás en una tarjeta, el checklist en otra,
@@ -4078,7 +4079,7 @@ function showEnig(kind){
     var html='<div class="rb-card rb-c1 rb-fx"><div class="rb-ac">'+par('arm','ARMADURA')+par('comp','COMPÁS')+'</div></div>'
       +'<div class="rb-card rb-ck rb-fx"><div class="rb-lab">CHECKLIST<span class="rb-pts">'+menos(ckP)+'</span></div><div class="rb-q k">'+ck+'</div></div>'
       +tira('rit','RITMO','rit','#22c55e').replace('rb-card rb-tira','rb-card rb-fx rb-tira')+tira('ent','ENTONACIÓN','ent','#3b82f6').replace('rb-card rb-tira','rb-card rb-fx rb-tira')
-      +'<div class="rb-card rb-fx rb-rs"><div class="rb-lab res">RESTAR<span class="rb-pts">'+menos(reT)+'</span></div><div class="rb-rsl">'+re+'</div></div>';
+      +'<div class="rb-card rb-fx rb-rs"><div class="rb-lab res">RESTAR<span class="rb-pts">'+menosR(reT)+'</span></div><div class="rb-rsl">'+re+'</div></div>';
     var pie='<div class="rb-pie"><div class="rb-card rb-com">'
         +(com?('<span class="rb-et">Comentario de tu profesor</span><span class="rb-cita">«'+esc(com)+'»</span>')
              :(hayCam?'<span class="rb-et">Tu profesor ha revisado tu corrección</span><span class="rb-txt">Ha cambiado lo que ves marcado en naranja.</span>'
@@ -5193,6 +5194,7 @@ function showEnig(kind){
       '.dictado-visor .rb-c1.rb-fx{display:flex;flex-direction:column;justify-content:center;padding:10px 14px}.dictado-visor .rb-c1 .rb-ac{width:100%}'+
       '.dictado-visor .rb-ck{display:flex;flex-direction:column;justify-content:center;gap:8px;padding:10px 14px}'+
       '.dictado-visor .rb-tira.rb-fx{align-content:center}.dictado-visor .rb-rs.rb-fx{justify-content:center}'+
+      '.dictado-visor .rb-nada{color:#64748b;font-weight:600}'+
       '@media (max-width:900px){.dictado-visor .rb-rf,.dictado-visor .rb-tira{grid-template-columns:96px 1fr 64px}.dictado-visor .dv-izq{order:0}}'+
       '@media (max-width:900px){.dictado-visor .dv-body.dv-c2{grid-template-columns:minmax(0,1fr)}.dictado-visor .dv-der{display:contents}.dictado-visor .rb-pie{order:-1;grid-template-columns:1fr}.dictado-visor .rb-nota{order:-1;justify-content:center;padding:10px 16px}.dictado-visor .rb-rs3{grid-template-columns:1fr}.dictado-visor .rb-nota b{font-size:40px}}'+
       '@media (max-width:560px){.dictado-visor .dv-tit .dv-sub{display:none}}'+
