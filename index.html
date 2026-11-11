@@ -4531,9 +4531,13 @@ function showEnig(kind){
             var fP=null; (listTodas||[]).forEach(function(x){ var xp=(x&&x.payload_json)||{}; if(xp.ficha_id && String(xp.numero)===String(ot.papel_n) && xp.fin_normal) fP=xp; });
             var fnP=fP?fP.fin_normal:'', fgP=fP?(fP.fin_gracia||''):'';
             if(!fnP){ var t0=Date.parse(o.creado_en||''); if(isFinite(t0)){ fnP=new Date(t0+7*DIA_MS).toISOString(); fgP=new Date(t0+14*DIA_MS).toISOString(); } }
-            partes.push(parte({cls:'ts-otras ts-papel'+(oh?' ts-hecha':''), col:'rosa', ic:'hoja', tit:'Ficha '+esc(ot.papel_n)+' de teoría<span class="cv2-sub"> · en papel</span>',
-              fila: (!oh && fnP)?'<span class="alu-item-plazo" data-fin="'+esc(fnP)+'" data-gracia="'+esc(fgP)+'"></span>':'',
-              der: oh?cv2Hecho('Entregada'):'<button class="ts-marcar cv2-btn" data-envio="'+esc(se)+'" data-parte="'+esc(oParte)+'">'+cv2Svg('check')+'Entregada en clase</button>'}));
+            /* (11-nov-2026, Iago) «Entregada en clase» ya no la da por entregada: Iago la confirma en el Diario. Hasta entonces,
+               «Entregada · por confirmar» y los plazos siguen; confirmada («Ya entregó»), «Entregada · por corregir», sin plazos.
+               Si Iago dice que no la tiene, la marca se quita y al alumno le llega un aviso. */
+            var confP=!!(oh && fP && fP.ficha_id && _entregadas && _entregadas[fP.ficha_id]);
+            partes.push(parte({cls:'ts-otras ts-papel'+(confP?' ts-hecha':(oh?' ts-por-confirmar':'')), col:'rosa', ic:'hoja', tit:'Ficha '+esc(ot.papel_n)+' de teoría<span class="cv2-sub"> · en papel</span>',
+              fila: (!confP && fnP)?'<span class="alu-item-plazo" data-fin="'+esc(fnP)+'" data-gracia="'+esc(fgP)+'"></span>':'',
+              der: oh?cv2Hecho(confP?'Entregada · por corregir':'Entregada · por confirmar'):'<button class="ts-marcar cv2-btn" data-envio="'+esc(se)+'" data-parte="'+esc(oParte)+'">'+cv2Svg('check')+'Entregada en clase</button>'}));
             return;
           }
           partes.push(parte({cls:'ts-otras'+(oh?' ts-hecha':' cv2-pv'), col:'blanco', ic:'tarea', tit:esc(ot.titulo||'Otras tareas'),
