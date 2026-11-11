@@ -2577,6 +2577,9 @@ function showEnig(kind){
       C+'.ts-parte.cv2-parte.ts-hecha{filter:grayscale(1)!important;opacity:.5!important}',
       /* (11-nov-2026) la fila de la ficha en papel con su línea ámbar/verde: crece lo justo, y si está hecha, el gris va en sus piezas (no en la línea) */
       C+'.ts-parte.cv2-parte.ts-con-nota{height:auto!important;min-height:64px;padding-bottom:4px!important}',
+      /* (11-nov-2026) «?» del «Me gusta»: discreto, arriba a la derecha */
+      C+'.alu-mg-info{margin-left:auto;flex:0 0 auto;width:22px;height:22px;padding:0;border-radius:6px;border:1px solid rgba(147,197,253,.45);background:transparent;color:#93c5fd;font:800 13px/20px \'Helvetica Neue\',Arial,sans-serif;cursor:pointer;opacity:.75}',
+      C+'.alu-mg-info:hover{opacity:1;border-color:#93c5fd}',
       /* (11-nov-2026, Iago: «que aparezca en verde ese texto, no en gris») aunque toda la tarjeta de tareas esté hecha: el gris va en cada pieza, no en la tarjeta */
       P+'.hecha:has(.ts-papel-ok){filter:none!important;opacity:.8!important}',
       P+'.hecha:has(.ts-papel-ok) *:not(.ts-papel-ok):not(:has(.ts-papel-ok)){filter:grayscale(1)}',
@@ -4672,8 +4675,26 @@ function showEnig(kind){
       // ---------- (7-nov-2026, Iago) «ME GUSTA» de Iago desde su Diario: azul, con el pulgar. FUGAZ: se da por visto solo al
       // verlo (autoLeer, abajo) y, ya visto, a los 2 días deja de salir: no se acumula
       if(o.payload_json && o.payload_json.me_gusta){
+        /* (11-nov-2026, Iago) «?» discreto arriba a la derecha: al pulsarlo, una ventanita explica qué es este «Me gusta» */
+        if(!window.__lmMgInfo){ window.__lmMgInfo=1;
+          document.addEventListener('click',function(e){ var q=e.target.closest && e.target.closest('.alu-mg-info'); if(!q) return;
+            e.preventDefault(); e.stopPropagation();
+            var ov=document.createElement('div');
+            ov.style.cssText='position:fixed;inset:0;z-index:100050;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(5,9,16,.62)';
+            ov.innerHTML='<div role="dialog" aria-modal="true" style="max-width:420px;width:100%;box-sizing:border-box;padding:20px 20px 16px;border-radius:14px;'+
+              'background:rgba(11,19,32,.96);border:1.5px solid #3b82f6;color:#e8eef5;font:500 15px/1.5 \'Helvetica Neue\',Arial,sans-serif;box-shadow:0 18px 50px rgba(0,0,0,.5)">'+
+              '<div style="font-weight:800;font-size:16px;margin-bottom:8px">¿Qué es este «Me gusta»?</div>'+
+              '<div style="opacity:.9">Las tareas y retos de cada semana son obligatorios, pero el resto del portal es tuyo: aprovéchalo como y cuando quieras.</div>'+
+              '<div style="opacity:.9;margin-top:8px">Iago no pretende evaluar cada ejercicio ni los resultados que sacas en lo que haces por libre: eso es a mayores y forma parte de tu libertad. Lo que sí puede ver es qué área has querido trabajar y cuánto tiempo le has dedicado.</div>'+
+              '<div style="opacity:.9;margin-top:8px">Este «Me gusta» es su forma de decirte que valora que trabajes por tu cuenta, más allá de la clase.</div>'+
+              '<div style="display:flex;justify-content:flex-end;margin-top:16px"><button type="button" data-r="1" style="cursor:pointer;padding:9px 16px;border-radius:8px;border:0;background:#3b82f6;color:#fff;font-weight:800;font-size:14px">Entendido</button></div></div>';
+            ov.addEventListener('click',function(ev){ ev.stopPropagation(); if(ev.target===ov || (ev.target.closest && ev.target.closest('[data-r]'))) ov.remove(); });
+            document.body.appendChild(ov);
+          },true);
+        }
         return cv2Tarjeta({cls:'alu-megusta cv2-info'+(o.leido?'':' no-leido'), id:o.id, col:'azul', ic:'pulgar',
-          tit:'A Iago le ha gustado', cuerpo:o.cuerpo?'<div class="alu-item-cuerpo">'+esc(o.cuerpo)+'</div>':'', fecha:_f});
+          tit:'A Iago le ha gustado', chip:'<button type="button" class="alu-mg-info" title="¿Qué es este «Me gusta»?" aria-label="¿Qué es este «Me gusta»?">?</button>',
+          cuerpo:o.cuerpo?'<div class="alu-item-cuerpo">'+esc(o.cuerpo)+'</div>':'', fecha:_f});
       }
       /* (11-nov-2026, Iago) Iago dijo que la ficha en papel NO le llegó: en el propio aviso, otra vez «Entregada en clase»
          (con el aviso del buzón) y «Escríbele a Iago» por si no está de acuerdo (un mensaje, le llega a la campana del Diario) */
