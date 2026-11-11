@@ -4107,16 +4107,36 @@ function showEnig(kind){
         if(!j || !j.sistemas || !j.sistemas.length || !document.body.contains(v)) return;
         var h='<figure class="dv-sis"><figcaption><span class="dv-cap">'+cv2Svg('check')+'La solución y tu dictado<span class="dv-sub"> · sistema a sistema</span></span>'
           +'<button type="button" class="dv-vfoto">Tu foto entera</button></figcaption><div class="dv-sisc">';
-        j.sistemas.forEach(function(s,i){ h+=(i?'<div class="dv-sep"></div>':'')+'<div class="dv-sb">SOLUCIÓN · sistema '+(i+1)+'</div><img alt="" src="'+esc(bs+s.sol)+'">'
-          +'<div class="dv-sb tu">TU DICTADO · sistema '+(i+1)+'</div><img alt="" src="'+esc(bs+s.alu+'?v='+(j.v||1))+'">'; });
+        /* (11-nov-2026, Iago) sin carteles encima: «SOLUCIÓN / TU DICTADO» en vertical a la izquierda de cada sistema, todo más pegado */
+        j.sistemas.forEach(function(s,i){ h+=(i?'<div class="dv-sep"></div>':'')+'<div class="dv-fl"><span class="dv-vl">SOLUCIÓN</span><img alt="" src="'+esc(bs+s.sol)+'"></div>'
+          +'<div class="dv-fl tu"><span class="dv-vl">TU DICTADO</span><img alt="" src="'+esc(bs+s.alu+'?v='+(j.v||1))+'"></div>'; });
         h+='</div></figure>';
         var izq=body.querySelector('.dv-izq'); if(!izq) return;
         izq.insertAdjacentHTML('afterbegin',h); izq.classList.add('con-sis');
         Array.prototype.forEach.call(der.querySelectorAll('figure'),function(f){ f.classList.add('dv-sol-oculta'); });
-        izq.querySelector('.dv-vfoto').addEventListener('click',function(){ var o=izq.classList.toggle('ver-foto'); this.textContent=o?'Sistema a sistema':'Tu foto entera'; });
+        izq.querySelector('.dv-vfoto').addEventListener('click',function(){ var o=izq.classList.toggle('ver-foto'); this.textContent=o?'Sistema a sistema':'Tu foto entera'; dvAjusta(); });
+        Array.prototype.forEach.call(izq.querySelectorAll('.dv-sisc img'),function(im){ im.addEventListener('load',dvAjusta); }); dvAjusta();
       }).catch(function(){});
     }
   }
+  /* (11-nov-2026, Iago: «que se vea todo sin scrollear») en pantalla ancha, la columna de los sistemas se estrecha lo justo para que
+     solución y dictado quepan enteros en el alto; la de parámetros se queda con el ancho que sobra */
+  function dvAjusta(){
+    var b=document.querySelector('.dictado-visor .dv-body.dv-c2'); if(!b) return;
+    b.style.gridTemplateColumns='';
+    if(window.innerWidth<=900) return;
+    var iz=b.querySelector('.dv-izq.con-sis'); if(!iz || iz.classList.contains('ver-foto')) return;
+    var ims=iz.querySelectorAll('.dv-sisc img'), rel=0, ok=true, seps=0;
+    Array.prototype.forEach.call(ims,function(im){ if(!im.naturalWidth) ok=false; else rel+=im.naturalHeight/im.naturalWidth; });
+    if(!ok || !rel) return;
+    Array.prototype.forEach.call(iz.querySelectorAll('.dv-sep'),function(e){ seps+=e.offsetHeight; });
+    var cap=iz.querySelector('figure.dv-sis figcaption'), cs=getComputedStyle(b);
+    var disp=b.clientHeight-parseFloat(cs.paddingTop)-parseFloat(cs.paddingBottom)-(cap?cap.offsetHeight:0)-22-seps-2*ims.length-6;
+    var tot=b.clientWidth-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight);
+    var w=Math.floor(disp/rel)+24+22+4+4;
+    if(w<tot-12-540) b.style.gridTemplateColumns=Math.max(w,Math.round(tot*0.34))+'px minmax(0,1fr)';
+  }
+  if(!window.__dvAjusta){ window.__dvAjusta=1; window.addEventListener('resize',function(){ dvAjusta(); }); }
   function modalEl(){
     var m=document.getElementById('alu-modal'); if(m) return m;
     m=document.createElement('div'); m.className='alu-modal'; m.id='alu-modal';
@@ -5193,6 +5213,8 @@ function showEnig(kind){
       '.dictado-visor .dv-sisc{padding:10px 12px 12px;background:#fff}.dictado-visor .dv-sisc img{display:block;width:100%;height:auto;margin:0 0 4px}'+
       '.dictado-visor .dv-sb{font:800 11px system-ui,sans-serif;letter-spacing:.05em;color:#0b1020;margin:2px 0}.dictado-visor .dv-sb.tu{color:#c2410c}'+
       '.dictado-visor .rb-rf.cam{border-color:#ea580c}.dictado-visor .dv-sep{height:14px}.dictado-visor .dv-der figure.dv-sol-oculta{display:none}'+
+      '.dictado-visor .dv-fl{display:flex;align-items:center;gap:4px;margin:0 0 2px}.dictado-visor .dv-fl img{flex:1 1 0;min-width:0;width:auto;margin:0}'+
+      '.dictado-visor .dv-vl{flex:none;width:18px;writing-mode:vertical-rl;transform:rotate(180deg);font:800 10px system-ui,sans-serif;letter-spacing:.08em;color:#0b1020;text-align:center;white-space:nowrap}.dictado-visor .dv-fl.tu .dv-vl{color:#c2410c}.dictado-visor .dv-sisc .dv-sep{height:8px}'+
       /* (11-nov-2026, Iago) columna de la derecha a toda la altura de la de las imágenes, tarjeta por tarjeta como en la pantalla del profesor */
       '.dictado-visor .dv-body.dv-c2{align-items:stretch}.dictado-visor .dv-der>.rb-fx{flex:1 1 auto}.dictado-visor .dv-der>.rb-pie{flex:none}'+
       '.dictado-visor .rb-c1.rb-fx{display:flex;flex-direction:column;justify-content:center;padding:10px 14px}.dictado-visor .rb-c1 .rb-ac{width:100%}'+
