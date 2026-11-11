@@ -40,8 +40,9 @@ def limpia(g):
     bg = cv2.GaussianBlur(g, (0, 0), 25); n = cv2.divide(g, bg, scale=255)
     lo, hi = np.percentile(n, 1), np.percentile(n, 60)
     n = np.clip((n.astype(float) - lo) * 255 / (hi - lo + 1e-6), 0, 255)
-    n = (255 * ((n / 255.0) ** 1.8)).astype(np.uint8)
-    n[n > 215] = 255
+    # (11-nov-2026, Iago: «que no se pierda trazo», opción B) más oscuro en lo flojo (lápiz suave) sin ensuciar el papel
+    n = (255 * ((n / 255.0) ** 2.3)).astype(np.uint8)
+    n[n > 222] = 255
     return n
 def control(a, t, b, w):
     # ¿hay líneas de pentagrama donde tienen que estar? (arriba y abajo, a la izquierda y a la derecha)
