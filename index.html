@@ -5682,6 +5682,52 @@ function showEnig(kind){
     v.querySelector('iframe').src = urlVideoActitud(); v.classList.add('open');
   }
   document.addEventListener('click', function(e){ var b = e.target.closest && e.target.closest('[data-vid-actitud]'); if (!b) return; e.preventDefault(); e.stopPropagation(); abrirVideoActitud(); }, true);
+  /* (12-nov-2026, Iago) «MI ACTITUD» y «MAPA TEÓRICO» en Mis resultados.
+     Mi actitud: ventana con la página de ge.lmathome.es/piel/avisos/actitud/real.html (la misma del vídeo, con sus datos de verdad):
+     lo que resta, lo neutro y lo que suma este trimestre, la escalera de actitud, el balance de fuerzas y la barra de lo sumado (+x,xx/2).
+     Datos: suite_mi_actitud (solo los suyos), su actitud del trimestre (y la del anterior), sus medias de clase y su mapa de teoría.
+     Para quitarlo: borrar este bloque, la barra .mr-acc de render() y su CSS (.mr-acc / #mi-actitud). */
+  var MI_ACT_URL = 'https://ge.lmathome.es/piel/avisos/actitud/real.html?real=1&v=2026-11-12a';
+  var MAPA_JS_MR = 'https://ge.lmathome.es/piel/mapa.js?v=2026-10-21a';
+  function rpcMR(fn, args){ var c = cli(); if (!c) return Promise.resolve(null); return c.rpc(fn, args).then(function(r){ return r.error ? null : r.data; }, function(){ return null; }); }
+  function abrirMapaMR(){
+    var id = cuentaId(); if (!id) return;
+    var abre = function(){ try { window.LMMapa.abrir({ cargar: function(){ return rpcMR('suite_mi_mapa_teoria', { p_cuenta_id: id }); } }); } catch (e) {} };
+    if (window.LMMapa) return abre();
+    var sc = document.createElement('script'); sc.src = MAPA_JS_MR; sc.async = true; sc.onload = abre; (document.head || document.documentElement).appendChild(sc);
+  }
+  var _miAct = null;
+  function datosMiActitud(){
+    var id = cuentaId();
+    return Promise.all([rpcMR('suite_mi_actitud', { p_cuenta_id: id }), rpcMR('suite_mi_mapa_teoria', { p_cuenta_id: id })]).then(function(r){
+      var d = r[0] || {}, t = d.trimestre || '1T', ex = examenes(), prevT = { '2T': '1T', '3T': '2T' }[t];
+      var med = {}, cnt = {}; sesiones().forEach(function(s){ if (s.trim !== t) return; med[s.ap] = (med[s.ap] || 0) + s.nota; cnt[s.ap] = (cnt[s.ap] || 0) + 1; });
+      Object.keys(med).forEach(function(k){ med[k] = med[k] / cnt[k]; });
+      var al = _st.alumno || {};
+      return { tipo: 'actitud-datos', d: d, mapa: r[1], cuenta: id, base: (ex[t] && ex[t].actitud != null) ? ex[t].actitud : null,
+               prev: prevT ? actitudDe(ex, prevT) : null, medias: med,
+               nombre: ((al.nombre || '') + ' ' + (al.apellidos || '')).trim(), grupoTxt: (al.grupo ? al.grupo + ' · ' : '') + (CURSO_NOMBRE[cursoCod()] || '') };
+    });
+  }
+  function abrirMiActitud(){
+    if (!cuentaId()) return;
+    var v = document.getElementById('mi-actitud');
+    if (!v) { v = document.createElement('div'); v.id = 'mi-actitud'; v.innerHTML = '<iframe title="Mi actitud" allow="fullscreen"></iframe><div class="ma-carga">Cargando tu actitud…</div>';
+      document.body.appendChild(v); }
+    var fr = v.querySelector('iframe'); v.classList.add('open', 'cargando');
+    _miAct = datosMiActitud(); fr.src = MI_ACT_URL;
+  }
+  function cerrarMiActitud(){ var v = document.getElementById('mi-actitud'); if (!v) return; v.classList.remove('open'); v.querySelector('iframe').src = 'about:blank'; }
+  window.addEventListener('message', function(e){
+    var m = e.data || {}, v = document.getElementById('mi-actitud'); if (!v || !v.classList.contains('open') || !/^https:\/\/ge\.lmathome\.es$/.test(e.origin)) return;
+    if (m.tipo === 'actitud-listo' && _miAct) _miAct.then(function(d){ v.classList.remove('cargando'); try { v.querySelector('iframe').contentWindow.postMessage(d, 'https://ge.lmathome.es'); } catch (x) {} });
+    else if (m.tipo === 'actitud-cerrar') cerrarMiActitud();
+    else if (m.tipo === 'actitud-video') abrirVideoActitud();
+    else if (m.tipo === 'actitud-mapa') abrirMapaMR();
+  });
+  document.addEventListener('keydown', function(e){ var v = document.getElementById('mi-actitud'); if (e.key === 'Escape' && v && v.classList.contains('open') && !((document.getElementById('vid-actitud') || {}).className || '').match(/\bopen\b/)) { e.stopImmediatePropagation(); cerrarMiActitud(); } }, true);
+  document.addEventListener('click', function(e){ var b = e.target.closest && e.target.closest('[data-mi-actitud],[data-mr-mapa]'); if (!b) return; e.preventDefault(); e.stopPropagation();
+    if (b.hasAttribute('data-mi-actitud')) abrirMiActitud(); else abrirMapaMR(); }, true);
   function abrirInfo(){
     var curso=cursoCod(), nom=CURSO_NOMBRE[curso]||curso, p=pesosCurso();
     var fila=function(l,v){ return '<div class="mr-row"><span>'+l+'</span><b>'+v+'</b></div>'; };
@@ -5741,7 +5787,8 @@ function showEnig(kind){
     var body=document.getElementById('mr-body'); if(!body) return;
     var ss=sesiones(), ex=examenes(), ini=iniciales();
     pintarQuien();
-    body.innerHTML='<div class="mr-grid">'+bloqueClase(ss,ini)+bloqueExamenes(ex)+bloqueBoletin(ex)+'</div>'
+    body.innerHTML='<div class="mr-acc"><button type="button" class="mr-acc-b act" data-mi-actitud><i>⚖</i>Mi actitud</button><button type="button" class="mr-acc-b mapa" data-mr-mapa><i>◈</i>Mapa teórico</button></div>'
+      +'<div class="mr-grid">'+bloqueClase(ss,ini)+bloqueExamenes(ex)+bloqueBoletin(ex)+'</div>'
       +bloqueGrafica(ss,ex,ini)
       +'<div class="mr-pie">Todo sale del Diario del profesor: tus notas de clase, tus notas de examen, tu actitud y la nota del boletín.</div>';
     var bi=body.querySelector('#mr-btn-info'); if(bi) bi.addEventListener('click',abrirInfo);
@@ -5856,6 +5903,13 @@ function showEnig(kind){
       +'.mr-real.rojo{color:var(--mr-real-mal);opacity:1}'
       +'.mr-bol-act{font-size:10.5px;font-weight:800;color:var(--mr-dim);text-align:center;line-height:1.3}.mr-bol-act b{font-weight:900}'
       +'.mr-act-q{margin-left:5px;width:17px;height:17px;padding:0;border-radius:5px;border:1.5px solid #facc15;background:transparent;color:#facc15;font-weight:900;font-size:11px;line-height:1;font-family:inherit;cursor:pointer;vertical-align:1px}'
+      +'.mr-acc{display:flex;gap:10px;justify-content:center;margin:0 0 12px}'
+      +'.mr-acc-b{display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 16px;border-radius:10px;border:2px solid #facc15;background:rgba(250,204,21,.12);color:#fde68a;font-weight:800;font-size:14px;cursor:pointer;font-family:inherit}'
+      +'.mr-acc-b i{font-style:normal;display:grid;place-items:center;width:24px;height:24px;border-radius:6px;background:#facc15;color:#111;font-size:13px}'
+      +'.mr-acc-b.mapa{border-color:#ec4899;background:rgba(236,72,153,.12);color:#f9a8d4}.mr-acc-b.mapa i{background:#ec4899;color:#fff}'
+      +'.mr-acc-b:hover{filter:brightness(1.2)}'
+      +'#mi-actitud{position:fixed;inset:0;z-index:2147482000;background:#0b1020;display:none}#mi-actitud.open{display:block}#mi-actitud iframe{width:100%;height:100%;border:0;display:block}'
+      +'#mi-actitud .ma-carga{position:absolute;inset:0;display:none;place-items:center;color:#cbd5e1;font-weight:700;font-size:15px;background:#0b1020}#mi-actitud.cargando .ma-carga{display:grid}'
       +'.mr-act-vid{display:inline-flex;align-items:center;gap:6px;margin:0 0 10px;padding:8px 12px;border-radius:9px;border:0;background:#facc15;color:#111;font-weight:800;font-size:13px;line-height:1;font-family:inherit;cursor:pointer}'
       +'#vid-actitud{position:fixed;inset:0;z-index:2147483000;background:#000;display:none}#vid-actitud.open{display:block}#vid-actitud iframe{width:100%;height:100%;border:0}'
       +'#vid-actitud .x{position:absolute;top:12px;right:12px;width:40px;height:40px;border-radius:10px;border:1.5px solid rgba(255,255,255,.3);background:rgba(10,12,18,.85);color:#fff;font-weight:800;font-size:18px;font-family:inherit;cursor:pointer;z-index:2}'
