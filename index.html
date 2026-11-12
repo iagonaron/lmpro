@@ -5687,7 +5687,7 @@ function showEnig(kind){
      lo que resta, lo neutro y lo que suma este trimestre, la escalera de actitud, el balance de fuerzas y la barra de lo sumado (+x,xx/2).
      Datos: suite_mi_actitud (solo los suyos), su actitud del trimestre (y la del anterior), sus medias de clase y su mapa de teoría.
      Para quitarlo: borrar este bloque, la barra .mr-acc de render() y su CSS (.mr-acc / #mi-actitud). */
-  var MI_ACT_URL = 'https://ge.lmathome.es/piel/avisos/actitud/real.html?real=1&v=2026-11-12b';
+  var MI_ACT_URL = 'https://ge.lmathome.es/piel/avisos/actitud/real.html?real=1&v=2026-11-12c';
   var MAPA_JS_MR = 'https://ge.lmathome.es/piel/mapa.js?v=2026-10-21a';
   function rpcMR(fn, args){ var c = cli(); if (!c) return Promise.resolve(null); return c.rpc(fn, args).then(function(r){ return r.error ? null : r.data; }, function(){ return null; }); }
   function abrirMapaMR(){
@@ -5787,7 +5787,7 @@ function showEnig(kind){
     var body=document.getElementById('mr-body'); if(!body) return;
     var ss=sesiones(), ex=examenes(), ini=iniciales();
     pintarQuien();
-    body.innerHTML='<div class="mr-acc"><button type="button" class="mr-acc-b act" data-mi-actitud><i>⚖</i>Mi actitud</button><button type="button" class="mr-acc-b mapa" data-mr-mapa><i>◈</i>Mapa teórico</button></div>'
+    body.innerHTML='<div class="mr-acc"><button type="button" class="mr-acc-b act" data-mi-actitud><i>⚖</i>Mi actitud</button><button type="button" class="mr-acc-b mapa" data-mr-mapa><i><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8.5" y="8.5" width="7" height="7" rx="1.6"/><path d="M12 8.5V4.5M15.5 12h3V6.5M12 15.5v4M8.5 12h-3v5.5"/><circle cx="12" cy="3.3" r="1.3"/><circle cx="18.5" cy="5.2" r="1.3"/><circle cx="12" cy="20.7" r="1.3"/><circle cx="5.5" cy="18.8" r="1.3"/></svg></i>Mapa teórico</button></div>'
       +'<div class="mr-grid">'+bloqueClase(ss,ini)+bloqueExamenes(ex)+bloqueBoletin(ex)+'</div>'
       +bloqueGrafica(ss,ex,ini)
       +'<div class="mr-pie">Todo sale del Diario del profesor: tus notas de clase, tus notas de examen, tu actitud y la nota del boletín.</div>';
