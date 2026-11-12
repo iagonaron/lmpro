@@ -5687,7 +5687,7 @@ function showEnig(kind){
      lo que resta, lo neutro y lo que suma este trimestre, la escalera de actitud, el balance de fuerzas y la barra de lo sumado (+x,xx/2).
      Datos: suite_mi_actitud (solo los suyos), su actitud del trimestre (y la del anterior), sus medias de clase y su mapa de teoría.
      Para quitarlo: borrar este bloque, la barra .mr-acc de render() y su CSS (.mr-acc / #mi-actitud). */
-  var MI_ACT_URL = 'https://ge.lmathome.es/piel/avisos/actitud/real.html?real=1&v=2026-11-12a';
+  var MI_ACT_URL = 'https://ge.lmathome.es/piel/avisos/actitud/real.html?real=1&v=2026-11-12b';
   var MAPA_JS_MR = 'https://ge.lmathome.es/piel/mapa.js?v=2026-10-21a';
   function rpcMR(fn, args){ var c = cli(); if (!c) return Promise.resolve(null); return c.rpc(fn, args).then(function(r){ return r.error ? null : r.data; }, function(){ return null; }); }
   function abrirMapaMR(){
@@ -5725,7 +5725,7 @@ function showEnig(kind){
     else if (m.tipo === 'actitud-video') abrirVideoActitud();
     else if (m.tipo === 'actitud-mapa') abrirMapaMR();
   });
-  document.addEventListener('keydown', function(e){ var v = document.getElementById('mi-actitud'); if (e.key === 'Escape' && v && v.classList.contains('open') && !((document.getElementById('vid-actitud') || {}).className || '').match(/\bopen\b/)) { e.stopImmediatePropagation(); cerrarMiActitud(); } }, true);
+  document.addEventListener('keydown', function(e){ var v = document.getElementById('mi-actitud'); if (e.key === 'Escape' && v && v.classList.contains('open') && !document.getElementById('lmm') && !((document.getElementById('vid-actitud') || {}).className || '').match(/\bopen\b/)) { e.stopImmediatePropagation(); cerrarMiActitud(); } }, true);
   document.addEventListener('click', function(e){ var b = e.target.closest && e.target.closest('[data-mi-actitud],[data-mr-mapa]'); if (!b) return; e.preventDefault(); e.stopPropagation();
     if (b.hasAttribute('data-mi-actitud')) abrirMiActitud(); else abrirMapaMR(); }, true);
   function abrirInfo(){
