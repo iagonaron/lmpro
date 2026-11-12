@@ -5614,7 +5614,7 @@ function showEnig(kind){
           +'<span class="mr-marca'+(susp?' susp':(ent===5?' cinco':''))+'">'+ent+'<span class="mr-real'+(realRoja?' rojo':'')+'">'+f2(v)+'</span></span></div>'; }).join('');
       var act=actitudDe(ex,t);
       return '<div class="mr-bol"><span class="mr-bol-t">'+t+'</span><div class="mr-bol-cuerpo"><div class="mr-bol-nums">'+nums+'</div>'
-        +'<div class="mr-bol-act">Actitud: <b style="color:'+colorNota(act)+'">'+actitudTxt(act)+'</b></div></div></div>';
+        +'<div class="mr-bol-act">Actitud: <b style="color:'+colorNota(act)+'">'+actitudTxt(act)+'</b><button type="button" class="mr-act-q" data-vid-actitud title="Cómo valoro tu actitud (vídeo)">?</button></div></div></div>';
     }).join('');
     return '<section class="mr-card"><div class="mr-ctit"><span>Nota boletín</span><button class="mr-info-btn" type="button" id="mr-btn-info">¿cómo sale?</button></div>'
       +'<div class="mr-bols">'+filas+'</div></section>';
@@ -5667,6 +5667,21 @@ function showEnig(kind){
   }
 
   /* ================= ventana «¿cómo sale?» ================= */
+  /* (12-nov-2026, Iago) vídeo «Cómo valoro tu actitud»: botón «?» junto a la actitud del trimestre y en «¿cómo sale?».
+     Hasta el 31-dic-2026, la versión de este curso (fichas extra gratis hasta el 13-nov); desde el 1-ene-2027, la genérica. */
+  function urlVideoActitud(){ var curso = Date.now() >= Date.parse('2027-01-01T00:00:00+01:00');
+    return 'https://ge.lmathome.es/piel/avisos/actitud/?g=' + (esGP() ? 'gp' : 'ge') + '&v=' + (curso ? 'curso' : 'hoy'); }
+  function abrirVideoActitud(){
+    var v = document.getElementById('vid-actitud');
+    if (!v) { v = document.createElement('div'); v.id = 'vid-actitud'; v.innerHTML = '<button type="button" class="x" aria-label="Cerrar">✕</button><iframe allow="autoplay; fullscreen" title="Cómo valoro tu actitud"></iframe>';
+      document.body.appendChild(v);
+      var cerrarV = function(){ v.classList.remove('open'); v.querySelector('iframe').src = 'about:blank'; };
+      v.querySelector('.x').addEventListener('click', cerrarV);
+      window.addEventListener('message', function(e){ if (e.data && e.data.tipo === 'lme-cerrar' && v.classList.contains('open')) cerrarV(); });
+      document.addEventListener('keydown', function(e){ if (e.key === 'Escape' && v.classList.contains('open')) { e.stopImmediatePropagation(); cerrarV(); } }, true); }
+    v.querySelector('iframe').src = urlVideoActitud(); v.classList.add('open');
+  }
+  document.addEventListener('click', function(e){ var b = e.target.closest && e.target.closest('[data-vid-actitud]'); if (!b) return; e.preventDefault(); e.stopPropagation(); abrirVideoActitud(); }, true);
   function abrirInfo(){
     var curso=cursoCod(), nom=CURSO_NOMBRE[curso]||curso, p=pesosCurso();
     var fila=function(l,v){ return '<div class="mr-row"><span>'+l+'</span><b>'+v+'</b></div>'; };
@@ -5689,7 +5704,7 @@ function showEnig(kind){
     var inner='<h4>De dónde sale tu nota del boletín</h4>'
       +'<div class="mr-msub">La nota del boletín es un número entero. Dentro de él, en pequeñito, tienes la nota real con la que sale.</div>'
       +pesos
-      +'<div class="mr-blq"><h5>La actitud</h5>'
+      +'<div class="mr-blq"><h5>La actitud</h5><button type="button" class="mr-act-vid" data-vid-actitud>▶ Vídeo: cómo valoro tu actitud</button>'
       +'<div class="mr-avi" style="margin-top:0">La actitud <b class="mr-ink">no está dentro del examen ni dentro de las notas de clase</b>. Se aplica al final, sobre la nota ya calculada: la nota académica vale un 95 % y la actitud un 5 %. Por eso la ves en cada trimestre, debajo de tu nota.</div>'
       +'<div class="mr-avi" style="margin-top:10px">Lo que vale más o menos cada palabra:</div><div class="mr-esc">'+escala+'</div></div>';
     var m=document.getElementById('mr-modal');
@@ -5840,6 +5855,10 @@ function showEnig(kind){
       +'.mr-real{position:absolute;right:5px;bottom:3px;font-size:10.5px;font-weight:800;line-height:1;font-variant-numeric:tabular-nums;opacity:.72}'
       +'.mr-real.rojo{color:var(--mr-real-mal);opacity:1}'
       +'.mr-bol-act{font-size:10.5px;font-weight:800;color:var(--mr-dim);text-align:center;line-height:1.3}.mr-bol-act b{font-weight:900}'
+      +'.mr-act-q{margin-left:5px;width:17px;height:17px;padding:0;border-radius:5px;border:1.5px solid #facc15;background:transparent;color:#facc15;font-weight:900;font-size:11px;line-height:1;font-family:inherit;cursor:pointer;vertical-align:1px}'
+      +'.mr-act-vid{display:inline-flex;align-items:center;gap:6px;margin:0 0 10px;padding:8px 12px;border-radius:9px;border:0;background:#facc15;color:#111;font-weight:800;font-size:13px;line-height:1;font-family:inherit;cursor:pointer}'
+      +'#vid-actitud{position:fixed;inset:0;z-index:2147483000;background:#000;display:none}#vid-actitud.open{display:block}#vid-actitud iframe{width:100%;height:100%;border:0}'
+      +'#vid-actitud .x{position:absolute;top:12px;right:12px;width:40px;height:40px;border-radius:10px;border:1.5px solid rgba(255,255,255,.3);background:rgba(10,12,18,.85);color:#fff;font-weight:800;font-size:18px;font-family:inherit;cursor:pointer;z-index:2}'
       +'.mr-graf{flex:0 0 auto}.mr-graf-svg{margin-top:10px}.mr-graf svg{width:100%;height:auto;display:block}'
       +'.mr-ley{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:8px}'
       +'.mr-chip{display:inline-flex;align-items:center;font-size:10.5px;font-weight:900;color:var(--apc);background:color-mix(in srgb,var(--apc) 16%,transparent);border:1px solid color-mix(in srgb,var(--apc) 45%,transparent);border-radius:99px;padding:3px 10px;text-transform:uppercase;letter-spacing:.03em}'
