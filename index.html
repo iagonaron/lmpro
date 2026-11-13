@@ -5744,7 +5744,7 @@ function showEnig(kind){
      lo que resta, lo neutro y lo que suma este trimestre, la escalera de actitud, el balance de fuerzas y la barra de lo sumado (+x,xx/2).
      Datos: suite_mi_actitud (solo los suyos), su actitud del trimestre (y la del anterior), sus medias de clase y su mapa de teoría.
      Para quitarlo: borrar este bloque, la barra .mr-acc de render() y su CSS (.mr-acc / #mi-actitud). */
-  var MI_ACT_URL = 'https://ge.lmathome.es/piel/avisos/actitud/real.html?real=1&v=2026-11-12c';
+  var MI_ACT_URL = 'https://ge.lmathome.es/piel/avisos/actitud/real.html?real=1&v=2026-11-13a';
   var MAPA_JS_MR = 'https://ge.lmathome.es/piel/mapa.js?v=2026-10-21a';
   function rpcMR(fn, args){ var c = cli(); if (!c) return Promise.resolve(null); return c.rpc(fn, args).then(function(r){ return r.error ? null : r.data; }, function(){ return null; }); }
   function abrirMapaMR(){
@@ -5766,16 +5766,16 @@ function showEnig(kind){
                nombre: ((al.nombre || '') + ' ' + (al.apellidos || '')).trim(), grupoTxt: (al.grupo ? al.grupo + ' · ' : '') + (CURSO_NOMBRE[cursoCod()] || '') };
     });
   }
-  function abrirMiActitud(){
+  function abrirMiActitud(desdeAviso){
     if (!cuentaId()) return;
     var v = document.getElementById('mi-actitud');
     if (!v) { v = document.createElement('div'); v.id = 'mi-actitud'; v.innerHTML = '<iframe title="Mi actitud" allow="fullscreen"></iframe><div class="ma-carga">Cargando tu actitud…</div>';
       document.body.appendChild(v); }
     var fr = v.querySelector('iframe'); v.classList.add('open', 'cargando');
-    _miAct = datosMiActitud(); fr.src = MI_ACT_URL;
+    _miAct = datosMiActitud(); fr.src = MI_ACT_URL + (desdeAviso ? '&desde=aviso' : '');
   }
   /* (13-nov-2026, C2) gancho para el botón «Consulta aquí tu puntaje» de la tarjeta «Me gusta» verificada */
-  window.__lmAbrirMiActitud = function(){ try{ abrirMiActitud(); }catch(e){} };
+  window.__lmAbrirMiActitud = function(){ try{ abrirMiActitud(true); }catch(e){} };
   function cerrarMiActitud(){ var v = document.getElementById('mi-actitud'); if (!v) return; v.classList.remove('open'); v.querySelector('iframe').src = 'about:blank'; }
   window.addEventListener('message', function(e){
     var m = e.data || {}, v = document.getElementById('mi-actitud'); if (!v || !v.classList.contains('open') || !/^https:\/\/ge\.lmathome\.es$/.test(e.origin)) return;
