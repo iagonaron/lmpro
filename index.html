@@ -2836,7 +2836,7 @@ function showEnig(kind){
     return !!(st && st.fase==='fin');
   }
   function esValidacionTxt(o){
-    if(!o || (o.payload_json && (o.payload_json.ficha_id || o.payload_json.envio_id || o.payload_json.dictado_revision || o.payload_json.bienvenida || o.payload_json.mensaje_prof || o.payload_json.reclamacion))) return false;
+    if(!o || (o.payload_json && (o.payload_json.ficha_id || o.payload_json.envio_id || o.payload_json.dictado_revision || o.payload_json.bienvenida || o.payload_json.mensaje_prof || o.payload_json.reclamacion || o.payload_json.me_gusta))) return false;  /* (13-nov-2026, C0) el 👍 dice «verificado» y no es la validación de la cuenta */
     return /valida|verificad/i.test(String(o.titulo||'')+' '+String(o.cuerpo||''));
   }
   // (6-ago Iago, v2) la campana cuenta COSAS PENDIENTES, no notificaciones sin
@@ -4422,7 +4422,7 @@ function showEnig(kind){
     // redundante — la bienvenida animada + el mini-tour ya cubren ese
     // momento. La ocultamos y la auto-marcamos leída (más abajo).
     function esNotifValidacion(o){
-      if(!o || (o.payload_json && (o.payload_json.ficha_id || o.payload_json.envio_id || o.payload_json.dictado_revision || o.payload_json.bienvenida || o.payload_json.mensaje_prof || o.payload_json.reclamacion))) return false;
+      if(!o || (o.payload_json && (o.payload_json.ficha_id || o.payload_json.envio_id || o.payload_json.dictado_revision || o.payload_json.bienvenida || o.payload_json.mensaje_prof || o.payload_json.reclamacion || o.payload_json.me_gusta))) return false;  /* (13-nov-2026, C0) el 👍 dice «verificado» y no es la validación de la cuenta */
       return /valida|verificad/i.test(String(o.titulo||'')+' '+String(o.cuerpo||''));
     }
     var listTodas=list;
