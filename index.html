@@ -2298,11 +2298,13 @@ function showEnig(kind){
   function cv2Mas(box,fila){
     if(!box || !fila) return;
     var parte=box.classList.contains('ts-parte'), b=fila.querySelector(':scope > .cv2-mas'), ab=box.classList.contains('cv2-abierta'), corta=false;
+    /* (14-nov-2026, Iago) en el 👍 «A Iago le ha gustado», «Leer mensaje completo» solo si su texto no cabe de verdad */
+    var mgv=box.classList.contains('mgv');
     if(!ab){
-      Array.prototype.forEach.call(box.querySelectorAll('.alu-item-cuerpo, .cv2-cita, .ts-parte-sub, .alu-item-tit, .cv2-pt'),function(e){
+      Array.prototype.forEach.call(box.querySelectorAll(mgv?'.alu-item-cuerpo':'.alu-item-cuerpo, .cv2-cita, .ts-parte-sub, .alu-item-tit, .cv2-pt'),function(e){
         if(e.scrollHeight>e.clientHeight+1 || e.scrollWidth>e.clientWidth+1) corta=true; });
-      var mid=parte?null:box.querySelector(':scope > .cv2-mid'); if(mid && mid.scrollHeight>mid.clientHeight+1) corta=true;
-      if(!parte && box.querySelector('.cv2-tuya')) corta=true;
+      var mid=(parte||mgv)?null:box.querySelector(':scope > .cv2-mid'); if(mid && mid.scrollHeight>mid.clientHeight+1) corta=true;
+      if(!parte && !mgv && box.querySelector('.cv2-tuya')) corta=true;
     }
     if(!(ab||corta)){ if(b) b.parentNode.removeChild(b); return; }
     if(!b){
