@@ -37,6 +37,7 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   ♭/♯) y se corrige. Todo pasa por LM_ACO (arriba/bajo/raizRueda) en index.html.
 
 ## Registro (lo más reciente arriba · hora de Galicia)
+- 13-nov 09:59 · «Qué suma v2» · C1 · atonalidad · EN CURSO · prueba.html: bloque data-lm-progreso (avance del capítulo; solo lee el estado del motor). Deshacer: borrar el bloque <script> comentado «13-nov-2026, Iago · Qué suma v2, C1».
 - 11-nov 19:25 · 4 Sabores (C1, la coordinadora del portal nuevo del Afrolatin) · HECHO, comprobado en vivo · afrolatin sabores/ (solo esa carpeta):
   r22, el grito de Chucho entero (Iago 19:02: «tiene que sonar el aaaah y el uh»; eligió la toma B de Antonio, original.wav 37,40–40,00 s):
   voz/s4/s4_grito.mp3 (2,6 s) y el repaso del mambo que lo espera entero (dur y espera 2,7 s), data y index.html. 3 commits: 1ab772d, 209a5cd,
