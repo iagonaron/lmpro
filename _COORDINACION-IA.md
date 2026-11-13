@@ -37,7 +37,7 @@ SIEMPRE sobre la versión del último commit y, al acabar, cambia tu línea a «
   ♭/♯) y se corrige. Todo pasa por LM_ACO (arriba/bajo/raizRueda) en index.html.
 
 ## Registro (lo más reciente arriba · hora de Galicia)
-- 13-nov 10:03 · «Qué suma v2» · C1 · cualidadesdelsonido · EN CURSO · prueba.html: bloque data-lm-progreso (avance del capítulo; solo lee el estado del motor). Deshacer: borrar el bloque <script> comentado «13-nov-2026, Iago · Qué suma v2, C1».
+- 13-nov 10:03 · «Qué suma v2» · C1 · cualidadesdelsonido · HECHO · commit 01943dc (parto de 78c0691) · prueba.html: bloque data-lm-progreso (avance del capítulo; solo lee el estado del motor). Deshacer: git revert 01943dc (o borrar el bloque <script> comentado «13-nov-2026, Iago · Qué suma v2, C1»).
 - 13-nov 10:01 · «Qué suma v2» · C1 · afrolatin · HECHO · commit 9e34176 (parto de 63d8d00) · sabores/index.html: bloque data-lm-progreso (avance del capítulo; solo lee el estado del motor). Deshacer: git revert 9e34176 (o borrar el bloque <script> comentado «13-nov-2026, Iago · Qué suma v2, C1»).
 - 13-nov 09:59 · «Qué suma v2» · C1 · atonalidad · HECHO · commit 8605761 (parto de 0b63662) · prueba.html: bloque data-lm-progreso (avance del capítulo; solo lee el estado del motor). Deshacer: git revert 8605761 (o borrar el bloque <script> comentado «13-nov-2026, Iago · Qué suma v2, C1»).
 - 11-nov 19:25 · 4 Sabores (C1, la coordinadora del portal nuevo del Afrolatin) · HECHO, comprobado en vivo · afrolatin sabores/ (solo esa carpeta):
