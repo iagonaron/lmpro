@@ -4760,7 +4760,7 @@ function showEnig(kind){
           },true);
         }
         return cv2Tarjeta(mgV(o,{cls:'alu-megusta cv2-info'+(o.leido?'':' no-leido'), id:o.id, col:'azul', ic:'pulgar',
-          tit:'A Iago le ha gustado', chip:(function(){ var v=false; try{ v=localStorage.getItem('lm_mg_info_visto')==='1'; }catch(er){}
+          tit:'A Iago le ha gustado', chip:'', _chipViejo:(function(){   /* (13-nov-2026, C0 · Iago) sin «¿Qué es este «Me gusta»?»: quedó obsoleto */ var v=false; try{ v=localStorage.getItem('lm_mg_info_visto')==='1'; }catch(er){}
             /* (11-nov-2026, Iago) hasta que lo pulse por primera vez: «¿Qué es este «Me gusta»? ?»; después, solo «?» */
             return '<button type="button" class="alu-mg-info'+(v?'':' con-texto')+'"'+(/\bportal\b/i.test(String((o.payload_json&&o.payload_json.que)||o.cuerpo||''))?' data-portal="1"':'')+' title="¿Qué es este «Me gusta»?" aria-label="¿Qué es este «Me gusta»?">'+(v?'?':'<span class="alu-mg-info-t">¿Qué es este «Me gusta»?</span><span class="alu-mg-info-q">?</span>')+'</button>'; })(),
           cuerpo:o.cuerpo?'<div class="alu-item-cuerpo">'+esc(o.cuerpo)+'</div>':'', fecha:_f}));
