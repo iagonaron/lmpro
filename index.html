@@ -2582,6 +2582,30 @@ function showEnig(kind){
       C+'.alu-mg-info:hover{opacity:1;border-color:#93c5fd}',
       C+'.alu-mg-info.con-texto{width:auto;display:inline-flex;align-items:center;gap:7px;padding:0 3px 0 9px;opacity:.95;font-weight:700;font-size:12.5px}',
       C+'.alu-mg-info.con-texto .alu-mg-info-q{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:4px;background:rgba(147,197,253,.18);font-weight:800}',
+      /* (13-nov-2026, C2) «Me gusta» verificado */
+      '#alu-body .alu-item.cv2.mgv>.cv2-mid{grid-template-columns:minmax(0,1fr) auto!important;height:auto!important;min-height:92px;overflow:visible!important}',
+      '#alu-body .alu-item.cv2.mgv .cv2-der{display:flex!important;align-items:center;grid-template-rows:none!important;justify-content:flex-end}',
+      '#alu-body .alu-item.cv2.mgv .cv2-sec{display:flex!important;position:static!important;align-items:center;justify-content:flex-end}',
+      '#alu-body .alu-item.cv2.mgv .mgv-fila{display:flex;align-items:center;gap:14px}',
+      '#alu-body .alu-item.cv2.mgv .mgv-cta{display:flex;flex-direction:column;align-items:center;gap:5px;width:84px;padding:0;border:0;background:none;cursor:pointer;color:inherit;font:inherit}',
+      '#alu-body .alu-item.cv2.mgv .mgv-ic{display:flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:12px;background:#facc15;color:#1c1400;box-shadow:0 2px 8px rgba(0,0,0,.3)}',
+      '#alu-body .alu-item.cv2.mgv .mgv-ic svg{width:24px;height:24px}',
+      '#alu-body .alu-item.cv2.mgv .mgv-lb{font:600 11px/1.15 Helvetica Neue,Arial,sans-serif;color:rgba(255,255,255,.82);text-align:center}',
+      '#alu-body .alu-item.cv2.mgv .mgv-num{position:relative;display:flex;align-items:center;justify-content:flex-end;width:194px;padding:0 14px;box-sizing:border-box}',
+      '#alu-body .alu-item.cv2.mgv .mgv-min{display:flex;align-items:baseline;gap:4px;padding-right:14px}',
+      '#alu-body .alu-item.cv2.mgv .mgv-min b{font:800 30px/1 Helvetica Neue,Arial,sans-serif;color:#fff}',
+      '#alu-body .alu-item.cv2.mgv .mgv-min span{font:600 12px/1 Helvetica Neue,Arial,sans-serif;color:rgba(255,255,255,.75)}',
+      '#alu-body .alu-item.cv2.mgv .mgv-pts{display:flex;flex-direction:column;align-items:flex-start;gap:1px;padding-left:14px;border-left:1px solid rgba(255,255,255,.22)}',
+      '#alu-body .alu-item.cv2.mgv .mgv-pts b{font:800 19px/1.1 Helvetica Neue,Arial,sans-serif;color:#4ade80}',
+      '#alu-body .alu-item.cv2.mgv .mgv-pts span{font:600 11px/1.1 Helvetica Neue,Arial,sans-serif;color:rgba(255,255,255,.78)}',
+      '#alu-body .alu-item.cv2.mgv .mgv-tope b{color:#facc15}',
+      '#alu-body .alu-item.cv2.mgv .mgv-base{display:flex;align-items:center;gap:5px;font:600 11px/1 Helvetica Neue,Arial,sans-serif;color:rgba(255,255,255,.7)}',
+      '#alu-body .alu-item.cv2.mgv .mgv-ch{padding:1px 5px;border-radius:5px;font-weight:800;border:1px solid}',
+      '#alu-body .alu-item.cv2.mgv .mgv-ch.m15{color:#fbbf24;border-color:#f59e0b}',
+      '#alu-body .alu-item.cv2.mgv .mgv-ch.m2{color:#f87171;border-color:#ef4444}',
+      '#alu-body .alu-item.cv2.mgv .mgv-sello{position:absolute;left:50%;top:50%;width:104px;height:104px;transform:translate(-50%,-50%) rotate(-12deg);opacity:.45;color:var(--cc,#fff);pointer-events:none;z-index:5}',
+      '#alu-body .alu-item.cv2.mgv.hito-cinta .mgv-sello{color:#efe5cf}',
+      '@media (max-width:640px){#alu-body .alu-item.cv2.mgv>.cv2-mid{grid-template-columns:minmax(0,1fr)!important}#alu-body .alu-item.cv2.mgv .cv2-der{grid-column:1!important;grid-row:2!important;justify-content:flex-start}#alu-body .alu-item.cv2.mgv .mgv-fila{flex-wrap:wrap;gap:10px}#alu-body .alu-item.cv2.mgv .mgv-num{width:auto;padding:0}}',
       /* (11-nov-2026, Iago: «que aparezca en verde ese texto, no en gris») aunque toda la tarjeta de tareas esté hecha: el gris va en cada pieza, no en la tarjeta */
       P+'.hecha:has(.ts-papel-ok){filter:none!important;opacity:.8!important}',
       P+'.hecha:has(.ts-papel-ok) *:not(.ts-papel-ok):not(:has(.ts-papel-ok)){filter:grayscale(1)}',
@@ -4280,6 +4304,39 @@ function showEnig(kind){
     hamilton:{tema:'ham', med:'ham', nombre:'Hamilton', parte:'', partes:{
       1:{pos:'50% 84%', posM:'66% 50%'}}}
   };
+/* (13-nov-2026, C2 · «Qué suma v2») TARJETA «A IAGO LE HA GUSTADO» VERIFICADA. Solo para avisos nuevos (payload_json.verificado = true/false);
+     los antiguos se pintan como siempre. Minutos y «+0,xx de actitud» a la derecha (con ×1,5 / ×2 si la actividad multiplica), sello circular de «verificado»
+     encima, y botón amarillo a «Mi actitud». Si es de un portal temático, con su textura (HITO_TEMAS). Cualquier fallo → la tarjeta de siempre.
+     Quitar: borrar esta función, la llamada mgV( en el bloque me_gusta de la campana y las reglas .mgv del CSS. */
+  var MGV_AREA={teoria:'rosa',ritmo:'naranja',entonacion:'azul',audicion:'verde'};
+  var MGV_APP={teoria:'Teoría at home',ritmo:'Ritmo',entonacion:'Entonación',dictado:'Dictado',predict:'PreDict',intervalia:'Intervalia',desafio:'Desafío',acceso:'Acceso rítmico'};
+  function mgV(o,c){
+    try{
+      var pj=o.payload_json||{}; if(typeof pj.verificado!=='boolean') return c;
+      var fm=function(x){ return x.toFixed(2).replace('.',','); };
+      var mins=Math.round(+pj.min||0), pts=+pj.pts||0, mult=+pj.mult||1, base=+pj.pts_base;
+      var k=String(pj.app||'').replace(/-(ge|gp)$/,''), portal=({acustica:'cabana',afrolatin:'sabores'})[k]||k;
+      var T=(typeof HITO_TEMAS!=='undefined' && HITO_TEMAS[portal])||null, n=parseInt(String(pj.parte||'').replace(/^.*?(\d+)\D*$/,'$1'),10)||1;
+      var sid='mgs'+String(o.id).replace(/[^a-z0-9]/gi,'');
+      c=Object.assign({},c); c.cls=(c.cls||'')+' mgv'+(pj.verificado?'':' mgv-no');
+      if(T){ if(!T.partes[n]) n=1; hitoCSS(); c.cls+=' cv2-hito hito-'+hitoTema(portal,n).tema; c.attrs=' data-portal="'+esc(portal)+'" data-n="'+n+'"'; c.sub=esc(T.nombre+(T.parte?' · '+T.parte+' '+n:'')); }
+      else { c.col=MGV_AREA[pj.area]||c.col; if(MGV_APP[k]) c.sub=esc(MGV_APP[k]); }
+      if(pj.texto) c.cuerpo='<div class="alu-item-cuerpo">'+esc(pj.texto)+'</div>';
+      var ver='<svg class="mgv-sello" viewBox="0 0 100 100" aria-hidden="true"><defs><path id="'+sid+'" d="M50,50 m-35,0 a35,35 0 1,1 70,0 a35,35 0 1,1 -70,0"/></defs><circle cx="50" cy="50" r="47" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="50" cy="50" r="43" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="2 2.4"/><text font-size="9.4" font-weight="800" letter-spacing="2.6" fill="currentColor"><textPath href="#'+sid+'">VERIFICADO · VERIFICADO · VERIFICADO ·</textPath></text><path d="M30 52 44 66 71 36" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+      var num='';
+      if(pj.verificado && mins>0){
+        var chip=(mult>1 && isFinite(base) && base>0 && pts>0)?'<div class="mgv-base"><span>'+fm(base)+'</span><span class="mgv-ch '+(mult>=2?'m2':'m15')+'" title="Esta actividad cuenta ×'+String(mult).replace('.',',')+' en tu actitud">×'+String(mult).replace('.',',')+'</span></div>':'';
+        var p=pts>0?'<div class="mgv-pts">'+chip+'<b>+'+fm(pts)+'</b><span>de actitud</span></div>':'<div class="mgv-pts mgv-tope"><b>Tope</b><span>alcanzado</span></div>';
+        num='<div class="mgv-num"><div class="mgv-min"><b>'+mins+'</b><span>min</span></div>'+p+ver+'</div>';
+      } else if(pj.verificado){ num='<div class="mgv-num">'+ver+'</div>'; }
+      var cta='<button type="button" class="mgv-cta" data-mgv-act="1" aria-label="Consulta aquí tu puntaje: estado y límites semanales y trimestrales"><span class="mgv-ic"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M6 21h12M5 7h14"/><path d="M5 7 2.5 13a3 3 0 0 0 5 0zM19 7l-2.5 6a3 3 0 0 0 5 0z"/></svg></span><span class="mgv-lb">Consulta aquí tu puntaje</span></button>';
+      c.sec='<div class="mgv-fila">'+cta+num+'</div>'; c.btn='';
+      if(!window.__lmMgvAct){ window.__lmMgvAct=1;
+        document.addEventListener('click',function(e){ var b=e.target.closest && e.target.closest('[data-mgv-act]'); if(!b) return; e.preventDefault(); e.stopPropagation();
+          try{ if(typeof window.__lmAbrirMiActitud==='function') window.__lmAbrirMiActitud(); else document.dispatchEvent(new CustomEvent('lm:abrir-mi-actitud')); }catch(er){} },true); }
+      return c;
+    }catch(er){ return c; }
+  }
   function hitoTema(portal, n){
     var T=HITO_TEMAS[portal], q=(T && T.partes && T.partes[n]) || null;
     return {tema:(q && q.tema) || (T && T.tema) || 'cab'};
@@ -4702,11 +4759,11 @@ function showEnig(kind){
             document.body.appendChild(ov);
           },true);
         }
-        return cv2Tarjeta({cls:'alu-megusta cv2-info'+(o.leido?'':' no-leido'), id:o.id, col:'azul', ic:'pulgar',
+        return cv2Tarjeta(mgV(o,{cls:'alu-megusta cv2-info'+(o.leido?'':' no-leido'), id:o.id, col:'azul', ic:'pulgar',
           tit:'A Iago le ha gustado', chip:(function(){ var v=false; try{ v=localStorage.getItem('lm_mg_info_visto')==='1'; }catch(er){}
             /* (11-nov-2026, Iago) hasta que lo pulse por primera vez: «¿Qué es este «Me gusta»? ?»; después, solo «?» */
             return '<button type="button" class="alu-mg-info'+(v?'':' con-texto')+'"'+(/\bportal\b/i.test(String((o.payload_json&&o.payload_json.que)||o.cuerpo||''))?' data-portal="1"':'')+' title="¿Qué es este «Me gusta»?" aria-label="¿Qué es este «Me gusta»?">'+(v?'?':'<span class="alu-mg-info-t">¿Qué es este «Me gusta»?</span><span class="alu-mg-info-q">?</span>')+'</button>'; })(),
-          cuerpo:o.cuerpo?'<div class="alu-item-cuerpo">'+esc(o.cuerpo)+'</div>':'', fecha:_f});
+          cuerpo:o.cuerpo?'<div class="alu-item-cuerpo">'+esc(o.cuerpo)+'</div>':'', fecha:_f}));
       }
       /* (11-nov-2026, Iago) Iago dijo que la ficha en papel NO le llegó: en el propio aviso, otra vez «Entregada en clase»
          (con el aviso del buzón) y «Escríbele a Iago» por si no está de acuerdo (un mensaje, le llega a la campana del Diario) */
@@ -5717,6 +5774,8 @@ function showEnig(kind){
     var fr = v.querySelector('iframe'); v.classList.add('open', 'cargando');
     _miAct = datosMiActitud(); fr.src = MI_ACT_URL;
   }
+  /* (13-nov-2026, C2) gancho para el botón «Consulta aquí tu puntaje» de la tarjeta «Me gusta» verificada */
+  window.__lmAbrirMiActitud = function(){ try{ abrirMiActitud(); }catch(e){} };
   function cerrarMiActitud(){ var v = document.getElementById('mi-actitud'); if (!v) return; v.classList.remove('open'); v.querySelector('iframe').src = 'about:blank'; }
   window.addEventListener('message', function(e){
     var m = e.data || {}, v = document.getElementById('mi-actitud'); if (!v || !v.classList.contains('open') || !/^https:\/\/ge\.lmathome\.es$/.test(e.origin)) return;
