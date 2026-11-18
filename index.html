@@ -2315,7 +2315,7 @@ function showEnig(kind){
   }
   function cv2Recortes(body){
     body=body||document.getElementById('alu-body'); if(!body) return;
-    Array.prototype.forEach.call(body.querySelectorAll('.alu-item.cv2:not(.cv2-tareas):not(.cv2-hito):not(.rsm):not(.dct-det)'),function(c){ cv2Mas(c, c.querySelector(':scope > .cv2-mid .cv2-l1')); });   /* (16-oct-2026) sin «Leer mensaje completo» en las de los portales: no tienen más que leer */
+    Array.prototype.forEach.call(body.querySelectorAll('.alu-item.cv2:not(.cv2-tareas):not(.cv2-hito):not(.rsm):not(.dct-det), .alu-item.cv2.mgv.cv2-hito'),function(c){ cv2Mas(c, c.querySelector(':scope > .cv2-mid .cv2-l1')); });   /* (16-oct-2026) sin «Leer mensaje completo» en las de los portales: no tienen más que leer */
     Array.prototype.forEach.call(body.querySelectorAll('.ts-parte.cv2-parte'),function(p){ cv2Mas(p, p.querySelector('.cv2-pt')); });
   }
   var _cv2RT=0;
@@ -2585,14 +2585,17 @@ function showEnig(kind){
       C+'.alu-mg-info.con-texto{width:auto;display:inline-flex;align-items:center;gap:7px;padding:0 3px 0 9px;opacity:.95;font-weight:700;font-size:12.5px}',
       C+'.alu-mg-info.con-texto .alu-mg-info-q{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:4px;background:rgba(147,197,253,.18);font-weight:800}',
       /* (13-nov-2026, C2) «Me gusta» verificado */
-      '#alu-body .alu-item.cv2.mgv>.cv2-mid{grid-template-columns:minmax(0,1fr) auto!important;height:auto!important;min-height:92px;overflow:visible!important}',
+      '#alu-body .alu-item.cv2.mgv>.cv2-mid{grid-template-columns:minmax(0,1fr) auto!important;height:64px!important;min-height:0;overflow:visible!important}',
+      /* (18-nov-2026, Iago: «haz que tengan la misma altura») el 👍 con la altura de las demás (64 px); con «Leer mensaje completo», crece */
+      '#alu-body .alu-item.cv2.mgv.cv2-abierta>.cv2-mid{height:auto!important;min-height:64px}',
+      '#alu-body .alu-item.cv2.mgv>.cv2-mid>.cv2-l1, #alu-body .alu-item.cv2.mgv .cv2-txt{min-width:0}',
       '#alu-body .alu-item.cv2.mgv .cv2-der{display:flex!important;align-items:center;grid-template-rows:none!important;justify-content:flex-end}',
       '#alu-body .alu-item.cv2.mgv .cv2-sec{display:flex!important;position:static!important;align-items:center;justify-content:flex-end}',
       '#alu-body .alu-item.cv2.mgv .mgv-fila{display:flex;align-items:center;gap:14px}',
-      '#alu-body .alu-item.cv2.mgv .mgv-cta{display:flex;flex-direction:column;align-items:center;gap:5px;width:84px;padding:0;border:0;background:none;cursor:pointer;color:inherit;font:inherit}',
-      '#alu-body .alu-item.cv2.mgv .mgv-ic{display:flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:12px;background:#facc15;color:#1c1400;box-shadow:0 2px 8px rgba(0,0,0,.3)}',
-      '#alu-body .alu-item.cv2.mgv .mgv-ic svg{width:24px;height:24px}',
-      '#alu-body .alu-item.cv2.mgv .mgv-lb{font:600 11px/1.15 Helvetica Neue,Arial,sans-serif;color:rgba(255,255,255,.82);text-align:center}',
+      '#alu-body .alu-item.cv2.mgv .mgv-cta{display:flex;flex-direction:column;align-items:center;gap:4px;width:84px;padding:0;border:0;background:none;cursor:pointer;color:inherit;font:inherit}',
+      '#alu-body .alu-item.cv2.mgv .mgv-ic{display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:12px;background:#facc15;color:#1c1400;box-shadow:0 2px 8px rgba(0,0,0,.3)}',
+      '#alu-body .alu-item.cv2.mgv .mgv-ic svg{width:20px;height:20px}',
+      '#alu-body .alu-item.cv2.mgv .mgv-lb{font:600 10px/1.12 Helvetica Neue,Arial,sans-serif;color:rgba(255,255,255,.82);text-align:center}',
       '#alu-body .alu-item.cv2.mgv .mgv-num{position:relative;display:flex;align-items:center;justify-content:flex-end;width:194px;padding:0 14px;box-sizing:border-box}',
       '#alu-body .alu-item.cv2.mgv .mgv-min{display:flex;align-items:baseline;gap:4px;padding-right:14px}',
       '#alu-body .alu-item.cv2.mgv .mgv-min b{font:800 30px/1 Helvetica Neue,Arial,sans-serif;color:#fff}',
@@ -2605,7 +2608,7 @@ function showEnig(kind){
       '#alu-body .alu-item.cv2.mgv .mgv-ch{padding:1px 5px;border-radius:5px;font-weight:800;border:1px solid}',
       '#alu-body .alu-item.cv2.mgv .mgv-ch.m15{color:#fbbf24;border-color:#f59e0b}',
       '#alu-body .alu-item.cv2.mgv .mgv-ch.m2{color:#f87171;border-color:#ef4444}',
-      '#alu-body .alu-item.cv2.mgv .mgv-sello{position:absolute;left:50%;top:50%;width:104px;height:104px;transform:translate(-50%,-50%) rotate(-12deg);opacity:.45;color:var(--cc,#fff);pointer-events:none;z-index:5}',
+      '#alu-body .alu-item.cv2.mgv .mgv-sello{position:absolute;left:50%;top:50%;width:84px;height:84px;transform:translate(-50%,-50%) rotate(-12deg);opacity:.45;color:var(--cc,#fff);pointer-events:none;z-index:5}',
       '#alu-body .alu-item.cv2.mgv.hito-cinta .mgv-sello{color:#efe5cf}',
       '@media (max-width:640px){#alu-body .alu-item.cv2.mgv>.cv2-mid{grid-template-columns:minmax(0,1fr)!important}#alu-body .alu-item.cv2.mgv .cv2-der{grid-column:1!important;grid-row:2!important;justify-content:flex-start}#alu-body .alu-item.cv2.mgv .mgv-fila{flex-wrap:wrap;gap:10px}#alu-body .alu-item.cv2.mgv .mgv-num{width:auto;padding:0}}',
       /* (11-nov-2026, Iago: «que aparezca en verde ese texto, no en gris») aunque toda la tarjeta de tareas esté hecha: el gris va en cada pieza, no en la tarjeta */
@@ -4399,7 +4402,7 @@ function showEnig(kind){
     if(!window.__hitoClic){ window.__hitoClic=1;
       document.addEventListener('click', function(ev){
         var t=ev.target; if(!t || !t.closest) return;
-        var c=t.closest('#alu-body .alu-item.cv2-hito'); if(!c || t.closest('.alu-recl-leido, .cv2-mas, .alu-hito-ir')) return;
+        var c=t.closest('#alu-body .alu-item.cv2-hito:not(.mgv)'); if(!c || t.closest('.alu-recl-leido, .cv2-mas, .alu-hito-ir')) return;   /* (18-nov-2026, Iago) el 👍 con textura de portal NO: tocarlo en cualquier sitio lo da por visto (gris) */
         ev.stopPropagation();
       }, true); }
   }
