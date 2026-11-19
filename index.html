@@ -2604,9 +2604,11 @@ function showEnig(kind){
       '#alu-body .alu-item.cv2.mgv .mgv-pts b{font:800 19px/1.1 Helvetica Neue,Arial,sans-serif;color:#4ade80}',
       '#alu-body .alu-item.cv2.mgv .mgv-pts span{font:600 11px/1.1 Helvetica Neue,Arial,sans-serif;color:rgba(255,255,255,.78)}',
       '#alu-body .alu-item.cv2.mgv .mgv-tope b{color:#facc15}',
-      '#alu-body .alu-item.cv2.mgv.mgv-con-av .cv2-tile{border-color:transparent;background:transparent;opacity:1!important}',
-      '#alu-body .mgv-av{position:relative;width:46px;height:46px;display:block}#alu-body .mgv-av svg{position:absolute;inset:0;width:46px;height:46px}',
-      '#alu-body .mgv-av-n{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1;color:#fff}',
+      /* (19-nov 11:27) sin el cuadrado de fondo de la casilla (ni la textura de portal): solo el marco de áreas, que la ocupa entera */
+      '#alu-body .alu-item.cv2.mgv.mgv-con-av .cv2-tile{border:0!important;background:none!important;background-image:none!important;box-shadow:none!important;opacity:1!important;width:46px!important;height:46px!important;padding:0!important}',
+      '#alu-body .alu-item.cv2.mgv.mgv-con-av .cv2-tile::before,#alu-body .alu-item.cv2.mgv.mgv-con-av .cv2-tile::after{display:none!important}',
+      '#alu-body .mgv-av{position:relative;width:46px;height:46px;display:block;flex:none}#alu-body .mgv-av svg{position:absolute;left:0;top:0;width:46px;height:46px}',
+      '#alu-body .mgv-av-n{position:absolute;left:0;top:0;width:46px;height:46px;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1;color:#fff;text-align:center}',
       '#alu-body .mgv-av-n b{font:800 13px/1 Helvetica Neue,Arial,sans-serif}#alu-body .mgv-av-n i{font-style:normal;font:600 8.5px/1 Helvetica Neue,Arial,sans-serif;opacity:.85;margin-top:1px}',
       '#alu-body .alu-item.cv2.mgv .mgv-tri{margin-top:3px;font:500 11px/1.1 Helvetica Neue,Arial,sans-serif!important;color:rgba(255,255,255,.62)!important}#alu-body .alu-item.cv2.mgv .mgv-tri b{font:800 11px/1.1 Helvetica Neue,Arial,sans-serif;color:rgba(255,255,255,.9)}',
       '#alu-body .alu-item.cv2.mgv .mgv-base{display:flex;align-items:center;gap:5px;font:600 11px/1 Helvetica Neue,Arial,sans-serif;color:rgba(255,255,255,.7)}',
@@ -4338,11 +4340,12 @@ function showEnig(kind){
          la actitud y «N min en el 1T». Solo en los avisos nuevos (los que traen areas_min). */
       var AV=(pj.verificado && pj.areas_min && typeof pj.areas_min==='object' && mins>0);
       if(AV){ var ACOL={ritmo:'#22c55e',entonacion:'#3b82f6',audicion:'#f97316',teoria:'#ec4899'}, AR=['ritmo','entonacion','audicion','teoria'];
-        var vals=AR.map(function(a){return +pj.areas_min[a]||0;}), sum=vals.reduce(function(p,v){return p+v;},0), Cc=2*Math.PI*20.5, off=0, nz=vals.filter(Boolean).length>1?1.2:0;
-        var ring='<circle cx="23" cy="23" r="20.5" fill="none" stroke="rgba(255,255,255,.14)" stroke-width="3.5"/>';
-        if(sum>0) AR.forEach(function(a,i){ var L=Cc*vals[i]/sum; if(L>0) ring+='<circle cx="23" cy="23" r="20.5" fill="none" stroke="'+ACOL[a]+'" stroke-width="3.5" stroke-dasharray="'+Math.max(0,L-nz).toFixed(2)+' '+(Cc-L+nz).toFixed(2)+'" stroke-dashoffset="'+(-off).toFixed(2)+'" transform="rotate(-90 23 23)"/>'; off+=L; });
+        /* (19-nov 11:27, Iago) cuadrado de esquinas suaves (la estética de la casa) cuyo BORDE es el reparto del trimestre por áreas */
+        var vals=AR.map(function(a){return +pj.areas_min[a]||0;}), sum=vals.reduce(function(p,v){return p+v;},0), off=0, gp=vals.filter(Boolean).length>1?0.8:0;
+        var ring='<rect x="1.75" y="1.75" width="42.5" height="42.5" rx="12" fill="none" stroke="rgba(255,255,255,.14)" stroke-width="3.5"/>';
+        if(sum>0) AR.forEach(function(a,i){ var L=100*vals[i]/sum; if(L>0) ring+='<rect x="1.75" y="1.75" width="42.5" height="42.5" rx="12" pathLength="100" fill="none" stroke="'+ACOL[a]+'" stroke-width="3.5" stroke-dasharray="'+Math.max(0,L-gp).toFixed(2)+' '+(100-L+gp).toFixed(2)+'" stroke-dashoffset="'+(-off).toFixed(2)+'"/>'; off+=L; });
         var areaHex=ACOL[pj.area]||'#64748b';
-        c.tileHTML='<span class="mgv-av"><svg viewBox="0 0 46 46">'+ring+'<circle cx="23" cy="23" r="16" fill="'+areaHex+'"/></svg><span class="mgv-av-n"><b>'+mins+'</b><i>min</i></span></span>';
+        c.tileHTML='<span class="mgv-av"><svg viewBox="0 0 46 46">'+ring+'<rect x="6.5" y="6.5" width="33" height="33" rx="8" fill="'+areaHex+'"/></svg><span class="mgv-av-n"><b>'+mins+'</b><i>min</i></span></span>';
         c.cls+=' mgv-con-av'; }
       var num='';
       if(AV){
