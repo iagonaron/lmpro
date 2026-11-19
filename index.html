@@ -2284,7 +2284,7 @@ function showEnig(kind){
        texto ocupa también la columna de los botones */
     if(!String(c.sec||'').trim() && !String(c.btn||'').trim()) c=Object.assign({},c,{cls:(c.cls||'')+' cv2-ancha'});
     return '<div class="alu-item cv2 '+(c.cls||'')+(nS?' cv2-s'+Math.min(nS,2):'')+'" data-id="'+esc(c.id)+'"'+(c.attrs||'')+cv2Estilo(c.col,c.colHex)+'>'
-      +'<div class="cv2-izq"><span class="cv2-tile" aria-hidden="true">'+cv2Svg(c.ic,c.icCls)+'<span class="alu-dot"></span>'+(c.peligro?CV2_PELIGRO:'')+'</span>'
+      +'<div class="cv2-izq"><span class="cv2-tile" aria-hidden="true">'+(c.tileHTML||cv2Svg(c.ic,c.icCls))+'<span class="alu-dot"></span>'+(c.peligro?CV2_PELIGRO:'')+'</span>'
       +(c.fecha?'<span class="alu-item-fecha cv2-fecha">'+esc(c.fecha)+'</span>':'')+'</div>'
       +'<div class="alu-item-main cv2-mid">'
       +'<div class="cv2-cont"><div class="cv2-l1"><span class="alu-item-tit">'+c.tit+(c.sub?'<span class="cv2-sub"> · '+c.sub+'</span>':'')+'</span>'+(c.chip||'')+'</div>'
@@ -2604,6 +2604,11 @@ function showEnig(kind){
       '#alu-body .alu-item.cv2.mgv .mgv-pts b{font:800 19px/1.1 Helvetica Neue,Arial,sans-serif;color:#4ade80}',
       '#alu-body .alu-item.cv2.mgv .mgv-pts span{font:600 11px/1.1 Helvetica Neue,Arial,sans-serif;color:rgba(255,255,255,.78)}',
       '#alu-body .alu-item.cv2.mgv .mgv-tope b{color:#facc15}',
+      '#alu-body .alu-item.cv2.mgv.mgv-con-av .cv2-tile{border-color:transparent;background:transparent;opacity:1!important}',
+      '#alu-body .mgv-av{position:relative;width:46px;height:46px;display:block}#alu-body .mgv-av svg{position:absolute;inset:0;width:46px;height:46px}',
+      '#alu-body .mgv-av-n{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1;color:#fff}',
+      '#alu-body .mgv-av-n b{font:800 13px/1 Helvetica Neue,Arial,sans-serif}#alu-body .mgv-av-n i{font-style:normal;font:600 8.5px/1 Helvetica Neue,Arial,sans-serif;opacity:.85;margin-top:1px}',
+      '#alu-body .alu-item.cv2.mgv .mgv-tri{margin-top:3px;font:500 11px/1.1 Helvetica Neue,Arial,sans-serif!important;color:rgba(255,255,255,.62)!important}#alu-body .alu-item.cv2.mgv .mgv-tri b{font:800 11px/1.1 Helvetica Neue,Arial,sans-serif;color:rgba(255,255,255,.9)}',
       '#alu-body .alu-item.cv2.mgv .mgv-base{display:flex;align-items:center;gap:5px;font:600 11px/1 Helvetica Neue,Arial,sans-serif;color:rgba(255,255,255,.7)}',
       '#alu-body .alu-item.cv2.mgv .mgv-ch{padding:1px 5px;border-radius:5px;font-weight:800;border:1px solid}',
       '#alu-body .alu-item.cv2.mgv .mgv-ch.m15{color:#fbbf24;border-color:#f59e0b}',
@@ -4328,8 +4333,24 @@ function showEnig(kind){
       else { c.col=MGV_AREA[pj.area]||c.col; if(MGV_APP[k]) c.sub=esc(MGV_APP[k]); }
       if(pj.texto) c.cuerpo='<div class="alu-item-cuerpo">'+esc(pj.texto)+'</div>';
       var ver='<svg class="mgv-sello" viewBox="0 0 100 100" aria-hidden="true"><defs><path id="'+sid+'" d="M50,50 m-35,0 a35,35 0 1,1 70,0 a35,35 0 1,1 -70,0"/></defs><circle cx="50" cy="50" r="47" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="50" cy="50" r="43" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="2 2.4"/><text font-size="9.4" font-weight="800" fill="currentColor"><textPath href="#'+sid+'" textLength="219.9" lengthAdjust="spacing">VERIFICADO · VERIFICADO · </textPath></text><path d="M30 52 44 66 71 36" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+      /* (19-nov-2026 11:22, Iago) como en el Pulso: a la izquierda, círculo del color del área con los minutos de ESTA actividad
+         y alrededor el anillo del trimestre por áreas (verde ritmo, azul entonación, naranja audición, rosa teoría); a la derecha,
+         la actitud y «N min en el 1T». Solo en los avisos nuevos (los que traen areas_min). */
+      var AV=(pj.verificado && pj.areas_min && typeof pj.areas_min==='object' && mins>0);
+      if(AV){ var ACOL={ritmo:'#22c55e',entonacion:'#3b82f6',audicion:'#f97316',teoria:'#ec4899'}, AR=['ritmo','entonacion','audicion','teoria'];
+        var vals=AR.map(function(a){return +pj.areas_min[a]||0;}), sum=vals.reduce(function(p,v){return p+v;},0), Cc=2*Math.PI*20.5, off=0, nz=vals.filter(Boolean).length>1?1.2:0;
+        var ring='<circle cx="23" cy="23" r="20.5" fill="none" stroke="rgba(255,255,255,.14)" stroke-width="3.5"/>';
+        if(sum>0) AR.forEach(function(a,i){ var L=Cc*vals[i]/sum; if(L>0) ring+='<circle cx="23" cy="23" r="20.5" fill="none" stroke="'+ACOL[a]+'" stroke-width="3.5" stroke-dasharray="'+Math.max(0,L-nz).toFixed(2)+' '+(Cc-L+nz).toFixed(2)+'" stroke-dashoffset="'+(-off).toFixed(2)+'" transform="rotate(-90 23 23)"/>'; off+=L; });
+        var areaHex=ACOL[pj.area]||'#64748b';
+        c.tileHTML='<span class="mgv-av"><svg viewBox="0 0 46 46">'+ring+'<circle cx="23" cy="23" r="16" fill="'+areaHex+'"/></svg><span class="mgv-av-n"><b>'+mins+'</b><i>min</i></span></span>';
+        c.cls+=' mgv-con-av'; }
       var num='';
-      if(pj.verificado && mins>0){
+      if(AV){
+        var chipA=(mult>1 && isFinite(base) && base>0 && pts>0)?'<span class="mgv-ch '+(mult>=2?'m2':'m15')+'">×'+String(mult).replace('.',',')+'</span> ':'';
+        var tA=(+pj.total_min>0)?'<span class="mgv-tri"><b>'+Math.round(+pj.total_min)+' min</b> en el trimestre</span>':'';
+        var pA=pts>0?'<div class="mgv-pts"><b>'+chipA+'+'+fm(pts)+'</b><span>de actitud</span>'+tA+'</div>':'<div class="mgv-pts mgv-tope"><b>Tope</b><span>alcanzado</span>'+tA+'</div>';
+        num='<div class="mgv-num">'+pA+ver+'</div>';
+      } else if(pj.verificado && mins>0){
         var chip=(mult>1 && isFinite(base) && base>0 && pts>0)?'<div class="mgv-base"><span>'+fm(base)+'</span><span class="mgv-ch '+(mult>=2?'m2':'m15')+'" title="Esta actividad cuenta ×'+String(mult).replace('.',',')+' en tu actitud">×'+String(mult).replace('.',',')+'</span></div>':'';
         var p=pts>0?'<div class="mgv-pts">'+chip+'<b>+'+fm(pts)+'</b><span>de actitud</span></div>':'<div class="mgv-pts mgv-tope"><b>Tope</b><span>alcanzado</span></div>';
         num='<div class="mgv-num"><div class="mgv-min"><b>'+mins+'</b><span>min</span></div>'+p+ver+'</div>';
