@@ -707,7 +707,7 @@ body.tester-sin-by .topbar-right .by{display:none}
       if(document.getElementById('visor-banner')) return;
       var b=document.createElement('div'); b.id='visor-banner';
       b.textContent='\u{1F441} Modo profesor · viendo como el alumno · solo lectura';
-      b.style.cssText='position:fixed;left:0;right:0;top:0;z-index:2147483647;background:linear-gradient(90deg,#7c3aed,#5b21b6);color:#fff;font:700 12.5px/1.4 system-ui,-apple-system,Arial;padding:7px 14px;text-align:center;box-shadow:0 2px 12px rgba(0,0,0,.45);letter-spacing:.02em';
+      b.style.cssText='position:fixed;left:0;right:0;bottom:0;z-index:2147483647;background:#2563eb;color:#fff;font:700 12.5px/1.4 system-ui,-apple-system,Arial;padding:7px 14px calc(7px + env(safe-area-inset-bottom,0px));text-align:center;box-shadow:0 -2px 12px rgba(0,0,0,.45);letter-spacing:.02em;pointer-events:none';   /* (19-nov-2026 15:59, Iago) abajo, fija y en azul (el color del botón de la ficha del alumno): arriba tapaba la barra */
       (document.body||document.documentElement).appendChild(b);
     }
     if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',banner); else banner();
