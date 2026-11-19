@@ -4875,8 +4875,8 @@ function showEnig(kind){
         return cv2Tarjeta({cls:'alu-hito cv2-hito cv2-info hito-'+hT.tema+(o.leido?'':' no-leido'), id:o.id, attrs:' data-portal="'+esc(hj.portal||'')+'" data-n="'+hN+'"', col:'amarillo', ic:'cabana',
           tit:hitoTitulo(hj, hN), chip:hitoChip(hT),
           datos:'<span class="hito-sub">'+hitoSub(hitoSubTxt(hj, o, hN))+'</span>',
-          sec: o.leido?'<span class="hito-hecho">✓ Visto</span>':'<button type="button" class="alu-recl-leido hito-hecho" data-recl-leido="'+esc(o.id)+'">'+cv2Svg('check')+'Marcar como visto</button>',
-          btn:'<a class="alu-hito-ir cv2-btn" href="'+esc(hitoUrl(hj,_hitosD))+'" target="_blank" rel="noopener">'+cv2Svg('play')+'Ir a ver</a>',
+          sec: o.leido?'<span class="hito-hecho">✓ Visto</span>':'<button type="button" class="alu-recl-leido hito-hecho" data-recl-leido="'+esc(o.id)+'">'+cv2Svg('check')+'Ya lo vi en clase</button>',
+          btn:'<a class="alu-hito-ir cv2-btn" href="'+esc(hitoUrl(hj,_hitosD))+'" target="_blank" rel="noopener">'+cv2Svg('play')+(o.leido?'Volver a ver':'Ir a ver')+'</a>'   /* (19-nov 18:41, Iago) visto: en gris y «Volver a ver» */,
           fecha:_f});
       }
       // ---------- FICHA DE TEORÍA suelta (con sus 14 casillas), en TIEMPO EXTRA (roja), EL 0 (negra) y AVISOS de Iago (amarillos)
@@ -5156,7 +5156,7 @@ function showEnig(kind){
   async function marcar(nid,el){
     var id=cuentaId(); if(!id||!nid) return;
     var r=await rpc('suite_alumno_marcar_leido',{p_cuenta_id:id,p_notif_id:nid});
-    if(r && r.ok){ if(el) el.classList.remove('no-leido'); refrescar(); }
+    if(r && r.ok){ if(el){ el.classList.remove('no-leido'); var ir=el.querySelector('.alu-hito-ir'); if(ir && ir.lastChild && ir.lastChild.nodeType===3) ir.lastChild.textContent='Volver a ver'; } refrescar(); }
   }
   async function marcarTodo(){
     var id=cuentaId(); if(!id) return;
