@@ -2604,6 +2604,7 @@ function showEnig(kind){
       '#alu-body .alu-item.cv2.mgv .mgv-pts b{font:800 19px/1.1 Helvetica Neue,Arial,sans-serif;color:#4ade80}',
       '#alu-body .alu-item.cv2.mgv .mgv-pts span{font:600 11px/1.1 Helvetica Neue,Arial,sans-serif;color:rgba(255,255,255,.78)}',
       '#alu-body .alu-item.cv2.mgv .mgv-tope b{color:#facc15}',
+      '#alu-body .alu-item.cv2.mgv .mgv-amar b{color:#facc15}#alu-body .alu-item.cv2.mgv .mgv-amar>span:not(.mgv-tri){color:#facc15}',
       /* (19-nov 11:27) sin el cuadrado de fondo de la casilla (ni la textura de portal): solo el marco de áreas, que la ocupa entera */
       '#alu-body .alu-item.cv2.mgv.mgv-con-av .cv2-tile{border:0!important;background:none!important;background-image:none!important;box-shadow:none!important;opacity:1!important;width:46px!important;height:46px!important;padding:0!important}',
       '#alu-body .alu-item.cv2.mgv.mgv-con-av .cv2-tile::before,#alu-body .alu-item.cv2.mgv.mgv-con-av .cv2-tile::after{display:none!important}',
@@ -4351,7 +4352,9 @@ function showEnig(kind){
       if(AV){
         var chipA=(mult>1 && isFinite(base) && base>0 && pts>0)?'<span class="mgv-ch '+(mult>=2?'m2':'m15')+'">×'+String(mult).replace('.',',')+'</span> ':'';
         var tA=(+pj.total_min>0)?'<span class="mgv-tri"><b>'+Math.round(+pj.total_min)+' min</b> en el trimestre</span>':'';
-        var pA=pts>0?'<div class="mgv-pts"><b>'+chipA+'+'+fm(pts)+'</b><span>de actitud</span>'+tA+'</div>':'<div class="mgv-pts mgv-tope"><b>Tope</b><span>alcanzado</span>'+tA+'</div>';
+        /* (19-nov 11:44, Iago) si con este trabajo llega al tope, se suma lo que quedaba, en amarillo, con «tope semanal alcanzado» */
+        var topeT=!!pj.tope_trim_ahora, topeS=!!(pj.tope_semana_ahora||pj.semana_llena);
+        var pA=pts>0?'<div class="mgv-pts'+((topeT||topeS)?' mgv-amar':'')+'"><b>'+chipA+'+'+fm(pts)+'</b><span>'+(topeT?'tope del trimestre alcanzado':topeS?'tope semanal alcanzado':'de actitud')+'</span>'+tA+'</div>':'<div class="mgv-pts mgv-tope"><b>Tope</b><span>alcanzado</span>'+tA+'</div>';
         num='<div class="mgv-num">'+pA+ver+'</div>';
       } else if(pj.verificado && mins>0){
         var chip=(mult>1 && isFinite(base) && base>0 && pts>0)?'<div class="mgv-base"><span>'+fm(base)+'</span><span class="mgv-ch '+(mult>=2?'m2':'m15')+'" title="Esta actividad cuenta ×'+String(mult).replace('.',',')+' en tu actitud">×'+String(mult).replace('.',',')+'</span></div>':'';
