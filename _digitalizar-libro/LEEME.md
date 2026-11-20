@@ -28,3 +28,6 @@ Lecciones elegidas en el plan de cartas del Diario que aún no están en digital
 
 ## Pendientes para libro.js
 (apúntalos aquí: lección · qué falta)
+- GP 046 · tresillos (c4-5, c8-9) y quintillo 5:6 (c11-12) que cruzan la barra: partidos en dos compases incompletos (no hay grupo que cruce barra).
+- GP 047 · grupo 4:3 (c6-7) cruza la barra: partido igual; el c9 suma 22 semicorcheas en el libro (pide 24), queda incompleto. «♪ = ♪» del cambio a 12/8 no se dibuja.
+- GP 127 · doble puntillo (c4, c8, c9): no hay en el formato; escrito como puntillo + figura unida (misma duración).

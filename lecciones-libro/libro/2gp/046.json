@@ -1,0 +1,200 @@
+{
+ "v": 1,
+ "libro": "Ritmo entonado 2.º GP",
+ "curso": "2Gp",
+ "grado": "gp",
+ "n": 46,
+ "titulo": "46",
+ "titulo_estilo": {
+  "x": 82,
+  "y": 108,
+  "px": 43
+ },
+ "numeros_x": 64,
+ "captura": "https://woiptkyrxkbpnvioypit.supabase.co/storage/v1/object/public/diario/libros_lecciones/2Gp/ritmo_entonado/full/046.png",
+ "tonalidad": "Sol mayor",
+ "armadura": "G",
+ "modo": "mayor",
+ "clave": "bass",
+ "pagina": {
+  "ancho": 1680,
+  "alto": 951,
+  "interlinea": 16.5
+ },
+ "sistemas": [
+  {
+   "y": 57,
+   "x0": 176,
+   "barras": [
+    845,
+    1227,
+    1669
+   ],
+   "compases": [
+    1,
+    2,
+    3
+   ]
+  },
+  {
+   "y": 323,
+   "x0": 55,
+   "barras": [
+    697,
+    1217,
+    1669
+   ],
+   "compases": [
+    4,
+    5,
+    6
+   ]
+  },
+  {
+   "y": 585,
+   "x0": 55,
+   "barras": [
+    591,
+    1082,
+    1669
+   ],
+   "compases": [
+    7,
+    8,
+    9
+   ]
+  },
+  {
+   "y": 846,
+   "x0": 55,
+   "barras": [
+    597,
+    1210,
+    1670
+   ],
+   "compases": [
+    10,
+    11,
+    12
+   ],
+   "final": "fin"
+  }
+ ],
+ "compases": [
+  {
+   "c": 1,
+   "compas": "7/8",
+   "m": "v 8:g3 8:f#3 | v 8:g3! 16:g3 16:f#3 | v 8:g3 16:r 16:f#3 | v 16:g3 16:a3"
+  },
+  {
+   "c": 2,
+   "m": "v 16:b3 16:a3 | v 8:g3 | v 4:d3- | v 8:e3! | ^ 4:b2-"
+  },
+  {
+   "c": 3,
+   "m": "v 8:d3> | v 8:r | v 16:d3 16:e3 16:f#3 16:e3 | v 8:d3 | v 8:r | v 16:d3 16:e3"
+  },
+  {
+   "c": 4,
+   "incompleto": true,
+   "m": "v 16:f#3 16:g3 16:a3 16:g3 16:f#3 16:e3 | v 4:d3 | ^ 8:a2 | v 8:d3 8:e3"
+  },
+  {
+   "c": 5,
+   "incompleto": true,
+   "m": "v 8:f#3 | v 4:d3 | v 8:a3 | v 16:d3 16:e3 16:f#3 16:g3 16:a3 | v 8:b3"
+  },
+  {
+   "c": 6,
+   "m": "v 8:b3 8:a3 | v 8:r | v 8:b3 8:a3 | v 16:g3 16:f#3 16:e3 16:g3"
+  },
+  {
+   "c": 7,
+   "m": "^ 4.:r | v 4:d3- | ^ 4:r"
+  },
+  {
+   "c": 8,
+   "incompleto": true,
+   "m": "^ 8:r | ^ 4:a2- | ^ 4.:r | ^ 8:d3 8:c#3"
+  },
+  {
+   "c": 9,
+   "incompleto": true,
+   "m": "^ 8:d3 | ^ 8:b2- 8:d3- | v 16:e3 16:f#3 16:e3 16:d3 16:c3 16:b2"
+  },
+  {
+   "c": 10,
+   "m": "^ 8:r | ^ 4:a2> | ^ 8:r | v 16:a3 16:b3 8:a3 | ^ 8:r"
+  },
+  {
+   "c": 11,
+   "incompleto": true,
+   "m": "v 16:a3 16:b3 16:a3 16:g3 16:f#3 | v 8.:g3 16:e3 8:c3 | ^ 16:d3 16:c3 16:b2"
+  },
+  {
+   "c": 12,
+   "incompleto": true,
+   "m": "^ 16:a2 16:d3 | ^ 8:g2 | v 4:g3> | ^ 4.:r"
+  }
+ ],
+ "ligaduras": [
+  "1.1-1.2 arriba",
+  "1.4-1.6 arriba",
+  "1.8-2.3 arriba",
+  "3.3-3.7 arriba",
+  "3.9-3.10 arriba",
+  "4.1-4.8 arriba",
+  "4.9-5.3 arriba",
+  "5.4-6.2 arriba",
+  "6.4-6.9 arriba",
+  "8.4-9.1 abajo",
+  "9.4-9.9 arriba",
+  "10.4-10.6 arriba",
+  "11.1-11.5 arriba",
+  "11.6-11.8 arriba",
+  "11.9-12.3 abajo"
+ ],
+ "tresillos": [
+  {
+   "notas": "4.9-4.10"
+  },
+  {
+   "notas": "5.1-5.1",
+   "cifra": false
+  },
+  {
+   "notas": "5.4-5.8",
+   "r": "5:4",
+   "ratio": true
+  },
+  {
+   "notas": "8.4-8.5"
+  },
+  {
+   "notas": "9.1-9.1",
+   "cifra": false
+  },
+  {
+   "notas": "9.2-9.3",
+   "r": "2:3"
+  },
+  {
+   "notas": "11.1-11.5",
+   "r": "5:4",
+   "ratio": true
+  },
+  {
+   "notas": "11.9-11.11",
+   "r": "5:6",
+   "ratio": true
+  },
+  {
+   "notas": "12.1-12.2",
+   "r": "5:6",
+   "cifra": false
+  }
+ ],
+ "pendiente": [
+  "Tresillo (c4-5, c8-9) y quintillo 5:6 (c11-12) que cruzan la barra de compás: se parten en dos compases marcados como incompletos (suman 28 semicorcheas entre los dos)."
+ ]
+}

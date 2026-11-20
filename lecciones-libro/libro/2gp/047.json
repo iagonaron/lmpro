@@ -1,0 +1,55 @@
+{
+ "v": 1,
+ "libro": "Ritmo entonado 2.º GP",
+ "curso": "2Gp",
+ "grado": "gp",
+ "n": 47,
+ "titulo": "47",
+ "titulo_estilo": {"x": 82, "y": 122, "px": 42},
+ "numeros_x": 64,
+ "captura": "https://woiptkyrxkbpnvioypit.supabase.co/storage/v1/object/public/diario/libros_lecciones/2Gp/ritmo_entonado/full/047.png",
+ "tonalidad": "Mi menor",
+ "armadura": "G",
+ "modo": "menor",
+ "clave": "treble",
+ "pagina": {"ancho": 1680, "alto": 968, "interlinea": 16.5},
+ "sistemas": [
+  {"y": 75, "x0": 176, "barras": [522, 1132, 1669], "compases": [1, 2, 3]},
+  {"y": 340, "x0": 58, "barras": [972, 1670], "compases": [4, 5]},
+  {"y": 602, "x0": 58, "barras": [795, 1593], "compases": [6, 7], "final": "doble", "cortesia": {"x1": 1670, "compas": "12/8"}},
+  {"y": 863, "x0": 58, "barras": [1155, 1670], "compases": [8, 9], "final": "fin"}
+ ],
+ "compases": [
+  {"c": 1, "compas": "4/4", "anacrusa": true, "m": "^ 16:b4 16:a4 16:g4 16:f#4"},
+  {"c": 2, "m": "^ 16:e4 16:d#4 | ^ 8:e4 8:b3 | ^ 8:e4 8.:b4 16:b4 | v 16:e5 16:d5 16:c5 16:b4"},
+  {"c": 3, "m": "v 16:a4 16:g4 | ^ 8:f#4! | ^ 8:a4 8:c5 8:a4 | ^ 8:f#4! | ^ 8:e4 8:d#4"},
+  {"c": 4, "m": "^ 4:r | ^ 16:e4 16:f#4 16:g4 16:a4 | ^ 16:g4 16:f#4 8:e4 | ^ 8:r | ^ 16:e4 16:f#4"},
+  {"c": 5, "m": "^ 16:g4 16:a4 | ^ 16:g4 16:a4 8:b4 | ^ 8:r | v 8:e5 8:f#5 | v 8:e5 8:f#5"},
+  {"c": 6, "incompleto": true, "m": "v 8:g5 8:f#5 8:e5 | v 4.:c5 | ^ 8:a4 8:b4 8:c5"},
+  {"c": 7, "incompleto": true, "m": "^ 8:a4 | ^ 8:g4! | ^ 16:b4 16:c5 16:b4 16:a4 16:g4 16:b4 | ^ 4:f#4 | ^ 8:r"},
+  {"c": 8, "compas": "12/8", "m": "^ 16:e4 16:d#4 16:e4 16:f#4 16:g4 16:f#4 | ^ 8:r | ^ 8:e4 8:f#4 8:g4 | ^ 8:r | ^ 8:e4 8:d4 8:b3 | ^ 8:r | ^ 8.:b4 16:a4"},
+  {"c": 9, "incompleto": true, "m": "^ 16:g4 16:f#4 | ^ 4.:r | v 4:e5> | ^ 4.:e4^ | ^ 4:r"}
+ ],
+ "ligaduras": [
+  "1.1-2.5 abajo", "2.6-3.3 arriba", "3.4-3.7 abajo", "3.8-3.9 abajo",
+  "4.2-4.8 abajo", "4.10-5.5 abajo", "5.7-5.8 arriba", "5.9-5.10 arriba",
+  "6.1-6.4 arriba", "6.5-7.2 abajo", "7.3-7.9 abajo",
+  "8.1-8.6 abajo", "8.8-8.10 abajo", "8.12-8.14 abajo", "8.16-9.2 abajo"
+ ],
+ "tresillos": [
+  {"notas": "6.5-6.7", "r": "4:3", "ratio": true},
+  {"notas": "7.1-7.1", "r": "4:3", "cifra": false},
+  {"notas": "8.8-8.10"},
+  {"notas": "8.12-8.14"}
+ ],
+ "notas_libro": [
+  {
+   "lineas": [{"x0": 1613, "x1": 1636, "y": 581, "partes": ["="]}],
+   "ritmos": [
+    {"figs": "8", "xs": [1589], "y": 575, "yb": 543},
+    {"figs": "8", "xs": [1649], "y": 575, "yb": 543}
+   ]
+  }
+ ],
+ "pendiente": ["Grupo 4:3 (c6-7) que cruza la barra: partido en dos compases marcados como incompletos (suman 32 semicorcheas entre los dos). El último compás (c9) suma 22 semicorcheas en el libro (pide 24): se deja como incompleto."]
+}

@@ -1,0 +1,35 @@
+{
+ "v": 1,
+ "libro": "Ritmo entonado 2.º GP",
+ "curso": "2Gp",
+ "grado": "gp",
+ "n": 117,
+ "titulo": "117",
+ "titulo_estilo": {"fuente": "sans", "x": 72, "y": 123, "px": 42},
+ "numeros_x": 64,
+ "captura": "https://woiptkyrxkbpnvioypit.supabase.co/storage/v1/object/public/diario/libros_lecciones/2Gp/ritmo_entonado/full/117.png",
+ "tonalidad": "Sol menor",
+ "armadura": "Bb",
+ "modo": "menor",
+ "clave": "bass",
+ "pagina": {"ancho": 1680, "alto": 399, "interlinea": 16.4},
+ "sistemas": [
+  {"y": 73, "x0": 176, "barras": [964, 1670], "compases": [1, 2]},
+  {"y": 292, "x0": 58, "barras": [802, 1262, 1670], "compases": [3, 4, 5], "final": "fin"}
+ ],
+ "compases": [
+  {"c": 1, "compas": "7/4", "m": "^ 4:g2- | ^ 8:d2 8:g2 | ^ 8:bb2 8:d3 | v 4:g3 | ^ 8:r | v 8:g3 | v 8:f3 8:eb3 | v 8:f3 8:g3"},
+  {"c": 2, "m": "^ 8.:d3 16:bb2 | v 8:d3 | ^ 8:r | ^ 8.:d3 16:bb2 | ^ 8:g2 | ^ 8:r | ^ 8:bb2 8:g2 | ^ 8:d2 8:e2 | ^ 4:f#2"},
+  {"c": 3, "m": "^ 4:g2- | ^ 8:d2 8:e2 8:f#2 | ^ 8:g2 8:d2 | ^ 4.:bb2 | ^ 8:c3 | ^ 8.:bb2 16:a2 | ^ 8.:g2 16:bb2"},
+  {"c": 4, "m": "v 4:d3! | ^ 4:a2! | ^ 4:r | ^ 4:f2! | ^ 4:d2 | ^ 4:r | ^ 16:d3 8:c3 16:a2"},
+  {"c": 5, "m": "^ 2:g2 | ^ 8:r | ^ 8:d2 | ^ 8:bb2 8:d2 | ^ 2:g2 | ^ 4:r"}
+ ],
+ "ligaduras": [
+  "1.2-1.6 arriba", "1.8-2.3 arriba", "2.5-2.7 abajo", "2.9-2.13 abajo",
+  "3.7-4.1 arriba", "4.7-5.1 abajo", "5.5-5.6 abajo"
+ ],
+ "tresillos": [
+  {"notas": "3.2-3.4"}
+ ],
+ "pendiente": []
+}
