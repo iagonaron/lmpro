@@ -246,7 +246,10 @@
         try{ if(typeof drawPulseTicks==='function' && !m.groupInfo) drawPulseTicks(ctx,m,vf,stave); }catch(e){}
         m.notes.forEach(function(n,k){ if(n.rest) return; var sn=vf[k]; var cx=stave.getNoteStartX(), cy=yTop+60, rad=8;
           try{ var bx=sn.getNoteHeadBeginX(), ex=sn.getNoteHeadEndX(); cx=(bx+ex)/2; var ys=sn.getYs(); if(ys&&ys.length) cy=ys[0]; rad=Math.max(7,(ex-bx)/2+2.5); }catch(e){}
-          XHEAD_POS.push({cx:cx,cy:cy,rad:rad}); });
+          XHEAD_POS.push({cx:cx,cy:cy,rad:rad});
+          /* (20-nov 17:38, Iago) blancas y redondas en modo X: la X dentro de su cabeza sin rellenar */
+          if(typeof RHYTHM_XHEADS!=='undefined' && RHYTHM_XHEADS && /^(h|w)$/.test(durBase(n.dur))){ try{ var _w=durBase(n.dur)==='w', _g=new VF.Glyph(_w?'noteheadWhole':'noteheadHalf', (VF.Tables&&VF.Tables.NOTATION_FONT_SCALE)||39), _gw=_g.getMetrics().width||12;
+            ctx.save(); ctx.setFillStyle('#111'); _g.render(ctx, cx-_gw/2, cy); ctx.restore(); }catch(e){} } });
       });
       var sigS=J.sistemas[si+1], sigClave=sigS?(sigS.clave||J.clave||'treble'):null;
       if(sigS && sigClave!==(ph._claveAct||ph.clef)){ try{ var ulS=estaves[sis.compases[sis.compases.length-1]]; var gl={treble:'gClef',bass:'fClef'}[sigClave];
