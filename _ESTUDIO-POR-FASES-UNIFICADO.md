@@ -118,3 +118,11 @@ los cambios del 20-nov 10:06–10:12 (§5), AJUSTADOS con la recapitulación de 
 - Diferencias de los AT HOME frente al visor (notificaciones): hay **temporizador**; el botón que arranca cada fase dice algo como **«Iniciar tiempo»** (que el alumno sepa que el reloj empieza al pulsarlo); y **no se puede volver a fases anteriores**. En el visor (lecciones desde la notificación) SÍ se puede ir a cualquier fase.
 - Al final de la realización final: **una sola ventana** con el **porcentaje** (y su texto y la ayuda de piano), la **dificultad** 0–10 (Tester/Protester) y **«Repetir»** (sin tapar el resultado con otra ventana).
 - Acompañamiento: acorde en el **primer pulso de cada compás**, aunque repita el anterior.
+
+## 13. Entonación: sonido, puntuación y armonía (Iago, 20-nov 13:32–13:35) — PARA TODOS
+- El **piano suena bajo** (acordes, tónica, escala, arpegio): más alto (en el visor, ganancia ×2).
+- **Arpegio** con el mismo pulso que la escala (no quedarse parado en la nota aguda).
+- **Puntuación más amable**: el profesor cantando bien sacó un 80 % y debería ser ~95 %. Visor: verde ≤ 60 cents (antes 40), ámbar ≤ 150 (antes 100), verde sostenido 15 % (antes 25 %).
+- En la realización final **el piano ayuda más** (un escalón más de ayuda en cada pentagrama tras el primero).
+- La **ventana del resultado no debe tapar** la partitura: semitransparente y en una esquina, para ver las notas verdes/ámbar/rojas.
+- **Armonía más rica**: no todo I-IV-V-I; usar vi y ii (y iii) cuando la melodía lo pida (p. ej. sol-mi-sol-si-sol → vi). En el visor, armonizador con esos grados más baratos y cambio de acorde en la parte fuerte.

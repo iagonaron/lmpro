@@ -155,14 +155,14 @@
         GRADOS.forEach(function(r){ var pcs=pcsDe(r), p=pulsos[i];
           if(p.prim!=null && pcs.indexOf(p.prim)<0){ coste[i][r]=Infinity; return; }
           var tot=0,dentro=0; p.dentro.forEach(function(x){ tot+=x.d; if(pcs.indexOf(x.pc)>=0) dentro+=x.d; });
-          var c=(tot?(1-dentro/tot)*2.2:0) + ({I:0,IV:0.15,V:0.15,vi:0.35,ii:0.35,iii:0.8})[r];
+          var c=(tot?(1-dentro/tot)*2.6:0) + ({I:0.2,IV:0.12,V:0.12,vi:0.1,ii:0.12,iii:0.3})[r];   /* (13:35, Iago) más rico: vi, ii y iii además de I-IV-V */
           if(i===0 && pi===0 && r!=='I') c+=3;               /* empieza en tónica */
           if(i===N-1){ if(ultimaFrase){ if(r!=='I') c+=6; } else if(r!=='V' && r!=='I') c+=1.2; }
           if(i===N-2 && ultimaFrase && r!=='V') c+=1.5;      /* cadencia perfecta al final */
           if(i===0){ coste[i][r]=c; return; }
           var mejor=Infinity, arg=null;
           GRADOS.forEach(function(r0){ var v=coste[i-1][r0]; if(!isFinite(v)) return;
-            var t=TRANS[r0][r]; if(pulsos[i].q0>0 && r0!==r) t+=0.25;   /* cambio en pulso débil: un poco menos natural */
+            var t=TRANS[r0][r]; if(pulsos[i].q0>0 && r0!==r) t+=0.25; if(pulsos[i].q0===0 && r0===r && i>1) t+=0.35;   /* en la parte fuerte, mejor cambiar de acorde que repetir */   /* cambio en pulso débil: un poco menos natural */
             if(v+t<mejor){ mejor=v+t; arg=r0; } });
           coste[i][r]=c+mejor; de[i][r]=arg; });
       }
@@ -547,6 +547,7 @@
     +'.lb-fin .esc{display:grid;grid-template-columns:repeat(11,1fr);gap:5px}.lb-fin .esc button{height:36px;border-radius:8px;border:1px solid rgba(148,163,184,.3);background:rgba(15,23,42,.6);color:#fff;font:700 14px/1 inherit;cursor:pointer}'
     +'.lb-fin .esc button.on{background:var(--lbc,#16a34a);border-color:var(--lbc,#16a34a)}.lb-fin .ley{display:flex;justify-content:space-between;font-size:11px;color:#94a3b8;margin-top:5px}'
     +'.lb-fin .lb-res .score{font-size:46px;font-weight:900;margin:0 0 6px;color:#fff}.lb-fin .lb-res .score.good{color:#22c55e}.lb-fin .lb-res .score.mid{color:#f59e0b}.lb-fin .lb-res .score.low{color:#ef4444}.lb-fin .lb-res p{margin:0 0 6px;font-size:13.5px;line-height:1.45;color:#cbd5e1}.lb-fin .lb-res .rp-estim{font-size:12px;color:#94a3b8}'
+    +'.lb-fin.trans{background:rgba(6,10,18,.12);-webkit-backdrop-filter:none;backdrop-filter:none;align-items:flex-end;justify-content:flex-end;padding:0 18px 18px 0;pointer-events:none}.lb-fin.trans .c{pointer-events:auto;width:min(430px,92vw);padding:16px 18px;background:rgba(10,16,28,.86)}.lb-fin.trans .lb-res .score{font-size:36px}.lb-fin.trans .t{font-size:17px;margin-bottom:8px}.lb-fin.trans .c{width:min(380px,92vw)}.lb-fin.trans .lb-res p{font-size:12.5px}.lb-fin.trans .rp-estim{display:none}.lb-fin.trans .esc button{height:30px;font-size:12.5px}.lb-fin.trans .sec{margin-bottom:10px}.lb-fin.trans .acc button{height:36px}'
     +'.lb-fin .acc{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;margin-top:6px}.lb-fin .acc button{height:42px;padding:0 18px;border-radius:10px;font:800 14px/1 inherit;cursor:pointer}'
     +'.lb-fin .b2{background:transparent;border:1px solid rgba(255,255,255,.35);color:#fff}.lb-fin .b1{background:#2563eb;border:0;color:#fff}.lb-fin .b1.verde{background:#16a34a}';
   function esTester(){ try{ return typeof rpEsTesterCuenta==='function' && rpEsTesterCuenta(); }catch(e){ return false; } }
@@ -570,7 +571,7 @@
   /* tarjeta: fin de vuelta (fase 2) o solo dificultad (al pasar a la 3) */
   function abreFin(op){ op=op||{}; document.querySelectorAll('.lb-fin').forEach(function(x){ x.remove(); });
     var tester=esTester();
-    var sc=document.createElement('div'); sc.className='lb-fin'; var c=document.createElement('div'); c.className='c'; if(op.final) sc.style.setProperty('--lbc','#2563eb');
+    var sc=document.createElement('div'); sc.className='lb-fin'; var c=document.createElement('div'); c.className='c'; if(op.final){ sc.style.setProperty('--lbc','#2563eb'); sc.classList.add('trans'); }
     var h='<p class="k">'+(op.soloDif?'Antes de la entonación':op.final?'Realización final':'Fase 2 · Ritmo con la mano')+'</p><p class="t">'+(op.final?'Tu resultado':'¿Qué tal ha ido?')+'</p>';
     if(op.final && op.res) h+='<div class="sec lb-res">'+op.res.pct+op.res.txt+'</div>';
     if(!op.final) h+='<div class="sec"><p class="lab">Elige tu carita: <b>solo la ves tú</b>, no se guarda.</p><div class="caras">'+CARAS.map(function(x,i){ return '<button type="button" data-i="'+i+'" title="'+x[1]+'" class="'+(CARA===i?'on':'')+'">'+x[0]+'</button>'; }).join('')+'</div></div>';
@@ -637,6 +638,14 @@
     if(typeof window.rpOido==='function'){ var _ro=window.rpOido; window.rpOido=function(o){ if(o!=='a') return _ro.apply(this,arguments);
         try{ if(!currentLesson) return; stopPlayer(); ensurePiano(); var c=ac(); if(!c) return; var L=currentLesson, base=rpTonicaBase(), isMin=L.modo!=='mayor', st=0.4, t=c.currentTime+0.12;
           (isMin?[0,3,7,12,7,3,0]:[0,4,7,12,7,4,0]).forEach(function(x,i,arr){ pianoHit(base+x,t,(i===arr.length-1?st*1.6:st*0.9),0.12); t+=st; }); }catch(e){ return _ro.apply(this,arguments); } }; }
+    /* (13:35, Iago) piano más alto; puntuación más amable; en la realización final el piano ayuda más */
+    if(typeof window.pianoHit==='function'){ var _ph=window.pianoHit; window.pianoHit=function(m,t,d,g){ return _ph.call(this,m,t,d,(g||0.1)*2.0); }; }
+    try{ if(typeof RPCFG!=='undefined'){ RPCFG.centsPerfect=RPCFG.centsPerfectLow=60; RPCFG.centsNear=RPCFG.centsNearLow=150; RPCFG.verdeSostenido=0.15; } }catch(e){}
+    if(typeof window.rpAnaliza==='function'){ var _ra=window.rpAnaliza; var MAS={none:'sysStart',sysStart:'every2',every2:'every1',every1:'every1'};
+      window.rpAnaliza=function(){ var r=_ra.apply(this,arguments);
+        try{ if(!PR._lbVisto) PR._lbVisto={0:1}; Object.keys(PR.nivel||{}).forEach(function(k){ if(PR._lbVisto[k]) return; PR._lbVisto[k]=1; PR.nivel[k]=MAS[PR.nivel[k]]||PR.nivel[k]; }); }catch(e){}
+        return r; }; }
+    if(typeof window.rpEntrarPrueba==='function'){ var _ep=window.rpEntrarPrueba; window.rpEntrarPrueba=function(){ var r=_ep.apply(this,arguments); try{ PR._lbVisto={0:1}; }catch(e){} return r; }; }
     /* intervalos: trazo recto (del punto de partida al de llegada) */
     document.addEventListener('pointermove',function(){ try{ var stt=RP_ANOT.get(currentLesson); if(!stt) return;
         Object.keys(stt.pages||{}).forEach(function(k){ var L=stt.pages[k].strokes||[], sk=L[L.length-1]; if(sk && sk.i && sk.p && sk.p.length>2) sk.p.splice(1, sk.p.length-2); }); }catch(e){} }, true);
