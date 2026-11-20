@@ -853,6 +853,42 @@
       window.addEventListener('resize',function(){ clearTimeout(encajaEntrada._t); encajaEntrada._t=setTimeout(encajaEntrada,200); });
       window.encajaEntradaGlobal=encajaEntrada;
       try{
+  /* (20-nov 17:56, Iago y un alumno) SUBDIVISIÓN QUE «SUBE UNA TALLA»: la subdivisión elegida es relativa al pulso. En un compás
+     de pulso de blanca (denominador 2) o de blanca con puntillo, «corcheas» suena en negras y «semicorcheas» en corcheas; y,
+     mientras suena ese compás, los botones lo enseñan (negra / corchea). En la fase 1 de percusión, corcheas por defecto. */
+  (function(){
+    if(typeof window.subClicks!=='function' || window.subClicks.__lbTalla) return;
+    /* los compases de denominador 2 (2/2, 3/2, 4/2): el pulso es la BLANCA (antes la claqueta solo daba el primero) */
+    if(typeof window.pulseOnsetsQ==='function' && !window.pulseOnsetsQ.__lbBlanca){ var _po=window.pulseOnsetsQ;
+      window.pulseOnsetsQ=function(m){ try{ var nd=String(m.time).split('/').map(Number); if(nd[1]===2 && !m.wideTernary && !m.fracSig) return Array.from({length:nd[0]},function(_,i){ return i*2; }); }catch(e){} return _po.apply(this,arguments); };
+      window.pulseOnsetsQ.__lbBlanca=1; }
+    function pulsoDe(mm){ var o=mm.onsets||[]; return o.length>1 ? (o[1]-o[0]) : mm.cap; }
+    var _sc=window.subClicks;
+    window.subClicks=function(sched){ var out=_sc.apply(this,arguments);
+      try{ var st=(typeof subStepQ==='function')?subStepQ():null; if(st==null || !sched || !sched.measInfo) return out;
+        sched.measInfo.forEach(function(mm){ if(mm.noMeter || pulsoDe(mm)<2-1e-6) return; var paso=st*2;
+          out=out.filter(function(o){ if(!o.sub || o.q<mm.q-1e-6 || o.q>=mm.q+mm.cap-1e-6) return true; var r=(o.q-mm.q)/paso; return Math.abs(r-Math.round(r))<1e-6; }); });
+      }catch(e){}
+      return out; };
+    window.subClicks.__lbTalla=1;
+    if(typeof window.rpSubDefecto==='function'){ var _sd=window.rpSubDefecto;
+      window.rpSubDefecto=function(ph){ var antes=(typeof rpSubFase!=='undefined')?rpSubFase:null; var r=_sd.apply(this,arguments);
+        try{ if(ph && ph.kind==='ritmo' && typeof rpSubFase!=='undefined' && rpSubFase!==antes && subMode==='pulso') subMode='corchea'; }catch(e){}
+        return r; }; }
+    var NEGRA='<svg viewBox="0 0 24 36" width="13" height="20" aria-hidden="true"><line x1="8" y1="6" x2="8" y2="28" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><ellipse cx="6" cy="29" rx="5" ry="3.6" transform="rotate(-22 6 29)" fill="currentColor"/></svg>';
+    var cache={L:null,n:0,ev:null,mi:null}, grande=null;
+    function pulsoEn(idx){ try{ var els=collectAllEls(); if(cache.L!==currentLesson || cache.n!==els.length){ cache.L=currentLesson; cache.n=els.length; cache.ev=allEvents(currentLesson); cache.mi=buildSchedule(currentLesson).measInfo||[]; }
+        var ev=cache.ev[idx]; if(!ev) return null; var q=ev.onsetQ; for(var i=0;i<cache.mi.length;i++){ var mm=cache.mi[i]; if(q>=mm.q-1e-6 && q<mm.q+mm.cap-1e-6) return mm.noMeter?1:pulsoDe(mm); } }catch(e){} return null; }
+    function pon(g){ var G=g?'1':'0', c=document.querySelector('button.subsym[data-s="corchea"]'), s=document.querySelector('button.subsym[data-s="semicorchea"]');
+      [c,s].forEach(function(b){ if(b && b.dataset.lbOrig==null) b.dataset.lbOrig=b.innerHTML; });
+      if(c && c.dataset.lbG!==G){ c.dataset.lbG=G; c.innerHTML=g?NEGRA:c.dataset.lbOrig; }
+      if(s && s.dataset.lbG!==G){ s.dataset.lbG=G; s.innerHTML=g?(c?c.dataset.lbOrig:s.dataset.lbOrig):s.dataset.lbOrig; } }
+    function mira(){ var e=document.querySelector('#score g.vf-stavenote.vf-gold'); if(!e){ pon(false); return; }
+      var p=pulsoEn(collectAllEls().indexOf(e)); if(p!=null) pon(p>=2-1e-6); }
+    try{ new MutationObserver(function(){ mira(); }).observe(document.body,{attributes:true,attributeFilter:['class'],subtree:true}); }catch(e){}
+  })();
+      }catch(e){}
+      try{
   /* (20-nov 17:51, Iago) fase 3 de entonación: al reproducir con el acompañamiento, las notas AZULES (pistas elegidas y ayuda del
      piano) suenan en el piano en su momento, todas igual. */
   (function(){ if(typeof window.play!=='function' || window.play.__lbAzules) return; var _pl=window.play;
