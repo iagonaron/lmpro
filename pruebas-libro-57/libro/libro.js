@@ -852,6 +852,10 @@
       var anotFuera=function(){ try{ if(typeof studyMode!=='undefined' && studyMode) return; if(typeof rpAnotarMontar_==='function') rpAnotarMontar_(); encajaEntrada(); }catch(e){} };
       window.addEventListener('resize',function(){ clearTimeout(encajaEntrada._t); encajaEntrada._t=setTimeout(encajaEntrada,200); });
       window.encajaEntradaGlobal=encajaEntrada;
+      /* (20-nov 17:44, Iago) claqueta (pulso y subdivisión) más fuerte en las fases de estudio */
+      try{ if(typeof window.click==='function' && !window.click.__lbFuerte){ var _clk=window.click;
+        window.click=function(t0,accent,vol){ var est=false; try{ est=(typeof studyMode!=='undefined' && studyMode); }catch(e){}
+          return _clk.call(this,t0,accent,(vol==null?1:vol)*(est?1.6:1)); }; window.click.__lbFuerte=1; } }catch(e){}
       /* (20-nov 17:24 y 17:41, Iago) pads verdes de la tablet a los lados, por DENTRO de las columnas de anotar (que siguen a la vista) */
       try{ var stP=document.createElement('style');
         stP.textContent='.rhythm-pads{position:fixed!important;left:0!important;top:0!important;right:0!important;bottom:0!important;z-index:60!important;pointer-events:none}'
