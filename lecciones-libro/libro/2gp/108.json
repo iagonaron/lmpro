@@ -1,0 +1,169 @@
+{
+ "v": 1,
+ "libro": "Ritmo entonado 2.º GP",
+ "curso": "2Gp",
+ "grado": "gp",
+ "n": 108,
+ "titulo": "108",
+ "titulo_estilo": {
+  "fuente": "sans",
+  "x": 71,
+  "y": 124,
+  "px": 43
+ },
+ "numeros_x": 64,
+ "captura": "https://woiptkyrxkbpnvioypit.supabase.co/storage/v1/object/public/diario/libros_lecciones/2Gp/ritmo_entonado/full/108.png",
+ "tonalidad": "Re mayor",
+ "armadura": "D",
+ "modo": "mayor",
+ "clave": "treble",
+ "pagina": {
+  "ancho": 1680,
+  "alto": 648,
+  "interlinea": 16.5
+ },
+ "sistemas": [
+  {
+   "y": 75,
+   "x0": 176,
+   "barras": [
+    609,
+    1098,
+    1445,
+    1670
+   ],
+   "compases": [
+    1,
+    2,
+    3,
+    4
+   ]
+  },
+  {
+   "y": 295,
+   "x0": 60,
+   "barras": [
+    520,
+    878,
+    1333,
+    1670
+   ],
+   "compases": [
+    5,
+    6,
+    7,
+    8
+   ]
+  },
+  {
+   "y": 541,
+   "x0": 60,
+   "barras": [
+    474,
+    904,
+    1404,
+    1670
+   ],
+   "compases": [
+    9,
+    10,
+    11,
+    12
+   ],
+   "final": "fin"
+  }
+ ],
+ "compases": [
+  {
+   "c": 1,
+   "compas": "6/8",
+   "m": "^ 4:d4 | ^ 8:a4 | ^ 4:f#4 | ^ 8:e4"
+  },
+  {
+   "c": 2,
+   "m": "^ 16:d4 16:e4 16:f#4 16:g4 16:a4 16:b4 | ^ 16:d4 16:e4 16:f#4 16:g4 16:a4 16:b4 16:c#5"
+  },
+  {
+   "c": 3,
+   "m": "^ 8:d4 8:e4 8:f#4 8:g4 8:a4 8:b4 8:c#5"
+  },
+  {
+   "c": 4,
+   "m": "v 4:d5 | ^ 8:a4 | ^ 4:f#4 | ^ 8:r"
+  },
+  {
+   "c": 5,
+   "m": "v 8:d5! 16:d5 16:c#5 8:b4 | v 8:r | v 16:d5 16:c#5 16:b4 16:c#5"
+  },
+  {
+   "c": 6,
+   "m": "^ 4:a4 | ^ 16:f#4 16:g4 | ^ 4:a4 | ^ 16:f#4 16:g4 16:a4"
+  },
+  {
+   "c": 7,
+   "m": "^ 8:b4 8:a4 8:g4 | ^ 16:b4 16:a4 16:g4 16:f#4 16:e4 16:d4 16:c#4"
+  },
+  {
+   "c": 8,
+   "m": "^ 8:b4 8:a4 8:g4 8:f#4 8:e4 8:d4 8:c#4"
+  },
+  {
+   "c": 9,
+   "m": "^ 8:a3 | ^ 4:a4- | ^ 4:r | ^ 8:c#4"
+  },
+  {
+   "c": 10,
+   "m": "^ 8.:d4 16:c#4 8:b3 | ^ 8:r | ^ 16:d4 16:c#4 8:b3"
+  },
+  {
+   "c": 11,
+   "m": "^ 8:d4 8:c#4 8:d4 8:e4 8:f#4 8:g4 8:a4"
+  },
+  {
+   "c": 12,
+   "m": "^ 4.:d4 | v 4.:d5>"
+  }
+ ],
+ "ligaduras": [
+  "1.1-2.6 abajo",
+  "2.7-2.13 abajo",
+  "3.1-4.3 abajo",
+  "5.2-5.4 arriba",
+  "5.6-6.4 arriba",
+  "6.5-7.3 abajo",
+  "7.4-7.10 abajo",
+  "8.1-8.7 abajo",
+  "9.4-10.3 abajo",
+  "10.5-10.7 abajo",
+  "11.1-12.1 abajo"
+ ],
+ "tresillos": [
+  {
+   "notas": "2.7-2.13",
+   "r": "7:6"
+  },
+  {
+   "notas": "3.1-3.7",
+   "r": "7:6"
+  },
+  {
+   "notas": "6.5-6.7",
+   "r": "3:2"
+  },
+  {
+   "notas": "7.4-7.10",
+   "r": "7:6"
+  },
+  {
+   "notas": "8.1-8.7",
+   "r": "7:6"
+  },
+  {
+   "notas": "11.1-11.7",
+   "r": "7:6"
+  }
+ ],
+ "pendiente": [
+  "Las ligaduras de c9-c10 (9.4-10.3 y 10.5-10.7) quedan cortadas por el borde inferior de la captura: extremos deducidos."
+ ]
+}

@@ -849,6 +849,14 @@
       var anotFuera=function(){ try{ if(typeof studyMode!=='undefined' && studyMode) return; if(typeof rpAnotarMontar_==='function') rpAnotarMontar_(); encajaEntrada(); }catch(e){} };
       window.addEventListener('resize',function(){ clearTimeout(encajaEntrada._t); encajaEntrada._t=setTimeout(encajaEntrada,200); });
       window.encajaEntradaGlobal=encajaEntrada;
+      /* (20-nov 17:24, Iago) pads verdes de la tablet a los LADOS, en el sitio de las columnas de anotar (igual que piel/estudio-comun.js) */
+      try{ var stP=document.createElement('style');
+        stP.textContent='.rhythm-pads{position:fixed!important;left:0!important;top:0!important;right:0!important;bottom:0!important;z-index:60!important;pointer-events:none}'
+          +'.rhythm-pads .rpad{position:fixed!important;bottom:auto!important;top:calc(50% - 46px)!important}.rhythm-pads .rpad.l{left:10px!important}.rhythm-pads .rpad.r{right:10px!important}'
+          +'body.lb-pads #rpAnotBar,body.lb-pads #rpTonRow,body.lb-pads #lbProf{visibility:hidden!important}body.lb-pads #scoreWrap{padding-left:112px!important;padding-right:112px!important;box-sizing:border-box}';
+        document.head.appendChild(stP);
+        var hayP=false; new MutationObserver(function(){ var h=!!document.querySelector('.rhythm-pads'); if(h===hayP) return; hayP=h; document.body.classList.toggle('lb-pads',h);
+          setTimeout(function(){ try{ window.dispatchEvent(new Event('resize')); }catch(e){} },30); }).observe(document.body,{childList:true,subtree:true}); }catch(e){}
       if(/[?&]evaluar=/.test(location.search)){ try{
         document.body.classList.add('lb-eval');
         var ce=document.createElement('style'); ce.textContent='body.lb-eval #rpAnotBar,body.lb-eval #rpTonRow,body.lb-eval #barActions,body.lb-eval #lbProf{display:none!important}body.lb-eval #scoreWrap.rp-anot{padding-left:0!important;padding-right:0!important}body.lb-eval #score canvas{pointer-events:none!important}'

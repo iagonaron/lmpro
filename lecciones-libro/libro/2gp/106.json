@@ -1,0 +1,204 @@
+{
+ "v": 1,
+ "libro": "Ritmo entonado 2.º GP",
+ "curso": "2Gp",
+ "grado": "gp",
+ "n": 106,
+ "titulo": "106",
+ "titulo_estilo": {
+  "fuente": "sans",
+  "x": 73,
+  "y": 123,
+  "px": 42
+ },
+ "numeros_x": 64,
+ "captura": "https://woiptkyrxkbpnvioypit.supabase.co/storage/v1/object/public/diario/libros_lecciones/2Gp/ritmo_entonado/full/106.png",
+ "tonalidad": "La mayor",
+ "armadura": "A",
+ "modo": "mayor",
+ "clave": "bass",
+ "pagina": {
+  "ancho": 1680,
+  "alto": 875,
+  "interlinea": 16.5
+ },
+ "sistemas": [
+  {
+   "y": 75,
+   "x0": 172,
+   "barras": [
+    760,
+    1211,
+    1672
+   ],
+   "compases": [
+    1,
+    2,
+    3
+   ]
+  },
+  {
+   "y": 295,
+   "x0": 57,
+   "barras": [
+    662,
+    1135,
+    1672
+   ],
+   "compases": [
+    4,
+    5,
+    6
+   ]
+  },
+  {
+   "y": 525,
+   "x0": 57,
+   "barras": [
+    585,
+    1140,
+    1667
+   ],
+   "compases": [
+    7,
+    8,
+    9
+   ]
+  },
+  {
+   "y": 769,
+   "x0": 57,
+   "barras": [
+    565,
+    965,
+    1376,
+    1667
+   ],
+   "compases": [
+    10,
+    11,
+    12,
+    13
+   ],
+   "final": "fin"
+  }
+ ],
+ "compases": [
+  {
+   "c": 1,
+   "compas": "3/4",
+   "m": "v 8:a3 16:g#3 16:f#3 | v 16:e3 16:d3 16:c#3 16:b2 | v 8:a2 16:r 16:a3"
+  },
+  {
+   "c": 2,
+   "m": "v 4:e3 | v 16:f#3- 16:f#3 16:f#3 16:e3- 16:e3 | v 8:e3 | v 8:r"
+  },
+  {
+   "c": 3,
+   "m": "v 4:f#3 | v 4:e3 | v 4:d3 | ^ 4:c#3 | ^ 4:b2"
+  },
+  {
+   "c": 4,
+   "m": "^ 8.:a2 16:g#2 | ^ 8:g#2 8:a2 | ^ 16:a2 16:g#2 16:a2 16:b2"
+  },
+  {
+   "c": 5,
+   "m": "^ 4:c#3 | v 4:e3 | v 4:d3 | ^ 4:c#3"
+  },
+  {
+   "c": 6,
+   "m": "^ 4:c#3 | v 4:d3 | v 4:e3 | v 4:d3 | ^ 4:c#3"
+  },
+  {
+   "c": 7,
+   "m": "^ 4:b2 | ^ 4:r | v 16:b3 8:b3 16:a3"
+  },
+  {
+   "c": 8,
+   "m": "v 8:g#3 8:f#3 8:e3 | v 8:b3 16:a3 16:g#3 | v 16:e3 16:e3 16:e3 16:f#3 16:g#3"
+  },
+  {
+   "c": 9,
+   "m": "v 4:e3 | v 4:f#3 | v 4:e3 | v 4:d3 | ^ 4:c#3"
+  },
+  {
+   "c": 10,
+   "m": "v 8:e3 | ^ 4.:b2> | v 16:r | v 16:e3 16:e3 16:f#3"
+  },
+  {
+   "c": 11,
+   "m": "v 4:e3 | ^ 4:b2 | v 4:e3 | v 4:g#3"
+  },
+  {
+   "c": 12,
+   "m": "v 4:e3 | ^ 4:b2 | v 4:e3 | v 4:f#3 | v 4:g#3"
+  },
+  {
+   "c": 13,
+   "m": "v 4:a3 | v 8.:r | ^ 16:a2 | ^ 4:a2-"
+  }
+ ],
+ "ligaduras": [
+  "1.1-1.8 arriba",
+  "1.10-2.1 arriba",
+  "2.2-2.7 arriba",
+  "3.1-3.5 arriba",
+  "4.1-4.4 abajo",
+  "4.5-5.4 abajo",
+  "6.1-6.5 arriba",
+  "7.3-8.3 arriba",
+  "8.4-8.6 arriba",
+  "8.7-8.11 arriba",
+  "9.1-10.1 arriba",
+  "10.4-10.6 arriba",
+  "11.1-11.4 arriba",
+  "12.1-13.1 arriba"
+ ],
+ "uniones": [
+  "4.2-4.3 abajo"
+ ],
+ "tresillos": [
+  {
+   "notas": "2.2-2.6",
+   "r": "5:4"
+  },
+  {
+   "notas": "3.1-3.5",
+   "r": "5:3",
+   "abajo": true
+  },
+  {
+   "notas": "5.1-5.4",
+   "r": "4:3",
+   "arriba": true
+  },
+  {
+   "notas": "6.1-6.5",
+   "r": "5:3",
+   "abajo": true
+  },
+  "8.1-8.3",
+  {
+   "notas": "8.7-8.11",
+   "r": "5:4"
+  },
+  {
+   "notas": "9.1-9.5",
+   "r": "5:3",
+   "abajo": true
+  },
+  {
+   "notas": "11.1-11.4",
+   "r": "4:3",
+   "abajo": true
+  },
+  {
+   "notas": "12.1-12.5",
+   "r": "5:3",
+   "abajo": true
+  }
+ ],
+ "pendiente": [
+  "Arco corto bajo c7.1 (empieza en el margen izquierdo del pentagrama): probablemente la ligadura de c6 que continúa; no se ha añadido."
+ ]
+}
