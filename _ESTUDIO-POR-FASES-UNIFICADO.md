@@ -126,3 +126,10 @@ los cambios del 20-nov 10:06–10:12 (§5), AJUSTADOS con la recapitulación de 
 - En la realización final **el piano ayuda más** (un escalón más de ayuda en cada pentagrama tras el primero).
 - La **ventana del resultado no debe tapar** la partitura: semitransparente y en una esquina, para ver las notas verdes/ámbar/rojas.
 - **Armonía más rica**: no todo I-IV-V-I; usar vi y ii (y iii) cuando la melodía lo pida (p. ej. sol-mi-sol-si-sol → vi). En el visor, armonizador con esos grados más baratos y cambio de acorde en la parte fuerte.
+
+## 14. «Marca el pulso con la mano» en la cuenta atrás (Iago, 20-nov 14:00) — PARA TODOS
+- En la cuenta atrás 3 · 2 · 1 antes de tocar/cantar, debajo del número, un aviso verde: **«✋ Marca el pulso con la mano»**.
+- **SÍ**: Ritmo at home (GE), Entonación at home (GE) y el visor de lecciones de la campana de GE, en todas las fases **menos la de percusión / estudio rítmico** (ahí las manos están percutiendo).
+- **NO**: Ritmo entonado (GP), ni at home ni en el visor de la campana de GP.
+- Hecho en el visor (libro.js v21: envoltorio de showCountdown/hideCountdown, solo si GE y la fase no es «ritmo»). Ritmo at home y Entonación at home: que lo pongan sus conversaciones con este mismo aspecto (pastilla verde lisa, borde #4ade80, texto blanco 17 px, centrada bajo el número).
+- Iniciar estudio (20-nov 13:59, visor): arriba, centrado y en verde.

@@ -768,6 +768,16 @@
       try{ document.querySelectorAll('p,div').forEach(function(e){ if(e.children.length===0 && /generado proceduralmente/i.test(e.textContent)) e.style.display='none'; }); }catch(e){}
       /* (20-nov 13:00, Iago) pantalla de entrada: «Iniciar estudio» y las columnas de anotar ya a los lados (lo escrito pasa al estudio) */
       try{ var sb=document.getElementById('studyBtn'); if(sb){ var svg=sb.querySelector('svg'); sb.innerHTML=''; if(svg) sb.appendChild(svg); sb.appendChild(document.createTextNode(' Iniciar estudio')); } }catch(e){}
+      /* (20-nov 14:00, Iago) GE: en la cuenta atrás 3·2·1 de todas las fases menos la percusión, «Marca el pulso con la mano». En GP, no */
+      try{ if(GE && typeof window.showCountdown==='function' && !window.showCountdown._mano){
+        var _scd=window.showCountdown, _hcd=window.hideCountdown;
+        var avisoMano=function(){ var a=document.getElementById('lbMano'); if(!a){ a=document.createElement('div'); a.id='lbMano';
+            a.style.cssText='position:fixed;left:50%;top:calc(50dvh + 92px);transform:translateX(-50%);z-index:91;padding:9px 18px;border-radius:10px;background:rgba(22,163,74,.95);border:1px solid #4ade80;color:#fff;font:800 17px/1.2 var(--lm-fuente,"Helvetica Neue",Helvetica,Arial,sans-serif);white-space:nowrap;box-shadow:0 6px 24px rgba(0,0,0,.4);pointer-events:none;display:none';
+            a.textContent='✋ Marca el pulso con la mano'; document.body.appendChild(a); } return a; };
+        window.showCountdown=function(cd,n){ var r=_scd.apply(this,arguments); try{ var ph=(typeof phaseList!=='undefined' && phaseList[phaseIdx])||{}; avisoMano().style.display=(typeof studyMode!=='undefined' && studyMode && ph.id!=='ritmo')?'block':'none'; }catch(e){} return r; };
+        window.showCountdown._mano=1;
+        if(typeof _hcd==='function') window.hideCountdown=function(){ var r=_hcd.apply(this,arguments); try{ var a=document.getElementById('lbMano'); if(a) a.style.display='none'; }catch(e){} return r; };
+      } }catch(e){ console.warn('[libro] aviso mano',e); }
       /* (20-nov 13:59, Iago) «Iniciar estudio» arriba, centrado y en verde, que se vea claro */
       try{ if(!document.getElementById('lb-ini-css')){ var cs=document.createElement('style'); cs.id='lb-ini-css'; cs.textContent=
         'body.libro-modo .topbar{position:relative;min-height:50px}'+
