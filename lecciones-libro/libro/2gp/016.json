@@ -1,0 +1,191 @@
+{
+ "v": 1,
+ "libro": "Ritmo entonado 2.º GP",
+ "curso": "2Gp",
+ "grado": "gp",
+ "n": 16,
+ "titulo": "16",
+ "titulo_estilo": {
+  "fuente": "sans",
+  "x": 82,
+  "y": 122,
+  "px": 42
+ },
+ "numeros_x": 64,
+ "captura": "https://woiptkyrxkbpnvioypit.supabase.co/storage/v1/object/public/diario/libros_lecciones/2Gp/ritmo_entonado/full/016.png",
+ "tonalidad": "Sol menor",
+ "armadura": "Bb",
+ "modo": "menor",
+ "clave": "bass",
+ "notacion": "Igual que libro/2gp/057.json. Silencio = figura:r. «-» tras la altura = tenuto.",
+ "pagina": {
+  "ancho": 1680,
+  "alto": 968,
+  "interlinea": 16.5
+ },
+ "sistemas": [
+  {
+   "y": 74,
+   "x0": 171,
+   "barras": [
+    805,
+    1270,
+    1667
+   ],
+   "compases": [
+    1,
+    2,
+    3
+   ]
+  },
+  {
+   "y": 339,
+   "x0": 54,
+   "barras": [
+    597,
+    1042,
+    1523
+   ],
+   "compases": [
+    4,
+    5,
+    6
+   ],
+   "final": "doble",
+   "cortesia": {
+    "x1": 1670,
+    "compas": "3+3+2/8"
+   }
+  },
+  {
+   "y": 602,
+   "x0": 56,
+   "barras": [
+    701,
+    1101,
+    1669
+   ],
+   "compases": [
+    7,
+    8,
+    9
+   ]
+  },
+  {
+   "y": 862,
+   "x0": 56,
+   "barras": [
+    704,
+    1255,
+    1666
+   ],
+   "compases": [
+    10,
+    11,
+    12
+   ],
+   "final": "fin"
+  }
+ ],
+ "compases": [
+  {
+   "c": 1,
+   "compas": "7/8",
+   "m": "^ 16:g2 16:a2 16:bb2 16:c3 16:bb2 16:a2 | ^ 8:g2 8:d2 | ^ 8:g2 8:f2 8:eb2"
+  },
+  {
+   "c": 2,
+   "m": "^ 16:d2 16:c#2 16:d2 16:e2 16:f#2 16:g2 | ^ 4:a2 | ^ 8:r | ^ 16:bb2 16:c3"
+  },
+  {
+   "c": 3,
+   "m": "^ 8:bb2 16:bb2 16:a2 16:g2 16:f#2 | ^ 4:g2 | ^ 4:r"
+  },
+  {
+   "c": 4,
+   "m": "^ 8:bb2 8:c3 8:bb2 8:a2 | ^ 8:g2 8:d2 | v 4:d3"
+  },
+  {
+   "c": 5,
+   "m": "^ 4.:c3>- | ^ 8:r | ^ 16:c3 16:bb2 | ^ 8:a2 16:a2 16:g2"
+  },
+  {
+   "c": 6,
+   "m": "^ 4:f#2 | ^ 8:d2 | v 8:d3 | ^ 8:r | ^ 8:c3 8:bb2 8:c3"
+  },
+  {
+   "c": 7,
+   "compas": "3+3+2/8",
+   "m": "v 4:d3 | ^ 8:bb2 | v 4:d3 | ^ 8:bb2 | ^ 8:g2 8:bb2 8:d3"
+  },
+  {
+   "c": 8,
+   "m": "^ 4:c3 | ^ 8:a2 | ^ 4:c3 | ^ 8:a2 | ^ 8:f#2 8:g2 8:a2"
+  },
+  {
+   "c": 9,
+   "m": "^ 16:bb2 16:c3 16:d3 16:c3 16:bb2 16:a2 | ^ 16:g2 16:a2 16:g2 16:f#2 16:e2 | ^ 8:f#2 | ^ 8:r"
+  },
+  {
+   "c": 10,
+   "m": "^ 8:g2 8:d2 8:d2 | ^ 8:d3 8:c3 8:bb2 8:a2 | ^ 8:g2 8:d2"
+  },
+  {
+   "c": 11,
+   "m": "^ 4:f#2 | ^ 8:d2 | v 4.:d3 | ^ 16:d3 16:c3 16:bb2 16:a2"
+  },
+  {
+   "c": 12,
+   "m": "^ 4:g2 | ^ 8:bb2 | ^ 4.:g2 | ^ 4:r"
+  }
+ ],
+ "ligaduras": [
+  "1.1-1.8 abajo",
+  "1.9-1.11 abajo",
+  "2.1-2.7 abajo",
+  "2.9-2.10 abajo",
+  "3.2-3.6 abajo",
+  "4.1-4.5 abajo",
+  "4.6-4.7 arriba",
+  "5.3-5.5 abajo",
+  "5.6-6.1 abajo",
+  "6.2-6.3 arriba",
+  "6.5-6.7 abajo",
+  "7.1-7.2 arriba",
+  "7.3-7.4 arriba",
+  "7.5-8.2 abajo",
+  "8.3-8.4 abajo",
+  "8.5-8.7 abajo",
+  "9.1-9.6 abajo",
+  "9.7-9.12 abajo",
+  "10.1-10.3 abajo",
+  "10.4-10.8 abajo",
+  "11.1-11.2 abajo",
+  "11.2-11.3 arriba",
+  "11.4-12.3 abajo"
+ ],
+ "corchetes": [
+  "6.1-6.2"
+ ],
+ "tresillos": [
+  "1.9-1.11",
+  {
+   "notas": "4.1-4.4",
+   "r": "4:3"
+  },
+  "6.5-6.7",
+  "7.5-7.7",
+  "8.5-8.7",
+  {
+   "notas": "9.7-9.11",
+   "r": "5:6"
+  },
+  {
+   "notas": "10.4-10.7",
+   "r": "4:3"
+  }
+ ],
+ "pendiente": [
+  "Ligaduras 10.1-10.3 y 11.1-11.2: el final de la captura corta el pentagrama inferior, final de la curva supuesto."
+ ]
+}

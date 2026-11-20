@@ -1,0 +1,229 @@
+{
+ "v": 1,
+ "libro": "Ritmo entonado 2.º GP",
+ "curso": "2Gp",
+ "grado": "gp",
+ "n": 12,
+ "titulo": "12",
+ "titulo_estilo": {
+  "fuente": "sans",
+  "x": 85,
+  "y": 122,
+  "px": 42
+ },
+ "numeros_x": 64,
+ "captura": "https://woiptkyrxkbpnvioypit.supabase.co/storage/v1/object/public/diario/libros_lecciones/2Gp/ritmo_entonado/full/012.png",
+ "tonalidad": "La mayor",
+ "armadura": "A",
+ "modo": "mayor",
+ "clave": "bass",
+ "pagina": {
+  "ancho": 1680,
+  "alto": 966,
+  "interlinea": 16.5
+ },
+ "sistemas": [
+  {
+   "y": 72,
+   "x0": 172,
+   "barras": [
+    737,
+    1183,
+    1668
+   ],
+   "compases": [
+    1,
+    2,
+    3
+   ]
+  },
+  {
+   "y": 338,
+   "x0": 55,
+   "barras": [
+    721,
+    1205,
+    1668
+   ],
+   "compases": [
+    4,
+    5,
+    6
+   ]
+  },
+  {
+   "y": 601,
+   "x0": 56,
+   "barras": [
+    635,
+    1134,
+    1668
+   ],
+   "compases": [
+    7,
+    8,
+    9
+   ]
+  },
+  {
+   "y": 861,
+   "x0": 77,
+   "barras": [
+    709,
+    1282,
+    1668
+   ],
+   "compases": [
+    10,
+    11,
+    12
+   ],
+   "final": "fin"
+  }
+ ],
+ "compases": [
+  {
+   "c": 1,
+   "compas": "7/8",
+   "m": "v 8:a3 8:e3 | v 8:a3 8:g#3 8:f#3 | v 8:e3 8:c#3"
+  },
+  {
+   "c": 2,
+   "m": "v 8.:a3 16:e3 | v 8:a3 8:b3 8:c#4 | v 8:e4 8:d4 8:c#4"
+  },
+  {
+   "c": 3,
+   "m": "v 8:b3 | v 8:r | v 16:b3 16:c#4 16:b3 16:a3 16:g#3 16:a3 | v 8:b3 | v 8:r"
+  },
+  {
+   "c": 4,
+   "m": "v 8:a3 8:f#3 | v 8.:a3 16:g#3 8:f#3 | v 16:d3 16:e3 16:f#3 16:d3"
+  },
+  {
+   "c": 5,
+   "m": "^ 8:c#3 | ^ 8:r | v 8:e3! 16:e3 8:d3 16:c#3 | v 8:e3 | v 8:r"
+  },
+  {
+   "c": 6,
+   "m": "^ 4:r | v 8:e3! 16:e3 8:d3 16:c#3 | ^ 8:b2 | ^ 8:r"
+  },
+  {
+   "c": 7,
+   "m": "^ 8:a2 8:e2 | ^ 8:a2 8:e2 | ^ 8:a2 8:c#3 8:d3"
+  },
+  {
+   "c": 8,
+   "m": "v 8:e3 8:c#3 | v 8:e3 8:d3 8:c#3 | v 8:e3! 16:e3 16:d3 8:c#3"
+  },
+  {
+   "c": 9,
+   "m": "v 8:f#3- | v 8:r | v 8:f#3 8:e3 8:d3 | v 16:f#3 16:g#3 16:f#3 16:e3 8:d3"
+  },
+  {
+   "c": 10,
+   "m": "^ 8:c#3! | ^ 8:r | ^ 8:c#3! | ^ 8:r | ^ 8:c#3 8:d3"
+  },
+  {
+   "c": 11,
+   "m": "^ 4:b2- | ^ 4:r | ^ 16:b2 16:c#3 16:b2 16:a2 16:g#2 16:b2"
+  },
+  {
+   "c": 12,
+   "m": "^ 4:a2 | ^ 4:r | v 4.:a3>"
+  }
+ ],
+ "ligaduras": [
+  "1.1-1.2 arriba",
+  "1.3-1.7 arriba",
+  "2.1-2.2 arriba",
+  "2.3-2.5 arriba",
+  "2.6-3.1 arriba",
+  "3.3-3.9 arriba",
+  "4.1-4.2 arriba",
+  "4.3-4.5 arriba",
+  "4.6-5.1 arriba",
+  "5.4-5.7 arriba",
+  "6.3-6.6 arriba",
+  "7.1-7.2 abajo",
+  "7.3-7.4 abajo",
+  "7.5-7.7 abajo",
+  "8.1-8.2 arriba",
+  "8.3-8.5 arriba",
+  "8.7-8.9 arriba",
+  "9.3-9.5 arriba",
+  "9.6-9.10 arriba",
+  "10.5-10.6 abajo",
+  "11.3-12.1 abajo"
+ ],
+ "tresillos": [
+  {
+   "notas": "2.6-2.8",
+   "abajo": true
+  },
+  {
+   "notas": "8.3-8.5",
+   "abajo": true
+  },
+  {
+   "notas": "9.3-9.5",
+   "abajo": true
+  },
+  {
+   "notas": "10.5-10.6",
+   "r": "2:3"
+  }
+ ],
+ "notas_libro": [
+  {
+   "lineas": [
+    {
+     "x0": 279,
+     "x1": 774,
+     "y": 521,
+     "partes": [
+      "Cambio en la distribución de los pulsos dispares."
+     ]
+    }
+   ],
+   "flecha": [
+    272,
+    515,
+    228,
+    541
+   ]
+  },
+  {
+   "lineas": [
+    {
+     "x0": 138,
+     "x1": 147,
+     "y": 560,
+     "partes": [
+      "("
+     ]
+    },
+    {
+     "x0": 214,
+     "x1": 223,
+     "y": 560,
+     "partes": [
+      ")"
+     ]
+    }
+   ],
+   "ritmos": [
+    {
+     "figs": "4 4 4.",
+     "xs": [
+      154,
+      173,
+      195
+     ],
+     "y": 557,
+     "yb": 523
+    }
+   ]
+  }
+ ],
+ "pendiente": []
+}

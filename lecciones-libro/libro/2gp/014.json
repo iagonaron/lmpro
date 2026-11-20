@@ -1,0 +1,221 @@
+{
+ "v": 1,
+ "libro": "Ritmo entonado 2.º GP",
+ "curso": "2Gp",
+ "grado": "gp",
+ "n": 14,
+ "titulo": "14",
+ "titulo_estilo": {
+  "fuente": "sans",
+  "x": 86,
+  "y": 137,
+  "px": 42
+ },
+ "numeros_x": 64,
+ "captura": "https://woiptkyrxkbpnvioypit.supabase.co/storage/v1/object/public/diario/libros_lecciones/2Gp/ritmo_entonado/full/014.png",
+ "tonalidad": "Si♭ mayor",
+ "armadura": "Bb",
+ "modo": "mayor",
+ "clave": "bass",
+ "pagina": {
+  "ancho": 1680,
+  "alto": 984,
+  "interlinea": 16.5
+ },
+ "sistemas": [
+  {
+   "y": 88,
+   "x0": 171,
+   "barras": [
+    790,
+    1225,
+    1668
+   ],
+   "compases": [
+    1,
+    2,
+    3
+   ]
+  },
+  {
+   "y": 354,
+   "x0": 55,
+   "barras": [
+    715,
+    1197,
+    1668
+   ],
+   "compases": [
+    4,
+    5,
+    6
+   ]
+  },
+  {
+   "y": 616,
+   "x0": 55,
+   "barras": [
+    665,
+    1196,
+    1668
+   ],
+   "compases": [
+    7,
+    8,
+    9
+   ]
+  },
+  {
+   "y": 878,
+   "x0": 56,
+   "barras": [
+    642,
+    1292,
+    1668
+   ],
+   "compases": [
+    10,
+    11,
+    12
+   ],
+   "final": "fin"
+  }
+ ],
+ "compases": [
+  {
+   "c": 1,
+   "compas": "8/8",
+   "m": "v 8:f3 8:eb3 | ^ 8:d3 8:c3 8:bb2 | ^ 16:d3 16:eb3 16:d3 16:c3 8:bb2"
+  },
+  {
+   "c": 2,
+   "m": "v 8:f3 8:eb3 | ^ 16:d3 16:eb3 16:d3 16:c3 16:bb2 | ^ 8:d3 8:c3 8:bb2"
+  },
+  {
+   "c": 3,
+   "m": "^ 8:a2 | ^ 8:r | ^ 4.:c3- | ^ 16:f2 16:g2 16:a2 16:bb2 16:c3 16:a2"
+  },
+  {
+   "c": 4,
+   "m": "^ 8:bb2 | ^ 8:r | v 4.:d3- | v 16:f3 16:eb3 16:d3 16:c3 16:bb2"
+  },
+  {
+   "c": 5,
+   "m": "^ 8:a2 | ^ 8:r | ^ 4.:f2- | v 16:f3 16:eb3 16:d3 16:eb3"
+  },
+  {
+   "c": 6,
+   "m": "v 8:f3 | ^ 8:r | ^ 4.:f2- | v 16:f3 16:eb3 16:d3 16:c3"
+  },
+  {
+   "c": 7,
+   "m": "^ 8:bb2 8:bb2 8:a2 | ^ 8:bb2 8:d3 | v 8:f3 8:f3 8:eb3"
+  },
+  {
+   "c": 8,
+   "m": "v 4.:f3 | ^ 4:r | v 16:f3 16:g3 16:f3 16:eb3 16:d3 16:eb3"
+  },
+  {
+   "c": 9,
+   "m": "v 4.:f3 | ^ 4:r | v 16:f3 16:g3 16:f3 16:eb3 16:d3"
+  },
+  {
+   "c": 10,
+   "m": "^ 8:c3 8:c3 8:bb2 | ^ 8.:a2 16:bb2 | ^ 4.:c3"
+  },
+  {
+   "c": 11,
+   "m": "v 16:c3 16:d3 16:eb3 16:f3 | ^ 8:c3 | ^ 8:r | ^ 16:c3 16:d3 16:c3 16:bb2 16:a2 16:c3"
+  },
+  {
+   "c": 12,
+   "m": "^ 4.:bb2 | ^ 4:r | v 4.:bb3>-"
+  }
+ ],
+ "ligaduras": [
+  "1.1-1.5 arriba",
+  "1.6-1.10 abajo",
+  "2.1-2.2 arriba",
+  "2.3-2.7 abajo",
+  "2.8-3.1 abajo",
+  "3.4-4.1 abajo",
+  "4.4-5.1 arriba",
+  "5.4-6.1 arriba",
+  "6.4-6.7 arriba",
+  "7.1-7.5 abajo",
+  "7.6-8.1 arriba",
+  "8.3-9.1 arriba",
+  "9.3-9.7 arriba",
+  "10.1-10.6 abajo",
+  "11.1-11.5 arriba",
+  "11.7-12.1 abajo"
+ ],
+ "tresillos": [
+  {
+   "notas": "2.3-2.7",
+   "r": "5:6"
+  },
+  {
+   "notas": "4.4-4.8",
+   "r": "5:6",
+   "abajo": true
+  },
+  {
+   "notas": "5.4-5.7",
+   "r": "4:6",
+   "abajo": true
+  },
+  {
+   "notas": "6.4-6.7",
+   "r": "4:6",
+   "abajo": true
+  },
+  {
+   "notas": "9.3-9.7",
+   "r": "5:6",
+   "abajo": true
+  },
+  {
+   "notas": "11.1-11.4",
+   "r": "4:6",
+   "abajo": true
+  }
+ ],
+ "pendiente": [
+  "Último compás: marca sobre la nota final (c12.3) = acento con tenuto (≥); escrita como «>-»."
+ ],
+ "notas_libro": [
+  {
+   "lineas": [
+    {
+     "x0": 115,
+     "x1": 124,
+     "y": 589,
+     "partes": [
+      "("
+     ]
+    },
+    {
+     "x0": 183,
+     "x1": 192,
+     "y": 589,
+     "partes": [
+      ")"
+     ]
+    }
+   ],
+   "ritmos": [
+    {
+     "figs": "4. 4 4",
+     "xs": [
+      129,
+      150,
+      174
+     ],
+     "y": 585,
+     "yb": 550
+    }
+   ]
+  }
+ ]
+}

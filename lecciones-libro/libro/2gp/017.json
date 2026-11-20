@@ -1,0 +1,153 @@
+{
+ "v": 1,
+ "libro": "Ritmo entonado 2.º GP",
+ "curso": "2Gp",
+ "grado": "gp",
+ "n": 17,
+ "titulo": "17",
+ "titulo_estilo": {
+  "fuente": "sans",
+  "x": 84,
+  "y": 122,
+  "px": 42
+ },
+ "numeros_x": 64,
+ "captura": "https://woiptkyrxkbpnvioypit.supabase.co/storage/v1/object/public/diario/libros_lecciones/2Gp/ritmo_entonado/full/017.png",
+ "tonalidad": "Do mayor",
+ "armadura": "C",
+ "modo": "mayor",
+ "clave": "treble",
+ "notacion": "Igual que libro/2gp/057.json. Silencio = figura:r. «-» tras la altura = tenuto.",
+ "pagina": {
+  "ancho": 1680,
+  "alto": 446,
+  "interlinea": 16.5
+ },
+ "sistemas": [
+  {
+   "y": 75,
+   "x0": 171,
+   "barras": [
+    585,
+    980,
+    1419,
+    1669
+   ],
+   "compases": [
+    1,
+    2,
+    3,
+    4
+   ]
+  },
+  {
+   "y": 341,
+   "x0": 55,
+   "barras": [
+    511,
+    937,
+    1365,
+    1670
+   ],
+   "compases": [
+    5,
+    6,
+    7,
+    8
+   ],
+   "final": "fin"
+  }
+ ],
+ "compases": [
+  {
+   "c": 1,
+   "compas": "7/8",
+   "m": "^ 8:c4 8:d4 8:e4 | ^ 8:g4 8:e4 | ^ 8:g4 8:e4"
+  },
+  {
+   "c": 2,
+   "m": "^ 8:c4 8:d4 8:e4 | ^ 16:g4 16:f4 16:e4 16:d4 | ^ 16:g4 16:f4 16:e4 16:d4"
+  },
+  {
+   "c": 3,
+   "m": "^ 8:c4 8:d4 8:e4 | ^ 16:g4 16:f4 16:e4 16:d4 | ^ 16:g4 16:f4 16:e4 16:d4 16:c4"
+  },
+  {
+   "c": 4,
+   "m": "^ 4.:d4 | ^ 8:g3' | ^ 8:r | ^ 4:r"
+  },
+  {
+   "c": 5,
+   "m": "v 8:c5 8:b4 8:c5 | ^ 8:f4 8:a4 | ^ 16:f4 16:g4 16:a4 16:b4"
+  },
+  {
+   "c": 6,
+   "m": "v 8:c5 8:b4 8:c5 | ^ 8:f4 8:a4 | ^ 16:f4 16:g4 16:a4 16:b4 16:c5"
+  },
+  {
+   "c": 7,
+   "m": "v 8:d5 8:d5 8:d5 | v 8:b4 | ^ 8:r | ^ 16:c5 16:b4 16:a4 16:g4 16:f4"
+  },
+  {
+   "c": 8,
+   "m": "^ 4.:e4 | ^ 8:c4 | ^ 8:r | v 8:c5' | ^ 8:r"
+  }
+ ],
+ "ligaduras": [
+  "1.1-1.3 abajo",
+  "1.4-1.5 abajo",
+  "1.6-1.7 abajo",
+  "2.1-2.3 abajo",
+  "2.4-2.7 abajo",
+  "2.8-2.11 abajo",
+  "3.1-3.3 abajo",
+  "3.4-3.7 abajo",
+  "3.8-3.12 abajo",
+  "5.1-5.3 arriba",
+  "5.4-5.5 abajo",
+  "5.6-5.9 abajo",
+  "6.1-6.3 arriba",
+  "6.4-6.5 abajo",
+  "6.6-7.4 arriba",
+  "7.6-8.1 abajo"
+ ],
+ "tresillos": [
+  {
+   "notas": "3.8-3.12",
+   "r": "5:4"
+  },
+  {
+   "notas": "6.6-6.10",
+   "r": "5:4",
+   "abajo": true
+  },
+  {
+   "notas": "7.6-7.10",
+   "r": "5:4"
+  }
+ ],
+ "notas_libro": [
+  {
+   "lineas": [
+    {
+     "x0": 1357,
+     "x1": 1617,
+     "y": 13,
+     "partes": [
+      {
+       "it": "Cinquillo"
+      },
+      " en pulso binario."
+     ]
+    }
+   ],
+   "flecha": [
+    1396,
+    19,
+    1355,
+    47
+   ]
+  }
+ ],
+ "pendiente": []
+}

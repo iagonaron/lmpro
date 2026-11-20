@@ -1,0 +1,276 @@
+{
+ "v": 1,
+ "libro": "Ritmo entonado 2.º GP",
+ "curso": "2Gp",
+ "grado": "gp",
+ "n": 10,
+ "titulo": "10",
+ "titulo_estilo": {
+  "fuente": "sans",
+  "x": 84,
+  "y": 122,
+  "px": 42
+ },
+ "numeros_x": 64,
+ "captura": "https://woiptkyrxkbpnvioypit.supabase.co/storage/v1/object/public/diario/libros_lecciones/2Gp/ritmo_entonado/full/010.png",
+ "tonalidad": "Do menor",
+ "armadura": "Eb",
+ "modo": "menor",
+ "clave": "treble",
+ "pagina": {
+  "ancho": 1680,
+  "alto": 960,
+  "interlinea": 16.5
+ },
+ "sistemas": [
+  {
+   "y": 72,
+   "x0": 171,
+   "barras": [
+    870,
+    1267,
+    1667
+   ],
+   "compases": [
+    1,
+    2,
+    3
+   ]
+  },
+  {
+   "y": 338,
+   "x0": 55,
+   "barras": [
+    634,
+    1084,
+    1618
+   ],
+   "compases": [
+    4,
+    5,
+    6
+   ],
+   "final": "doble",
+   "cortesia": {
+    "x1": 1668,
+    "compas": "3+2/8"
+   }
+  },
+  {
+   "y": 600,
+   "x0": 56,
+   "barras": [
+    620,
+    972,
+    1320,
+    1668
+   ],
+   "compases": [
+    7,
+    8,
+    9,
+    10
+   ],
+   "clave": "bass"
+  },
+  {
+   "y": 854,
+   "x0": 57,
+   "barras": [
+    550,
+    890,
+    1237,
+    1462,
+    1668
+   ],
+   "compases": [
+    11,
+    12,
+    13,
+    14,
+    15
+   ],
+   "final": "fin",
+   "numero": 15,
+   "clave": "bass"
+  }
+ ],
+ "compases": [
+  {
+   "c": 1,
+   "compas": "3+3+2/8",
+   "m": "^ 8:c4 8:d4 8:eb4 | ^ 8:f4 8:g4 8:ab4 | ^ 8:g4 8:eb4"
+  },
+  {
+   "c": 2,
+   "m": "^ 8:c4 8:d4 8:eb4 | ^ 8:f4 8:g4 8:ab4 | ^ 4:g4-"
+  },
+  {
+   "c": 3,
+   "m": "^ 8:c4 8:d4 8:eb4 | ^ 8:f4 8:ab4 | ^ 8:g4 8:eb4"
+  },
+  {
+   "c": 4,
+   "m": "^ 8:g4 8:f4 8:eb4 | ^ 8:d4 8:d4 8:c4 | ^ 4:d4-"
+  },
+  {
+   "c": 5,
+   "m": "^ 8:g4 8:f4 8:eb4 | ^ 8:d4 8:d4 8:c4 | ^ 4:b3-"
+  },
+  {
+   "c": 6,
+   "m": "^ 8:g4 8:f4 8:eb4 | ^ 8:d4 8:c4 | ^ 8:b3 8:d4"
+  },
+  {
+   "c": 7,
+   "compas": "3+2/8",
+   "m": "^ 8:c3 8:c3 8:d3 | v 8:eb3 8:d3"
+  },
+  {
+   "c": 8,
+   "m": "^ 8:c3 8:c3 8:d3 | v 4:eb3"
+  },
+  {
+   "c": 9,
+   "m": "^ 8:c3 8:d3 | v 8:eb3 8:d3"
+  },
+  {
+   "c": 10,
+   "m": "^ 8:c3 8:bb2 8:ab2 | ^ 4:g2"
+  },
+  {
+   "c": 11,
+   "m": "v 8:g3 8:g3 8:f3 | v 8:eb3 8:c3"
+  },
+  {
+   "c": 12,
+   "m": "v 8:g3 8:f3 | v 8:eb3 8:c3"
+  },
+  {
+   "c": 13,
+   "m": "v 8:g3 8:f3 | v 8:eb3 8:d3 8:c3"
+  },
+  {
+   "c": 14,
+   "m": "^ 4.:b2 | ^ 4:r"
+  },
+  {
+   "c": 15,
+   "m": "^ 4.:c3> | ^ 4:r"
+  }
+ ],
+ "ligaduras": [
+  "1.1-1.3 abajo",
+  "1.4-1.6 abajo",
+  "1.7-1.8 abajo",
+  "2.1-2.3 abajo",
+  "2.4-2.6 abajo",
+  "3.1-3.3 abajo",
+  "3.4-3.5 abajo",
+  "3.6-3.7 abajo",
+  "4.1-4.3 abajo",
+  "4.4-4.6 abajo",
+  "5.1-5.3 abajo",
+  "5.4-5.6 abajo",
+  "6.1-6.3 abajo",
+  "6.4-6.5 abajo",
+  "6.6-6.7 abajo",
+  "7.1-7.3 abajo",
+  "7.4-7.5 arriba",
+  "8.1-8.4 arriba",
+  "9.1-9.2 abajo",
+  "9.3-9.4 arriba",
+  "10.1-10.4 abajo",
+  "11.1-11.3 arriba",
+  "11.4-11.5 arriba",
+  "12.1-12.2 arriba",
+  "12.3-12.4 arriba",
+  "13.1-13.2 arriba",
+  "13.3-14.1 arriba"
+ ],
+ "tresillos": [
+  {
+   "notas": "3.4-3.5",
+   "r": "2:3"
+  },
+  {
+   "notas": "6.4-6.5",
+   "r": "2:3"
+  },
+  {
+   "notas": "9.1-9.2",
+   "r": "2:3"
+  },
+  {
+   "notas": "12.1-12.2",
+   "r": "2:3",
+   "abajo": true
+  },
+  {
+   "notas": "13.1-13.2",
+   "r": "2:3",
+   "abajo": true
+  },
+  {
+   "notas": "13.3-13.5",
+   "abajo": true
+  }
+ ],
+ "notas_libro": [
+  {
+   "lineas": [
+    {
+     "x0": 1177,
+     "x1": 1425,
+     "y": 9,
+     "partes": [
+      {
+       "it": "Dosillo"
+      },
+      " en pulso ternario."
+     ]
+    }
+   ],
+   "flecha": [
+    1428,
+    14,
+    1472,
+    45
+   ]
+  },
+  {
+   "lineas": [
+    {
+     "x0": 1614,
+     "x1": 1636,
+     "y": 321,
+     "partes": [
+      "="
+     ]
+    }
+   ],
+   "ritmos": [
+    {
+     "figs": "8",
+     "xs": [
+      1589
+     ],
+     "y": 317,
+     "yb": 283
+    },
+    {
+     "figs": "8",
+     "xs": [
+      1650
+     ],
+     "y": 317,
+     "yb": 283
+    }
+   ]
+  }
+ ],
+ "pendiente": [
+  "En los pentagramas 3-4 (5/8) el libro dibuja una barra discontinua en mitad de cada compás (separa 3+2) y numera cada mitad como compás: por eso el pentagrama 4 empieza en «15» (c11 aquí); se ha usado «numero»:15. Las barras discontinuas no se dibujan.",
+  "Cambio de clave a Fa al final del pentagrama 2 (clave de cortesía antes de la doble barra)."
+ ]
+}

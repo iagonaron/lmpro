@@ -381,11 +381,16 @@
     (nb.rayas||[]).forEach(function(r){ ctx.setLineWidth(U(1.3)); ctx.beginPath(); ctx.moveTo(U(r[0]),U(r[2])); ctx.lineTo(U(r[1]),U(r[2])); ctx.stroke(); });
     /* figuras rítmicas sueltas (sin pentagrama): {figs:"8 16r 16 8", xs:[cabezas], y:línea de las cabezas, yb:altura de la barra} */
     (nb.ritmos||[]).forEach(function(r){ var f=String(r.figs).trim().split(/\s+/), y=U(r.y), yb=U(r.yb!=null?r.yb:r.y-41), sx=[], dur=[];
-      f.forEach(function(t,i){ var x=U(r.xs[i]), sil=/r$/.test(t), d=parseInt(t,10); dur.push(sil?0:d);
+      var solo=f.filter(function(t){ return !/r$/.test(t); }).length===1;
+      f.forEach(function(t,i){ var x=U(r.xs[i]), sil=/r$/.test(t), d=parseInt(t,10), pto=/\./.test(t); dur.push(sil?0:d);
         if(sil){ try{ VF.Glyph.renderGlyph(ctx,x-U(6),y-U(12),U(34),d===16?'rest16th':'rest8th',{category:'restNote'}); }catch(e){} sx.push(null); return; }
-        ctx.beginPath(); for(var a=0;a<=24;a++){ var th=a/24*Math.PI*2, ex=U(6.4)*Math.cos(th), ey=U(4.6)*Math.sin(th), cr=Math.cos(-0.35), sr=Math.sin(-0.35), px=x+ex*cr-ey*sr, py=y+ex*sr+ey*cr; if(a===0) ctx.moveTo(px,py); else ctx.lineTo(px,py); } ctx.closePath(); ctx.fill();
-        var stx=x+U(5.6); ctx.fillRect(stx-U(0.7),yb,U(1.4),y-yb-U(1)); sx.push(stx); });
-      var vis=sx.filter(function(v){ return v!=null; }); if(vis.length>1) ctx.fillRect(vis[0]-U(0.7),yb,vis[vis.length-1]-vis[0]+U(1.4),U(4.2));
+        ctx.beginPath(); for(var a=0;a<=24;a++){ var th=a/24*Math.PI*2, ex=U(6.4)*Math.cos(th), ey=U(4.6)*Math.sin(th), cr=Math.cos(-0.35), sr=Math.sin(-0.35), px=x+ex*cr-ey*sr, py=y+ex*sr+ey*cr; if(a===0) ctx.moveTo(px,py); else ctx.lineTo(px,py); } ctx.closePath(); if(d===2||d===1){ ctx.setLineWidth(U(1.6)); ctx.stroke(); } else ctx.fill();
+        if(pto){ ctx.beginPath(); ctx.arc(x+U(11),y,U(2),0,Math.PI*2); ctx.fill(); }
+        if(d===1){ sx.push(null); return; }
+        var stx=x+U(5.6); ctx.fillRect(stx-U(0.7),yb,U(1.4),y-yb-U(1)); sx.push(stx);
+        if((solo || !f.every(function(t){ return /r$/.test(t) || parseInt(t,10)>=8; })) && d>=8){ for(var fl=0; fl<(d===16?2:1); fl++){ var fy=yb+fl*U(7); ctx.beginPath(); ctx.moveTo(stx,fy); ctx.bezierCurveTo(stx+U(2),fy+U(9),stx+U(11),fy+U(11),stx+U(8),fy+U(22)); ctx.bezierCurveTo(stx+U(9),fy+U(13),stx+U(3),fy+U(11),stx,fy+U(5)); ctx.fill(); } } });
+      if(solo) dur=dur.map(function(){ return 0; });
+      var vis=sx.filter(function(v){ return v!=null; }), conBarra=f.every(function(t){ return /r$/.test(t) || parseInt(t,10)>=8; }); if(vis.length>1 && conBarra) ctx.fillRect(vis[0]-U(0.7),yb,vis[vis.length-1]-vis[0]+U(1.4),U(4.2));
       for(var i=0;i<f.length;i++){ if(dur[i]!==16) continue; var j=i; while(j+1<f.length && dur[j+1]===16) j++;
         var y2=yb+U(7.5); if(j>i) ctx.fillRect(sx[i]-U(0.7),y2,sx[j]-sx[i]+U(1.4),U(4.2)); else ctx.fillRect(sx[i]-U(9),y2,U(9.7),U(4.2)); i=j; } });
     if(nb.flecha){ var f=nb.flecha.map(U); ctx.setLineWidth(U(1.2)); ctx.beginPath(); ctx.moveTo(f[0],f[1]); ctx.lineTo(f[2],f[3]); ctx.stroke();
