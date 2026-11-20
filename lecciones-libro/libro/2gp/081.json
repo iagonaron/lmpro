@@ -1,0 +1,109 @@
+{
+ "v": 1,
+ "libro": "Ritmo entonado 2.º GP",
+ "curso": "2Gp",
+ "grado": "gp",
+ "n": 81,
+ "titulo": "81",
+ "titulo_estilo": {
+  "fuente": "sans",
+  "x": 82,
+  "y": 120,
+  "px": 40
+ },
+ "numeros_x": 64,
+ "captura": "https://woiptkyrxkbpnvioypit.supabase.co/storage/v1/object/public/diario/libros_lecciones/2Gp/ritmo_entonado/full/081.png",
+ "tonalidad": "Fa menor",
+ "armadura": "Ab",
+ "modo": "menor",
+ "clave": "treble",
+ "pagina": {
+  "ancho": 1680,
+  "alto": 417,
+  "interlinea": 16.5
+ },
+ "sistemas": [
+  {
+   "y": 75,
+   "x0": 173,
+   "barras": [
+    797,
+    1230,
+    1670
+   ],
+   "compases": [
+    1,
+    2,
+    3
+   ]
+  },
+  {
+   "y": 311,
+   "x0": 56,
+   "barras": [
+    622,
+    1065,
+    1487,
+    1668
+   ],
+   "compases": [
+    4,
+    5,
+    6,
+    7
+   ],
+   "final": "fin"
+  }
+ ],
+ "compases": [
+  {
+   "c": 1,
+   "compas": "C",
+   "m": "^ 8:f4 | ^ 4.:c4 | ^ 16:ab4 16:g4 | ^ 4:f4 | ^ 16:e4 16:f4"
+  },
+  {
+   "c": 2,
+   "m": "^ 2:g4 | v 2.:c5 | ^ 4:g4"
+  },
+  {
+   "c": 3,
+   "m": "^ 2:e4 | v 2.:c5 | ^ 8:g4 8:e4"
+  },
+  {
+   "c": 4,
+   "m": "^ 8:f4 | ^ 4.:c4 | ^ 16:ab4 16:g4 | v 4:c5 | v 16:eb5 16:db5"
+  },
+  {
+   "c": 5,
+   "m": "v 2.:c5 | v 4:bb4 | ^ 4:ab4 | ^ 4:g4"
+  },
+  {
+   "c": 6,
+   "m": "^ 8:c5 8:c4 | ^ 4:r | ^ 8:e4 8:c4 | ^ 8:r | ^ 16:g4 16:f4 16:e4"
+  },
+  {
+   "c": 7,
+   "m": "^ 1:f4"
+  }
+ ],
+ "ligaduras": [
+  "1.1-1.2 abajo",
+  "1.3-1.7 abajo",
+  "2.1-2.3 abajo",
+  "3.1-3.4 abajo",
+  "4.1-4.2 abajo",
+  "4.3-4.7 arriba",
+  "6.1-6.2 abajo",
+  "6.4-6.5 abajo",
+  "6.7-6.9 abajo"
+ ],
+ "tresillos": [
+  "2.1-2.3",
+  "3.1-3.4",
+  "5.1-5.4",
+  "6.7-6.9"
+ ],
+ "pendiente": [
+  "Corchetes discontinuos bajo el compás 5 (cuatro, por debajo de la blanca con puntillo y de las tres negras): la captura está cortada por abajo y no caben en el formato."
+ ]
+}

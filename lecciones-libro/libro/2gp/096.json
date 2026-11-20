@@ -1,0 +1,288 @@
+{
+ "v": 1,
+ "libro": "Ritmo entonado 2.º GP",
+ "curso": "2Gp",
+ "grado": "gp",
+ "n": 96,
+ "titulo": "96",
+ "titulo_estilo": {
+  "x": 82,
+  "y": 112,
+  "px": 42
+ },
+ "numeros_x": 64,
+ "captura": "https://woiptkyrxkbpnvioypit.supabase.co/storage/v1/object/public/diario/libros_lecciones/2Gp/ritmo_entonado/full/096.png",
+ "tonalidad": "Re mayor",
+ "armadura": "D",
+ "modo": "mayor",
+ "clave": "treble",
+ "pagina": {
+  "ancho": 1680,
+  "alto": 895,
+  "interlinea": 16.6
+ },
+ "sistemas": [
+  {
+   "y": 74,
+   "x0": 173,
+   "numero": null,
+   "barras": [
+    475,
+    739,
+    995,
+    1395,
+    1668
+   ],
+   "compases": [
+    0,
+    1,
+    2,
+    3,
+    4
+   ]
+  },
+  {
+   "y": 316,
+   "x0": 56,
+   "barras": [
+    632,
+    958,
+    1272,
+    1608
+   ],
+   "compases": [
+    5,
+    6,
+    7,
+    8
+   ],
+   "cortesia": {
+    "x1": 1668,
+    "compas": "9/8"
+   }
+  },
+  {
+   "y": 544,
+   "x0": 57,
+   "barras": [
+    687,
+    954,
+    1323,
+    1668
+   ],
+   "compases": [
+    9,
+    10,
+    11,
+    12
+   ]
+  },
+  {
+   "y": 790,
+   "x0": 56,
+   "barras": [
+    587,
+    969,
+    1331,
+    1668
+   ],
+   "compases": [
+    13,
+    14,
+    15,
+    16
+   ],
+   "final": "fin"
+  }
+ ],
+ "compases": [
+  {
+   "c": 0,
+   "compas": "3/4",
+   "anacrusa": true,
+   "m": "v 8:a4 8:b4 8:c#5"
+  },
+  {
+   "c": 1,
+   "m": "v 8:d5 | ^ 4:a4- | ^ 4:f#4 | ^ 16:g4 16:a4"
+  },
+  {
+   "c": 2,
+   "m": "v 4:b4 | ^ 4:g4 | v 4:b4 | v 8:d5 8:c#5"
+  },
+  {
+   "c": 3,
+   "m": "^ 8:b4 16:b4 16:a4 | ^ 8:g4 16:g4 16:f#4 | ^ 16:e4 16:d4 16:c#4 16:b3"
+  },
+  {
+   "c": 4,
+   "m": "^ 4:a3 | ^ 4:c#4 | ^ 8:e4 8:c#4 | ^ 4:a4!"
+  },
+  {
+   "c": 5,
+   "m": "v 8:e5! 8:e5 | v 8:e5 8:d5 8:c#5 | 16:r | v 16:e5 16:d5 16:c#5"
+  },
+  {
+   "c": 6,
+   "m": "v 8:e5 | 8:r | v 4:b4 | ^ 4:g#4 | v 4:b4"
+  },
+  {
+   "c": 7,
+   "m": "v 8:d5 | 8:r | v 4:f#5 | v 4:e5 | v 4:d5"
+  },
+  {
+   "c": 8,
+   "barra_fin": "doble",
+   "m": "v 8:c#5- 8:a4- | 4:r~ | v 8:a4 8:b4 8:c#5"
+  },
+  {
+   "c": 9,
+   "compas": "9/8",
+   "m": "v 4:d5 | ^ 8:a4 | ^ 8:a4 8:f#4 8:g4 | ^ 8:a4 8:g4 8:f#4 8:e4"
+  },
+  {
+   "c": 10,
+   "m": "^ 2.:d4 | ^ 2.:a3"
+  },
+  {
+   "c": 11,
+   "m": "^ 8:f#4 8:e4 8:d4 | 8:r | ^ 8:f#4 8:g4 | ^ 8:a4 | v 4:d5"
+  },
+  {
+   "c": 12,
+   "m": "v 4.:e5 | v 4.:c#5 | v 2.:e5"
+  },
+  {
+   "c": 13,
+   "m": "v 4.:e5 | v 8.:c#5 8.:d5 | v 2.:e5"
+  },
+  {
+   "c": 14,
+   "m": "4:r | v 8:f#5 | v 8:d5 8:r 8:a4 | v 8:d5 8:f#5 8:e5 8:d5"
+  },
+  {
+   "c": 15,
+   "m": "v 8.:c#5 8.:b4 | ^ 4.:a4 | ^ 4.:g4 | ^ 4.:e4"
+  },
+  {
+   "c": 16,
+   "m": "^ 4.:f#4 | 4:r | ^ 8:a4 | v 4.:d5"
+  }
+ ],
+ "ligaduras": [
+  "0.1-1.1 arriba",
+  "1.2-1.5 abajo",
+  "2.1-3.1 arriba",
+  "3.2-3.4 abajo",
+  "3.5-4.5 abajo",
+  "5.2-5.5 arriba",
+  "6.3-7.1 arriba",
+  "7.3-8.2 arriba",
+  "8.4-8.6 arriba",
+  "9.1-9.5 arriba",
+  "9.6-10.2 abajo",
+  "11.1-11.3 abajo",
+  "11.5-11.8 arriba",
+  "12.1-12.3 arriba",
+  "13.1-13.4 arriba",
+  "14.2-14.3 arriba",
+  "14.5-14.9 arriba",
+  "15.1-16.1 arriba",
+  "16.3-16.4 arriba"
+ ],
+ "uniones": [
+  "5.2-5.3",
+  "9.2-9.3"
+ ],
+ "tresillos": [
+  {
+   "notas": "0.1-0.3",
+   "abajo": true
+  },
+  {
+   "notas": "2.1-2.5",
+   "r": "4:3",
+   "abajo": true
+  },
+  {
+   "notas": "4.1-4.4",
+   "r": "4:3"
+  },
+  {
+   "notas": "5.3-5.5",
+   "abajo": true
+  },
+  {
+   "notas": "6.3-6.5",
+   "abajo": true
+  },
+  {
+   "notas": "7.3-7.5",
+   "abajo": true
+  },
+  {
+   "notas": "8.4-8.6",
+   "abajo": true
+  },
+  {
+   "notas": "9.6-9.9",
+   "r": "4:3"
+  },
+  {
+   "notas": "10.1-10.2",
+   "r": "2:3"
+  },
+  {
+   "notas": "12.1-12.3",
+   "r": "4:3",
+   "abajo": true
+  },
+  {
+   "notas": "13.1-13.4",
+   "r": "4:3",
+   "abajo": true
+  },
+  {
+   "notas": "14.6-14.9",
+   "r": "4:3"
+  },
+  {
+   "notas": "15.1-15.5",
+   "r": "4:3",
+   "cifra": false
+  }
+ ],
+ "notas_libro": [
+  {
+   "lineas": [
+    {
+     "x0": 1625,
+     "x1": 1645,
+     "y": 297,
+     "partes": [
+      "="
+     ]
+    }
+   ],
+   "ritmos": [
+    {
+     "figs": "4",
+     "xs": [
+      1606
+     ],
+     "y": 292,
+     "yb": 260
+    },
+    {
+     "figs": "4.",
+     "xs": [
+      1660
+     ],
+     "y": 292,
+     "yb": 260
+    }
+   ]
+  }
+ ],
+ "pendiente": []
+}
