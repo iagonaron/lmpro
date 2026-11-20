@@ -529,9 +529,13 @@
      · al acabar una vuelta de la fase 2: ¿qué tal ha ido? (solo para ti) + dificultad 0–10 (Tester/Protester) + otra vez / entonación
      · dificultad: sin botón; se pide al pasar a la fase 3 y el número queda arriba · claqueta: en 9/8 no hay golpe de más
      · intervalos: trazo recto */
-  var DIF=null;
+  var DIF=null, CARA=null;
   var CARAS=[['😣','Fatal'],['🙁','Regular tirando a mal'],['😐','Regular'],['🙂','Bien'],['😄','Muy bien']];
-  var AJ_CSS='.rp-ayudasel.lb-arriba{margin-right:8px}.rp-ayudasel.lb-arriba .seg-l{display:none}#rpEntTools{margin-right:8px}#phaseNextTop{display:none!important}#rpDif{display:none!important}'
+  var AJ_CSS='.rp-ayudasel.lb-arriba{margin-right:8px;align-items:center}.rp-ayudasel.lb-arriba .seg-l{display:inline-block!important;font:400 12px/1.1 "Helvetica Neue",Arial,sans-serif!important;color:rgba(255,255,255,.6)!important;margin-right:8px;text-transform:none!important;letter-spacing:0!important;max-width:60px;white-space:normal}'
+    +'@media (max-width:1280px){.rp-ayudasel.lb-arriba .seg-l{display:none!important}#phaseTop .rp-ayudasel .rp-ay,#rpEntTools button{padding:0 9px!important;font-size:12.5px!important}.lb-resumen{margin-left:8px}}'
+    +'@media (max-height:760px){#rpAnotBar .rpv-col-in{gap:3px!important}#rpAnotBar .rpv-b{height:34px!important;min-height:34px!important}}@media (max-height:640px){#rpAnotBar .rpv-b{height:29px!important;min-height:29px!important;font-size:11px!important}}'
+    +'html body.libro-modo{overflow-x:hidden}'
+    +'.lb-resumen{display:inline-flex;align-items:center;gap:6px;margin-left:14px;font:400 13px/1 "Helvetica Neue",Arial,sans-serif;color:rgba(255,255,255,.78);cursor:pointer;white-space:nowrap}.lb-resumen b{color:#fff;font-weight:800}.lb-resumen .cara{font-size:18px}#rpEntTools{margin-right:8px}#phaseNextTop{display:none!important}#rpDif{display:none!important}'
     +'#phaseSteps .rp-paso{cursor:pointer}#phaseSteps .rp-paso:hover{filter:brightness(1.25)}'
     +'.lb-dif-chip{display:inline-flex;align-items:center;gap:7px;height:40px;box-sizing:border-box;padding:0 13px;border-radius:10px;border:1px solid rgba(255,255,255,.35);color:#fff;font:800 14px/1 "Helvetica Neue",Helvetica,Arial,sans-serif;margin-right:8px;cursor:pointer;background:transparent}'
     +'.lb-fin{position:fixed;inset:0;z-index:2147480001;display:flex;align-items:center;justify-content:center;background:rgba(6,10,18,.82);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}'
@@ -552,17 +556,24 @@
     if(!ch){ ch=document.createElement('button'); ch.type='button'; ch.id='lbDifChip'; ch.className='lb-dif-chip'; ch.title='Dificultad que marcaste (solo en pantalla, no se guarda). Pulsa para cambiarla.'; ch.onclick=function(){ abreFin({soloDif:true}); }; }
     ch.innerHTML=(typeof RP_DIF_ICO!=='undefined'?RP_DIF_ICO:'')+'<span>Dificultad '+DIF+'</span>';
     if(ch.nextSibling!==cl) cl.parentNode.insertBefore(ch,cl); }
+  /* (13:32, Iago) arriba, en el hueco tras los números: lo que marcaste (dificultad y carita), discreto */
+  function resumen(){ var cont=document.getElementById('phaseSteps'); if(!cont) return; var r=document.getElementById('lbResumen');
+    if(DIF==null && CARA==null){ if(r) r.remove(); return; }
+    if(!r){ r=document.createElement('span'); r.id='lbResumen'; r.className='lb-resumen'; }
+    r.innerHTML=(DIF!=null?'Dificultad <b>'+DIF+'</b>':'')+(DIF!=null&&CARA!=null?' · ':'')+(CARA!=null?'<span class="cara" title="'+CARAS[CARA][1]+'">'+CARAS[CARA][0]+'</span>':'');
+    r.title='Lo que marcaste (solo en pantalla, no se guarda). Púlsalo para cambiarlo.'; r.onclick=function(){ abreFin({soloDif:true}); };
+    if(r.parentNode!==cont || r!==cont.lastChild) cont.appendChild(r); }
   function irAFase(i){ try{ stopPlayer(); }catch(e){}
     if(i>=phaseList.length){ if(typeof rpEntrarPrueba==='function') rpEntrarPrueba('fases'); return; }
     if(typeof PR!=='undefined' && PR.on && typeof rpSalirPrueba==='function') rpSalirPrueba();
     phaseIdx=i; showPhase(); }
   /* tarjeta: fin de vuelta (fase 2) o solo dificultad (al pasar a la 3) */
   function abreFin(op){ op=op||{}; document.querySelectorAll('.lb-fin').forEach(function(x){ x.remove(); });
-    var tester=esTester(); if(op.soloDif && !tester){ if(op.luego) op.luego(); return; }
+    var tester=esTester();
     var sc=document.createElement('div'); sc.className='lb-fin'; var c=document.createElement('div'); c.className='c'; if(op.final) sc.style.setProperty('--lbc','#2563eb');
-    var h='<p class="k">'+(op.soloDif?'Antes de la entonación':op.final?'Realización final':'Fase 2 · Ritmo con la mano')+'</p><p class="t">'+(op.soloDif?'¿Qué dificultad tiene esta lección?':op.final?'Tu resultado':'¿Qué tal ha ido?')+'</p>';
+    var h='<p class="k">'+(op.soloDif?'Antes de la entonación':op.final?'Realización final':'Fase 2 · Ritmo con la mano')+'</p><p class="t">'+(op.final?'Tu resultado':'¿Qué tal ha ido?')+'</p>';
     if(op.final && op.res) h+='<div class="sec lb-res">'+op.res.pct+op.res.txt+'</div>';
-    if(!op.soloDif && !op.final) h+='<div class="sec"><p class="lab">Elige tu carita: <b>solo la ves tú</b>, no se guarda.</p><div class="caras">'+CARAS.map(function(x,i){ return '<button type="button" data-i="'+i+'" title="'+x[1]+'">'+x[0]+'</button>'; }).join('')+'</div></div>';
+    if(!op.final) h+='<div class="sec"><p class="lab">Elige tu carita: <b>solo la ves tú</b>, no se guarda.</p><div class="caras">'+CARAS.map(function(x,i){ return '<button type="button" data-i="'+i+'" title="'+x[1]+'" class="'+(CARA===i?'on':'')+'">'+x[0]+'</button>'; }).join('')+'</div></div>';
     if(tester) h+='<div class="sec"><p class="lab">Dificultad de la lección, de <b>0</b> a <b>10</b> (solo en pantalla, no se guarda)</p><div class="esc">'+[0,1,2,3,4,5,6,7,8,9,10].map(function(i){ return '<button type="button" data-d="'+i+'" class="'+(DIF===i?'on':'')+'">'+i+'</button>'; }).join('')+'</div><div class="ley"><span>muy fácil</span><span>intermedio</span><span>muy difícil</span></div></div>';
     var ent=(phaseList[2]&&phaseList[2].kind==='entonacion');
     h+='<div class="acc">'+(op.soloDif?'<button type="button" class="b1" data-a="seguir">Seguir</button>'
@@ -573,8 +584,8 @@
     /* el texto «Hazlo otra vez…» va justo debajo del título */
     if(!op.soloDif && !op.final){ var t=c.querySelector('.t'), l=c.querySelector('p.lab'); if(t&&l) t.parentNode.insertBefore(l,t.nextSibling); }
     c.addEventListener('click',function(e){ var b=e.target.closest('button'); if(!b) return;
-      if(b.dataset.i!=null){ c.querySelectorAll('.caras button').forEach(function(x){ x.classList.toggle('on',x===b); }); return; }
-      if(b.dataset.d!=null){ DIF=+b.dataset.d; try{ rpDifPulsado=true; }catch(x){} c.querySelectorAll('.esc button').forEach(function(x){ x.classList.toggle('on',x===b); }); difChip(); if(op.soloDif && op.cerrarAlElegir){ sc.remove(); if(op.luego) op.luego(); } return; }
+      if(b.dataset.i!=null){ CARA=+b.dataset.i; c.querySelectorAll('.caras button').forEach(function(x){ x.classList.toggle('on',x===b); }); resumen(); return; }
+      if(b.dataset.d!=null){ DIF=+b.dataset.d; try{ rpDifPulsado=true; }catch(x){} c.querySelectorAll('.esc button').forEach(function(x){ x.classList.toggle('on',x===b); }); difChip(); resumen(); if(op.soloDif && op.cerrarAlElegir){ sc.remove(); if(op.luego) op.luego(); } return; }
       var a=b.dataset.a; sc.remove();
       if(a==='repetir'){ try{ if(typeof rpEmpezar==='function') rpEmpezar(); }catch(x){} }
       if(a==='otra'){ try{ if(typeof phasePlay==='function') phasePlay(); }catch(x){} }
@@ -592,11 +603,11 @@
     if(typeof window.renderPhaseSteps==='function'){ var _r=window.renderPhaseSteps; window.renderPhaseSteps=function(){ _r.apply(this,arguments);
         Array.prototype.forEach.call(document.querySelectorAll('#phaseSteps .rp-paso'),function(b,i){ b.setAttribute('role','button'); b.tabIndex=0;
           b.onclick=function(){ var cur=(typeof PR!=='undefined'&&PR.on)?phaseList.length:phaseIdx; if(i===cur) return;
-            if(i>=2 && cur<2 && DIF==null && esTester()){ abreFin({soloDif:true, luego:function(){ irAFase(i); }}); return; }
+            if(i>=2 && cur<2 && ((DIF==null && esTester()) || CARA==null)){ abreFin({soloDif:true, luego:function(){ irAFase(i); }}); return; }
             irAFase(i); }; });
-        difChip(); }; }
+        difChip(); resumen(); }; }
     if(typeof window.nextPhase==='function'){ var _n=window.nextPhase; window.nextPhase=function(){ var cur=phaseIdx;
-        if(cur===1 && DIF==null && esTester() && !(typeof PR!=='undefined'&&PR.on)){ abreFin({soloDif:true, luego:function(){ _n(); }}); return; } return _n.apply(this,arguments); }; }
+        if(cur===1 && ((DIF==null && esTester()) || CARA==null) && !(typeof PR!=='undefined'&&PR.on)){ abreFin({soloDif:true, luego:function(){ _n(); }}); return; } return _n.apply(this,arguments); }; }
     /* fin de una vuelta en la fase 2 */
     if(typeof window.play==='function'){ var _p=window.play; window.play=function(opts){
         try{ var ph=studyMode && phaseList[phaseIdx]; if(ph && ph.kind==='lectura' && opts && !(typeof PR!=='undefined'&&PR.on)){ var oe=opts.onEnd; opts.onEnd=function(){ if(oe) oe.apply(this,arguments); setTimeout(function(){ if(studyMode && phaseList[phaseIdx] && phaseList[phaseIdx].kind==='lectura') abreFin({}); },350); }; } }catch(e){}
@@ -612,7 +623,7 @@
     if(typeof window.showPhase==='function'){ var _sp=window.showPhase; window.showPhase=function(){ var r=_sp.apply(this,arguments);
         try{ var ph=phaseList[phaseIdx]; if(studyMode && ph && ph.kind==='entonacion' && !(typeof PR!=='undefined'&&PR.on)){ var top=document.getElementById('phaseTop'), play=document.getElementById('phasePlayTop'),
             ay=document.querySelector('#phaseControls .rp-ayudasel'), et=document.getElementById('rpEntTools');
-          if(top && play){ if(ay){ ay.classList.add('lb-arriba'); top.insertBefore(ay,play); } if(et){ var pi=et.querySelector('.rp-pistas'), oi=et.querySelector('.rp-oido'); if(pi&&oi) et.insertBefore(pi,oi); top.insertBefore(et,play); } }
+          if(top && play){ Array.prototype.forEach.call(top.querySelectorAll('.rp-ayudasel'),function(x){ if(x!==ay) x.remove(); }); if(ay){ ay.classList.add('lb-arriba'); top.insertBefore(ay,play); } if(et){ var pi=et.querySelector('.rp-pistas'), oi=et.querySelector('.rp-oido'); if(pi&&oi) et.insertBefore(pi,oi); top.insertBefore(et,play); } }
           if(typeof rpEncaja==='function') setTimeout(rpEncaja,0); } }catch(e){}
         difChip(); return r; }; }
     /* al acabar la realización final: una sola ventana con la carita y la dificultad */
@@ -622,6 +633,10 @@
             var sc0=rc.querySelector('.score'); res.pct=sc0?sc0.outerHTML:''; var ps=rc.querySelectorAll('p'); res.txt=''; ps.forEach(function(p0){ if(!p0.classList.contains('fb-step')) res.txt+=p0.outerHTML; });
             rc.remove(); abreFin({final:true, res:res}); } }catch(e){}
         return r; }; }
+    /* (13:32, Iago) el arpegio, con el mismo pulso que la escala: sin quedarse parado en la nota aguda */
+    if(typeof window.rpOido==='function'){ var _ro=window.rpOido; window.rpOido=function(o){ if(o!=='a') return _ro.apply(this,arguments);
+        try{ if(!currentLesson) return; stopPlayer(); ensurePiano(); var c=ac(); if(!c) return; var L=currentLesson, base=rpTonicaBase(), isMin=L.modo!=='mayor', st=0.4, t=c.currentTime+0.12;
+          (isMin?[0,3,7,12,7,3,0]:[0,4,7,12,7,4,0]).forEach(function(x,i,arr){ pianoHit(base+x,t,(i===arr.length-1?st*1.6:st*0.9),0.12); t+=st; }); }catch(e){ return _ro.apply(this,arguments); } }; }
     /* intervalos: trazo recto (del punto de partida al de llegada) */
     document.addEventListener('pointermove',function(){ try{ var stt=RP_ANOT.get(currentLesson); if(!stt) return;
         Object.keys(stt.pages||{}).forEach(function(k){ var L=stt.pages[k].strokes||[], sk=L[L.length-1]; if(sk && sk.i && sk.p && sk.p.length>2) sk.p.splice(1, sk.p.length-2); }); }catch(e){} }, true);
