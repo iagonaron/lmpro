@@ -762,11 +762,43 @@
     if(GE){ try{ var h=document.getElementById('goRitmoHome'); if(h){ var rt=h.querySelector('.rt'); if(rt) rt.style.display='none'; } }catch(e){} }
     /* anotaciones guardadas en el dispositivo */
     try{ var cta=new URLSearchParams(location.search).get('cuenta')||'local';
-      CLAVE_ANOT='lm_libro_anot_'+(J.grado||'gp')+'_'+J.n+'_'+cta;
+      /* cuentas de Iago (Tester / Protester): sus apuntes van por clase (día + franja de 90 min desde las 16:00), así cada grupo empieza en limpio */
+      var PROFE=/^(4a3a8cf5-1ed6-4e86-99d1-5b090d5eacfb|23a2b7fb-3373-4877-b245-3a37d1f53de6)$/i.test(cta);
+      var franja=''; if(PROFE){ var dd=new Date(), mm=dd.getHours()*60+dd.getMinutes(); franja='_'+dd.getFullYear()+('0'+(dd.getMonth()+1)).slice(-2)+('0'+dd.getDate()).slice(-2)+'_'+Math.floor((mm-960)/90); }
+      CLAVE_ANOT='lm_libro_anot_'+(J.grado||'gp')+'_'+J.n+'_'+cta+franja;
       if(typeof RP_ANOT!=='undefined'){ var guard=null; try{ guard=JSON.parse(localStorage.getItem(CLAVE_ANOT)||'null'); }catch(e){}
         var store=(guard&&guard.pages)?guard:{pages:{},ton:null}; RP_ANOT.set(LEC,store);
-        var ult=JSON.stringify(store);
-        var graba=function(){ try{ var t=JSON.stringify(store); if(t!==ult){ localStorage.setItem(CLAVE_ANOT,t); ult=t; } }catch(e){} };
+        /* (20-nov 15:52, Iago) APUNTES DE CLASE: lo que Iago pinta en clase (cuenta Tester/Protester) se guarda para el grupo que
+           tiene clase a esa hora (horario_clases), 14 días. Al alumno de ese grupo le aparece ya puesto, con el interruptor
+           «Con apuntes de Iago» para quitarlo. Sus propias anotaciones siguen en su dispositivo (los apuntes llevan prof:1 y no se guardan con ellas). */
+        var lbRpc=function(fn,args){ var K='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndvaXB0a3lyeGticG52aW95cGl0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0NzI2ODYsImV4cCI6MjA5MjA0ODY4Nn0.B2nKgj5rD0rkdLeMIrd9KgD8lUPWsBT4Y7aCtmnvbjA';   /* clave pública (anon), la misma del motor */
+          return fetch('https://woiptkyrxkbpnvioypit.supabase.co/rest/v1/rpc/'+fn,{method:'POST',headers:{'Content-Type':'application/json',apikey:K,Authorization:'Bearer '+K},body:JSON.stringify(args)}).then(function(r){ if(!r.ok) throw new Error('http '+r.status); return r.json(); }); };
+        var sinProf=function(k,v){ return Array.isArray(v) ? v.filter(function(x){ return !(x && x.prof); }) : v; };
+        var GR_ANOT=(GRADO==='4ge'||J.grado==='ge')?'4ge':'2gp', CLAVE_PROF='lm_libro_prof_'+GR_ANOT+'_'+J.n;
+        var ult=JSON.stringify(store,sinProf), profT=null, profUlt=null;
+        var subeProf=function(t){ try{ if(!PROFE || cta==='local' || t===profUlt) return; profUlt=t;
+            lbRpc('suite_libro_anot_clase_guardar',{p_cuenta:cta,p_grado:GR_ANOT,p_leccion:J.n,p_datos:JSON.parse(t)}).then(function(r){
+              if(r && r.ok){ var ch=document.getElementById('lbProfOk'); if(!ch){ ch=document.createElement('div'); ch.id='lbProfOk'; ch.style.cssText='position:fixed;left:12px;bottom:12px;z-index:60;padding:8px 13px;border-radius:10px;background:rgba(10,16,28,.72);border:1px solid #4ade80;color:#e5e7eb;font:700 13px/1 "Helvetica Neue",Arial,sans-serif;pointer-events:none;transition:opacity .4s'; document.body.appendChild(ch); }
+                ch.textContent='📌 Apuntes guardados para '+String(r.grupo).replace(/^4/,'4.º ').replace(/^2Gp/,'2.º GP '); ch.style.opacity='1'; clearTimeout(ch._t); ch._t=setTimeout(function(){ ch.style.opacity='0.35'; },2500); } }).catch(function(){ profUlt=null; }); }catch(e){} };
+        var graba=function(){ try{ var t=JSON.stringify(store,sinProf); if(t!==ult){ localStorage.setItem(CLAVE_ANOT,t); ult=t; clearTimeout(profT); profT=setTimeout(function(){ subeProf(t); },2500); } }catch(e){} };
+        /* alumno: traer los apuntes de su grupo y ponerlos (por defecto, encendidos) */
+        var PROF=null;
+        var profOn=function(){ try{ return localStorage.getItem(CLAVE_PROF)!=='0'; }catch(e){ return true; } };
+        var profPon=function(on){ try{
+            Object.keys(store.pages||{}).forEach(function(k){ var pg=store.pages[k]; ['strokes','notes','alertas'].forEach(function(a){ if(Array.isArray(pg[a])){ for(var i=pg[a].length-1;i>=0;i--) if(pg[a][i] && pg[a][i].prof) pg[a].splice(i,1); } }); });
+            if(Array.isArray(store.oct)){ for(var j=store.oct.length-1;j>=0;j--) if(store.oct[j] && store.oct[j].prof) store.oct.splice(j,1); }
+            if(on && PROF && PROF.pages){ Object.keys(PROF.pages).forEach(function(k){ var src=PROF.pages[k]||{}; var pg=store.pages[k]||(store.pages[k]={strokes:[],notes:[],alertas:[]});
+                ['strokes','notes','alertas'].forEach(function(a){ if(!Array.isArray(pg[a])) pg[a]=[]; (src[a]||[]).forEach(function(x){ var c=JSON.parse(JSON.stringify(x)); c.prof=1; pg[a].unshift(c); }); }); });
+              if(Array.isArray(PROF.oct)){ if(!Array.isArray(store.oct)) store.oct=[]; PROF.oct.forEach(function(x){ var c=JSON.parse(JSON.stringify(x)); c.prof=1; store.oct.unshift(c); }); } }
+          }catch(e){ console.warn('[libro] apuntes',e); } };
+        var profBoton=function(){ var b=document.getElementById('lbProf'); if(!b){ b=document.createElement('button'); b.id='lbProf'; b.type='button';
+            b.style.cssText='position:fixed;left:12px;bottom:12px;z-index:60;display:flex;align-items:center;gap:9px;padding:8px 12px;border-radius:10px;background:rgba(10,16,28,.78);border:1px solid rgba(255,255,255,.25);color:#fff;font:700 13px/1 "Helvetica Neue",Arial,sans-serif;cursor:pointer;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)';
+            b.onclick=function(){ var on=!profOn(); try{ localStorage.setItem(CLAVE_PROF,on?'1':'0'); }catch(e){} profPon(on); pinta(); try{ if(typeof rpAnotarMontar_==='function') rpAnotarMontar_(); if(typeof studyMode!=='undefined' && !studyMode) encajaEntradaGlobal(); else if(typeof rpEncaja==='function') rpEncaja(); }catch(e){} };
+            document.body.appendChild(b); }
+          var pinta=function(){ var on=profOn(); b.innerHTML='<span style="display:inline-block;width:34px;height:20px;border-radius:10px;position:relative;background:'+(on?'#16a34a':'#475569')+';transition:background .2s"><i style="position:absolute;top:2px;left:'+(on?'16px':'2px')+';width:16px;height:16px;border-radius:8px;background:#fff;transition:left .2s"></i></span>Con apuntes de Iago'; };
+          pinta(); };
+        window.__lbProfPromesa = (cta!=='local') ? lbRpc('suite_libro_anot_clase_leer',{p_cuenta:cta,p_grado:GR_ANOT,p_leccion:J.n}).then(function(r){
+            if(!r || !r.datos || PROFE) return; PROF=r.datos; profPon(profOn()); profBoton(); }).catch(function(){}) : Promise.resolve();
         setInterval(graba,2000); document.addEventListener('pointerup',function(){ setTimeout(graba,120); },true); window.addEventListener('pagehide',graba); document.addEventListener('visibilitychange',graba); }
     }catch(e){ console.warn('[libro] anotaciones',e); }
   }
@@ -813,7 +845,8 @@
       var encajaEntrada=function(){ try{ if(typeof studyMode==='undefined' || studyMode || typeof rpEncaja!=='function') return; studyMode=true; try{ rpEncaja(); }finally{ studyMode=false; } document.body.classList.add('libro-entrada'); }catch(e){} };
       var anotFuera=function(){ try{ if(typeof studyMode!=='undefined' && studyMode) return; if(typeof rpAnotarMontar_==='function') rpAnotarMontar_(); encajaEntrada(); }catch(e){} };
       window.addEventListener('resize',function(){ clearTimeout(encajaEntrada._t); encajaEntrada._t=setTimeout(encajaEntrada,200); });
-      setTimeout(anotFuera,60);
+      window.encajaEntradaGlobal=encajaEntrada;
+      (function(){ var hecho=false, ya=function(){ if(hecho) return; hecho=true; anotFuera(); }; Promise.resolve(window.__lbProfPromesa).then(function(){ setTimeout(ya,30); }); setTimeout(ya,1500); })();
       if(typeof window.closeStudy==='function'){ var _cs=window.closeStudy; window.closeStudy=function(){ var r=_cs.apply(this,arguments); setTimeout(anotFuera,60); return r; }; }
     }).catch(function(e){ console.error('[libro] no se pudo abrir la lección',e);
       var s=document.getElementById('score'); if(s) s.innerHTML='<div style="padding:30px;text-align:center;color:#7a1407">No se pudo abrir la lección '+NUM+'.</div>'; });
