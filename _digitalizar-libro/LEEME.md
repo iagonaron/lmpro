@@ -31,3 +31,9 @@ Lecciones elegidas en el plan de cartas del Diario que aún no están en digital
 - GP 046 · tresillos (c4-5, c8-9) y quintillo 5:6 (c11-12) que cruzan la barra: partidos en dos compases incompletos (no hay grupo que cruce barra).
 - GP 047 · grupo 4:3 (c6-7) cruza la barra: partido igual; el c9 suma 22 semicorcheas en el libro (pide 24), queda incompleto. «♪ = ♪» del cambio a 12/8 no se dibuja.
 - GP 127 · doble puntillo (c4, c8, c9): no hay en el formato; escrito como puntillo + figura unida (misma duración).
+- GE 108 · la doble barra separada tras el c1 se dibuja como doble barra normal.
+- GE 112 · ligadura de unión si3–si3 entre pentagramas (c3–c4): libro.js la dibuja recta al cruzar de pentagrama; omitida (queda la de expresión, y en audio se re-ataca).
+- GE 133 · segundo pentagrama de pulso sin transcribir (falta en el formato).
+- GE 148 · ligadura corta bajo re4 del c8 (1.ª vez) hacia la repetición: omitida.
+- GP 153 · c11 termina en breve (falta en el formato): escrita como redonda y compás incompleto.
+- Claves de Do: 206 «alto», 211 «tenor», 213 «soprano» (VexFlow las dibuja bien). OJO: la clave de cortesía de fin de pentagrama de libro.js solo conoce treble/bass, por si algún día una lección cambia a clave de Do a mitad.

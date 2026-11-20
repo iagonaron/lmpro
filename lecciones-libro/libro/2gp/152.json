@@ -1,0 +1,231 @@
+{
+ "v": 1,
+ "libro": "Ritmo entonado 2.º GP",
+ "curso": "2Gp",
+ "grado": "gp",
+ "n": 152,
+ "titulo": "152",
+ "titulo_estilo": {
+  "fuente": "sans",
+  "x": 50,
+  "y": 123,
+  "px": 42
+ },
+ "numeros_x": 48,
+ "captura": "https://woiptkyrxkbpnvioypit.supabase.co/storage/v1/object/public/diario/libros_lecciones/2Gp/ritmo_entonado/full/152.png",
+ "tonalidad": "Sol mayor",
+ "modo": "mayor",
+ "armadura": "G",
+ "clave": "treble",
+ "pagina": {
+  "ancho": 1680,
+  "alto": 1033,
+  "interlinea": 16.7
+ },
+ "sistemas": [
+  {
+   "y": 75,
+   "x0": 160,
+   "barras": [
+    629,
+    882,
+    1239,
+    1670
+   ],
+   "compases": [
+    1,
+    2,
+    3,
+    4
+   ],
+   "numero": null
+  },
+  {
+   "y": 331,
+   "x0": 44,
+   "barras": [
+    605,
+    951,
+    1425,
+    1670
+   ],
+   "compases": [
+    5,
+    6,
+    7,
+    8
+   ]
+  },
+  {
+   "y": 587,
+   "x0": 44,
+   "barras": [
+    485,
+    820,
+    1210,
+    1595
+   ],
+   "compases": [
+    9,
+    10,
+    11,
+    12
+   ],
+   "final": "doble",
+   "cortesia": {
+    "x1": 1668,
+    "compas": "7/16"
+   }
+  },
+  {
+   "y": 843,
+   "x0": 44,
+   "barras": [
+    582,
+    900,
+    1378,
+    1670
+   ],
+   "compases": [
+    13,
+    14,
+    15,
+    16
+   ],
+   "final": "fin"
+  }
+ ],
+ "compases": [
+  {
+   "c": 1,
+   "compas": "5/16",
+   "m": "v 16:g5 16:f#5 16:g5 | v 16:d5 16:b4"
+  },
+  {
+   "c": 2,
+   "m": "^ 8:g4 16:a4 | v 16:b4 16:d5"
+  },
+  {
+   "c": 3,
+   "m": "^ 8:g4 16:a4 | v 32:b4 32:c5 32:d5 32:b4"
+  },
+  {
+   "c": 4,
+   "m": "^ 16:c5 32:c5 32:b4 32:a4 32:g4 | ^ 16:f#4 | 16:r"
+  },
+  {
+   "c": 5,
+   "m": "^ 32:f#4 32:g4 32:a4 32:b4 32:c5 32:a4 | v 16:d5 | 16:r"
+  },
+  {
+   "c": 6,
+   "barra_fin": "doble",
+   "m": "8.:r | ^ 32:c4 32:d4 32:e4 32:f#4"
+  },
+  {
+   "c": 7,
+   "compas": "4/16",
+   "m": "^ 32:g4 32:a4 32:b4 32:a4 | ^ 16:g4 32:g4 32:f#4"
+  },
+  {
+   "c": 8,
+   "m": "^ 16:g4 16:d4 16:g4 16:b4"
+  },
+  {
+   "c": 9,
+   "m": "v 16:d5 16:c5 16:b4 | ^ 16:a4- 16:b4-"
+  },
+  {
+   "c": 10,
+   "m": "v 16:c5 16:b4 16:a4 | ^ 16:g4- 16:b4-"
+  },
+  {
+   "c": 11,
+   "m": "^ 16:a4 16:d4 | 32:r | v 32:d5 32:c5 32:b4"
+  },
+  {
+   "c": 12,
+   "m": "^ 16:a4 16:d4 | 32:r | v 32:c5 32:b4 32:a4"
+  },
+  {
+   "c": 13,
+   "compas": "7/16",
+   "m": "^ 16:g4 16:d4 | v 16:g4 16:b4 16:d5 | v 16:g5 16:f#5"
+  },
+  {
+   "c": 14,
+   "m": "v 8:e5 | v 16:c5 16:e5 16:g5 | v 16:f#5 16:e5"
+  },
+  {
+   "c": 15,
+   "m": "v 16.:d5 32:c5 16:b4 | v 16:d5 | 16:r | v 32:d5 32:c5 32:b4 32:a4"
+  },
+  {
+   "c": 16,
+   "m": "^ 8.:g4 | 16:r | v 16:f#5! | ^ 8:g4"
+  }
+ ],
+ "ligaduras": [
+  "1.1-1.3 arriba",
+  "1.4-1.5 arriba",
+  "2.1-2.4 arriba",
+  "3.1-4.1 arriba",
+  "4.2-4.6 abajo",
+  "5.1-5.7 abajo",
+  "6.2-7.5 abajo",
+  "7.6-8.1 abajo",
+  "8.2-8.4 abajo",
+  "9.1-9.3 arriba",
+  "10.1-10.3 arriba",
+  "11.1-11.2 abajo",
+  "11.4-12.2 arriba",
+  "12.4-12.6 arriba",
+  "13.1-13.2 abajo",
+  "13.3-13.5 arriba",
+  "13.6-14.1 arriba",
+  "14.2-14.4 arriba",
+  "14.5-14.6 arriba",
+  "15.1-15.4 arriba",
+  "15.6-16.1 arriba"
+ ],
+ "tresillos": [
+  "9.1-9.3",
+  "10.1-10.3"
+ ],
+ "matices": [
+  "16.4 sfz"
+ ],
+ "notas_libro": [
+  {
+   "lineas": [
+    {
+     "x0": 964,
+     "x1": 983,
+     "y": 316,
+     "partes": [
+      "="
+     ]
+    }
+   ],
+   "ritmos": [
+    {
+     "figs": "8",
+     "xs": [
+      939
+     ],
+     "y": 309,
+     "yb": 277
+    },
+    {
+     "figs": "8",
+     "xs": [
+      1001
+     ],
+     "y": 309,
+     "yb": 277
+    }
+   ]
+  }
+ ],
+ "pendiente": []
+}
