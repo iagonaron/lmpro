@@ -16,9 +16,17 @@ Módulos:
 
 ## Prioridad 1 bis · Anotaciones de clase para el grupo (Iago 15:43, eligió las opciones recomendadas)
 - En el **visor de la campana**, abierto con la cuenta Tester o Protester (la que Iago usa en el aula), sale un botón **«Guardar para <grupo>»**. El grupo se deduce del día y la hora de clase (horario C1/C2 y grupos del Diario) y se enseña para confirmar, p. ej. «Guardar para 4.º A».
-- Se guarda lo pintado en esa lección: trazos, intervalos, octavas y patrones. Va a una tabla nueva de Supabase (curso, grupo, lección, datos, creado), con **caducidad de 10 días**: la tabla se limpia sola y no acumula nada.
+- Se guarda lo pintado en esa lección: trazos, intervalos, octavas y patrones. Va a una tabla nueva de Supabase (curso, grupo, lección, datos, creado), con **caducidad de 14 días** (Iago 15:52): la tabla se limpia sola y no acumula nada.
 - El alumno de ese grupo que abre esa lección desde sus tareas ve: **«¿Quieres ver las anotaciones que Iago hizo en clase con tu grupo?»** con dos botones: **«Sí»** y **«No, prefiero desde cero»**. Con «Sí», se copian a sus anotaciones (que siguen guardándose en su dispositivo). La pregunta sale una sola vez por lección.
 - **En la escaleta de la clase de evaluación (C2, Iago 15:46):** en el bloque «Evaluar lecciones de ritmo / ritmo entonado», el botón **«Abrir»** lleva directo a esa lección en el visor, en la pantalla del aula, con las anotaciones que Iago guardó para ESE grupo. Así el alumno que quiera mirarlas las ve desde su pupitre. Si para ese grupo y esa lección no hay nada guardado, la abre limpia.
+- HECHO 16:05 (libro.js v23, commit c15fdbe/8f68aab · Supabase `suite_libro_anot_clase` + `suite_libro_anot_clase_guardar/_leer` + `suite_libro_grupo_ahora`):
+  - Lo que Iago pinta con Tester/Protester se guarda SOLO, sin botón, para el grupo que tiene clase a esa hora (horario_clases, ±20 min). Sale el chip «📌 Apuntes guardados para 4.º B».
+  - Al alumno le salen ya puestos, con el interruptor «Con apuntes de Iago» abajo a la izquierda (encendido por defecto, Iago 15:52; sustituye a la pregunta Sí/No).
+  - Los apuntes de Iago se guardan por clase (día + franja de 90 min) para que cada grupo empiece en limpio.
+  - Falta: el botón «Abrir» de la escaleta.
+- **Escaleta de evaluación (Iago 15:53):** «Abrir» lleva a una vista de SOLO MIRAR, a pantalla completa y sin columnas de anotar, con las anotaciones del grupo. Arriba, un botón por lección («Lección 46», «Lección 47»…); por defecto la primera, y se pasa a la siguiente con un toque.
+- **App de corrección (Iago 15:54):** al cambiar de lección mientras corrige, un cartelito le recuerda «cambia también la lección en la pantalla del aula».
+- **Botones de Ritmo y Ritmo entonado** de Tester/Protester (los cuadrados de arriba del portal): un tercer botón «Lecciones a evaluar», junto a «Intro activa» y «Ver resultados», que abre la vista de la escaleta sin pasar por ella.
 - Vale para las lecciones del libro que se abren en el visor de la campana: las de ritmo de 4.º GE y las de ritmo entonado de 2.º GP (Iago 15:44). No se aplica a los módulos at home, que generan lecciones nuevas. Textos al alumno en 2.ª persona del singular.
 
 ## Prioridad 2 (todos los módulos con Tónica/Escala/Arpegio: visor fase 3, RaH fase 3, REaH fase 3, EaH)
