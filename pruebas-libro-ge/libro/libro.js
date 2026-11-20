@@ -764,6 +764,9 @@
       var franja=''; if(PROFE){ var dd=new Date(), mm=dd.getHours()*60+dd.getMinutes(); franja='_'+dd.getFullYear()+('0'+(dd.getMonth()+1)).slice(-2)+('0'+dd.getDate()).slice(-2)+'_'+Math.floor((mm-960)/90); }
       CLAVE_ANOT='lm_libro_anot_'+(J.grado||'gp')+'_'+J.n+'_'+cta+franja;
       if(typeof RP_ANOT!=='undefined'){ var guard=null; try{ guard=JSON.parse(localStorage.getItem(CLAVE_ANOT)||'null'); }catch(e){}
+        /* (16:30, Iago) VISTA PARA EVALUAR (?evaluar=46,47): solo mirar, a pantalla completa, con los apuntes del grupo que tiene clase ahora */
+        var EVAL=/[?&]evaluar=/.test(location.search);
+        if(EVAL) guard=null;
         var store=(guard&&guard.pages)?guard:{pages:{},ton:null}; RP_ANOT.set(LEC,store);
         /* (20-nov 15:52, Iago) APUNTES DE CLASE: lo que Iago pinta en clase (cuenta Tester/Protester) se guarda para el grupo que
            tiene clase a esa hora (horario_clases), 14 días. Al alumno de ese grupo le aparece ya puesto, con el interruptor
@@ -775,9 +778,9 @@
         var ult=JSON.stringify(store,sinProf), profT=null, profUlt=null;
         var subeProf=function(t){ try{ if(!PROFE || cta==='local' || t===profUlt) return; profUlt=t;
             lbRpc('suite_libro_anot_clase_guardar',{p_cuenta:cta,p_grado:GR_ANOT,p_leccion:J.n,p_datos:JSON.parse(t)}).then(function(r){
-              if(r && r.ok){ var ch=document.getElementById('lbProfOk'); if(!ch){ ch=document.createElement('div'); ch.id='lbProfOk'; ch.style.cssText='position:fixed;left:12px;bottom:12px;z-index:60;padding:8px 13px;border-radius:10px;background:rgba(10,16,28,.72);border:1px solid #4ade80;color:#e5e7eb;font:700 13px/1 "Helvetica Neue",Arial,sans-serif;pointer-events:none;transition:opacity .4s'; document.body.appendChild(ch); }
+              if(r && r.ok){ var ch=document.getElementById('lbProfOk'); if(!ch){ ch=document.createElement('div'); ch.id='lbProfOk'; ch.style.cssText='position:fixed;left:66px;bottom:14px;z-index:60;padding:8px 13px;border-radius:10px;background:rgba(10,16,28,.72);border:1px solid #4ade80;color:#e5e7eb;font:700 13px/1 "Helvetica Neue",Arial,sans-serif;pointer-events:none;transition:opacity .4s'; document.body.appendChild(ch); }
                 ch.textContent='📌 Apuntes guardados para '+String(r.grupo).replace(/^4/,'4.º ').replace(/^2Gp/,'2.º GP '); ch.style.opacity='1'; clearTimeout(ch._t); ch._t=setTimeout(function(){ ch.style.opacity='0.35'; },2500); } }).catch(function(){ profUlt=null; }); }catch(e){} };
-        var graba=function(){ try{ var t=JSON.stringify(store,sinProf); if(t!==ult){ localStorage.setItem(CLAVE_ANOT,t); ult=t; clearTimeout(profT); profT=setTimeout(function(){ subeProf(t); },2500); } }catch(e){} };
+        var graba=function(){ if(EVAL) return; try{ var t=JSON.stringify(store,sinProf); if(t!==ult){ localStorage.setItem(CLAVE_ANOT,t); ult=t; clearTimeout(profT); profT=setTimeout(function(){ subeProf(t); },2500); } }catch(e){} };
         /* alumno: traer los apuntes de su grupo y ponerlos (por defecto, encendidos) */
         var PROF=null;
         var profOn=function(){ try{ return localStorage.getItem(CLAVE_PROF)!=='0'; }catch(e){ return true; } };
@@ -789,12 +792,14 @@
               if(Array.isArray(PROF.oct)){ if(!Array.isArray(store.oct)) store.oct=[]; PROF.oct.forEach(function(x){ var c=JSON.parse(JSON.stringify(x)); c.prof=1; store.oct.unshift(c); }); } }
           }catch(e){ console.warn('[libro] apuntes',e); } };
         var profBoton=function(){ var b=document.getElementById('lbProf'); if(!b){ b=document.createElement('button'); b.id='lbProf'; b.type='button';
-            b.style.cssText='position:fixed;left:12px;bottom:12px;z-index:60;display:flex;align-items:center;gap:9px;padding:8px 12px;border-radius:10px;background:rgba(10,16,28,.78);border:1px solid rgba(255,255,255,.25);color:#fff;font:700 13px/1 "Helvetica Neue",Arial,sans-serif;cursor:pointer;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)';
+            b.style.cssText='position:fixed;left:66px;bottom:14px;z-index:60;display:flex;align-items:center;gap:9px;padding:8px 12px;border-radius:10px;background:rgba(10,16,28,.78);border:1px solid rgba(255,255,255,.25);color:#fff;font:700 13px/1 "Helvetica Neue",Arial,sans-serif;cursor:pointer;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)';
             b.onclick=function(){ var on=!profOn(); try{ localStorage.setItem(CLAVE_PROF,on?'1':'0'); }catch(e){} profPon(on); pinta(); try{ if(typeof rpAnotarMontar_==='function') rpAnotarMontar_(); if(typeof studyMode!=='undefined' && !studyMode) encajaEntradaGlobal(); else if(typeof rpEncaja==='function') rpEncaja(); }catch(e){} };
             document.body.appendChild(b); }
           var pinta=function(){ var on=profOn(); b.innerHTML='<span style="display:inline-block;width:34px;height:20px;border-radius:10px;position:relative;background:'+(on?'#16a34a':'#475569')+';transition:background .2s"><i style="position:absolute;top:2px;left:'+(on?'16px':'2px')+';width:16px;height:16px;border-radius:8px;background:#fff;transition:left .2s"></i></span>Con apuntes de Iago'; };
           pinta(); };
-        window.__lbProfPromesa = (cta!=='local') ? lbRpc('suite_libro_anot_clase_leer',{p_cuenta:cta,p_grado:GR_ANOT,p_leccion:J.n}).then(function(r){
+        if(EVAL && PROFE){ window.__lbProfPromesa = lbRpc('suite_libro_anot_clase_ahora',{p_cuenta:cta,p_grado:GR_ANOT,p_leccion:J.n}).then(function(r){
+            window.__lbEvalGrupo=(r&&r.grupo)||null; if(r && r.datos){ PROF=r.datos; profPon(true); } }).catch(function(){}); }
+        else window.__lbProfPromesa = (cta!=='local') ? lbRpc('suite_libro_anot_clase_leer',{p_cuenta:cta,p_grado:GR_ANOT,p_leccion:J.n}).then(function(r){
             if(!r || !r.datos || PROFE) return; PROF=r.datos; profPon(profOn()); profBoton(); }).catch(function(){}) : Promise.resolve();
         setInterval(graba,2000); document.addEventListener('pointerup',function(){ setTimeout(graba,120); },true); window.addEventListener('pagehide',graba); document.addEventListener('visibilitychange',graba); }
     }catch(e){ console.warn('[libro] anotaciones',e); }
@@ -844,6 +849,20 @@
       var anotFuera=function(){ try{ if(typeof studyMode!=='undefined' && studyMode) return; if(typeof rpAnotarMontar_==='function') rpAnotarMontar_(); encajaEntrada(); }catch(e){} };
       window.addEventListener('resize',function(){ clearTimeout(encajaEntrada._t); encajaEntrada._t=setTimeout(encajaEntrada,200); });
       window.encajaEntradaGlobal=encajaEntrada;
+      if(/[?&]evaluar=/.test(location.search)){ try{
+        document.body.classList.add('lb-eval');
+        var ce=document.createElement('style'); ce.textContent='body.lb-eval #rpAnotBar,body.lb-eval #rpTonRow,body.lb-eval #barActions,body.lb-eval #lbProf{display:none!important}body.lb-eval #scoreWrap.rp-anot{padding-left:0!important;padding-right:0!important}body.lb-eval #score canvas{pointer-events:none!important}'
+          +'#lbEvalTabs{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);z-index:60;display:flex;gap:8px;align-items:center;padding:6px;border-radius:12px;background:rgba(10,16,28,.78);border:1px solid rgba(255,255,255,.18);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);font-family:"Helvetica Neue",Arial,sans-serif}'
+          +'#lbEvalTabs button{height:40px;padding:0 18px;border-radius:9px;border:1px solid rgba(255,255,255,.28);background:transparent;color:#fff;font:800 15px/1 inherit;cursor:pointer}#lbEvalTabs button.on{background:#16a34a;border-color:#4ade80}#lbEvalTabs .g{color:#cbd5e1;font:700 13px/1 inherit;padding:0 8px}';
+        document.head.appendChild(ce);
+        document.body.classList.add('lb-ent');
+        var lista=(new URLSearchParams(location.search).get('evaluar')||'').split(',').map(function(x){ return parseInt(x,10); }).filter(function(x){ return x>0; });
+        var tabs=document.createElement('div'); tabs.id='lbEvalTabs';
+        if(lista.length>1) lista.forEach(function(n){ var b=document.createElement('button'); b.type='button'; b.textContent='Lección '+n; if(n===J.n) b.className='on';
+            b.onclick=function(){ if(n===J.n) return; var q=new URLSearchParams(location.search); q.set('libro',n); location.replace(location.pathname+'?'+q.toString()); }; tabs.appendChild(b); });
+        var gl=document.createElement('span'); gl.className='g'; tabs.appendChild(gl); document.body.appendChild(tabs);
+        Promise.resolve(window.__lbProfPromesa).then(function(){ var g=window.__lbEvalGrupo; gl.textContent=g?('Apuntes de clase · '+String(g).replace(/^4/,'4.º ').replace(/^2Gp/,'2.º GP ')):'Sin apuntes de clase guardados'; });
+      }catch(e){ console.warn('[libro] evaluar',e); } }
       /* (16:06) el botón «Iniciar estudio» va abajo: en la entrada se deja su hueco debajo de la partitura */
       try{ var cssE=document.createElement('style'); cssE.textContent='body.lb-ent #scoreWrap{padding-bottom:62px!important}'; document.head.appendChild(cssE); }catch(e){}
       if(typeof window.openStudy==='function'){ var _os=window.openStudy; window.openStudy=function(){ document.body.classList.remove('lb-ent'); return _os.apply(this,arguments); }; }
