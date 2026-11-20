@@ -10,8 +10,8 @@ Módulos:
 - Cuando algo se pueda, se hace en el común. Si toca el index.html de RaH o EaH, el push está bloqueado desde esta sesión: subirlo por Chrome (/upload/main de GitHub) o pedirle a Iago acceso con la app de GitHub.
 
 ## Prioridad 1 (lo que verán los alumnos esta semana)
-1. **GP lección 58 en digital.** Iago la abrió desde la campana y salió la versión antigua. Pasarla y añadirla a DIGITAL.GP.n.
-2. **Terminar la tanda de GP** de los ayudantes pausados por el límite: 67, 81, 82, 85, 93, 90, 96 (falta 090, 096) y 101–141 (faltan 107, 108, 109, 140, 141). Revisarlas y publicarlas.
+1. HECHO 17:55 (29a498b) · **GP lección 58 en digital.** Iago la abrió desde la campana y salió la versión antigua. Pasarla y añadirla a DIGITAL.GP.n.
+2. HECHO 17:55/18:10 (29a498b, 3cc623b) · **Terminar la tanda de GP** de los ayudantes pausados por el límite: 67, 81, 82, 85, 93, 90, 96 (falta 090, 096) y 101–141 (faltan 107, 108, 109, 140, 141). Revisarlas y publicarlas.
 3. HECHO 15:35 (estudio-comun v2) · **Arpegio en EaH**: la nota aguda dura de más (epOido: `i===3 ? st*1.6` y `t+=st*1.5`). Ponerlo con el mismo pulso que la escala.
 
 ## Prioridad 1 bis · Anotaciones de clase para el grupo (Iago 15:43, eligió las opciones recomendadas)
@@ -31,18 +31,18 @@ Módulos:
 
 ## Prioridad 2 (todos los módulos con Tónica/Escala/Arpegio: visor fase 3, RaH fase 3, REaH fase 3, EaH)
 4. **Botón «Acordes»** junto a Tónica · Escala · Arpegio. Suenan los acordes tonales bien enlazados, con buena conducción de voces: I – IV – V(7) – I, o I – ii – V7 – I. Los carteles de la fase lo explican.
-5. **Ventanas y carteles sin fondo negro opaco.** Que se intuya el fondo del conservatorio (cristal oscuro semitransparente con desenfoque) sin que se lea la lección. En todos los módulos, también en la primera ventana al pulsar «Iniciar estudio».
+5. HECHO 18:50 (estudio-comun v5) en RaH, REaH y EaH; falta el visor · **Ventanas y carteles sin fondo negro opaco.** Que se intuya el fondo del conservatorio (cristal oscuro semitransparente con desenfoque) sin que se lea la lección. En todos los módulos, también en la primera ventana al pulsar «Iniciar estudio».
 6. HECHO 15:35 en parte (aviso de la mano en azul; falta el borde del número) · **Cuenta atrás de EaH**: el aviso «Marca el pulso con la mano» y el recuadro del número, en AZUL (entonación), no en verde.
 7. **EaH**: los silencios también se iluminan en azul cuando llega su momento.
-8. **«Iniciar estudio»** centrado y destacado en todos: verde en ritmo, azul en entonación.
-9. **Cada cartel de fase** recuerda que se puede bajar la velocidad y elegir la subdivisión si ayuda.
+8. HECHO 18:50 en RaH/REaH (centrado arriba, verde) · **«Iniciar estudio»** centrado y destacado en todos: verde en ritmo, azul en entonación.
+9. HECHO 18:50 (aviso de la velocidad + subdivisión) · **Cada cartel de fase** recuerda que se puede bajar la velocidad y elegir la subdivisión si ayuda.
 10. **Micrófono una sola vez por dispositivo.** Recordar el permiso (navigator.permissions / localStorage) y no volver a pedirlo en cada ventana. Que nadie se salte el paso del micrófono.
 
 ## Prioridad 3 (Ritmo at home GE, y donde aplique Ritmo entonado at home)
 11. **«Combina mundos»** deja elegir un solo mundo, y entonces se marcan todas sus cartas (como ya pidió para GP).
 12. **Fase de ejecución fuera.** No es una fase ni un botón con forma de ▶. Al acabarse el tiempo de la fase 2 sale una ventana: «Se ha agotado el tiempo de estudio: ahora hazlo directamente. Tienes 2 oportunidades», con una obligatoria y la segunda opcional. Igual en REaH.
 13. **Cambio de fase pulsando el número** (1, 2, 3, 4). Fuera «Pasar a la siguiente fase». Se puede ir a la fase 3 cuando se quiera. En los at home NO se vuelve atrás (decisión §12), salvo que Iago diga otra cosa.
-14. **Carteles con tiempo**: el botón no dice «Entendido» sino «Entendido e iniciar tiempo» (RaH, EaH, REaH).
+14. HECHO 18:50 · **Carteles con tiempo**: el botón no dice «Entendido» sino «Entendido e iniciar tiempo» (RaH, EaH, REaH).
 15. **Subdivisión por defecto en RaH**: fase 1 en corcheas, adaptada al compás (en compuesto, negra con puntillo + corcheas, como en el visor); fase 2 solo pulso.
 16. **Título «RITMO at home» cortado** arriba a la izquierda durante el estudio (sale «RIT / MO / at home» en tres líneas). Arreglarlo.
 17. **Percusión (fase 1)**: al terminar de tocar NO sale ninguna ventana («a practicar»…): nada.
@@ -59,3 +59,5 @@ Módulos:
 Al terminar cada bloque: probar con Playwright (capturas revisadas) y en vivo con el navegador. Apuntar HECHO aquí y en _COORDINACION-IA.md, y contárselo a Iago con ✅/⚠ y el resumen ⸻.
 
 - **Pads verdes de la tablet (Iago 17:24):** a los lados de la pantalla, en el sitio de las columnas de anotar (que se esconden mientras tocas) — **HECHO 18:10** (libro.js v26, estudio-comun v4).
+- **Blancas y redondas en modo X (Iago 17:38 y 17:40):** la X dentro de su cabeza sin rellenar (blanca con plica, redonda sin ella), también en las lecciones digitalizadas (la 47) — **HECHO 18:55** (libro.js v27; motor del visor; ritmopro 305aff0). ⚠ Ritmo at home (GE): cambiado en el clon local, sin subir (push bloqueado).
+- **Percusión con las columnas de anotar a la vista (Iago 17:41):** los pads van por dentro de las columnas — **HECHO 19:05** (libro.js v28, estudio-comun v6, ritmopro c7a90fb).
