@@ -452,7 +452,7 @@
       +'<span class="cv-b sq" style="border-color:#475569"><span style="width:14px;height:14px;border-radius:3px;background:#50e68c;display:block"></span></span>'
       +(GE?'':'<span class="cv-b sq" style="border-color:#475569;color:#e2e8f0">△</span>')
       +'<span class="cv-b sq" style="border-color:#475569">⚠️</span><span class="cv-b sq" style="background:#2563eb;border-color:#2563eb;color:#fff;font-size:11px">4J</span><span class="cv-b sq" style="background:#15803d;border-color:#15803d;color:#fff;font-size:11px">3m</span>'; }
-  var CARTELES_VISUALES=false;   /* (20-nov) se enciende cuando Iago dé el visto bueno; para verlos antes: &cv=1 */
+  var CARTELES_VISUALES=true;    /* (20-nov) se enciende cuando Iago dé el visto bueno; para verlos antes: &cv=1 */
   function cvFila(v,t){ return '<div class="cv-f"><div class="cv-v">'+v+'</div><div class="cv-tx">'+t+'</div></div>'; }
   var CV_VEL='Abajo, en la barra de <b>Velocidad</b>, vas <b>más lento</b> o <b>más rápido</b>. La que elijas se mantiene hasta el final, salvo que la cambies.';
   function cvContenido(tipo){
