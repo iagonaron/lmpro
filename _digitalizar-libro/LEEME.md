@@ -37,3 +37,8 @@ Lecciones elegidas en el plan de cartas del Diario que aún no están en digital
 - GE 148 · ligadura corta bajo re4 del c8 (1.ª vez) hacia la repetición: omitida.
 - GP 153 · c11 termina en breve (falta en el formato): escrita como redonda y compás incompleto.
 - Claves de Do: 206 «alto», 211 «tenor», 213 «soprano» (VexFlow las dibuja bien). OJO: la clave de cortesía de fin de pentagrama de libro.js solo conoce treble/bass, por si algún día una lección cambia a clave de Do a mitad.
+- GP 130 · dobles puntillos escritos como puntillo + figura unida (misma duración).
+- ⚠ ARMADURAS DE 5 O MÁS ALTERACIONES: KEY_ACCIDENTALS del motor (index.html de ritmopro/banco) solo llega a 4♯/4♭ (E, Ab). Con F# (6♯), C# (7♯), Db (5♭), Cb (7♭)… la copia pinta la alteración delante de cada nota afectada. Afecta a GP 118, 120 (F#), 123 (C#), 135 (Cb) → EN ESPERA (sin publicar), y también a la GP 067 (Db) ya publicada por el piloto. Falta añadir en libro.js las armaduras B, F#, C#, Db, Gb, Cb (y sus menores).
+- ⚠ GP 149 · semifusas (64) en el c2: durDe/dur16 de libro.js no admiten '64'. El JSON en espera las finge como fusas con valoración 4:2/8:4 oculta (3 barras en vez de 4) y el c4 hay que repasarlo con el libro → EN ESPERA.
+- ⚠ GP 133 · el recorte (src.png) está cortado por abajo en c7–c8: no se ven las cifras de los grupos; el JSON en espera los deduce por la suma (c7 6:4, c8 3:2). Hay que re-recortarla del PDF (Ritmo 6 - Tordesillas.pdf) y confirmarlo → EN ESPERA.
+- Los JSON en espera están en _digitalizar-libro/en-espera/2gp-NNN.json (verifican sin avisos; solo falta lo dicho). Cuando esté resuelto: copiarlos a lecciones-libro/libro/2gp/NNN.json y añadir el número a DIGITAL.GP.

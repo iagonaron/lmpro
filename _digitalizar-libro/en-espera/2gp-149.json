@@ -1,0 +1,149 @@
+{
+ "v": 1,
+ "libro": "Ritmo entonado 2.º GP",
+ "curso": "2Gp",
+ "grado": "gp",
+ "n": 149,
+ "titulo": "149",
+ "titulo_estilo": {
+  "fuente": "sans",
+  "x": 62,
+  "y": 137,
+  "px": 42
+ },
+ "numeros_x": 62,
+ "captura": "https://woiptkyrxkbpnvioypit.supabase.co/storage/v1/object/public/diario/libros_lecciones/2Gp/ritmo_entonado/full/149.png",
+ "tonalidad": "Fa menor",
+ "armadura": "Ab",
+ "modo": "menor",
+ "clave": "treble",
+ "pagina": {
+  "ancho": 1680,
+  "alto": 769,
+  "interlinea": 16.6
+ },
+ "sistemas": [
+  {
+   "y": 89,
+   "x0": 175,
+   "barras": [
+    827,
+    1668
+   ],
+   "compases": [
+    1,
+    2
+   ]
+  },
+  {
+   "y": 343,
+   "x0": 58,
+   "barras": [
+    742,
+    1669
+   ],
+   "compases": [
+    3,
+    4
+   ]
+  },
+  {
+   "y": 597,
+   "x0": 60,
+   "barras": [
+    907,
+    1486,
+    1668
+   ],
+   "compases": [
+    5,
+    6,
+    7
+   ],
+   "final": "fin"
+  }
+ ],
+ "compases": [
+  {
+   "c": 1,
+   "compas": "6/8",
+   "m": "8:r | ^ 16.:f4 32:f4 8:ab4 | 8:r | ^ 16.:f4 32:f4 32:c5 32:bb4 32:ab4 32:bb4"
+  },
+  {
+   "c": 2,
+   "m": "^ 16:g4 32:e4 32:f4 32:e4 32:f4 | ^ 16:g4 32:e4 32:d4 32:e4 32:d4 | ^ 32:c4 32:d4 32:e4 32:f4 32:g4 32:ab4 32:bb4 32:c5 | ^ 8:bb4 8:e4- 16:r 16:g4"
+  },
+  {
+   "c": 3,
+   "m": "^ 16.:ab4 32:f4 8:f4 | 8:r | ^ 16.:db5 32:f4 16:ab4 16:r 16:bb4! | 16:r"
+  },
+  {
+   "c": 4,
+   "m": "v 16:c5 16:bb4 16:ab4 16:c5 8:c5> 32:bb4 32:ab4 32:bb4 | ^ 32:c5 32:bb4 32:ab4 8:c5 32:eb5 32:db5 32:c5 32:bb4 32:ab4 32:g4 32:f4 32:eb4"
+  },
+  {
+   "c": 5,
+   "m": "^ 16:g4 16:f4- 16:r 32:bb4 32:c5 32:db5 32:bb4 32:g4 32:f4 | ^ 16:bb3 16:db4- 16:r 32:f4 32:g4 32:bb4 32:ab4 32:g4 32:f4"
+  },
+  {
+   "c": 6,
+   "m": "^ 16:bb4 16:e4- | 4:r | ^ 16:c5! 32:bb4 32:ab4 32:bb4 8:c5 32:c5 32:bb4 32:ab4 32:g4"
+  },
+  {
+   "c": 7,
+   "m": "^ 4.:f4 | 4.:r"
+  }
+ ],
+ "ligaduras": [
+  "1.2-1.4 abajo",
+  "1.6-2.1 abajo",
+  "2.2-2.6 abajo",
+  "2.7-2.19 abajo",
+  "2.22-3.3 abajo",
+  "3.5-3.7 abajo",
+  "4.1-4.4 arriba",
+  "4.6-4.12 arriba",
+  "4.13-4.15 abajo",
+  "4.16-5.1 abajo",
+  "5.4-5.10 abajo",
+  "5.13-6.1 abajo",
+  "6.5-6.9 abajo",
+  "6.10-7.1 abajo"
+ ],
+ "uniones": [
+  "6.8-6.9"
+ ],
+ "tresillos": [
+  {
+   "notas": "2.2-2.5",
+   "r": "4:2",
+   "cifra": false
+  },
+  {
+   "notas": "2.7-2.10",
+   "r": "4:2",
+   "cifra": false
+  },
+  {
+   "notas": "2.11-2.18",
+   "r": "8:4",
+   "cifra": false
+  },
+  "4.1-4.3",
+  "4.6-4.8",
+  {
+   "notas": "4.9-4.11",
+   "abajo": true
+  },
+  "4.13-4.15",
+  {
+   "notas": "4.16-4.20",
+   "r": "5:4"
+  },
+  "6.5-6.7"
+ ],
+ "pendiente": [
+  "El compás 2 lleva semifusas (64avos): el formato no admite la figura 64. Se han escrito como fusas (32) agrupadas en valoración especial oculta (4:2 y 8:4, sin cifra) para que el compás sume 6/8 y suene bien; en la copia se verán 3 barras en lugar de 4.",
+  "En c2 el libro pone un becuadro ante el re (n.º 8): con re♭ en la armadura es el re natural (d4); está escrito así."
+ ]
+}

@@ -1,0 +1,166 @@
+{
+ "v": 1,
+ "libro": "Ritmo entonado 2.º GP",
+ "curso": "2Gp",
+ "grado": "gp",
+ "n": 135,
+ "titulo": "135",
+ "titulo_estilo": {
+  "fuente": "sans",
+  "x": 72,
+  "y": 123,
+  "px": 42
+ },
+ "numeros_x": 66,
+ "captura": "https://woiptkyrxkbpnvioypit.supabase.co/storage/v1/object/public/diario/libros_lecciones/2Gp/ritmo_entonado/full/135.png",
+ "tonalidad": "La♭ menor",
+ "armadura": "Cb",
+ "modo": "menor",
+ "clave": "treble",
+ "pagina": {
+  "ancho": 1680,
+  "alto": 940,
+  "interlinea": 16.6
+ },
+ "sistemas": [
+  {
+   "y": 74,
+   "x0": 175,
+   "barras": [
+    764,
+    1229,
+    1667
+   ],
+   "compases": [
+    1,
+    2,
+    3
+   ]
+  },
+  {
+   "y": 328,
+   "x0": 60,
+   "barras": [
+    707,
+    1251,
+    1667
+   ],
+   "compases": [
+    4,
+    5,
+    6
+   ]
+  },
+  {
+   "y": 580,
+   "x0": 60,
+   "barras": [
+    724,
+    1142,
+    1667
+   ],
+   "compases": [
+    7,
+    8,
+    9
+   ]
+  },
+  {
+   "y": 833,
+   "x0": 60,
+   "barras": [
+    765,
+    1225,
+    1668
+   ],
+   "compases": [
+    10,
+    11,
+    12
+   ],
+   "final": "fin"
+  }
+ ],
+ "compases": [
+  {
+   "c": 1,
+   "compas": "6/8",
+   "m": "^ 8:cb5! 8.:gb4- 16:eb4 | ^ 16:cb4 8:bb3 8:cb4 16:db4"
+  },
+  {
+   "c": 2,
+   "m": "^ 8:eb4 32:eb4 32:db4 32:eb4 32:fb4 8:gb4 | 8:r | ^ 16.:ab4 32:gb4 16.:fb4 32:eb4"
+  },
+  {
+   "c": 3,
+   "m": "^ 16:db4 8:db4 16:cb4 32:bb3 32:cb4 32:db4 32:eb4 | ^ 8:db4 8:gb3 | 8:r"
+  },
+  {
+   "c": 4,
+   "m": "^ 8:ab4! | ^ 4:fb4> | ^ 16:fb4 16:ab4 16:g4 16:ab4 16.:bb4 32:cb5"
+  },
+  {
+   "c": 5,
+   "m": "^ 32:gb4 32:fb4 32:eb4 32:fb4 8:gb4 16:gb4 16:fb4 16:eb4 | ^ 8:db4 8:c4 8:db4 8:eb4"
+  },
+  {
+   "c": 6,
+   "m": "^ 8:fb4 | 4:r | ^ 8:ab4- 8:r 32:gb4 32:fb4 32:eb4 32:fb4"
+  },
+  {
+   "c": 7,
+   "m": "^ 8.:gb4 16:eb4 8:cb4 | ^ 16:r 16:gb4 16:r 16:eb4 16:r 16:cb4"
+  },
+  {
+   "c": 8,
+   "m": "^ 8:fb4! 16:fb4 8:ab4 16:cb5 | ^ 8:eb4 16:eb4 8:ab4 16:cb5"
+  },
+  {
+   "c": 9,
+   "m": "v 4.:db5 | ^ 32:db5 32:cb5 32:bb4 32:ab4 | ^ 32:gb4 32:ab4 32:gb4 32:fb4 | ^ 32:eb4 32:fb4 32:eb4 32:db4"
+  },
+  {
+   "c": 10,
+   "m": "^ 8:cb4 8.:gb4- 16:eb4 | ^ 8:cb4 16:r 16:bb3 16:cb4 16:db4 16:eb4"
+  },
+  {
+   "c": 11,
+   "m": "^ 8:fb4 16:ab4 8:gb4 16:f4 | ^ 16:gb4 32:gb4 32:ab4 8:bb4 | 8:r"
+  },
+  {
+   "c": 12,
+   "m": "^ 8:cb5! 16:cb5 16:bb4 16:ab4 16:gb4- 16:fb4- | ^ 8:eb4 | ^ 4:cb4"
+  }
+ ],
+ "ligaduras": [
+  "1.2-2.1 abajo",
+  "2.2-2.6 abajo",
+  "2.8-3.8 abajo",
+  "4.4-5.5 abajo",
+  "5.6-6.1 abajo",
+  "6.5-6.8 abajo",
+  "7.1-7.3 abajo",
+  "8.2-8.5 abajo",
+  "8.6-9.1 abajo",
+  "9.2-10.1 abajo",
+  "10.2-10.4 abajo",
+  "10.9-11.1 abajo",
+  "11.2-11.8 abajo",
+  "12.2-12.7 abajo"
+ ],
+ "uniones": [
+  "4.2-4.3"
+ ],
+ "tresillos": [
+  "5.6-5.8",
+  "10.7-10.9",
+  "12.2-12.4",
+  {
+   "notas": "5.9-5.12",
+   "r": "4:3"
+  }
+ ],
+ "pendiente": [
+  "Armadura de 7 bemoles (Do♭ M / La♭ m): 'Cb' no está en KEY_ACCIDENTALS del motor, así que la copia dibuja un bemol delante de cada nota y no dibuja los becuadros (sol, fa, do naturales de c4, c11) que sí tiene el libro; las alturas del JSON son las correctas."
+ ]
+}
