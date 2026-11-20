@@ -24,9 +24,9 @@ Módulos:
   - Al alumno le salen ya puestos, con el interruptor «Con apuntes de Iago» abajo a la izquierda (encendido por defecto, Iago 15:52; sustituye a la pregunta Sí/No).
   - Los apuntes de Iago se guardan por clase (día + franja de 90 min) para que cada grupo empiece en limpio.
   - Falta: el botón «Abrir» de la escaleta.
-- **Escaleta de evaluación (Iago 15:53):** «Abrir» lleva a una vista de SOLO MIRAR, a pantalla completa y sin columnas de anotar, con las anotaciones del grupo. Arriba, un botón por lección («Lección 46», «Lección 47»…); por defecto la primera, y se pasa a la siguiente con un toque.
-- **App de corrección (Iago 15:54):** al cambiar de lección mientras corrige, un cartelito le recuerda «cambia también la lección en la pantalla del aula».
-- **Botones de Ritmo y Ritmo entonado** de Tester/Protester (los cuadrados de arriba del portal): un tercer botón «Lecciones a evaluar», junto a «Intro activa» y «Ver resultados», que abre la vista de la escaleta sin pasar por ella.
+- **Escaleta de evaluación (Iago 15:53):** «Abrir» lleva a una vista de SOLO MIRAR, a pantalla completa y sin columnas de anotar, con las anotaciones del grupo. Arriba, un botón por lección («Lección 46», «Lección 47»…); por defecto la primera, y se pasa a la siguiente con un toque. — **HECHO 17:35** (libro.js v25 ?evaluar=; RPC suite_libro_anot_clase_ahora).
+- **App de corrección (Iago 15:54):** al cambiar de lección mientras corrige, un cartelito le recuerda «cambia también la lección en la pantalla del aula». — **HECHO en Dropbox 18:30** (aviso-pantalla-20nov.js + línea en index.html de RITMO ELEMENTAL v6 y RITMO ENTONADO PROFESIONAL v7; .bak-antes-aviso-pantalla-20261120). **Falta publicar en Netlify** (ritmoelemental, ritmoentonadoprofesional): desde aquí no se llega a Netlify.
+- **Botones de Ritmo y Ritmo entonado** de Tester/Protester (los cuadrados de arriba del portal): un tercer botón «Lecciones a evaluar», junto a «Intro activa» y «Ver resultados», que abre la vista de la escaleta sin pasar por ella. — **HECHO 18:10**: siempre, con selector de lecciones (Iago 17:24).
 - Vale para las lecciones del libro que se abren en el visor de la campana: las de ritmo de 4.º GE y las de ritmo entonado de 2.º GP (Iago 15:44). No se aplica a los módulos at home, que generan lecciones nuevas. Textos al alumno en 2.ª persona del singular.
 
 ## Prioridad 2 (todos los módulos con Tónica/Escala/Arpegio: visor fase 3, RaH fase 3, REaH fase 3, EaH)
@@ -57,3 +57,5 @@ Módulos:
     - Los alumnos de GP que acaban las tareas ven la barra azul del temazo EN ESE MISMO SITIO y con el mismo tamaño, en vez de debajo del lema.
 
 Al terminar cada bloque: probar con Playwright (capturas revisadas) y en vivo con el navegador. Apuntar HECHO aquí y en _COORDINACION-IA.md, y contárselo a Iago con ✅/⚠ y el resumen ⸻.
+
+- **Pads verdes de la tablet (Iago 17:24):** a los lados de la pantalla, en el sitio de las columnas de anotar (que se esconden mientras tocas) — **HECHO 18:10** (libro.js v26, estudio-comun v4).
