@@ -852,6 +852,23 @@
       var anotFuera=function(){ try{ if(typeof studyMode!=='undefined' && studyMode) return; if(typeof rpAnotarMontar_==='function') rpAnotarMontar_(); encajaEntrada(); }catch(e){} };
       window.addEventListener('resize',function(){ clearTimeout(encajaEntrada._t); encajaEntrada._t=setTimeout(encajaEntrada,200); });
       window.encajaEntradaGlobal=encajaEntrada;
+      try{
+  /* (20-nov 17:51, Iago) fase 3 de entonación: al reproducir con el acompañamiento, las notas AZULES (pistas elegidas y ayuda del
+     piano) suenan en el piano en su momento, todas igual. */
+  (function(){ if(typeof window.play!=='function' || window.play.__lbAzules) return; var _pl=window.play;
+    window.play=function(opts){
+      try{ var ph=(typeof phaseList!=='undefined' && typeof phaseIdx!=='undefined') ? phaseList[phaseIdx] : null;
+        if(opts && opts.schedule && typeof studyMode!=='undefined' && studyMode && ph && ph.kind==='entonacion' && !(typeof PR!=='undefined' && PR.on)){
+          var notas=opts.schedule.notes||[], els=(typeof collectNoteEls==='function')?collectNoteEls():[], fijas={};
+          try{ if(typeof rpPistasState==='function') fijas=rpPistasState().fijas||{}; }catch(e){}
+          var set=new Set(opts.refSet?Array.from(opts.refSet):[]), n=0;
+          notas.forEach(function(nt,i){ if(!nt || nt.tied || nt.midi==null) return; var g=els[i];
+            if((i in fijas) || (g && g.classList && g.classList.contains('rp-va'))){ set.add(nt.onsetQ); n++; } });
+          if(n){ opts.refSet=set; opts.pianoHelp='none'; }
+        } }catch(e){}
+      return _pl.apply(this,arguments); };
+    window.play.__lbAzules=1; })();
+      }catch(e){}
       /* (20-nov 17:44, Iago) claqueta (pulso y subdivisión) más fuerte en las fases de estudio */
       try{ if(typeof window.click==='function' && !window.click.__lbFuerte){ var _clk=window.click;
         window.click=function(t0,accent,vol){ var est=false; try{ est=(typeof studyMode!=='undefined' && studyMode); }catch(e){}
