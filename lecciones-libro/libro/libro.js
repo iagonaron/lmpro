@@ -797,7 +797,9 @@
         var graba=function(){ if(EVAL) return; try{ var t=JSON.stringify(store,sinProf); if(t!==ult){ localStorage.setItem(CLAVE_ANOT,t); ult=t; clearTimeout(profT); profT=setTimeout(function(){ subeProf(t); },2500); } }catch(e){} };
         /* alumno: traer los apuntes de su grupo y ponerlos (por defecto, encendidos) */
         var PROF=null;
-        var profOn=function(){ try{ return localStorage.getItem(CLAVE_PROF)!=='0'; }catch(e){ return true; } };
+        /* (21:12, Iago) siempre activado al abrir la lección; apagarlo vale solo mientras está abierta (ya no se recuerda) */
+        var PROF_ON=true; try{ localStorage.removeItem(CLAVE_PROF); }catch(e){}
+        var profOn=function(){ return PROF_ON; };
         var profPon=function(on){ try{
             Object.keys(store.pages||{}).forEach(function(k){ var pg=store.pages[k]; ['strokes','notes','alertas'].forEach(function(a){ if(Array.isArray(pg[a])){ for(var i=pg[a].length-1;i>=0;i--) if(pg[a][i] && pg[a][i].prof) pg[a].splice(i,1); } }); });
             if(Array.isArray(store.oct)){ for(var j=store.oct.length-1;j>=0;j--) if(store.oct[j] && store.oct[j].prof) store.oct.splice(j,1); }
@@ -807,7 +809,7 @@
           }catch(e){ console.warn('[libro] apuntes',e); } };
         var profBoton=function(){ var b=document.getElementById('lbProf'); if(!b){ b=document.createElement('button'); b.id='lbProf'; b.type='button';
             b.style.cssText='position:fixed;right:14px;top:10px;z-index:60;display:flex;align-items:center;gap:9px;padding:8px 12px;border-radius:10px;background:rgba(10,16,28,.78);border:1px solid rgba(255,255,255,.25);color:#fff;font:700 13px/1 "Helvetica Neue",Arial,sans-serif;cursor:pointer;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)';
-            b.onclick=function(){ var on=!profOn(); try{ localStorage.setItem(CLAVE_PROF,on?'1':'0'); }catch(e){} profPon(on); pinta(); try{ if(typeof rpAnotarMontar_==='function') rpAnotarMontar_(); if(typeof studyMode!=='undefined' && !studyMode) encajaEntradaGlobal(); else if(typeof rpEncaja==='function') rpEncaja(); }catch(e){}
+            b.onclick=function(){ var on=!profOn(); PROF_ON=on; profPon(on); pinta(); try{ if(typeof rpAnotarMontar_==='function') rpAnotarMontar_(); if(typeof studyMode!=='undefined' && !studyMode) encajaEntradaGlobal(); else if(typeof rpEncaja==='function') rpEncaja(); }catch(e){}
               /* (20-nov 21:00, Iago) quitarlos tiene que BORRAR TODO lo dibujado, trazos incluidos: la capa ya pintada no se rehacía hasta cambiar de tamaño */
               setTimeout(function(){ try{ window.dispatchEvent(new Event('resize')); }catch(e){} try{ octPinta(); }catch(e){} },40); };
             document.body.appendChild(b); }
