@@ -328,7 +328,7 @@
   }
 
   var _cv=null;
-  function mide(txt,size,fam){ try{ if(!_cv) _cv=document.createElement('canvas').getContext('2d'); _cv.font=size+'px '+fam; return _cv.measureText(txt).width; }catch(e){ return txt.length*size*0.5; } }
+  function mide(txt,size,fam,peso){ try{ if(!_cv) _cv=document.createElement('canvas').getContext('2d'); _cv.font=(peso||'')+' '+size+'px '+fam; return _cv.measureText(txt).width; }catch(e){ return txt.length*size*0.5; } }
   /* ligadura que salta de pentagrama: hasta el final del primero y desde el principio del segundo */
   function ligaduraPartida(ctx,a,b,arriba,S,estaves,L){
     function fin(n){ var st=n.getStave(); var lastX=0, ultSt=st; Object.keys(estaves).forEach(function(k){ var e=estaves[k]; if(Math.abs(e.getY()-st.getY())<1 && e.getX()+e.getWidth()>lastX){ lastX=e.getX()+e.getWidth(); ultSt=e; } }); return {x:lastX-4/S, y:n.getYs()[0]}; }
@@ -345,8 +345,8 @@
     var F='"Helvetica Neue", Helvetica, Arial, sans-serif';
     nb.lineas.forEach(function(li){
       var piezasDe=function(T){ return li.partes.map(function(p){
-        if(typeof p==='string') return {t:p, w:mide(p,T,F)};
-        if(p.it) return {t:p.it, it:true, w:mide(p.it,T,F)};
+        var pe=li.negrita?'bold':''; if(typeof p==='string') return {t:p, w:mide(p,T,F,pe)};
+        if(p.it) return {t:p.it, it:true, w:mide(p.it,T,F,'italic '+pe)};
         if(p.frac) return {frac:p.frac, apilada:!!p.apilada, w:(p.apilada?0.75:1.15)*T};
         if(p.figura) return {fig:p.figura, w:1.9*T}; return {t:'',w:0}; }); };
       var T=U(17), piezas=piezasDe(T), tot=piezas.reduce(function(a,p){ return a+p.w; },0);
