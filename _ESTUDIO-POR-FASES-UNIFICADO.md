@@ -99,3 +99,16 @@ los cambios del 20-nov 10:06–10:12 (§5), AJUSTADOS con la recapitulación de 
 - **Sin tiempos de cortesía.** El tiempo validado es el de las **cuentas atrás** de cada fase y, en las **ejecuciones / realizaciones finales**, lo que dure esa ejecución.
 - Visor de lecciones del libro (sin cuentas atrás en pantalla): cuenta el tiempo activo sin carteles, con tope 3′ percusión · 2′ ritmo · 3′ entonación + lo que duren las realizaciones (libro.js, vtCalc).
 - Revisarlo en el barrido final de unificación (§9) en los cuatro módulos.
+
+## 11. Ajustes de Iago probando la lección 47 en el visor (20-nov 13:00–13:11)
+- **Entrada**: botón «Iniciar estudio» (fuera «Generar examen» y «Editar»), columnas de anotar desde el principio (lo escrito pasa al estudio), lección al tamaño de pantalla como en la fase 1, sin blanco sobrante abajo. El libro original se ve **manteniendo pulsado** su botón; al soltar, vuelve la lección.
+- **Percusión SIN valoración**: ni «Casi / Estuviste cerca», ni 2.ª ronda sin el verde; las figuras siempre se iluminan en verde.
+- **Se cambia de fase pulsando los números 1·2·3·4** de arriba; fuera «Pasar a la siguiente fase» / «Pasar a la realización final».
+- **Dificultad sin botón**: se pregunta al pasar a la fase 3 y, otra vez, en una única ventana al final de la fase 4 junto con «¿Qué tal ha ido?» (caritas, solo para el alumno). Tester/Protester: la dificultad; todos: la carita.
+- **Fin de vuelta en la fase 2 (ritmo)**: ventana «¿Qué tal ha ido?» (caritas) + dificultad (Tester/Protester) + «Otra vez» / «Pasar a la entonación (opcional en GE)».
+- **Fase 3, arriba de izquierda a derecha**: Ayuda del piano (por defecto «Cada pentagrama») · Pistas · Tónica/Escala/Arpegio · ▶. Nada más.
+- **Carteles de ritmo todo en verde** (salvo el aviso de la mano, en ámbar).
+- **Claqueta**: en 9/8, 6/8… solo los pulsos (había un golpe de más en el último pulso: era del compás fraccionario). OJO ritmopro: `subClicks` añade ese golpe en cualquier compás cuyo último pulso dure más de una negra (también 5/8, 7/8): corregido en el visor (libro.js), falta en ritmopro.
+- **Acompañamiento: como mínimo un acorde que suene en cada compás** (el que se mantiene se vuelve a atacar en la parte fuerte). PARA TODOS (Ritmo entonado at home: `buildAccompaniment` fusiona acordes iguales entre compases).
+- **Intervalos: trazo RECTO** (del punto de partida al de llegada). PARA TODOS.
+- **Octava alta / baja** (PARA TODOS, en todas las anotaciones: estudio, at home, entonación, ritmo): dos botones bajo las alertas; toque = «8va↑»/«8va↓»; pulsar y arrastrar = «8va↑» + línea discontinua horizontal hasta donde sueltes + «loco» en diagonal.
