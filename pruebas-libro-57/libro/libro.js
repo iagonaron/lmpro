@@ -307,7 +307,10 @@
     (J.notas_libro||[]).forEach(function(nb){ notaLibro(ctx,nb,U); });
     /* encaje en la tarjeta: viewBox con las medidas del libro escaladas */
     var svg=container.querySelector('svg');
-    if(svg){ var W=U(P.ancho), H=U(P.alto); svg.setAttribute('viewBox','0 0 '+W+' '+H); svg.setAttribute('preserveAspectRatio','xMidYMin meet');
+    if(svg){ var W=U(P.ancho), H=U(P.alto);
+      /* (20-nov) si algo (barras de plicas largas hacia abajo, cifras de grupos) baja más que el recorte del libro, la tarjeta crece lo justo para que no se corte */
+      try{ var bb=svg.getBBox(); if(bb && bb.height && bb.y+bb.height+U(8)>H) H=Math.ceil(bb.y+bb.height+U(8)); }catch(e){}
+      svg.setAttribute('viewBox','0 0 '+W+' '+H); svg.setAttribute('preserveAspectRatio','xMidYMin meet');
       svg.removeAttribute('width'); svg.removeAttribute('height'); svg.style.width='100%'; svg.style.height='auto'; svg.style.display='block'; svg.style.margin='0 auto'; }
   }
 
@@ -859,6 +862,11 @@
       var anotFuera=function(){ try{ if(typeof studyMode!=='undefined' && studyMode) return; if(typeof rpAnotarMontar_==='function') rpAnotarMontar_(); encajaEntrada(); }catch(e){} };
       window.addEventListener('resize',function(){ clearTimeout(encajaEntrada._t); encajaEntrada._t=setTimeout(encajaEntrada,200); });
       window.encajaEntradaGlobal=encajaEntrada;
+      /* (20-nov) que no se corte lo que baja por debajo del recorte del libro (barras de plicas hacia abajo, cifras de grupos): antes de encajar, el viewBox crece hasta abarcarlo */
+      try{ if(typeof window.rpEncaja==='function' && !window.rpEncaja.__lbAlto){ var _enc=window.rpEncaja;
+        window.rpEncaja=function(){ try{ var sv=document.querySelector('#score svg'); if(sv && !sv.dataset.rpRec && !sv.dataset.lbAlto){ var v=(sv.getAttribute('viewBox')||'').split(/\s+/).map(Number), bb=sv.getBBox();
+            if(v.length===4 && bb && bb.height && bb.y+bb.height+14>v[1]+v[3]){ v[3]=Math.ceil(bb.y+bb.height+14-v[1]); sv.setAttribute('viewBox',v.join(' ')); } sv.dataset.lbAlto='1'; } }catch(e){}
+          return _enc.apply(this,arguments); }; window.rpEncaja.__lbAlto=1; } }catch(e){}
       try{
   /* (20-nov 17:56, Iago y un alumno) SUBDIVISIÓN QUE «SUBE UNA TALLA»: la subdivisión elegida es relativa al pulso. En un compás
      de pulso de blanca (denominador 2) o de blanca con puntillo, «corcheas» suena en negras y «semicorcheas» en corcheas; y,

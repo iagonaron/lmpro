@@ -5,31 +5,117 @@
  "grado": "gp",
  "n": 133,
  "titulo": "133",
- "titulo_estilo": {"fuente": "sans", "x": 72, "y": 125, "px": 42},
+ "titulo_estilo": {
+  "fuente": "sans",
+  "x": 72,
+  "y": 125,
+  "px": 42
+ },
  "numeros_x": 66,
  "captura": "https://woiptkyrxkbpnvioypit.supabase.co/storage/v1/object/public/diario/libros_lecciones/2Gp/ritmo_entonado/full/133.png",
  "tonalidad": "Sol menor",
  "armadura": "Bb",
  "modo": "menor",
  "clave": "bass",
- "pagina": {"ancho": 1680, "alto": 416, "interlinea": 16.5},
+ "pagina": {
+  "ancho": 1680,
+  "alto": 416,
+  "interlinea": 16.5
+ },
  "sistemas": [
-  {"y": 74, "x0": 175, "barras": [548, 798, 1030, 1270, 1483, 1670], "compases": [1, 2, 3, 4, 5, 6], "numero": null},
-  {"y": 310, "x0": 60, "barras": [500, 807, 997, 1285, 1540, 1668], "compases": [7, 8, 9, 10, 11, 12], "final": "fin"}
+  {
+   "y": 74,
+   "x0": 175,
+   "barras": [
+    548,
+    798,
+    1030,
+    1270,
+    1483,
+    1670
+   ],
+   "compases": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+   ],
+   "numero": null
+  },
+  {
+   "y": 310,
+   "x0": 60,
+   "barras": [
+    500,
+    807,
+    997,
+    1285,
+    1540,
+    1668
+   ],
+   "compases": [
+    7,
+    8,
+    9,
+    10,
+    11,
+    12
+   ],
+   "final": "fin"
+  }
  ],
  "compases": [
-  {"c": 1, "compas": "3/8", "m": "^ 8:g2! 16:g2 16:a2 16:bb2 16:c3"},
-  {"c": 2, "m": "^ 16.:d3 32:eb3 16:d3 16:c3 16:bb2 16:a2"},
-  {"c": 3, "m": "^ 32:g2 32:a2 32:bb2 32:c3 | v 4:d3"},
-  {"c": 4, "m": "v 8:f3- 16:f3 32:f3 32:g3 16:f3 16:eb3"},
-  {"c": 5, "m": "v 8:d3 16:c3 16:d3 16:eb3 8:f3"},
-  {"c": 6, "m": "v 16:f#3-! | 16:r | v 4:d3>"},
-  {"c": 7, "m": "v 8:g3! 16:g2 16:a2 16:bb2 16:c3 16:d3 16:eb3"},
-  {"c": 8, "m": "v 16:d3 8:g3 16:f3 16:eb3 16:d3 16:c#3"},
-  {"c": 9, "m": "v 16:d3 | 16:r | ^ 4:g2>"},
-  {"c": 10, "m": "8:r | ^ 32:g2 32:a2 32:bb2 32:c3 8:d3"},
-  {"c": 11, "m": "8:r | v 16.:d4 32:c4 16:bb3 16:a3"},
-  {"c": 12, "m": "v 4.:g3"}
+  {
+   "c": 1,
+   "compas": "3/8",
+   "m": "^ 8:g2! 16:g2 16:a2 16:bb2 16:c3"
+  },
+  {
+   "c": 2,
+   "m": "^ 16.:d3 32:eb3 16:d3 16:c3 16:bb2 16:a2"
+  },
+  {
+   "c": 3,
+   "m": "^ 32:g2 32:a2 32:bb2 32:c3 | v 4:d3"
+  },
+  {
+   "c": 4,
+   "m": "v 8:f3- 16:f3 32:f3 32:g3 16:f3 16:eb3"
+  },
+  {
+   "c": 5,
+   "m": "v 8:d3 16:c3 16:d3 16:eb3 8:f3"
+  },
+  {
+   "c": 6,
+   "m": "v 16:f#3-! | 16:r | v 4:d3>"
+  },
+  {
+   "c": 7,
+   "m": "v 16:g3! 8:g2 16:a2 32:bb2 32:c3 32:d3 32:eb3"
+  },
+  {
+   "c": 8,
+   "m": "v 16:d3 8:g3 16:f3 16:eb3 16:d3 16:c#3"
+  },
+  {
+   "c": 9,
+   "m": "v 16:d3 | 16:r | ^ 4:g2>"
+  },
+  {
+   "c": 10,
+   "m": "8:r | ^ 32:g2 32:a2 32:bb2 32:c3 8:d3"
+  },
+  {
+   "c": 11,
+   "m": "8:r | v 16.:d4 32:c4 16:bb3 16:a3"
+  },
+  {
+   "c": 12,
+   "m": "v 4.:g3"
+  }
  ],
  "ligaduras": [
   "1.2-2.6 abajo",
@@ -43,10 +129,7 @@
  ],
  "tresillos": [
   "5.2-5.4",
-  {"notas": "7.2-7.7", "r": "6:4"},
   "8.4-8.6"
  ],
- "pendiente": [
-  "La captura src.png está cortada por abajo (el 2.º pentagrama pierde las barras/plicas inferiores): los tresillos/seisillo de los compases 7 y 8 (cifras 3 y 6 bajo las barras) no se ven. Ritmo deducido por suma (3/8 = 6 semicorcheas): c7 = corchea sol3 + seisillo de semicorcheas (sol2-mib3, 6:4); c8 = semicorchea, corchea, semicorchea + tresillo de semicorcheas (re3 mib3... do#3). Dudoso: confirmar con la página completa del libro."
- ]
+ "pendiente": []
 }
