@@ -1,0 +1,126 @@
+{
+ "v": 1,
+ "libro": "Ritmo entonado 2.º GP",
+ "curso": "2Gp",
+ "grado": "gp",
+ "n": 38,
+ "titulo": "38",
+ "titulo_estilo": {
+  "x": 75,
+  "y": 117,
+  "px": 41
+ },
+ "numeros_x": 62,
+ "captura": "libro/capturas/2gp/038.png",
+ "tonalidad": "Mi bemol mayor",
+ "armadura": "Eb",
+ "modo": "mayor",
+ "clave": "treble",
+ "notacion": "Igual que libro/2gp/057.json. Silencio = figura:r. «-» tras la altura = tenuto.",
+ "pagina": {
+  "ancho": 1680,
+  "alto": 703,
+  "interlinea": 15.6
+ },
+ "sistemas": [
+  {
+   "y": 72,
+   "x0": 166,
+   "barras": [
+    1001,
+    1574
+   ],
+   "compases": [
+    1,
+    2
+   ]
+  },
+  {
+   "y": 324,
+   "x0": 56,
+   "barras": [
+    938,
+    1574
+   ],
+   "compases": [
+    3,
+    4
+   ]
+  },
+  {
+   "y": 571,
+   "x0": 58,
+   "barras": [
+    719,
+    1201,
+    1573
+   ],
+   "compases": [
+    5,
+    6,
+    7
+   ],
+   "final": "fin"
+  }
+ ],
+ "compases": [
+  {
+   "c": 1,
+   "compas": "10/8",
+   "m": "^ 8:g4 8:eb4 8:g4 | ^ 8:bb3 8:eb4 | ^ 16:g4 16:ab4 16:bb4 16:ab4 16:g4 16:f4 | ^ 8:eb4 8:bb4"
+  },
+  {
+   "c": 2,
+   "m": "^ 8:r | v 8:c5 8:ab4 | ^ 8:r | v 8:c5 | ^ 8:bb4 16:bb4 16:ab4 8:g4 | ^ 8:r | v 8:bb4"
+  },
+  {
+   "c": 3,
+   "m": "^ 8:ab4 8:f4 | v 8:ab4 8.:d5 16:c5 | ^ 8:bb4 8:ab4 | v 16:bb4 16:c5 16:bb4 16:a4"
+  },
+  {
+   "c": 4,
+   "m": "v 8:bb4 | ^ 4:bb3- | v 8:bb4! | ^ 4:c4- | v 8:bb4! | ^ 8:d4 8:eb4 8:f4 | ^ 8:r"
+  },
+  {
+   "c": 5,
+   "m": "^ 8.:g4 16:eb4 | ^ 8:bb3 8:eb4 8:bb4 8:g4 8:f5 | ^ 8:r | v 8:eb5 8:d5 8:c5"
+  },
+  {
+   "c": 6,
+   "m": "v 8:bb4 8:bb4 | v 8:r | v 8:bb4 8:c5 8:bb4 | ^ 8:r | ^ 4.:r | v 8:bb4"
+  },
+  {
+   "c": 7,
+   "m": "^ 2:g4 | ^ 8:r | v 4:eb5> | ^ 4.:r"
+  }
+ ],
+ "ligaduras": [
+  "1.1-1.5 abajo",
+  "1.6-1.13 abajo",
+  "2.2-2.3 arriba",
+  "2.5-2.6 arriba",
+  "2.7-2.9 abajo",
+  "2.11-3.1 arriba",
+  "3.1-3.2 abajo",
+  "3.3-3.7 arriba",
+  "3.8-4.1 arriba",
+  "4.6-4.8 abajo",
+  "5.1-5.7 abajo",
+  "5.9-6.2 arriba",
+  "6.4-6.6 arriba",
+  "6.9-7.1 arriba"
+ ],
+ "tresillos": [
+  {
+   "notas": "3.6-3.7",
+   "r": "2:3",
+   "abajo": true
+  },
+  "4.6-4.8",
+  "5.9-5.11",
+  "6.4-6.6"
+ ],
+ "pendiente": [
+  "c3: el «2» bajo las dos corcheas bb4-ab4 se ha interpretado como dosillo (2:3), único modo de que el compás sume 10/8."
+ ]
+}

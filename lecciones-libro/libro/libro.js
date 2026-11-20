@@ -80,7 +80,7 @@
         var tk=g.trim().split(/\s+/); var stem=0;
         if(tk[0]==='^'){ stem=1; tk.shift(); } else if(tk[0]==='v'){ stem=-1; tk.shift(); }
         var idx=[];
-        tk.forEach(function(t){ var p=t.split(':'); var esSil=/^r/.test(p[1]); var suf=(/[-!>~'^]+$/.exec(p[1])||[''])[0]; if(suf) p[1]=p[1].slice(0,-suf.length);
+        tk.forEach(function(t){ var p=t.split(':'); var esSil=/^r/.test(p[1]); var suf=(/[-!>~'^V]+$/.exec(p[1])||[''])[0]; if(suf) p[1]=p[1].slice(0,-suf.length);
           var n={dur:durDe(p[0])}; if(esSil){ n.rest=true; } else { n.midi=midiDe(p[1]); n.key=keyDe(p[1]); }
           if(suf){ n._art=suf; if(suf.indexOf('-')>=0) n._ten=true; }
           idx.push(notes.length); notes.push(n); stems.push(stem); total16+=dur16(p[0]); });
@@ -226,7 +226,7 @@
           var sn=new VF.StaveNote({clef:clefDe(ni),keys:[x2?(n.key+'/x2'):n.key],duration:durBase(n.dur),stem_direction:sd||1,auto_stem:!sd});
           for(var di=0;di<durDots(n.dur);di++) VF.Dot.buildAndAttach([sn]);
           if(n._art){ var pos=(sd||1)===1?VF.ModifierPosition.BELOW:VF.ModifierPosition.ABOVE;
-            [['-','a-'],['!','a.'],['>','a>'],["'",'av'],['^','a^']].forEach(function(z){ if(n._art.indexOf(z[0])>=0){ try{ var ar=new VF.Articulation(z[1]); ar.setPosition(pos); sn.addModifier(ar,0); }catch(e){} } });
+            [['-','a-'],['!','a.'],['>','a>'],["'",'av'],['^','a^'],['V','a^']].forEach(function(z){ if(n._art.indexOf(z[0])>=0){ try{ var ar=new VF.Articulation(z[1]); ar.setPosition(z[0]==='^'?VF.ModifierPosition.ABOVE:z[0]==='V'?VF.ModifierPosition.BELOW:pos); sn.addModifier(ar,0); }catch(e){} } });
             if(n._art.indexOf('~')>=0){ try{ var fe=new VF.Articulation('a@a'); fe.setPosition(VF.ModifierPosition.ABOVE); sn.addModifier(fe,0); }catch(e){} } }
           if(!x2){ var mm=String(n.key).match(/^([a-g])(#|b)?\/(\d)/); if(mm){ var kk=mm[1]+mm[3], want=mm[2]||'n', inKey=(KEY_ACCIDENTALS[ph.keysig]||{})[mm[1]]||'n';
             var cur=(kk in acc)?acc[kk]:inKey; acc[kk]=want; var prec=(J.precauciones||[]).some(function(t){ return String(t).split(/\s+/)[0]===lb.c+'.'+(ni+1); }); if(want!==cur || prec) sn.addModifier(new VF.Accidental(want),0); } }

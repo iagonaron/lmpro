@@ -1,0 +1,425 @@
+{
+ "v": 1,
+ "libro": "Ritmo entonado 2.º GP",
+ "curso": "2Gp",
+ "grado": "gp",
+ "n": 51,
+ "titulo": "51",
+ "titulo_estilo": {
+  "fuente": "sans",
+  "x": 84,
+  "y": 227,
+  "px": 43
+ },
+ "numeros_x": 66,
+ "captura": "libro/capturas/2gp/051.png",
+ "tonalidad": "Do mayor",
+ "armadura": "C",
+ "modo": "mayor",
+ "clave": "treble",
+ "notacion": "Igual que libro/2gp/057.json. Silencio = figura:r. «-» tras la altura = tenuto. Clave de fa: do central = c4.",
+ "pagina": {
+  "ancho": 1680,
+  "alto": 1376,
+  "interlinea": 16.5
+ },
+ "sistemas": [
+  {
+   "y": 181,
+   "x0": 172,
+   "barras": [
+    468,
+    726,
+    988,
+    1133,
+    1363,
+    1622
+   ],
+   "compases": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+   ],
+   "cortesia": {
+    "x1": 1668,
+    "compas": "3/8"
+   }
+  },
+  {
+   "y": 447,
+   "x0": 59,
+   "barras": [
+    342,
+    565,
+    737,
+    1112,
+    1328,
+    1617
+   ],
+   "compases": [
+    7,
+    8,
+    9,
+    10,
+    11,
+    12
+   ],
+   "cortesia": {
+    "x1": 1668,
+    "compas": "1/4"
+   }
+  },
+  {
+   "y": 708,
+   "x0": 58,
+   "barras": [
+    273,
+    670,
+    893,
+    1192,
+    1342,
+    1668
+   ],
+   "compases": [
+    13,
+    14,
+    15,
+    16,
+    17,
+    18
+   ],
+   "clave": "bass"
+  },
+  {
+   "y": 970,
+   "x0": 57,
+   "barras": [
+    407,
+    622,
+    923,
+    1110,
+    1428,
+    1618
+   ],
+   "compases": [
+    19,
+    20,
+    21,
+    22,
+    23,
+    24
+   ],
+   "clave": "treble",
+   "cortesia": {
+    "x1": 1668,
+    "compas": "5/8"
+   }
+  },
+  {
+   "y": 1236,
+   "x0": 57,
+   "barras": [
+    492,
+    762,
+    973,
+    1166,
+    1397,
+    1668
+   ],
+   "compases": [
+    25,
+    26,
+    27,
+    28,
+    29,
+    30
+   ],
+   "final": "fin"
+  }
+ ],
+ "compases": [
+  {
+   "c": 1,
+   "compas": "3/8",
+   "m": "^ 8:f#4 8:f#4 8:f#4"
+  },
+  {
+   "c": 2,
+   "compas": "2/4",
+   "m": "^ 8:e4 8:c#4 | ^ 4:b3-"
+  },
+  {
+   "c": 3,
+   "m": "^ 8:c#4 8:b3 8:c#4 8:d#4"
+  },
+  {
+   "c": 4,
+   "compas": "1/4",
+   "m": "^ 4:e4-"
+  },
+  {
+   "c": 5,
+   "compas": "3/8",
+   "m": "^ 8:f#4 8:f#4 8:f#4"
+  },
+  {
+   "c": 6,
+   "compas": "2/4",
+   "m": "^ 8:e4 8:c#4 | ^ 4:b3-"
+  },
+  {
+   "c": 7,
+   "compas": "3/8",
+   "m": "^ 8:a3 8:b3 8:a3"
+  },
+  {
+   "c": 8,
+   "compas": "2/4",
+   "m": "^ 4:b3- | ^ 4:b3-"
+  },
+  {
+   "c": 9,
+   "compas": "3/8",
+   "m": "^ 4.:r"
+  },
+  {
+   "c": 10,
+   "compas": "6/8",
+   "m": "^ 8:d2 8:e2 8:d2 | ^ 8:e2 8:f#2 8:g2",
+   "clave_desde": {
+    "n": 1,
+    "clave": "bass"
+   }
+  },
+  {
+   "c": 11,
+   "compas": "2/4",
+   "m": "^ 4:a2- | ^ 4:a2-"
+  },
+  {
+   "c": 12,
+   "compas": "5/8",
+   "m": "^ 8:g2 8:a2 8:b2 8:c3 8:g2"
+  },
+  {
+   "c": 13,
+   "compas": "1/4",
+   "m": "^ 4:a2-"
+  },
+  {
+   "c": 14,
+   "compas": "6/8",
+   "m": "^ 8:d2 8:e2 8:d2 | ^ 8:e2 8:f#2 8:g2"
+  },
+  {
+   "c": 15,
+   "compas": "2/4",
+   "m": "^ 4:a2- | ^ 4:a2-"
+  },
+  {
+   "c": 16,
+   "compas": "5/8",
+   "m": "^ 8:g2 8:a2 8:b2 8:c3 8:d3"
+  },
+  {
+   "c": 17,
+   "compas": "1/4",
+   "m": "^ 4:a2-"
+  },
+  {
+   "c": 18,
+   "compas": "5/8",
+   "m": "v 8:f#5> 8:e5 8:d5 8:c5 8:b4",
+   "clave_desde": {
+    "n": 1,
+    "clave": "treble"
+   }
+  },
+  {
+   "c": 19,
+   "m": "v 4:r | v 8:r | v 8:f#5> 8:e5"
+  },
+  {
+   "c": 20,
+   "compas": "3/8",
+   "m": "v 8:d5 8:c5 8:b4"
+  },
+  {
+   "c": 21,
+   "compas": "5/8",
+   "m": "^ 4:a4 | ^ 8:r | ^ 8:c#5> 8:b4"
+  },
+  {
+   "c": 22,
+   "compas": "3/8",
+   "m": "^ 8:a4 8:g4 8:f#4"
+  },
+  {
+   "c": 23,
+   "compas": "5/8",
+   "m": "^ 4:e4 | ^ 8:r | v 8:g#5> 8:f#5"
+  },
+  {
+   "c": 24,
+   "compas": "3/8",
+   "m": "v 8:e5 8:d5 8:c#5"
+  },
+  {
+   "c": 25,
+   "compas": "5/8",
+   "m": "v 8:g#5> 8:f#5 8:e5 8:d5 8:c#5"
+  },
+  {
+   "c": 26,
+   "compas": "2/4",
+   "m": "v 4:b4 | v 8:f#5 | v 8:b4"
+  },
+  {
+   "c": 27,
+   "m": "v 8:b4 | v 8:f#5 | v 4:b4-"
+  },
+  {
+   "c": 28,
+   "m": "v 4:c5 | v 8:c5 8:c5"
+  },
+  {
+   "c": 29,
+   "m": "v 8:eb5> 8:c5 8:c5 8:c5"
+  },
+  {
+   "c": 30,
+   "compas": "5/8",
+   "m": "v 4:b4 | v 8:f#5 | v 4:b4-"
+  }
+ ],
+ "ligaduras": [
+  "1.1-2.3 abajo",
+  "3.1-4.1 abajo",
+  "5.1-6.3 abajo",
+  "7.1-8.1 abajo",
+  "10.1-11.1 abajo",
+  "12.1-12.5 abajo",
+  "14.1-15.1 abajo",
+  "16.1-17.1 abajo",
+  "18.1-18.5 arriba",
+  "19.3-21.1 arriba",
+  "21.3-23.1 abajo",
+  "23.3-24.3 arriba",
+  "25.1-25.5 arriba",
+  "26.1-26.2 arriba",
+  "26.3-27.2 arriba",
+  "30.1-30.2 arriba"
+ ],
+ "uniones": [
+  "26.3-27.1"
+ ],
+ "notas_libro": [
+  {
+   "lineas": [
+    {
+     "x0": 380,
+     "x1": 995,
+     "y": 45,
+     "partes": [
+      "Ejercicio basado en los primeros compases del"
+     ]
+    },
+    {
+     "x0": 322,
+     "x1": 1055,
+     "y": 80,
+     "partes": [
+      "tercer movimiento de la ",
+      {
+       "it": "Sonata para piano"
+      },
+      " de B. Bartók."
+     ]
+    }
+   ],
+   "flecha": [
+    328,
+    90,
+    275,
+    155
+   ]
+  },
+  {
+   "lineas": [
+    {
+     "x0": 853,
+     "x1": 1145,
+     "y": 1129,
+     "partes": [
+      {
+       "it": "Sforzato en fortissimo:"
+      }
+     ]
+    },
+    {
+     "x0": 767,
+     "x1": 1227,
+     "y": 1156,
+     "partes": [
+      "ataque súbito del sonido del nivel dinámico ",
+      {
+       "it": "ff."
+      }
+     ]
+    }
+   ],
+   "flecha": [
+    772,
+    1135,
+    695,
+    1174
+   ]
+  },
+  {
+   "lineas": [
+    {
+     "x0": 647,
+     "x1": 690,
+     "y": 1206,
+     "negrita": true,
+     "partes": [
+      {
+       "it": "sff"
+      }
+     ]
+    },
+    {
+     "x0": 828,
+     "x1": 872,
+     "y": 1206,
+     "negrita": true,
+     "partes": [
+      {
+       "it": "sff"
+      }
+     ]
+    },
+    {
+     "x0": 1532,
+     "x1": 1573,
+     "y": 1206,
+     "negrita": true,
+     "partes": [
+      {
+       "it": "sff"
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "pendiente": [
+  "Barrado que cruza la barra de compás (c19.3-c20.3 f#5-e5|d5-c5-b4 y c21.3-c22.3 c#5-b4|a4-g4-f#4 y c23.3-c24.3, c25): escrito como grupos separados por compás.",
+  "Los «sff» (sforzato en fortissimo) sobre c26.2, c27.2 y c30.2 van como texto (notas_libro) en su posición del libro, no como matiz.",
+  "c9→c10: la clave de fa aparece antes de la barra (final de c9) y c17→c18 la de sol; se marcan con clave_desde en el compás siguiente (se dibuja tras la barra).",
+  "Pequeña curva de ligadura al inicio del pentagrama 3 (llega a c13.1 desde la izquierda) no transcrita: no hay ligadura que salga del final del pentagrama 2."
+ ]
+}

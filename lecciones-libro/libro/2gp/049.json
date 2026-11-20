@@ -1,0 +1,343 @@
+{
+ "v": 1,
+ "libro": "Ritmo entonado 2.º GP",
+ "curso": "2Gp",
+ "grado": "gp",
+ "n": 49,
+ "titulo": "49",
+ "titulo_estilo": {
+  "x": 78,
+  "y": 207,
+  "px": 43
+ },
+ "numeros_x": 60,
+ "captura": "libro/capturas/2gp/049.png",
+ "tonalidad": "Fa menor",
+ "armadura": "Ab",
+ "modo": "menor",
+ "clave": "bass",
+ "notacion": "Igual que libro/2gp/057.json. Silencio = figura:r. «-» tras la altura = tenuto. Clave de fa: do central = c4 (ledger sobre la línea superior = c4).",
+ "pagina": {
+  "ancho": 1680,
+  "alto": 1051,
+  "interlinea": 15.75
+ },
+ "sistemas": [
+  {
+   "y": 162,
+   "x0": 165,
+   "barras": [
+    524,
+    774,
+    988,
+    1275,
+    1524
+   ],
+   "compases": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "cortesia": {
+    "x1": 1572,
+    "compas": "3/8"
+   }
+  },
+  {
+   "y": 413,
+   "x0": 55,
+   "barras": [
+    399,
+    710,
+    1042,
+    1523
+   ],
+   "compases": [
+    6,
+    7,
+    8,
+    9
+   ],
+   "cortesia": {
+    "x1": 1572,
+    "compas": "7/8"
+   }
+  },
+  {
+   "y": 660,
+   "x0": 55,
+   "barras": [
+    657,
+    1029,
+    1298,
+    1525
+   ],
+   "compases": [
+    10,
+    11,
+    12,
+    13
+   ],
+   "cortesia": {
+    "x1": 1572,
+    "compas": "2/4"
+   }
+  },
+  {
+   "y": 905,
+   "x0": 55,
+   "barras": [
+    492,
+    710,
+    1036,
+    1342,
+    1570
+   ],
+   "compases": [
+    14,
+    15,
+    16,
+    17,
+    18
+   ],
+   "final": "fin"
+  }
+ ],
+ "compases": [
+  {
+   "c": 1,
+   "compas": "3/8",
+   "m": "v 8:f3 8:f3 8:f3"
+  },
+  {
+   "c": 2,
+   "compas": "2/4",
+   "m": "v 4:ab3 | v 8:f3! | v 8:r"
+  },
+  {
+   "c": 3,
+   "compas": "3/8",
+   "m": "v 8:ab3 8:f3 8:ab3"
+  },
+  {
+   "c": 4,
+   "compas": "5/8",
+   "m": "v 4:c4 | v 8:db4 | v 4:c4-"
+  },
+  {
+   "c": 5,
+   "compas": "2/4",
+   "m": "v 4:ab3- | v 8:r | v 8:ab3"
+  },
+  {
+   "c": 6,
+   "compas": "3/8",
+   "m": "v 4:g3 | v 8:f3"
+  },
+  {
+   "c": 7,
+   "compas": "6/8",
+   "m": "v 8:eb3 | v 4:db3 | ^ 4.:c3"
+  },
+  {
+   "c": 8,
+   "compas": "5/8",
+   "m": "v 8:f3 8:g3 | v 8.:ab3 16:g3 8:f3"
+  },
+  {
+   "c": 9,
+   "compas": "9/8",
+   "m": "v 4.:g3 | v 8:g3 8:f3 8:e3 8:g3 | ^ 8:c3 | v 4:c4-"
+  },
+  {
+   "c": 10,
+   "compas": "7/8",
+   "m": "v 8:r | v 8:ab3 8:g3 | v 8:f3 8:d3 | v 8:f3 8:eb3 8:g3"
+  },
+  {
+   "c": 11,
+   "compas": "6/8",
+   "m": "v 8:r | v 8:ab3 8:g3 | v 8:ab3 8.:ab2 16:bb2"
+  },
+  {
+   "c": 12,
+   "m": "^ 4.:c3 | ^ 8:c2^ | ^ 4:r"
+  },
+  {
+   "c": 13,
+   "compas": "3/8",
+   "m": "^ 8:db2 8:f2 8:ab2"
+  },
+  {
+   "c": 14,
+   "compas": "2/4",
+   "m": "v 4:db3 | ^ 4:b2-"
+  },
+  {
+   "c": 15,
+   "compas": "3/8",
+   "m": "^ 8:c3 8:bb2 8:ab2"
+  },
+  {
+   "c": 16,
+   "compas": "5/8",
+   "m": "^ 4.:g2 | ^ 8:c3 8:b2"
+  },
+  {
+   "c": 17,
+   "compas": "2/4",
+   "m": "^ 4:c3 | ^ 8:r | ^ 16:c2 16:d2 16:e2"
+  },
+  {
+   "c": 18,
+   "compas": "3/8",
+   "m": "^ 4.:f2"
+  }
+ ],
+ "ligaduras": [
+  "1.1-1.3 arriba",
+  "2.1-2.2 arriba",
+  "3.1-4.3 arriba",
+  "5.3-6.2 arriba",
+  "7.1-7.2 arriba",
+  "8.1-8.2 arriba",
+  "8.3-9.1 arriba",
+  "9.2-9.6 arriba",
+  "10.2-10.5 arriba",
+  "10.6-10.8 arriba",
+  "11.2-11.4 arriba",
+  "11.5-12.1 arriba",
+  "13.1-14.1 abajo",
+  "15.1-16.1 abajo",
+  "16.2-17.1 abajo",
+  "17.3-18.1 abajo"
+ ],
+ "tresillos": [
+  "10.6-10.8",
+  {
+   "notas": "9.2-9.5",
+   "r": "4:3"
+  },
+  "17.3-17.5"
+ ],
+ "matices": [
+  "7.3 sfz"
+ ],
+ "notas_libro": [
+  {
+   "lineas": [
+    {
+     "x0": 573,
+     "x1": 1336,
+     "y": 290,
+     "partes": [
+      "Los cambios de compás pueden estar precedidos por una línea divisoria ",
+      {
+       "it": "simple,"
+      }
+     ]
+    },
+    {
+     "x0": 671,
+     "x1": 1237,
+     "y": 313,
+     "partes": [
+      "no doble, sobre todo cuando estos cambios son frecuentes."
+     ]
+    }
+   ],
+   "flecha": [
+    572,
+    286,
+    529,
+    232
+   ]
+  },
+  {
+   "lineas": [
+    {
+     "x0": 225,
+     "x1": 814,
+     "y": 39,
+     "partes": [
+      "Cambios métricos de los primeros compases de"
+     ]
+    },
+    {
+     "x0": 141,
+     "x1": 904,
+     "y": 70,
+     "partes": [
+      "las “Variaciones Libres”, nº 140 del ",
+      {
+       "it": "Mikrokosmos"
+      },
+      " de B. Bartók."
+     ]
+    }
+   ],
+   "flecha": [
+    375,
+    80,
+    340,
+    148
+   ]
+  },
+  {
+   "lineas": [
+    {
+     "x0": 682,
+     "x1": 1103,
+     "y": 569,
+     "partes": [
+      {
+       "it": "Sforzando:"
+      },
+      " fuerte acentuación de la nota."
+     ]
+    }
+   ],
+   "flecha": [
+    668,
+    548,
+    632,
+    514
+   ]
+  },
+  {
+   "lineas": [
+    {
+     "x0": 527,
+     "x1": 542,
+     "y": 142,
+     "partes": [
+      "="
+     ]
+    }
+   ],
+   "ritmos": [
+    {
+     "figs": "8",
+     "xs": [
+      507
+     ],
+     "y": 141,
+     "yb": 115
+    },
+    {
+     "figs": "8",
+     "xs": [
+      555
+     ],
+     "y": 141,
+     "yb": 115
+    }
+   ]
+  }
+ ],
+ "pendiente": [
+  "Marcato de c12.2: el libro lo pone encima de la nota (plica arriba); el renderizador lo dibuja debajo como «v»."
+ ]
+}

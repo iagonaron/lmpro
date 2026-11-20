@@ -5,24 +5,24 @@
  "grado": "gp",
  "n": 53,
  "titulo": "53",
- "captura": "https://woiptkyrxkbpnvioypit.supabase.co/storage/v1/object/public/diario/libros_lecciones/2Gp/ritmo_entonado/full/053.png",
+ "captura": "libro/capturas/2gp/053.png",
  "tonalidad": "Sol mayor",
  "armadura": "G",
  "modo": "mayor",
  "clave": "treble",
  "titulo_estilo": {
   "x": 82,
-  "y": 124,
+  "y": 143,
   "px": 42
  },
  "pagina": {
   "ancho": 1680,
-  "alto": 970,
+  "alto": 1025,
   "interlinea": 16.4
  },
  "sistemas": [
   {
-   "y": 74,
+   "y": 93,
    "x0": 175,
    "barras": [
     1672
@@ -32,7 +32,7 @@
    ]
   },
   {
-   "y": 340,
+   "y": 359,
    "x0": 58,
    "barras": [
     1391,
@@ -44,7 +44,7 @@
    ]
   },
   {
-   "y": 602,
+   "y": 621,
    "x0": 58,
    "barras": [
     1672
@@ -54,7 +54,7 @@
    ]
   },
   {
-   "y": 864,
+   "y": 883,
    "x0": 59,
    "barras": [
     1669
@@ -123,7 +123,7 @@
     {
      "x0": 728,
      "x1": 1477,
-     "y": 233,
+     "y": 252,
      "partes": [
       "En este tipo de escritura las ",
       {
@@ -135,7 +135,7 @@
     {
      "x0": 887,
      "x1": 1317,
-     "y": 261,
+     "y": 280,
      "partes": [
       "y dar término al efecto de las alteraciones."
      ]
@@ -143,17 +143,13 @@
    ],
    "flecha": [
     1337,
-    253,
+    272,
     1384,
-    328
+    347
    ]
   }
  ],
- "pendiente": [
-  "Campo 'precauciones' (becuadro de precaución en 2.12, c5 tras el do# de 1.18) inventado: no está en la ampliación del formato; confirmar nombre.",
-  "Marca cortada bajo la última nota del sistema 4 (x≈1660), no transcrita.",
-  "Título '53' medido x=82, y=124, px≈42 (negrita sin serifa)."
- ],
+ "pendiente": [],
  "sin_numeros": true,
  "tresillos": [
   {

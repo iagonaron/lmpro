@@ -7,22 +7,22 @@
  "titulo": "54",
  "titulo_estilo": {
   "x": 83,
-  "y": 123,
+  "y": 142,
   "px": 42
  },
- "captura": "https://woiptkyrxkbpnvioypit.supabase.co/storage/v1/object/public/diario/libros_lecciones/2Gp/ritmo_entonado/full/054.png",
+ "captura": "libro/capturas/2gp/054.png",
  "tonalidad": "Mi menor",
  "modo": "menor",
  "armadura": "G",
  "clave": "bass",
  "pagina": {
   "ancho": 1680,
-  "alto": 968,
+  "alto": 1016,
   "interlinea": 16.5
  },
  "sistemas": [
   {
-   "y": 74,
+   "y": 93,
    "x0": 172,
    "barras": [
     1670
@@ -32,7 +32,7 @@
    ]
   },
   {
-   "y": 340,
+   "y": 359,
    "x0": 58,
    "barras": [
     1302,
@@ -44,7 +44,7 @@
    ]
   },
   {
-   "y": 602,
+   "y": 621,
    "x0": 58,
    "barras": [
     1670
@@ -54,7 +54,7 @@
    ]
   },
   {
-   "y": 864,
+   "y": 883,
    "x0": 58,
    "barras": [
     1670

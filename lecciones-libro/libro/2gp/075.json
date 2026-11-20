@@ -8,11 +8,11 @@
  "titulo_estilo": {
   "fuente": "sans",
   "x": 82,
-  "y": 122,
+  "y": 141,
   "px": 42
  },
  "numeros_x": 64,
- "captura": "https://woiptkyrxkbpnvioypit.supabase.co/storage/v1/object/public/diario/libros_lecciones/2Gp/ritmo_entonado/full/075.png",
+ "captura": "libro/capturas/2gp/075.png",
  "tonalidad": "Fa mayor",
  "armadura": "F",
  "modo": "mayor",
@@ -20,12 +20,12 @@
  "notacion": "Igual que libro/2gp/057.json. Silencio = figura:r. «-» tras la altura = tenuto.",
  "pagina": {
   "ancho": 1680,
-  "alto": 951,
+  "alto": 1015,
   "interlinea": 16.5
  },
  "sistemas": [
   {
-   "y": 74,
+   "y": 93,
    "x0": 172,
    "barras": [
     710,
@@ -41,7 +41,7 @@
    ]
   },
   {
-   "y": 327,
+   "y": 346,
    "x0": 56,
    "barras": [
     615,
@@ -57,7 +57,7 @@
    ]
   },
   {
-   "y": 581,
+   "y": 600,
    "x0": 55,
    "barras": [
     494,
@@ -73,7 +73,7 @@
    ]
   },
   {
-   "y": 846,
+   "y": 865,
    "x0": 55,
    "barras": [
     608,
@@ -154,7 +154,7 @@
   },
   {
    "c": 16,
-   "m": "^ 4:a4 | ^ 8.:r | ^ 16:f4"
+   "m": "^ 4:a4 | ^ 8.:r | ^ 16:f4V"
   }
  ],
  "ligaduras": [
@@ -180,9 +180,7 @@
   "4.4-4.6"
  ],
  "pendiente": [
-  "Marca «V» bajo la última nota (c16.3), pegada al borde inferior de la captura; no transcrita (¿respiración o resto cortado de un «3»?).",
-  "Barrado que cruza un silencio de semicorchea (la barra sigue por encima): c5 y c13, escrito como un único grupo con el silencio dentro; en c1 las barras se interrumpen y van como grupos separados.",
-  "El corchete del tresillo de c15 queda cortado por el borde inferior de la captura (solo se ve el gancho izquierdo en x≈984)."
+  "Barrado que cruza un silencio de semicorchea (la barra sigue por encima): c5 y c13, escrito como un único grupo con el silencio dentro; en c1 las barras se interrumpen y van como grupos separados."
  ],
  "uniones": [
   "2.5-3.1",
