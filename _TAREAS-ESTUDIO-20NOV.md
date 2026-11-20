@@ -43,7 +43,7 @@ Módulos:
 12. **Fase de ejecución fuera.** No es una fase ni un botón con forma de ▶. Al acabarse el tiempo de la fase 2 sale una ventana: «Se ha agotado el tiempo de estudio: ahora hazlo directamente. Tienes 2 oportunidades», con una obligatoria y la segunda opcional. Igual en REaH.
 13. **Cambio de fase pulsando el número** (1, 2, 3, 4). Fuera «Pasar a la siguiente fase». Se puede ir a la fase 3 cuando se quiera. En los at home NO se vuelve atrás (decisión §12), salvo que Iago diga otra cosa.
 14. HECHO 18:50 · **Carteles con tiempo**: el botón no dice «Entendido» sino «Entendido e iniciar tiempo» (RaH, EaH, REaH).
-15. **Subdivisión por defecto en RaH**: fase 1 en corcheas, adaptada al compás (en compuesto, negra con puntillo + corcheas, como en el visor); fase 2 solo pulso.
+15. HECHO 19:40 (estudio-comun v10; además la subdivisión «sube una talla» en compases de blanca, Iago 17:56) · **Subdivisión por defecto en RaH**: fase 1 en corcheas, adaptada al compás (en compuesto, negra con puntillo + corcheas, como en el visor); fase 2 solo pulso.
 16. **Título «RITMO at home» cortado** arriba a la izquierda durante el estudio (sale «RIT / MO / at home» en tres líneas). Arreglarlo.
 17. **Percusión (fase 1)**: al terminar de tocar NO sale ninguna ventana («a practicar»…): nada.
 18. **Caritas tras la ejecución**: 1 Muy mal · 2 Mal · 3 Safé · 4 Bien · 5 Muy bien («Decente» fuera; escribir «Safé» tal cual lo dijo Iago).
