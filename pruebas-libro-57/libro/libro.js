@@ -30,6 +30,10 @@
       ".libro-orig-btn:hover::after{content:attr(data-tip);position:absolute;right:46px;white-space:nowrap;background:rgba(10,16,30,.9);padding:6px 9px;border-radius:7px}"+
       ".libro-orig{position:fixed;inset:0;z-index:99995;background:rgba(6,9,18,.94);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:18px}"+
       ".libro-orig img{max-width:96vw;max-height:84vh;background:#fff;border-radius:8px}"+
+      "body.libro-modo #phaseControls{position:sticky;bottom:8px;z-index:60;background:rgba(22,15,4,.94);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}"+
+      "body.libro-modo #score.libro-papel svg{height:calc(100vh - 250px)!important;min-height:300px;width:100%!important}"+
+      ".libro-recuerda{margin:12px 0 0;padding:10px 12px;border:1px solid rgba(110,231,160,.55);border-radius:10px;background:rgba(22,163,74,.14);font-size:.95em;line-height:1.4;text-align:left}"+
+      ".libro-recuerda b{color:#6ee7a0}"+
       ".libro-orig button{margin-top:14px;border:1px solid rgba(255,255,255,.3);background:transparent;color:#e9edf5;border-radius:9px;padding:9px 18px;font:700 13px 'Helvetica Neue',Arial;cursor:pointer}";
     document.head.appendChild(st);
   }catch(e){}
@@ -302,6 +306,21 @@
     document.body.appendChild(b);
   }
 
+  /* (20-nov-2026, Iago) en el cartel de la FASE 1 se remarca que abajo se ajusta la velocidad y, en la entonación, la ayuda */
+  var RECUERDA='<b>Recuerda:</b> abajo puedes ajustar la velocidad, de la tortuga a la liebre. Ponla a la que te resulte cómoda. '+
+               'Y en la entonación podrás elegir cuánta ayuda necesitas. Aquí no hay tiempo: tómate el que haga falta.';
+  function recordatorioFase1(){
+    var mo=new MutationObserver(function(){
+      if(typeof studyMode==='undefined' || !studyMode || phaseIdx!==0) return;
+      document.querySelectorAll('.phase-banner, .rp-cartel').forEach(function(card){
+        if(card.querySelector('.libro-recuerda')) return;
+        var p=document.createElement('p'); p.className='libro-recuerda'; p.innerHTML=RECUERDA;
+        var ok=card.querySelector('.pb-ok, .rp-cartel-ok'); if(ok) card.insertBefore(p,ok); else card.appendChild(p);
+      });
+    });
+    mo.observe(document.body,{childList:true,subtree:true});
+  }
+
   function arranca(){
     fetch(FICHERO,{cache:'no-cache'}).then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); }).then(function(J){
       LEC=montaLeccion(J); window.__LIBRO=LEC;
@@ -317,6 +336,8 @@
       currentLesson=LEC; renderCurrent();
       try{ var tg=document.getElementById('lessonTags'); if(tg) tg.innerHTML='<span>Lección '+J.n+'</span><span>'+J.tonalidad+'</span><span>'+J.compases.length+' compases</span>'; }catch(e){}
       botonOriginal(J);
+      document.body.classList.add('libro-modo');
+      recordatorioFase1();
       try{ document.querySelectorAll('p,div').forEach(function(e){ if(e.children.length===0 && /generado proceduralmente/i.test(e.textContent)) e.style.display='none'; }); }catch(e){}
     }).catch(function(e){ console.error('[libro] no se pudo abrir la lección',e);
       var s=document.getElementById('score'); if(s) s.innerHTML='<div style="padding:30px;text-align:center;color:#7a1407">No se pudo abrir la lección '+NUM+'.</div>'; });
