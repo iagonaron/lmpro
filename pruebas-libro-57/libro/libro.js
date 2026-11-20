@@ -310,7 +310,8 @@
       try{ document.getElementById('entry').style.display='none'; document.getElementById('app').style.display='block'; }catch(e){}
       try{ var tr=document.querySelector('#app .tabs'); if(tr) tr.style.display='none'; }catch(e){}
       try{ applyTrimUI(); }catch(e){}
-      ['genBtn','gp1ChangeBtn'].forEach(function(id){ var e=document.getElementById(id); if(e){ e.style.display='none'; e.setAttribute('data-libro-oculto','1'); } });
+      /* (20-nov-2026, Iago) en las lecciones del libro no hay «Prueba directa»: o se estudia por fases o se lee directamente en pantalla */
+      ['genBtn','gp1ChangeBtn','accompBtn'].forEach(function(id){ var e=document.getElementById(id); if(e){ e.style.display='none'; e.setAttribute('data-libro-oculto','1'); } });
       try{ var h=document.getElementById('goRitmoHome'); if(h){ h.removeAttribute('href'); h.onclick=function(e){ e.preventDefault(); }; h.style.pointerEvents='none'; var bk=h.querySelector('.back'); if(bk) bk.style.display='none'; } }catch(e){}
       document.title='Lección '+J.n+' · Ritmo entonado';
       currentLesson=LEC; renderCurrent();
