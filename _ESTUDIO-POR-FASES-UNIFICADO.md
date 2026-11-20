@@ -81,3 +81,10 @@ los cambios del 20-nov 10:06–10:12 (§5), AJUSTADOS con la recapitulación de 
 - Visor GP/GE + lecciones del libro: coordinadora (`libro.js` monta el estudio de ritmopro sin tiempo).
 - Ritmo at home y Entonación at home (GE): conversaciones propias cuando ritmopro esté publicado; reutilizan su código.
 - Antes de subir: huella EN CURSO/HECHO en el `_COORDINACION-IA.md` del repo; enseñar a Iago antes de publicar.
+
+## 8. Carteles visuales y aviso de la mano (Iago, 20-nov 12:10–12:20) — PARA TODOS
+- Carteles de cada fase como los de Entonación at home / Ritmo at home: título + una frase + **filas con el control en miniatura a la izquierda** (botón, pentagrama con la nota en azul, tortuga/liebre, columnas de anotar…) y qué hace a la derecha. Solo lo que exista en esa fase. Iago dio por buena la propuesta de Ritmo at home (fases 1, 2, ejecución, 3 y 4).
+- En la **fase 2** (ritmo con notas / con la mano) y en la **ejecución rítmica**, una fila **destacada** (borde ámbar, icono de mano):
+  - **GE**: «Recuerda usar el **pulso con la mano** cada vez que practiques.»
+  - **GP**: «Recuerda utilizar **la mano**, ya sea marcando **subdivisión** o **pulso**, según cómo trabajemos en clase cada dificultad.»
+- Visor de lecciones del libro: hecho en `libro.js` (cvContenido/cvVisualiza), pendiente del visto bueno de Iago para encenderlo (`CARTELES_VISUALES`).
