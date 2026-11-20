@@ -133,3 +133,14 @@ los cambios del 20-nov 10:06–10:12 (§5), AJUSTADOS con la recapitulación de 
 - **NO**: Ritmo entonado (GP), ni at home ni en el visor de la campana de GP.
 - Hecho en el visor (libro.js v21: envoltorio de showCountdown/hideCountdown, solo si GE y la fase no es «ritmo»). Ritmo at home y Entonación at home: que lo pongan sus conversaciones con este mismo aspecto (pastilla verde lisa, borde #4ade80, texto blanco 17 px, centrada bajo el número).
 - Iniciar estudio (20-nov 13:59, visor): arriba, centrado y en verde.
+
+## 15. Ajustes de Iago tras probar el visor (20-nov 13:59–14:08) — PARA TODOS, ya aplicados en los cuatro módulos
+- **«Iniciar estudio»** en verde (en el visor, además, arriba y centrado).
+- **Octava**: «loco» recto, a continuación de la línea (sin inclinar).
+- **Pulsar cualquier otro control** (Pistas, ayuda del piano, Tónica…, fases) **suelta la herramienta de anotar** que hubiera (octava o lápiz).
+- **Sin scroll** mientras se estudia: todo cabe en la pantalla.
+- **Acompañamiento más alto** (×1,8 sobre lo de antes; tónica/escala/arpegio ya se oían bien).
+- **Puntuación más generosa** (Iago cantó al 95–100 % y salió 84 %): la voz se analiza 0,1 s más tarde (latencia), basta un frame con voz, verde ≤ 70 cents en algún momento de la nota, ámbar ≤ 160 cents cuenta 0,6 en el porcentaje.
+- **Ventana del resultado** en el centro, del mismo tamaño, fondo más claro; si el ratón sale del recuadro, o se toca fuera en el iPad, se vuelve **cristal líquido** y se ve la partitura con sus colores.
+- **Lo anotado se guarda** en el dispositivo al soltar el dedo/ratón (visor: ya se guardaba cada 2 s; ahora también al soltar) y vuelve al abrir otro día la misma lección.
+- Dónde: visor = lecciones-libro/libro/libro.js (v22) · Ritmo at home, Entonación at home y Ritmo entonado at home = LMEAVathome/piel/estudio-comun.js, cargado desde piel/lm-piel.js (y en ritmopro también desde su index.html).
