@@ -88,3 +88,7 @@ los cambios del 20-nov 10:06–10:12 (§5), AJUSTADOS con la recapitulación de 
   - **GE**: «Recuerda usar el **pulso con la mano** cada vez que practiques.»
   - **GP**: «Recuerda utilizar **la mano**, ya sea marcando **subdivisión** o **pulso**, según cómo trabajemos en clase cada dificultad.»
 - Visor de lecciones del libro: hecho en `libro.js` (cvContenido/cvVisualiza), pendiente del visto bueno de Iago para encenderlo (`CARTELES_VISUALES`).
+
+## 9. Barrido final de unificación (Iago, 20-nov 12:22)
+- Cuando Ritmo at home y Entonación at home estén hechos, la coordinadora hace un **barrido final**: compara los cuatro módulos (Ritmo at home, Entonación at home, Ritmo entonado at home, visor de lecciones) y le da a Iago la **lista de diferencias** para unificar (textos de carteles, p. ej. «la figura que suena se ilumina», controles, colores).
+- Piel, para todos: **verde = ritmo**, **azul = entonación**, fondo = **la foto del conservatorio**; el **dorado ya no se usa**.
