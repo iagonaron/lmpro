@@ -12,12 +12,12 @@ Módulos:
 ## Prioridad 1 (lo que verán los alumnos esta semana)
 1. **GP lección 58 en digital.** Iago la abrió desde la campana y salió la versión antigua. Pasarla y añadirla a DIGITAL.GP.n.
 2. **Terminar la tanda de GP** de los ayudantes pausados por el límite: 67, 81, 82, 85, 93, 90, 96 (falta 090, 096) y 101–141 (faltan 107, 108, 109, 140, 141). Revisarlas y publicarlas.
-3. **Arpegio en EaH**: la nota aguda dura de más (epOido: `i===3 ? st*1.6` y `t+=st*1.5`). Ponerlo con el mismo pulso que la escala.
+3. HECHO 15:35 (estudio-comun v2) · **Arpegio en EaH**: la nota aguda dura de más (epOido: `i===3 ? st*1.6` y `t+=st*1.5`). Ponerlo con el mismo pulso que la escala.
 
 ## Prioridad 2 (todos los módulos con Tónica/Escala/Arpegio: visor fase 3, RaH fase 3, REaH fase 3, EaH)
 4. **Botón «Acordes»** junto a Tónica · Escala · Arpegio. Suenan los acordes tonales bien enlazados, con buena conducción de voces: I – IV – V(7) – I, o I – ii – V7 – I. Los carteles de la fase lo explican.
 5. **Ventanas y carteles sin fondo negro opaco.** Que se intuya el fondo del conservatorio (cristal oscuro semitransparente con desenfoque) sin que se lea la lección. En todos los módulos, también en la primera ventana al pulsar «Iniciar estudio».
-6. **Cuenta atrás de EaH**: el aviso «Marca el pulso con la mano» y el recuadro del número, en AZUL (entonación), no en verde.
+6. HECHO 15:35 en parte (aviso de la mano en azul; falta el borde del número) · **Cuenta atrás de EaH**: el aviso «Marca el pulso con la mano» y el recuadro del número, en AZUL (entonación), no en verde.
 7. **EaH**: los silencios también se iluminan en azul cuando llega su momento.
 8. **«Iniciar estudio»** centrado y destacado en todos: verde en ritmo, azul en entonación.
 9. **Cada cartel de fase** recuerda que se puede bajar la velocidad y elegir la subdivisión si ayuda.
