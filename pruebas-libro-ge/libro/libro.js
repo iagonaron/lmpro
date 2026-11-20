@@ -502,6 +502,10 @@
   function adaptaEstudio(J){
     GE=(J.grado==='ge'); if(GE) document.body.classList.add('libro-ge');
     try{ if(typeof RP_LIM!=='undefined'){ RP_LIM.perc=RP_LIM.ritmo=RP_LIM.ent=1e9; } }catch(e){}
+    /* (20-nov 12:32, Iago) tiempo validado: sin cortesías y sin el rato de los carteles (el motor ya no cuenta el cartel abierto).
+       Aquí no hay cuentas atrás en pantalla, pero lo que se valida NO pasa de lo que darían las de Ritmo entonado at home (3′ · 2′ · 3′) */
+    if(typeof window.vtCalc==='function'){ var _vc=window.vtCalc; window.vtCalc=function(){ var g={perc:RP_LIM.perc,ritmo:RP_LIM.ritmo,ent:RP_LIM.ent};
+      RP_LIM.perc=180; RP_LIM.ritmo=120; RP_LIM.ent=180; try{ return _vc.apply(this,arguments); } finally{ RP_LIM.perc=g.perc; RP_LIM.ritmo=g.ritmo; RP_LIM.ent=g.ent; } }; }
     if(typeof window.rpTextoFase==='function'){ var _rtf=window.rpTextoFase; window.rpTextoFase=function(ph){ return sinTiempo(_rtf.apply(this,arguments), ph); }; }
     if(GE && typeof window.rpPatronBtn==='function'){ window.rpPatronBtn=function(){ var b=document.getElementById('rpPatron'); if(b) b.remove(); }; }   /* GE: sin «Revelar patrón» */
     if(typeof window.renderPhaseSteps==='function'){ var _rps=window.renderPhaseSteps;

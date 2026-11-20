@@ -93,3 +93,9 @@ los cambios del 20-nov 10:06–10:12 (§5), AJUSTADOS con la recapitulación de 
 ## 9. Barrido final de unificación (Iago, 20-nov 12:22)
 - Cuando Ritmo at home y Entonación at home estén hechos, la coordinadora hace un **barrido final**: compara los cuatro módulos (Ritmo at home, Entonación at home, Ritmo entonado at home, visor de lecciones) y le da a Iago la **lista de diferencias** para unificar (textos de carteles, p. ej. «la figura que suena se ilumina», controles, colores).
 - Piel, para todos: **verde = ritmo**, **azul = entonación**, fondo = **la foto del conservatorio**; el **dorado ya no se usa**.
+
+## 10. Tiempo validado (Iago, 20-nov 12:32) — PARA TODOS
+- El rato con un **cartel abierto NO cuenta** como trabajo (aunque el alumno se quede mucho tiempo en él).
+- **Sin tiempos de cortesía.** El tiempo validado es el de las **cuentas atrás** de cada fase y, en las **ejecuciones / realizaciones finales**, lo que dure esa ejecución.
+- Visor de lecciones del libro (sin cuentas atrás en pantalla): cuenta el tiempo activo sin carteles, con tope 3′ percusión · 2′ ritmo · 3′ entonación + lo que duren las realizaciones (libro.js, vtCalc).
+- Revisarlo en el barrido final de unificación (§9) en los cuatro módulos.
