@@ -1,0 +1,42 @@
+{
+ "v": 1,
+ "libro": "Ritmo entonado 2.º GP",
+ "curso": "2Gp",
+ "grado": "gp",
+ "n": 118,
+ "titulo": "118",
+ "titulo_estilo": {"fuente": "sans", "x": 72, "y": 107, "px": 43},
+ "numeros_x": 66,
+ "captura": "https://woiptkyrxkbpnvioypit.supabase.co/storage/v1/object/public/diario/libros_lecciones/2Gp/ritmo_entonado/full/118.png",
+ "tonalidad": "Fa# mayor",
+ "armadura": "F#",
+ "modo": "mayor",
+ "clave": "treble",
+ "pagina": {"ancho": 1680, "alto": 383, "interlinea": 16.5},
+ "sistemas": [
+  {"y": 57, "x0": 175, "barras": [1024, 1670], "compases": [1, 2]},
+  {"y": 277, "x0": 60, "barras": [797, 1367, 1668], "compases": [3, 4, 5], "numero": 5, "final": "fin"}
+ ],
+ "compases": [
+  {"c": 1, "compas": "7/4", "m": "^ 8:f#4 8:g#4 | ^ 8:a#4 8:b4 | ^ 8:a#4 8:g#4 | ^ 4:f#4 | 4:r | ^ 4:f#4 | 4:r"},
+  {"c": 2, "m": "^ 4:c#4- | v 8:c#5 8:b4 | v 4:c#5 | v 8.:c#5 16:b4 | ^ 8.:a#4 16:g#4 | ^ 8.:a#4 16:b4 | v 4:c#5"},
+  {"c": 3, "m": "^ 4:f#4- | v 8:f#5 | v 4.:c#5 | ^ 8:a#4 | v 4.:c#5 | v 8:f#5 | v 4.:e#5"},
+  {"c": 4, "m": "v 4:d#5 | 4:r | v 8:b4 8:c#5 8:d#5 | v 4:c#5! | ^ 4:c#4! | 4:r | ^ 16:c#5 16:b4 16:a#4 16:g#4"},
+  {"c": 5, "m": "^ 4:a#4 | 2:r | 1:f#4->"}
+ ],
+ "ligaduras": [
+  "1.1-1.7 abajo",
+  "2.2-2.4 arriba",
+  "2.5-2.11 arriba",
+  "3.2-3.3 arriba",
+  "3.4-3.5 abajo",
+  "3.6-3.7 arriba",
+  "4.3-4.6 arriba",
+  "4.9-5.1 abajo"
+ ],
+ "tresillos": ["4.3-4.5"],
+ "matices": ["1.9 fz"],
+ "pendiente": [
+  "7/4 con barras de compás discontinuas internas (3+4 pulsos) que el libro numera como compases separados (1-4 en el primer pentagrama, 5 al inicio del segundo): se han escrito como compases de 7/4 completos con numero:5 en el segundo sistema; las barras discontinuas no se dibujan."
+ ]
+}

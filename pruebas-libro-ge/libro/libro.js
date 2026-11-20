@@ -47,7 +47,7 @@
   function midiDe(p){ var m=/^([a-g])(#{1,2}|b{1,2}|n)?(-?\d)$/.exec(p); if(!m) throw new Error('altura '+p);
     var alt=m[2]==='#'?1:m[2]==='##'?2:m[2]==='b'?-1:m[2]==='bb'?-2:0; return 12*(+m[3]+1)+NOMBRE_NOTA[m[1]]+alt; }
   function keyDe(p){ var m=/^([a-g])(#{1,2}|b{1,2}|n)?(-?\d)$/.exec(p); return m[1]+(m[2]&&m[2]!=='n'?m[2]:'')+'/'+m[3]; }
-  function durDe(f){ var dot=/\.$/.test(f); var b=f.replace('.',''); var mapa={'1':'w','2':'h','4':'q','8':'8','16':'16','32':'32'}; return mapa[b]+(dot?'d':''); }
+  function durDe(f){ var dot=/\.$/.test(f); var b=f.replace('.',''); var mapa={'1':'w','2':'h','4':'q','8':'8','16':'16','32':'32','64':'64'};   /* (20-nov) semifusas */ return mapa[b]+(dot?'d':''); }
   function dur16(f){ var dot=/\.$/.test(f); var b=+f.replace('.',''); var d=16/b; return dot?d*1.5:d; }
   function compasDe(txt){ /* «2/4+1/4» → time 9/16, fracSig ['2/4','+¼'] · «3/4» → 3/4 · «libre» → sin compás */
     if(txt==='libre') return {libre:true, time:'4/4', num:'', den:'', extra:null};
@@ -111,8 +111,15 @@
       return {clef:s.clave||J.clave||'treble', keysig:J.armadura, time:ms[0].time, measures:ms, nMeasures:ms.length, valid:true, dense:false};
     });
     /* tónica: en mayor, la de la armadura (G → g); en menor, su relativa (C → a, G → e, F → d…) */
-    var MAYOR={'C':'c','G':'g','D':'d','A':'a','E':'e','B':'b','F#':'f#','Db':'c#','F':'f','Bb':'bb','Eb':'eb','Ab':'ab'};
-    var MENOR={'C':'a','G':'e','D':'b','A':'f#','E':'c#','B':'ab','F':'d','Bb':'g','Eb':'c','Ab':'f','Db':'bb','F#':'eb'};
+    var MAYOR={'C':'c','G':'g','D':'d','A':'a','E':'e','B':'b','F#':'f#','C#':'c#','Db':'c#','Gb':'f#','Cb':'b','F':'f','Bb':'bb','Eb':'eb','Ab':'ab'};
+    var MENOR={'C':'a','G':'e','D':'b','A':'f#','E':'c#','B':'ab','F#':'eb','C#':'bb','F':'d','Bb':'g','Eb':'c','Ab':'f','Db':'bb','Gb':'eb','Cb':'ab'};
+    /* (20-nov) armaduras de 5 a 7 alteraciones: el motor solo llegaba a 4♯/4♭ y pintaba la alteración delante de cada nota */
+    try{ if(typeof KEY_ACCIDENTALS!=='undefined'){ var SOS=['f','c','g','d','a','e','b'], BEM=['b','e','a','d','g','c','f'];
+      var pon=function(k,lista,n,a){ if(KEY_ACCIDENTALS[k]) return; var o={}; lista.slice(0,n).forEach(function(l){ o[l]=a; }); KEY_ACCIDENTALS[k]=o; };
+      [['B',5],['F#',6],['C#',7]].forEach(function(x){ pon(x[0],SOS,x[1],'#'); });
+      [['G#m',5],['D#m',6],['A#m',7]].forEach(function(x){ pon(x[0],SOS,x[1],'#'); });
+      [['Db',5],['Gb',6],['Cb',7]].forEach(function(x){ pon(x[0],BEM,x[1],'b'); });
+      [['Bbm',5],['Ebm',6],['Abm',7]].forEach(function(x){ pon(x[0],BEM,x[1],'b'); }); } }catch(e){}
     var esMenor=(J.modo==='menor');
     var tonic=(esMenor?MENOR:MAYOR)[J.armadura||'C']||'c';
     var L={trimKey:'gp1', worldId:'m1', cards:['c1_9'], keysig:J.armadura, tonic:tonic, modo:esMenor?'menor_armonica':'mayor', phrases:phrases,
