@@ -28,13 +28,14 @@
       "#score.libro-papel svg{max-width:100%!important}"+
       ".libro-orig-btn{position:fixed;right:14px;bottom:14px;z-index:99990;width:38px;height:38px;border-radius:9px;border:1px solid rgba(255,255,255,.28);background:rgba(10,16,30,.72);color:#e9edf5;font:600 12px 'Helvetica Neue',Arial,sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center}"+
       ".libro-orig-btn:hover::after{content:attr(data-tip);position:absolute;right:46px;white-space:nowrap;background:rgba(10,16,30,.9);padding:6px 9px;border-radius:7px}"+
-      ".libro-orig{position:fixed;inset:0;z-index:99995;background:rgba(6,9,18,.94);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:18px}"+
+      ".libro-orig-btn{touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}.libro-orig-btn.on{background:#2563eb;border-color:#2563eb}.libro-orig{pointer-events:none;position:fixed;inset:0;z-index:99995;background:rgba(6,9,18,.94);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:18px}"+
       ".libro-orig img{max-width:96vw;max-height:84vh;background:#fff;border-radius:8px}"+
       "body.libro-modo #rpReloj{display:none!important}"+
       "body.libro-modo footer{display:none!important}"+
       "body.libro-ge .anot-pt{display:none!important}"+
       "body.libro-modo .libro-recuerda{display:block}"+
-      "body.libro-modo:not(.rp-estudio) #score.libro-papel svg{height:calc(100vh - 250px)!important;min-height:300px;width:100%!important}"+
+      "body.libro-modo:not(.rp-estudio) #score.libro-papel svg{width:100%!important;height:auto!important;max-height:calc(100vh - 170px);display:block;margin:0 auto}"+
+      "body.libro-modo #exBtn,body.libro-modo #exEdit{display:none!important}"+
       ".libro-recuerda{margin:12px 0 0;padding:10px 12px;border:1px solid rgba(110,231,160,.55);border-radius:10px;background:rgba(22,163,74,.14);font-size:.95em;line-height:1.4;text-align:left}"+
       ".libro-recuerda b{color:#6ee7a0}"+
       ".libro-orig button{margin-top:14px;border:1px solid rgba(255,255,255,.3);background:transparent;color:#e9edf5;border-radius:9px;padding:9px 18px;font:700 13px 'Helvetica Neue',Arial;cursor:pointer}";
@@ -91,7 +92,7 @@
       var tIncompleto=(function(){ var n=Math.round(total16*2), d=32; while(n%2===0&&d>4){ n/=2; d/=2; } return n+'/'+d; })();
       var m={time:incompleto?tIncompleto:compasAct.time, notes:notes, beams:beams, cap:(incompleto?total16:cap16)/4};
       if(compasAct.fracSig && !incompleto) m.fracSig=compasAct.fracSig.slice();
-      m._libro={c:c.c, stems:stems, compas:compasAct, cambia:!!c.compas && !compasAct.libre, aire:(c.aire!=null?+c.aire:null), sinBarra:!!c.sin_barra, barraIni:c.barra_ini||null, barraFin:c.barra_fin||null};
+      m._libro={c:c.c, stems:stems, compas:compasAct, cambia:!!c.compas && !compasAct.libre, aire:(c.aire!=null?+c.aire:null), sinBarra:!!c.sin_barra, barraIni:c.barra_ini||null, barraFin:c.barra_fin||null, claveDesde:(c.clave_desde&&c.clave_desde.n)?{n:+c.clave_desde.n, clave:c.clave_desde.clave||'treble'}:null};
       /* tresillos y otros grupos (5:6…): una sola valoración especial por compás para el motor (misma proporción) */
       if(tres.length){ var idx=[], wr=[], re=[], occ=0; m.tuplets=[];
         tres.forEach(function(t){ var ii=[]; for(var q=t.n1;q<=t.n2;q++){ if(!notes[q]) continue; ii.push(q); idx.push(q); wr.push(notes[q].dur); re.push(realDe[q]/4); occ+=realDe[q]/4; }
@@ -211,13 +212,14 @@
         try{ BARLINE_POS.push({x:stave.getX(), yTop:stave.getYForLine(0)-8, yBot:stave.getYForLine(4)+8}); }catch(e){ BARLINE_POS.push({x:x,yTop:yTop,yBot:yTop+80}); }
         /* notas */
         var acc={};
+        var cdz=lb.claveDesde; var clefDe=function(ni){ return (cdz && ni+1>=cdz.n)?cdz.clave:(ph._claveAct||ph.clef); };
         var vf=m.notes.map(function(n,ni){
           var sd=lb.stems[ni];
-          if(n.rest){ var rr=new VF.StaveNote({clef:ph.clef,keys:[ph.clef==='bass'?'d/3':'b/4'],duration:durBase(n.dur)+'r'}); for(var dr=0;dr<durDots(n.dur);dr++) VF.Dot.buildAndAttach([rr]);
+          if(n.rest){ var rr=new VF.StaveNote({clef:clefDe(ni),keys:[clefDe(ni)==='bass'?'d/3':'b/4'],duration:durBase(n.dur)+'r'}); for(var dr=0;dr<durDots(n.dur);dr++) VF.Dot.buildAndAttach([rr]);
             if(n._art && n._art.indexOf('~')>=0){ try{ var fr=new VF.Articulation('a@a'); fr.setPosition(VF.ModifierPosition.ABOVE); rr.addModifier(fr,0); }catch(e){} }
             vfDe[lb.c+'.'+ni]=rr; return rr; }
           var x2 = (typeof RHYTHM_XHEADS!=='undefined' && RHYTHM_XHEADS);
-          var sn=new VF.StaveNote({clef:ph.clef,keys:[x2?(n.key+'/x2'):n.key],duration:durBase(n.dur),stem_direction:sd||1,auto_stem:!sd});
+          var sn=new VF.StaveNote({clef:clefDe(ni),keys:[x2?(n.key+'/x2'):n.key],duration:durBase(n.dur),stem_direction:sd||1,auto_stem:!sd});
           for(var di=0;di<durDots(n.dur);di++) VF.Dot.buildAndAttach([sn]);
           if(n._art){ var pos=(sd||1)===1?VF.ModifierPosition.BELOW:VF.ModifierPosition.ABOVE;
             [['-','a-'],['!','a.'],['>','a>']].forEach(function(z){ if(n._art.indexOf(z[0])>=0){ try{ var ar=new VF.Articulation(z[1]); ar.setPosition(pos); sn.addModifier(ar,0); }catch(e){} } });
@@ -228,12 +230,12 @@
         var beams=(m.beams||[]).map(function(g){ return new VF.Beam(g.map(function(k){ return vf[k]; }),false); });
         var tups=(m.tuplets||[]).map(function(t,ti){ var tl=(J._tres||[]).filter(function(x){ return x.c===lb.c; })[ti]||{};
           try{ var op={num_notes:t.group.ratioNum,notes_occupied:t.group.ratioDen,ratioed:!!tl.ratio}; if(tl.abajo || (!tl.arriba && (lb.stems[t.idx[0]]||1)===-1)) op.location=-1; if(tl.cifra===false){ op.bracketed=false; } var tu=new VF.Tuplet(t.idx.map(function(k){ return vf[k]; }),op); if(tl.cifra===false){ tu.draw=function(){}; } return tu; }catch(e){ return null; } }).filter(Boolean);
-        var voice=voiceOf(m); voice.addTickables(vf);
+        var voice=voiceOf(m); if(cdz && vf[cdz.n-1]){ var tk=vf.slice(); try{ tk.splice(cdz.n-1,0,new VF.ClefNote(cdz.clave,'small')); }catch(e){} voice.addTickables(tk); } else voice.addTickables(vf);
         /* como en el libro: tras la última figura queda el aire de lo que dura (una corchea con puntillo deja más hueco) */
         var _d=measureNoteBeats(m), _cap=meterCapQ(m.time), _ult=_d[_d.length-1]||0;
         var izq=stave.getNoteStartX()-x; var bruto=w-izq; var ancho=bruto-Math.max(U(18), (lb.aire!=null)?bruto*lb.aire:bruto*(_ult/_cap)*0.55);
         new VF.Formatter().joinVoices([voice]).format([voice],Math.max(40,ancho));
-        voice.draw(ctx,stave);
+        voice.draw(ctx,stave); if(cdz) ph._claveAct=cdz.clave;
         beams.forEach(function(b){ b.setContext(ctx).draw(); });
         tups.forEach(function(t){ try{ t.setContext(ctx).draw(); }catch(e){} });
         (J._uni||[]).forEach(function(u){ if(u.c1===lb.c && u.c2===lb.c && vf[u.n1] && vf[u.n2]){ try{ var tdir=(u.arriba!=null && u.abajo)?1:(u.arriba?-1:((lb.stems[u.n1]||1)===1?1:-1)); new VF.StaveTie({first_note:vf[u.n1],last_note:vf[u.n2],first_indices:[0],last_indices:[0]}).setDirection(tdir).setContext(ctx).draw(); }catch(e){} } });
@@ -243,7 +245,7 @@
           XHEAD_POS.push({cx:cx,cy:cy,rad:rad}); });
       });
       var sigS=J.sistemas[si+1], sigClave=sigS?(sigS.clave||J.clave||'treble'):null;
-      if(sigS && sigClave!==ph.clef){ try{ var ulS=estaves[sis.compases[sis.compases.length-1]]; var gl={treble:'gClef',bass:'fClef'}[sigClave];
+      if(sigS && sigClave!==(ph._claveAct||ph.clef)){ try{ var ulS=estaves[sis.compases[sis.compases.length-1]]; var gl={treble:'gClef',bass:'fClef'}[sigClave];
         if(ulS && gl){ var gx=ulS.getX()+ulS.getWidth()-U(34); var gy=sigClave==='bass'?ulS.getYForLine(1):ulS.getYForLine(3); VF.Glyph.renderGlyph(ctx,gx,gy,30,gl,{category:'clefNote'}); } }catch(e){} }
       /* compás de cortesía tras la doble barra (como en el libro: el pentagrama sigue hasta el margen) */
       if(sis.cortesia){
@@ -395,11 +397,16 @@
   window.generateLesson=function(){ if(LEC){ if(typeof studyMode!=='undefined' && studyMode) closeStudy(); currentLesson=LEC; renderCurrent(); return; } return _gen.apply(this,arguments); };
 
   function botonOriginal(J){
-    var b=document.createElement('button'); b.className='libro-orig-btn'; b.setAttribute('data-tip','Ver la lección en el libro'); b.title='';
+    var b=document.createElement('button'); b.className='libro-orig-btn'; b.setAttribute('data-tip','Mantén pulsado para ver la lección en el libro'); b.title='';
     b.innerHTML='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 4h7a3 3 0 0 1 3 3v13a2 2 0 0 0-2-2H2z"/><path d="M22 4h-7a3 3 0 0 0-3 3v13a2 2 0 0 1 2-2h8z"/></svg>';
-    b.onclick=function(){ var ov=document.createElement('div'); ov.className='libro-orig';
-      ov.innerHTML='<img alt="Lección '+J.n+' en el libro" src="'+J.captura+'"><button>Cerrar</button>';
-      ov.onclick=function(e){ if(e.target.tagName!=='IMG') ov.remove(); }; document.body.appendChild(ov); };
+    /* (20-nov 13:01, Iago) se ve MIENTRAS se mantiene pulsado; al soltar, vuelve la lección */
+    var ov=null;
+    function ver(e){ try{ e.preventDefault(); if(e.pointerId!=null && b.setPointerCapture) b.setPointerCapture(e.pointerId); }catch(x){} if(ov) return;
+      ov=document.createElement('div'); ov.className='libro-orig'; ov.innerHTML='<img alt="Lección '+J.n+' en el libro" src="'+J.captura+'">'; document.body.appendChild(ov); b.classList.add('on'); }
+    function quitar(){ if(ov){ ov.remove(); ov=null; } b.classList.remove('on'); }
+    b.addEventListener('pointerdown',ver); ['pointerup','pointercancel','lostpointercapture'].forEach(function(ev){ b.addEventListener(ev,quitar); });
+    b.addEventListener('contextmenu',function(e){ e.preventDefault(); });
+    b.addEventListener('keydown',function(e){ if(e.key===' '||e.key==='Enter'){ e.preventDefault(); ver(e); } }); b.addEventListener('keyup',quitar); b.addEventListener('blur',quitar);
     document.body.appendChild(b);
   }
 
@@ -558,6 +565,14 @@
       document.body.classList.add('libro-modo');
       adaptaEstudio(J); try{ if(CARTELES_VISUALES || /[?&]cv=1/.test(location.search)) cvArranca(); }catch(e){ console.warn('[libro] carteles',e); }
       try{ document.querySelectorAll('p,div').forEach(function(e){ if(e.children.length===0 && /generado proceduralmente/i.test(e.textContent)) e.style.display='none'; }); }catch(e){}
+      /* (20-nov 13:00, Iago) pantalla de entrada: «Iniciar estudio» y las columnas de anotar ya a los lados (lo escrito pasa al estudio) */
+      try{ var sb=document.getElementById('studyBtn'); if(sb){ var svg=sb.querySelector('svg'); sb.innerHTML=''; if(svg) sb.appendChild(svg); sb.appendChild(document.createTextNode(' Iniciar estudio')); } }catch(e){}
+      /* la lección, ya desde la entrada, al tamaño de la pantalla como en la fase 1 (mismo ajuste que el estudio) */
+      var encajaEntrada=function(){ try{ if(typeof studyMode==='undefined' || studyMode || typeof rpEncaja!=='function') return; studyMode=true; try{ rpEncaja(); }finally{ studyMode=false; } document.body.classList.add('libro-entrada'); }catch(e){} };
+      var anotFuera=function(){ try{ if(typeof studyMode!=='undefined' && studyMode) return; if(typeof rpAnotarMontar_==='function') rpAnotarMontar_(); encajaEntrada(); }catch(e){} };
+      window.addEventListener('resize',function(){ clearTimeout(encajaEntrada._t); encajaEntrada._t=setTimeout(encajaEntrada,200); });
+      setTimeout(anotFuera,60);
+      if(typeof window.closeStudy==='function'){ var _cs=window.closeStudy; window.closeStudy=function(){ var r=_cs.apply(this,arguments); setTimeout(anotFuera,60); return r; }; }
     }).catch(function(e){ console.error('[libro] no se pudo abrir la lección',e);
       var s=document.getElementById('score'); if(s) s.innerHTML='<div style="padding:30px;text-align:center;color:#7a1407">No se pudo abrir la lección '+NUM+'.</div>'; });
   }
