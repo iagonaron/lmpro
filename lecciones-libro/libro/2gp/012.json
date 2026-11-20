@@ -8,23 +8,23 @@
  "titulo_estilo": {
   "fuente": "sans",
   "x": 85,
-  "y": 122,
+  "y": 141,
   "px": 42
  },
  "numeros_x": 64,
- "captura": "https://woiptkyrxkbpnvioypit.supabase.co/storage/v1/object/public/diario/libros_lecciones/2Gp/ritmo_entonado/full/012.png",
+ "captura": "libro/capturas/2gp/012.png",
  "tonalidad": "La mayor",
  "armadura": "A",
  "modo": "mayor",
  "clave": "bass",
  "pagina": {
   "ancho": 1680,
-  "alto": 966,
+  "alto": 1005,
   "interlinea": 16.5
  },
  "sistemas": [
   {
-   "y": 72,
+   "y": 91,
    "x0": 172,
    "barras": [
     737,
@@ -38,7 +38,7 @@
    ]
   },
   {
-   "y": 338,
+   "y": 357,
    "x0": 55,
    "barras": [
     721,
@@ -52,7 +52,7 @@
    ]
   },
   {
-   "y": 601,
+   "y": 620,
    "x0": 56,
    "barras": [
     635,
@@ -66,7 +66,7 @@
    ]
   },
   {
-   "y": 861,
+   "y": 880,
    "x0": 77,
    "barras": [
     709,
@@ -179,7 +179,7 @@
     {
      "x0": 279,
      "x1": 774,
-     "y": 521,
+     "y": 540,
      "partes": [
       "Cambio en la distribución de los pulsos dispares."
      ]
@@ -187,9 +187,9 @@
    ],
    "flecha": [
     272,
-    515,
+    534,
     228,
-    541
+    560
    ]
   },
   {
@@ -197,7 +197,7 @@
     {
      "x0": 138,
      "x1": 147,
-     "y": 560,
+     "y": 579,
      "partes": [
       "("
      ]
@@ -205,7 +205,7 @@
     {
      "x0": 214,
      "x1": 223,
-     "y": 560,
+     "y": 579,
      "partes": [
       ")"
      ]
@@ -219,8 +219,8 @@
       173,
       195
      ],
-     "y": 557,
-     "yb": 523
+     "y": 576,
+     "yb": 542
     }
    ]
   }

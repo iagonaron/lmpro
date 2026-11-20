@@ -8,23 +8,23 @@
  "titulo_estilo": {
   "fuente": "sans",
   "x": 84,
-  "y": 122,
+  "y": 148,
   "px": 42
  },
  "numeros_x": 64,
- "captura": "https://woiptkyrxkbpnvioypit.supabase.co/storage/v1/object/public/diario/libros_lecciones/2Gp/ritmo_entonado/full/010.png",
+ "captura": "libro/capturas/2gp/010.png",
  "tonalidad": "Do menor",
  "armadura": "Eb",
  "modo": "menor",
  "clave": "treble",
  "pagina": {
   "ancho": 1680,
-  "alto": 960,
+  "alto": 1022,
   "interlinea": 16.5
  },
  "sistemas": [
   {
-   "y": 72,
+   "y": 98,
    "x0": 171,
    "barras": [
     870,
@@ -38,7 +38,7 @@
    ]
   },
   {
-   "y": 338,
+   "y": 364,
    "x0": 55,
    "barras": [
     634,
@@ -57,7 +57,7 @@
    }
   },
   {
-   "y": 600,
+   "y": 626,
    "x0": 56,
    "barras": [
     620,
@@ -74,7 +74,7 @@
    "clave": "bass"
   },
   {
-   "y": 854,
+   "y": 880,
    "x0": 57,
    "barras": [
     550,
@@ -222,7 +222,7 @@
     {
      "x0": 1177,
      "x1": 1425,
-     "y": 9,
+     "y": 35,
      "partes": [
       {
        "it": "Dosillo"
@@ -233,9 +233,9 @@
    ],
    "flecha": [
     1428,
-    14,
+    40,
     1472,
-    45
+    71
    ]
   },
   {
@@ -243,7 +243,7 @@
     {
      "x0": 1614,
      "x1": 1636,
-     "y": 321,
+     "y": 347,
      "partes": [
       "="
      ]
@@ -255,16 +255,16 @@
      "xs": [
       1589
      ],
-     "y": 317,
-     "yb": 283
+     "y": 343,
+     "yb": 309
     },
     {
      "figs": "8",
      "xs": [
       1650
      ],
-     "y": 317,
-     "yb": 283
+     "y": 343,
+     "yb": 309
     }
    ]
   }

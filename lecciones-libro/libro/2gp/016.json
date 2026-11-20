@@ -8,11 +8,11 @@
  "titulo_estilo": {
   "fuente": "sans",
   "x": 82,
-  "y": 122,
+  "y": 141,
   "px": 42
  },
  "numeros_x": 64,
- "captura": "https://woiptkyrxkbpnvioypit.supabase.co/storage/v1/object/public/diario/libros_lecciones/2Gp/ritmo_entonado/full/016.png",
+ "captura": "libro/capturas/2gp/016.png",
  "tonalidad": "Sol menor",
  "armadura": "Bb",
  "modo": "menor",
@@ -20,12 +20,12 @@
  "notacion": "Igual que libro/2gp/057.json. Silencio = figura:r. «-» tras la altura = tenuto.",
  "pagina": {
   "ancho": 1680,
-  "alto": 968,
+  "alto": 1036,
   "interlinea": 16.5
  },
  "sistemas": [
   {
-   "y": 74,
+   "y": 93,
    "x0": 171,
    "barras": [
     805,
@@ -39,7 +39,7 @@
    ]
   },
   {
-   "y": 339,
+   "y": 358,
    "x0": 54,
    "barras": [
     597,
@@ -58,7 +58,7 @@
    }
   },
   {
-   "y": 602,
+   "y": 621,
    "x0": 56,
    "barras": [
     701,
@@ -72,7 +72,7 @@
    ]
   },
   {
-   "y": 862,
+   "y": 881,
    "x0": 56,
    "barras": [
     704,
@@ -128,7 +128,7 @@
   },
   {
    "c": 10,
-   "m": "^ 8:g2 8:d2 8:d2 | ^ 8:d3 8:c3 8:bb2 8:a2 | ^ 8:g2 8:d2"
+   "m": "^ 8:g2 8:d2! 8:d2! | ^ 8:d3 8:c3 8:bb2 8:a2 | ^ 8:g2 8:d2"
   },
   {
    "c": 11,
@@ -160,12 +160,13 @@
   "9.7-9.12 abajo",
   "10.1-10.3 abajo",
   "10.4-10.8 abajo",
-  "11.1-11.2 abajo",
+  "10.9-11.1 abajo",
   "11.2-11.3 arriba",
   "11.4-12.3 abajo"
  ],
  "corchetes": [
-  "6.1-6.2"
+  "6.1-6.2",
+  "11.1-11.2"
  ],
  "tresillos": [
   "1.9-1.11",
@@ -185,7 +186,5 @@
    "r": "4:3"
   }
  ],
- "pendiente": [
-  "Ligaduras 10.1-10.3 y 11.1-11.2: el final de la captura corta el pentagrama inferior, final de la curva supuesto."
- ]
+ "pendiente": []
 }

@@ -8,23 +8,23 @@
  "titulo_estilo": {
   "fuente": "sans",
   "x": 86,
-  "y": 137,
+  "y": 156,
   "px": 42
  },
  "numeros_x": 64,
- "captura": "https://woiptkyrxkbpnvioypit.supabase.co/storage/v1/object/public/diario/libros_lecciones/2Gp/ritmo_entonado/full/014.png",
+ "captura": "libro/capturas/2gp/014.png",
  "tonalidad": "Si♭ mayor",
  "armadura": "Bb",
  "modo": "mayor",
  "clave": "bass",
  "pagina": {
   "ancho": 1680,
-  "alto": 984,
+  "alto": 1037,
   "interlinea": 16.5
  },
  "sistemas": [
   {
-   "y": 88,
+   "y": 107,
    "x0": 171,
    "barras": [
     790,
@@ -38,7 +38,7 @@
    ]
   },
   {
-   "y": 354,
+   "y": 373,
    "x0": 55,
    "barras": [
     715,
@@ -52,7 +52,7 @@
    ]
   },
   {
-   "y": 616,
+   "y": 635,
    "x0": 55,
    "barras": [
     665,
@@ -66,7 +66,7 @@
    ]
   },
   {
-   "y": 878,
+   "y": 897,
    "x0": 56,
    "barras": [
     642,
@@ -190,7 +190,7 @@
     {
      "x0": 115,
      "x1": 124,
-     "y": 589,
+     "y": 608,
      "partes": [
       "("
      ]
@@ -198,7 +198,7 @@
     {
      "x0": 183,
      "x1": 192,
-     "y": 589,
+     "y": 608,
      "partes": [
       ")"
      ]
@@ -212,8 +212,8 @@
       150,
       174
      ],
-     "y": 585,
-     "yb": 550
+     "y": 604,
+     "yb": 569
     }
    ]
   }

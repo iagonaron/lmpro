@@ -8,11 +8,11 @@
  "titulo_estilo": {
   "fuente": "sans",
   "x": 84,
-  "y": 122,
+  "y": 145,
   "px": 42
  },
  "numeros_x": 64,
- "captura": "https://woiptkyrxkbpnvioypit.supabase.co/storage/v1/object/public/diario/libros_lecciones/2Gp/ritmo_entonado/full/017.png",
+ "captura": "libro/capturas/2gp/017.png",
  "tonalidad": "Do mayor",
  "armadura": "C",
  "modo": "mayor",
@@ -20,12 +20,12 @@
  "notacion": "Igual que libro/2gp/057.json. Silencio = figura:r. «-» tras la altura = tenuto.",
  "pagina": {
   "ancho": 1680,
-  "alto": 446,
+  "alto": 507,
   "interlinea": 16.5
  },
  "sistemas": [
   {
-   "y": 75,
+   "y": 98,
    "x0": 171,
    "barras": [
     585,
@@ -41,7 +41,7 @@
    ]
   },
   {
-   "y": 341,
+   "y": 364,
    "x0": 55,
    "barras": [
     511,
@@ -132,7 +132,7 @@
     {
      "x0": 1357,
      "x1": 1617,
-     "y": 13,
+     "y": 36,
      "partes": [
       {
        "it": "Cinquillo"
@@ -143,9 +143,9 @@
    ],
    "flecha": [
     1396,
-    19,
+    42,
     1355,
-    47
+    70
    ]
   }
  ],
