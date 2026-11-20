@@ -1,0 +1,273 @@
+{
+ "v": 1,
+ "libro": "Ritmo 4.º GE",
+ "curso": "4Ge",
+ "grado": "ge",
+ "n": 50,
+ "titulo": "50",
+ "titulo_estilo": {
+  "fuente": "sans",
+  "x": 44,
+  "y": 167,
+  "px": 44
+ },
+ "numeros_x": 44,
+ "captura": "https://woiptkyrxkbpnvioypit.supabase.co/storage/v1/object/public/diario/libros_lecciones/4Ge/ritmo/full/050.png",
+ "tonalidad": "Fa mayor",
+ "armadura": "F",
+ "modo": "mayor",
+ "clave": "bass",
+ "notacion": "Igual que libro/2gp/057.json. Silencio = figura:r. «-» tras la altura = tenuto. Clave de fa: do central = c4 (ledger bajo la línea superior de la clave = c4).",
+ "pagina": {
+  "ancho": 1680,
+  "alto": 964,
+  "interlinea": 16.4
+ },
+ "sistemas": [
+  {
+   "y": 119,
+   "x0": 155,
+   "barras": [
+    473,
+    653,
+    846,
+    1062,
+    1189,
+    1347,
+    1477,
+    1640
+   ],
+   "compases": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8
+   ]
+  },
+  {
+   "y": 372,
+   "x0": 40,
+   "barras": [
+    340,
+    535,
+    732,
+    928,
+    1125,
+    1322,
+    1478,
+    1639
+   ],
+   "compases": [
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16
+   ],
+   "numero": 8
+  },
+  {
+   "y": 624,
+   "x0": 40,
+   "barras": [
+    372,
+    541,
+    809,
+    972,
+    1142,
+    1351,
+    1514,
+    1636
+   ],
+   "compases": [
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24
+   ],
+   "final": "fin",
+   "numero": 16
+  }
+ ],
+ "compases": [
+  {
+   "c": 1,
+   "compas": "3/8",
+   "m": "v 8.:f3 16:e3 8:f3"
+  },
+  {
+   "c": 2,
+   "m": "v 8.:g3 16:f3 8:g3"
+  },
+  {
+   "c": 3,
+   "m": "v 8.:a3 16:bb3 16:c4 16:bb3"
+  },
+  {
+   "c": 4,
+   "m": "v 16:a3 16:g3 8:f3 16:f3 16:e3"
+  },
+  {
+   "c": 5,
+   "m": "v 8:d3 | v 4:d4-"
+  },
+  {
+   "c": 6,
+   "m": "v 8:bb3 | v 4:g3-"
+  },
+  {
+   "c": 7,
+   "m": "v 4.:e3>"
+  },
+  {
+   "c": 8,
+   "m": "v 8:e3 8:f3 8:g3"
+  },
+  {
+   "c": 9,
+   "m": "v 8.:a3 16:g3 8:a3"
+  },
+  {
+   "c": 10,
+   "m": "v 8.:c4 16:a3 16:bb3 16:c4"
+  },
+  {
+   "c": 11,
+   "m": "v 8:d4 16:d4 16:c4 8:bb3"
+  },
+  {
+   "c": 12,
+   "m": "v 8:r | v 16:d4 16:c4 8:bb3"
+  },
+  {
+   "c": 13,
+   "m": "v 8:c4! 16:c4 16:bb3 8:a3"
+  },
+  {
+   "c": 14,
+   "m": "v 8:r | v 16:c4 16:bb3 16:a3 16:g3"
+  },
+  {
+   "c": 15,
+   "m": "v 4:f3 | v 8:a3"
+  },
+  {
+   "c": 16,
+   "m": "v 4:c4 | v 8:r"
+  },
+  {
+   "c": 17,
+   "m": "v 8:d4! 16:d4 16:c4 8:bb3"
+  },
+  {
+   "c": 18,
+   "m": "v 8:r | v 8:f4 8:d4"
+  },
+  {
+   "c": 19,
+   "m": "v 16:c4 16:d4 16:c4 16:bb3 8:a3"
+  },
+  {
+   "c": 20,
+   "m": "v 8:r | v 8:c4 8:a3"
+  },
+  {
+   "c": 21,
+   "m": "v 8.:g3 16:a3 8:bb3"
+  },
+  {
+   "c": 22,
+   "m": "v 8.:c4 16:bb3 16:a3 16:g3"
+  },
+  {
+   "c": 23,
+   "m": "v 8:f3 8:r 8:a3"
+  },
+  {
+   "c": 24,
+   "m": "v 4.:f3"
+  }
+ ],
+ "ligaduras": [
+  "1.1-4.3 arriba",
+  "4.4-5.1 arriba",
+  "6.1-6.2 arriba",
+  "8.1-8.3 arriba",
+  "9.1-10.1 arriba",
+  "10.2-11.1 arriba",
+  "11.2-11.4 arriba",
+  "12.2-12.4 arriba",
+  "13.2-13.4 arriba",
+  "14.2-16.1 arriba",
+  "17.2-17.4 arriba",
+  "18.2-18.3 arriba",
+  "19.1-19.5 arriba",
+  "20.2-20.3 arriba",
+  "21.1-23.1 arriba",
+  "23.3-24.1 arriba"
+ ],
+ "notas_libro": [
+  {
+   "lineas": [
+    {
+     "x0": 407,
+     "x1": 937,
+     "y": 885,
+     "partes": [
+      "Repaso subdivisión ternaria:"
+     ],
+     "negrita": true
+    }
+   ],
+   "rayas": [
+    [
+     40,
+     392,
+     870
+    ],
+    [
+     1290,
+     1640,
+     870
+    ]
+   ],
+   "ritmos": [
+    {
+     "figs": "8 16r 16 8",
+     "xs": [
+      963,
+      1013,
+      1045,
+      1077
+     ],
+     "y": 888,
+     "yb": 847
+    },
+    {
+     "figs": "8 16r 16 16 16",
+     "xs": [
+      1122,
+      1167,
+      1202,
+      1233,
+      1267
+     ],
+     "y": 888,
+     "yb": 847
+    }
+   ]
+  }
+ ],
+ "pendiente": []
+}

@@ -1,0 +1,132 @@
+{
+ "v": 1,
+ "libro": "Ritmo entonado 2.º GP",
+ "curso": "2Gp",
+ "grado": "gp",
+ "n": 39,
+ "titulo": "39",
+ "titulo_estilo": {
+  "x": 84,
+  "y": 231,
+  "px": 43
+ },
+ "numeros_x": 64,
+ "captura": "libro/capturas/2gp/039.png",
+ "tonalidad": "Fa menor",
+ "armadura": "Ab",
+ "modo": "menor",
+ "clave": "bass",
+ "notacion": "Igual que libro/2gp/057.json. Silencio = figura:r. «-» tras la altura = tenuto. Clave de fa: do central = c4 (ledger sobre la línea superior = c4).",
+ "pagina": {
+  "ancho": 1680,
+  "alto": 578,
+  "interlinea": 16.5
+ },
+ "sistemas": [
+  {
+   "y": 184,
+   "x0": 171,
+   "barras": [
+    1010,
+    1669
+   ],
+   "compases": [
+    1,
+    2
+   ]
+  },
+  {
+   "y": 450,
+   "x0": 55,
+   "barras": [
+    832,
+    1374,
+    1668
+   ],
+   "compases": [
+    3,
+    4,
+    5
+   ],
+   "final": "fin"
+  }
+ ],
+ "compases": [
+  {
+   "c": 1,
+   "compas": "11/8",
+   "m": "v 16:f3 16:g3 8:ab3 | v 16:ab3 16:bb3 8:c4 8:c4! | v 16:c4 16:bb3 8:ab3 | v 16:ab3 16:g3 8:f3 | v 8:f3 8:eb3"
+  },
+  {
+   "c": 2,
+   "m": "v 16:f3 16:eb3 16:db3 16:c3 | v 16:f3 16:g3 16:ab3 16:bb3 8:c4 | v 8:f4 8:c4 | v 16:f4 8:c4 16:db4 | v 4:c4"
+  },
+  {
+   "c": 3,
+   "m": "v 16:db4 16:c4 8:bb3 | v 16:db4 16:c4 8:bb3 8:bb3! | v 16:db4 16:c4 16:bb3 16:c4 | v 8:bb3 | ^ 8:bb2 8:c3 8:db3"
+  },
+  {
+   "c": 4,
+   "m": "^ 8:c3 | ^ 8:r | v 2:c4> | v 16:c4 16:db4 16:c4 16:bb3 16:ab3 16:g3 | v 8:f3 8:e3 8:g3"
+  },
+  {
+   "c": 5,
+   "m": "v 2:f3 | v 8:f3 | ^ 2.:r"
+  }
+ ],
+ "ligaduras": [
+  "1.1-1.3 arriba",
+  "1.4-1.6 arriba",
+  "1.8-1.10 arriba",
+  "1.11-1.13 arriba",
+  "1.14-1.15 arriba",
+  "2.1-2.4 arriba",
+  "2.5-2.9 arriba",
+  "2.10-2.11 arriba",
+  "2.12-2.15 arriba",
+  "3.1-3.3 arriba",
+  "3.4-3.6 arriba",
+  "3.8-3.12 arriba",
+  "3.13-4.1 abajo",
+  "4.5-5.2 arriba"
+ ],
+ "uniones": [
+  "4.3-4.4",
+  "5.1-5.2"
+ ],
+ "tresillos": [
+  "4.10-4.12"
+ ],
+ "notas_libro": [
+  {
+   "lineas": [
+    {
+     "x0": 430,
+     "x1": 1066,
+     "y": 39,
+     "partes": [
+      "Ejercicio basado en el segundo movimiento de la"
+     ]
+    },
+    {
+     "x0": 473,
+     "x1": 1022,
+     "y": 72,
+     "partes": [
+      {
+       "it": "Bachiana Brasileira nº 9"
+      },
+      " de H. Villa-Lobos."
+     ]
+    }
+   ],
+   "flecha": [
+    458,
+    76,
+    386,
+    168
+   ]
+  }
+ ],
+ "pendiente": []
+}

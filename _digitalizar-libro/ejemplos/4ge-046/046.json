@@ -1,0 +1,140 @@
+{
+ "v": 1,
+ "libro": "Ritmo 4.º GE",
+ "curso": "4Ge",
+ "grado": "ge",
+ "n": 46,
+ "titulo": "46",
+ "titulo_estilo": {
+  "fuente": "sans",
+  "x": 45,
+  "y": 167,
+  "px": 43
+ },
+ "numeros_x": 44,
+ "captura": "https://woiptkyrxkbpnvioypit.supabase.co/storage/v1/object/public/diario/libros_lecciones/4Ge/ritmo/full/046.png",
+ "tonalidad": "La menor",
+ "modo": "menor",
+ "armadura": "C",
+ "clave": "treble",
+ "pagina": {
+  "ancho": 1680,
+  "alto": 1054,
+  "interlinea": 16.4
+ },
+ "sistemas": [
+  {
+   "y": 117,
+   "x0": 150,
+   "barras": [
+    374,
+    981,
+    1639
+   ],
+   "compases": [
+    0,
+    1,
+    2
+   ]
+  },
+  {
+   "y": 369,
+   "x0": 40,
+   "barras": [
+    883,
+    1639
+   ],
+   "compases": [
+    3,
+    4
+   ]
+  },
+  {
+   "y": 621,
+   "x0": 40,
+   "barras": [
+    897,
+    1639
+   ],
+   "compases": [
+    5,
+    6
+   ]
+  },
+  {
+   "y": 875,
+   "x0": 40,
+   "barras": [
+    966,
+    1637
+   ],
+   "compases": [
+    7,
+    8
+   ],
+   "final": "fin"
+  }
+ ],
+ "compases": [
+  {
+   "c": 0,
+   "compas": "12/8",
+   "anacrusa": true,
+   "m": "^ 8:e4"
+  },
+  {
+   "c": 1,
+   "m": "^ 4:a4 | v 8:c5 | v 8:a4 8:c5 8:b4 | ^ 8.:a4 16:g4 8:f4 | ^ 4:e4 | ^ 8:e4"
+  },
+  {
+   "c": 2,
+   "m": "^ 4:a4 | v 8:c5 | v 8:a4 8:c5 8:b4 | v 8:a4 16:a4 16:b4 16:c5 16:d5 | v 4:e5 | v 8:e5"
+  },
+  {
+   "c": 3,
+   "m": "v 8.:f5 16:e5 8:d5 | v 4:e5 | v 8:c5 | v 8.:d5 16:c5 8:b4 | v 4:c5 | ^ 8:a4"
+  },
+  {
+   "c": 4,
+   "m": "v 4:e5 | ^ 8:e4 | ^ 4:g#4 | ^ 8:a4 | v 4.:b4 | ^ 4:r | ^ 8:e4"
+  },
+  {
+   "c": 5,
+   "m": "^ 8.:d4 16:e4 8:f4 | ^ 8.:a4 16:b4 8:a4 | ^ 8:g4 16:g4 16:f4 16:e4 16:d4 | ^ 8:e4 | ^ 4:c4"
+  },
+  {
+   "c": 6,
+   "m": "^ 8.:b3 16:c4 8:d4 | ^ 8.:g4 16:a4 8:g4 | ^ 8:e4 8:g4 | ^ 8:r | ^ 8:c5 8:g4 | ^ 8:r"
+  },
+  {
+   "c": 7,
+   "m": "^ 4.:g#4> | ^ 16:e4 16:d#4 16:e4 16:f#4 16:g#4 16:a4 | v 4:b4 | ^ 8:r | v 8.:e5 16:d5 8:b4"
+  },
+  {
+   "c": 8,
+   "m": "^ 8:a4 8:a4 8:c5 | ^ 4:a4 | ^ 8:r | ^ 8.:a4 16:a4 8:e4 | ^ 4:c4 | ^ 8:r"
+  }
+ ],
+ "ligaduras": [
+  "0.1-1.9 arriba",
+  "1.10-2.6 arriba",
+  "2.7-2.11 arriba",
+  "2.12-3.4 arriba",
+  "3.5-3.9 arriba",
+  "3.10-4.1 arriba",
+  "4.2-4.5 arriba",
+  "4.7-5.7 abajo",
+  "5.8-5.13 abajo",
+  "6.1-6.8 abajo",
+  "6.10-6.11 abajo",
+  "7.2-7.8 arriba",
+  "7.10-8.4 arriba",
+  "8.6-8.9 abajo"
+ ],
+ "corchetes": [
+  "3.4-3.5",
+  "3.9-3.10",
+  "4.1-4.2"
+ ],
+ "pendiente": []
+}
