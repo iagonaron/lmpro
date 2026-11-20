@@ -14,6 +14,12 @@ Módulos:
 2. **Terminar la tanda de GP** de los ayudantes pausados por el límite: 67, 81, 82, 85, 93, 90, 96 (falta 090, 096) y 101–141 (faltan 107, 108, 109, 140, 141). Revisarlas y publicarlas.
 3. HECHO 15:35 (estudio-comun v2) · **Arpegio en EaH**: la nota aguda dura de más (epOido: `i===3 ? st*1.6` y `t+=st*1.5`). Ponerlo con el mismo pulso que la escala.
 
+## Prioridad 1 bis · Anotaciones de clase para el grupo (Iago 15:43, eligió las opciones recomendadas)
+- En el **visor de la campana**, abierto con la cuenta Tester o Protester (la que Iago usa en el aula), sale un botón **«Guardar para <grupo>»**. El grupo se deduce del día y la hora de clase (horario C1/C2 y grupos del Diario) y se enseña para confirmar, p. ej. «Guardar para 4.º A».
+- Se guarda lo pintado en esa lección: trazos, intervalos, octavas y patrones. Va a una tabla nueva de Supabase (curso, grupo, lección, datos, creado), con **caducidad de 10 días**: la tabla se limpia sola y no acumula nada.
+- El alumno de ese grupo que abre esa lección desde sus tareas ve: **«¿Quieres ver las anotaciones que Iago hizo en clase con tu grupo?»** con dos botones: **«Sí»** y **«No, prefiero desde cero»**. Con «Sí», se copian a sus anotaciones (que siguen guardándose en su dispositivo). La pregunta sale una sola vez por lección.
+- Solo en el visor de la campana (GE y GP). Textos al alumno en 2.ª persona del singular.
+
 ## Prioridad 2 (todos los módulos con Tónica/Escala/Arpegio: visor fase 3, RaH fase 3, REaH fase 3, EaH)
 4. **Botón «Acordes»** junto a Tónica · Escala · Arpegio. Suenan los acordes tonales bien enlazados, con buena conducción de voces: I – IV – V(7) – I, o I – ii – V7 – I. Los carteles de la fase lo explican.
 5. **Ventanas y carteles sin fondo negro opaco.** Que se intuya el fondo del conservatorio (cristal oscuro semitransparente con desenfoque) sin que se lea la lección. En todos los módulos, también en la primera ventana al pulsar «Iniciar estudio».
