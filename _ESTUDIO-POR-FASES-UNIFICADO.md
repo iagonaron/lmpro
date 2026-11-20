@@ -112,3 +112,9 @@ los cambios del 20-nov 10:06–10:12 (§5), AJUSTADOS con la recapitulación de 
 - **Acompañamiento: como mínimo un acorde que suene en cada compás** (el que se mantiene se vuelve a atacar en la parte fuerte). PARA TODOS (Ritmo entonado at home: `buildAccompaniment` fusiona acordes iguales entre compases).
 - **Intervalos: trazo RECTO** (del punto de partida al de llegada). PARA TODOS.
 - **Octava alta / baja** (PARA TODOS, en todas las anotaciones: estudio, at home, entonación, ritmo): dos botones bajo las alertas; toque = «8va↑»/«8va↓»; pulsar y arrastrar = «8va↑» + línea discontinua horizontal hasta donde sueltes + «loco» en diagonal.
+
+## 12. Qué cambia en los módulos AT HOME (Iago, 20-nov 13:13–13:15) — PARA TODOS
+- Todo lo de §11 se aplica también a **Ritmo entonado at home**, **Ritmo at home** y, desde el paso 3, a **Entonación at home**.
+- Diferencias de los AT HOME frente al visor (notificaciones): hay **temporizador**; el botón que arranca cada fase dice algo como **«Iniciar tiempo»** (que el alumno sepa que el reloj empieza al pulsarlo); y **no se puede volver a fases anteriores**. En el visor (lecciones desde la notificación) SÍ se puede ir a cualquier fase.
+- Al final de la realización final: **una sola ventana** con el **porcentaje** (y su texto y la ayuda de piano), la **dificultad** 0–10 (Tester/Protester) y **«Repetir»** (sin tapar el resultado con otra ventana).
+- Acompañamiento: acorde en el **primer pulso de cada compás**, aunque repita el anterior.

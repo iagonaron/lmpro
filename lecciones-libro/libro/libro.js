@@ -51,6 +51,10 @@
   function dur16(f){ var dot=/\.$/.test(f); var b=+f.replace('.',''); var d=16/b; return dot?d*1.5:d; }
   function compasDe(txt){ /* «2/4+1/4» → time 9/16, fracSig ['2/4','+¼'] · «3/4» → 3/4 · «libre» → sin compás */
     if(txt==='libre') return {libre:true, time:'4/4', num:'', den:'', extra:null};
+    if(txt==='C|'||txt==='¢') return {time:'2/2', num:'2', den:'2', extra:null, simbolo:'C|'};
+    if(txt==='C') return {time:'4/4', num:'4', den:'4', extra:null, simbolo:'C'};
+    var ad=/^(\d+(?:\+\d+)+)\/(\d+)$/.exec(txt);   /* «3+3+2/8»: se dibuja así y dura la suma */
+    if(ad){ var sum=ad[1].split('+').reduce(function(x,y){ return x+(+y); },0); return {time:sum+'/'+ad[2], num:ad[1], den:ad[2], extra:null, aditivo:true}; }
     var m=/^(\d+)\/(\d+)(?:([+\-])(\d+)\/(\d+))?$/.exec(txt); if(!m) throw new Error('compás '+txt);
     var n=+m[1], d=+m[2]; if(!m[3]) return {time:n+'/'+d, num:String(n), den:String(d), extra:null};
     var en=+m[4], ed=+m[5]; /* fracción de la unidad: (n ± en/ed)/d */
@@ -76,7 +80,7 @@
         var tk=g.trim().split(/\s+/); var stem=0;
         if(tk[0]==='^'){ stem=1; tk.shift(); } else if(tk[0]==='v'){ stem=-1; tk.shift(); }
         var idx=[];
-        tk.forEach(function(t){ var p=t.split(':'); var esSil=/^r/.test(p[1]); var suf=(/[-!>~]+$/.exec(p[1])||[''])[0]; if(suf) p[1]=p[1].slice(0,-suf.length);
+        tk.forEach(function(t){ var p=t.split(':'); var esSil=/^r/.test(p[1]); var suf=(/[-!>~'^]+$/.exec(p[1])||[''])[0]; if(suf) p[1]=p[1].slice(0,-suf.length);
           var n={dur:durDe(p[0])}; if(esSil){ n.rest=true; } else { n.midi=midiDe(p[1]); n.key=keyDe(p[1]); }
           if(suf){ n._art=suf; if(suf.indexOf('-')>=0) n._ten=true; }
           idx.push(notes.length); notes.push(n); stems.push(stem); total16+=dur16(p[0]); });
@@ -116,7 +120,7 @@
            simpleSlow5:false, mixSlow:false, fusaN:false, conjunctM4:false, noMeter:false, roles:null, combine:false,
            valid:true, libro:J};
     L._lig=(J.ligaduras||[]).map(parseLigadura);
-    L._cor=(J.corchetes||[]).map(function(t){ var m=/^(\d+)\.(\d+)-(\d+)\.(\d+)$/.exec(t.trim()); return m?{c1:+m[1],n1:+m[2]-1,c2:+m[3],n2:+m[4]-1}:null; }).filter(Boolean);
+    L._cor=(J.corchetes||[]).map(function(t){ var m=/^(\d+)\.(\d+)-(\d+)\.(\d+)(?:\s+(arriba|abajo))?$/.exec(t.trim()); return m?{c1:+m[1],n1:+m[2]-1,c2:+m[3],n2:+m[4]-1,arriba:m[5]==='arriba'}:null; }).filter(Boolean);
     try{ armoniza(L); }catch(e){ console.warn('[libro] armonía',e); }
     return L;
   }
@@ -187,7 +191,7 @@
     var vfDe={};   /* «c.n» → StaveNote, para las ligaduras */
     var estaves={};
     J.sistemas.forEach(function(sis,si){
-      var ph=L.phrases[si]; var yTop=U(sis.y)-40;   /* línea superior del pentagrama a sis.y */
+      var ph=L.phrases[si]; ph._claveAct=null; var yTop=U(sis.y)-40;   /* línea superior del pentagrama a sis.y */
       var xs=[sis.x0].concat(sis.barras);
       sis.compases.forEach(function(k,j){
         var m=ph.measures[j], lb=m._libro;
@@ -195,7 +199,7 @@
         var stave=new VF.Stave(x,yTop,w,{left_bar:j===0});
         if(j===0){ stave.addClef(ph.clef).addKeySignature(ph.keysig); }
         var conCifra = lb.cambia;
-        if(conCifra) stave.addTimeSignature(lb.compas.num+'/'+lb.compas.den);
+        if(conCifra) stave.addTimeSignature(lb.compas.simbolo||(lb.compas.num+'/'+lb.compas.den));
         if(lb.sinBarra) stave.setEndBarType(VF.Barline.type.NONE);
         if(lb.barraIni==='repeticion') stave.setBegBarType(VF.Barline.type.REPEAT_BEGIN);
         if(lb.barraFin==='repeticion') stave.setEndBarType(VF.Barline.type.REPEAT_END);
@@ -222,7 +226,7 @@
           var sn=new VF.StaveNote({clef:clefDe(ni),keys:[x2?(n.key+'/x2'):n.key],duration:durBase(n.dur),stem_direction:sd||1,auto_stem:!sd});
           for(var di=0;di<durDots(n.dur);di++) VF.Dot.buildAndAttach([sn]);
           if(n._art){ var pos=(sd||1)===1?VF.ModifierPosition.BELOW:VF.ModifierPosition.ABOVE;
-            [['-','a-'],['!','a.'],['>','a>']].forEach(function(z){ if(n._art.indexOf(z[0])>=0){ try{ var ar=new VF.Articulation(z[1]); ar.setPosition(pos); sn.addModifier(ar,0); }catch(e){} } });
+            [['-','a-'],['!','a.'],['>','a>'],["'",'av'],['^','a^']].forEach(function(z){ if(n._art.indexOf(z[0])>=0){ try{ var ar=new VF.Articulation(z[1]); ar.setPosition(pos); sn.addModifier(ar,0); }catch(e){} } });
             if(n._art.indexOf('~')>=0){ try{ var fe=new VF.Articulation('a@a'); fe.setPosition(VF.ModifierPosition.ABOVE); sn.addModifier(fe,0); }catch(e){} } }
           if(!x2){ var mm=String(n.key).match(/^([a-g])(#|b)?\/(\d)/); if(mm){ var kk=mm[1]+mm[3], want=mm[2]||'n', inKey=(KEY_ACCIDENTALS[ph.keysig]||{})[mm[1]]||'n';
             var cur=(kk in acc)?acc[kk]:inKey; acc[kk]=want; var prec=(J.precauciones||[]).some(function(t){ return String(t).split(/\s+/)[0]===lb.c+'.'+(ni+1); }); if(want!==cur || prec) sn.addModifier(new VF.Accidental(want),0); } }
@@ -252,7 +256,7 @@
         var x1=U(sis.barras[sis.barras.length-1]), x2=U(sis.cortesia.x1);
         var cst=new VF.Stave(x1,yTop,x2-x1,{left_bar:false}); cst.setBegBarType(VF.Barline.type.NONE); cst.setEndBarType(VF.Barline.type.NONE);
         var cc=compasDe(sis.cortesia.compas);
-        cst.addTimeSignature(cc.num+'/'+cc.den); cst.setContext(ctx).draw();
+        cst.addTimeSignature(cc.simbolo||(cc.num+'/'+cc.den)); cst.setContext(ctx).draw();
         if(cc.extra){ var bc2=bordeCifra(cst); fraccionCompas(ctx, bc2!=null?bc2:cst.getNoteStartX()+U(2), cst.getYForLine(0), cc.extra, S); }
       }
       /* número de compás (italic) sobre la clave, salvo el primer sistema; título en el primero */
@@ -285,9 +289,10 @@
       try{ var x0=a.getNoteHeadBeginX()-U(4), x1=b.getNoteHeadEndX()+U(4), yb=0;
         [a,b].forEach(function(n){ var e=n.getStemExtents?n.getStemExtents():null; var ys=n.getYs(); yb=Math.max(yb, ys[0]+U(14), e?Math.max(e.baseY,e.topY)+U(6):0); });
         var st=a.getStave(); yb=Math.max(yb, st.getYForLine(4)+U(22));
+        if(g.arriba){ yb=1e9; [a,b].forEach(function(n){ var e=n.getStemExtents?n.getStemExtents():null; var ys=n.getYs(); yb=Math.min(yb, ys[0]-U(14), e?Math.min(e.baseY,e.topY)-U(6):1e9); }); yb=Math.min(yb, st.getYForLine(0)-U(22)); }
         ctx.save(); ctx.setStrokeStyle('#111'); ctx.setLineWidth(U(1.6)); try{ ctx.setLineDash([U(9),U(7)]); }catch(e){}
         ctx.beginPath(); ctx.moveTo(x0,yb); ctx.lineTo(x1,yb); ctx.stroke(); try{ ctx.setLineDash([]); }catch(e){}
-        ctx.beginPath(); ctx.moveTo(x0,yb-U(7)); ctx.lineTo(x0,yb); ctx.moveTo(x1,yb-U(7)); ctx.lineTo(x1,yb); ctx.stroke(); ctx.restore(); }catch(e){} });
+        var gch=g.arriba?U(7):-U(7); ctx.beginPath(); ctx.moveTo(x0,yb+gch); ctx.lineTo(x0,yb); ctx.moveTo(x1,yb+gch); ctx.lineTo(x1,yb); ctx.stroke(); ctx.restore(); }catch(e){} });
     /* notas del libro (texto + flecha) */
     (J.notas_libro||[]).forEach(function(nb){ notaLibro(ctx,nb,U); });
     /* encaje en la tarjeta: viewBox con las medidas del libro escaladas */
@@ -532,6 +537,7 @@
     +'.lb-fin .caras button.on{border-color:var(--lbc,#16a34a);background:rgba(22,163,74,.22)}'
     +'.lb-fin .esc{display:grid;grid-template-columns:repeat(11,1fr);gap:5px}.lb-fin .esc button{height:36px;border-radius:8px;border:1px solid rgba(148,163,184,.3);background:rgba(15,23,42,.6);color:#fff;font:700 14px/1 inherit;cursor:pointer}'
     +'.lb-fin .esc button.on{background:var(--lbc,#16a34a);border-color:var(--lbc,#16a34a)}.lb-fin .ley{display:flex;justify-content:space-between;font-size:11px;color:#94a3b8;margin-top:5px}'
+    +'.lb-fin .lb-res .score{font-size:46px;font-weight:900;margin:0 0 6px;color:#fff}.lb-fin .lb-res .score.good{color:#22c55e}.lb-fin .lb-res .score.mid{color:#f59e0b}.lb-fin .lb-res .score.low{color:#ef4444}.lb-fin .lb-res p{margin:0 0 6px;font-size:13.5px;line-height:1.45;color:#cbd5e1}.lb-fin .lb-res .rp-estim{font-size:12px;color:#94a3b8}'
     +'.lb-fin .acc{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;margin-top:6px}.lb-fin .acc button{height:42px;padding:0 18px;border-radius:10px;font:800 14px/1 inherit;cursor:pointer}'
     +'.lb-fin .b2{background:transparent;border:1px solid rgba(255,255,255,.35);color:#fff}.lb-fin .b1{background:#2563eb;border:0;color:#fff}.lb-fin .b1.verde{background:#16a34a}';
   function esTester(){ try{ return typeof rpEsTesterCuenta==='function' && rpEsTesterCuenta(); }catch(e){ return false; } }
@@ -548,13 +554,14 @@
   /* tarjeta: fin de vuelta (fase 2) o solo dificultad (al pasar a la 3) */
   function abreFin(op){ op=op||{}; document.querySelectorAll('.lb-fin').forEach(function(x){ x.remove(); });
     var tester=esTester(); if(op.soloDif && !tester){ if(op.luego) op.luego(); return; }
-    var sc=document.createElement('div'); sc.className='lb-fin'; var c=document.createElement('div'); c.className='c';
-    var h='<p class="k">'+(op.soloDif?'Antes de la entonación':op.final?'Realización final':'Fase 2 · Ritmo con la mano')+'</p><p class="t">'+(op.soloDif?'¿Qué dificultad tiene esta lección?':'¿Qué tal ha ido?')+'</p>';
-    if(!op.soloDif) h+='<div class="sec"><p class="lab">Elige tu carita: <b>solo la ves tú</b>, no se guarda.</p><div class="caras">'+CARAS.map(function(x,i){ return '<button type="button" data-i="'+i+'" title="'+x[1]+'">'+x[0]+'</button>'; }).join('')+'</div></div>';
+    var sc=document.createElement('div'); sc.className='lb-fin'; var c=document.createElement('div'); c.className='c'; if(op.final) sc.style.setProperty('--lbc','#2563eb');
+    var h='<p class="k">'+(op.soloDif?'Antes de la entonación':op.final?'Realización final':'Fase 2 · Ritmo con la mano')+'</p><p class="t">'+(op.soloDif?'¿Qué dificultad tiene esta lección?':op.final?'Tu resultado':'¿Qué tal ha ido?')+'</p>';
+    if(op.final && op.res) h+='<div class="sec lb-res">'+op.res.pct+op.res.txt+'</div>';
+    if(!op.soloDif && !op.final) h+='<div class="sec"><p class="lab">Elige tu carita: <b>solo la ves tú</b>, no se guarda.</p><div class="caras">'+CARAS.map(function(x,i){ return '<button type="button" data-i="'+i+'" title="'+x[1]+'">'+x[0]+'</button>'; }).join('')+'</div></div>';
     if(tester) h+='<div class="sec"><p class="lab">Dificultad de la lección, de <b>0</b> a <b>10</b> (solo en pantalla, no se guarda)</p><div class="esc">'+[0,1,2,3,4,5,6,7,8,9,10].map(function(i){ return '<button type="button" data-d="'+i+'" class="'+(DIF===i?'on':'')+'">'+i+'</button>'; }).join('')+'</div><div class="ley"><span>muy fácil</span><span>intermedio</span><span>muy difícil</span></div></div>';
     var ent=(phaseList[2]&&phaseList[2].kind==='entonacion');
     h+='<div class="acc">'+(op.soloDif?'<button type="button" class="b1" data-a="seguir">Seguir</button>'
-        :op.final?'<button type="button" class="b1" data-a="ver">Ver mi resultado</button>'
+        :op.final?'<button type="button" class="b2" data-a="ver">Ver la partitura</button><button type="button" class="b1" data-a="repetir">↻ Repetir</button>'
         :'<button type="button" class="b2" data-a="otra">↻ Otra vez</button>'+(ent?'<button type="button" class="b1" data-a="ent">Pasar a la entonación'+(GE?' · opcional':'')+'</button>':''))+'</div>';
     if(!op.soloDif && !op.final) h='<p class="lab" style="margin:-6px 0 14px">Hazlo <b>otra vez</b> si quieres, o pasa a la <b>entonación</b>'+(GE?', que es <b>opcional</b>':'')+'.</p>'.replace(/^/,'')+h.replace(/^([\s\S]*?<\/p><p class="t">[\s\S]*?<\/p>)/,'$1');
     c.innerHTML=h;
@@ -564,6 +571,7 @@
       if(b.dataset.i!=null){ c.querySelectorAll('.caras button').forEach(function(x){ x.classList.toggle('on',x===b); }); return; }
       if(b.dataset.d!=null){ DIF=+b.dataset.d; try{ rpDifPulsado=true; }catch(x){} c.querySelectorAll('.esc button').forEach(function(x){ x.classList.toggle('on',x===b); }); difChip(); if(op.soloDif && op.cerrarAlElegir){ sc.remove(); if(op.luego) op.luego(); } return; }
       var a=b.dataset.a; sc.remove();
+      if(a==='repetir'){ try{ if(typeof rpEmpezar==='function') rpEmpezar(); }catch(x){} }
       if(a==='otra'){ try{ if(typeof phasePlay==='function') phasePlay(); }catch(x){} }
       if(a==='ent'){ irAFase(2); }
       if(a==='seguir' && op.luego) op.luego(); });
@@ -604,7 +612,11 @@
         difChip(); return r; }; }
     /* al acabar la realización final: una sola ventana con la carita y la dificultad */
     if(typeof window.rpFin==='function'){ var _rf=window.rpFin; window.rpFin=function(cortada,abandonada){ try{ rpDifPulsado=true; }catch(e){} var r=_rf.apply(this,arguments);
-        if(!abandonada) setTimeout(function(){ if(studyMode) abreFin({final:true}); },900); return r; }; }
+        /* (13:13, Iago) UNA sola ventana: el % (con su texto y la ayuda de piano) + la dificultad + volver a hacerlo */
+        try{ var rc=document.querySelector('#phaseBannerHost .tap-fb.rp-res'); if(rc && !abandonada){ var res={};
+            var sc0=rc.querySelector('.score'); res.pct=sc0?sc0.outerHTML:''; var ps=rc.querySelectorAll('p'); res.txt=''; ps.forEach(function(p0){ if(!p0.classList.contains('fb-step')) res.txt+=p0.outerHTML; });
+            rc.remove(); abreFin({final:true, res:res}); } }catch(e){}
+        return r; }; }
     /* intervalos: trazo recto (del punto de partida al de llegada) */
     document.addEventListener('pointermove',function(){ try{ var stt=RP_ANOT.get(currentLesson); if(!stt) return;
         Object.keys(stt.pages||{}).forEach(function(k){ var L=stt.pages[k].strokes||[], sk=L[L.length-1]; if(sk && sk.i && sk.p && sk.p.length>2) sk.p.splice(1, sk.p.length-2); }); }catch(e){} }, true);
