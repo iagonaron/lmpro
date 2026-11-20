@@ -534,7 +534,8 @@
   var AJ_CSS='.rp-ayudasel.lb-arriba{margin-right:8px;align-items:center}.rp-ayudasel.lb-arriba .seg-l{display:inline-block!important;font:400 12px/1.1 "Helvetica Neue",Arial,sans-serif!important;color:rgba(255,255,255,.6)!important;margin-right:8px;text-transform:none!important;letter-spacing:0!important;max-width:60px;white-space:normal}'
     +'@media (max-width:1280px){.rp-ayudasel.lb-arriba .seg-l{display:none!important}#phaseTop .rp-ayudasel .rp-ay,#rpEntTools button{padding:0 9px!important;font-size:12.5px!important}.lb-resumen{margin-left:8px}}'
     +'@media (max-height:760px){#rpAnotBar .rpv-col-in{gap:3px!important}#rpAnotBar .rpv-b{height:34px!important;min-height:34px!important}}@media (max-height:640px){#rpAnotBar .rpv-b{height:29px!important;min-height:29px!important;font-size:11px!important}}'
-    +'html body.libro-modo{overflow-x:hidden}'
+    +'html:has(body.libro-modo),html body.libro-modo{overflow:hidden!important;overscroll-behavior:none}'
+    +'@media (max-width:640px){body.libro-modo #phaseControls,body.libro-modo #phaseControls *{flex-wrap:wrap!important;max-width:100%;box-sizing:border-box} body.libro-modo #phaseControls{left:0!important;right:0!important;width:auto!important;justify-content:center!important}}'
     +'.lb-resumen{display:inline-flex;align-items:center;gap:6px;margin-left:14px;font:400 13px/1 "Helvetica Neue",Arial,sans-serif;color:rgba(255,255,255,.78);cursor:pointer;white-space:nowrap}.lb-resumen b{color:#fff;font-weight:800}.lb-resumen .cara{font-size:18px}#rpEntTools{margin-right:8px}#phaseNextTop{display:none!important}#rpDif{display:none!important}'
     +'#phaseSteps .rp-paso{cursor:pointer}#phaseSteps .rp-paso:hover{filter:brightness(1.25)}'
     +'.lb-dif-chip{display:inline-flex;align-items:center;gap:7px;height:40px;box-sizing:border-box;padding:0 13px;border-radius:10px;border:1px solid rgba(255,255,255,.35);color:#fff;font:800 14px/1 "Helvetica Neue",Helvetica,Arial,sans-serif;margin-right:8px;cursor:pointer;background:transparent}'
@@ -547,7 +548,9 @@
     +'.lb-fin .esc{display:grid;grid-template-columns:repeat(11,1fr);gap:5px}.lb-fin .esc button{height:36px;border-radius:8px;border:1px solid rgba(148,163,184,.3);background:rgba(15,23,42,.6);color:#fff;font:700 14px/1 inherit;cursor:pointer}'
     +'.lb-fin .esc button.on{background:var(--lbc,#16a34a);border-color:var(--lbc,#16a34a)}.lb-fin .ley{display:flex;justify-content:space-between;font-size:11px;color:#94a3b8;margin-top:5px}'
     +'.lb-fin .lb-res .score{font-size:46px;font-weight:900;margin:0 0 6px;color:#fff}.lb-fin .lb-res .score.good{color:#22c55e}.lb-fin .lb-res .score.mid{color:#f59e0b}.lb-fin .lb-res .score.low{color:#ef4444}.lb-fin .lb-res p{margin:0 0 6px;font-size:13.5px;line-height:1.45;color:#cbd5e1}.lb-fin .lb-res .rp-estim{font-size:12px;color:#94a3b8}'
-    +'.lb-fin.trans{background:rgba(6,10,18,.12);-webkit-backdrop-filter:none;backdrop-filter:none;align-items:flex-end;justify-content:flex-end;padding:0 18px 18px 0;pointer-events:none}.lb-fin.trans .c{pointer-events:auto;width:min(430px,92vw);padding:16px 18px;background:rgba(10,16,28,.86)}.lb-fin.trans .lb-res .score{font-size:36px}.lb-fin.trans .t{font-size:17px;margin-bottom:8px}.lb-fin.trans .c{width:min(380px,92vw)}.lb-fin.trans .lb-res p{font-size:12.5px}.lb-fin.trans .rp-estim{display:none}.lb-fin.trans .esc button{height:30px;font-size:12.5px}.lb-fin.trans .sec{margin-bottom:10px}.lb-fin.trans .acc button{height:36px}'
+    /* (20-nov 14:07, Iago) ventana del resultado: en el centro y del mismo tamaño que las demás, con el fondo más claro; si el ratón sale del recuadro (o tocas fuera en el iPad) se vuelve cristal líquido y se ve la partitura detrás */
+    +'.lb-fin.trans{background:rgba(6,10,18,.18);-webkit-backdrop-filter:none;backdrop-filter:none;pointer-events:none}.lb-fin.trans .c{pointer-events:auto;background:rgba(10,16,28,.66);-webkit-backdrop-filter:blur(7px);backdrop-filter:blur(7px);transition:background .35s,backdrop-filter .35s,box-shadow .35s}.lb-fin.trans .rp-estim{display:none}'
+    +'.lb-fin.trans.liquido{background:transparent}.lb-fin.trans.liquido .c{background:rgba(255,255,255,.06);-webkit-backdrop-filter:blur(1.5px) saturate(1.3);backdrop-filter:blur(1.5px) saturate(1.3);box-shadow:inset 0 0 0 1px rgba(255,255,255,.35),0 8px 30px rgba(0,0,0,.18)}.lb-fin.trans.liquido .c *{text-shadow:0 1px 3px rgba(0,0,0,.85),0 0 8px rgba(0,0,0,.6)}'
     +'.lb-fin .acc{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;margin-top:6px}.lb-fin .acc button{height:42px;padding:0 18px;border-radius:10px;font:800 14px/1 inherit;cursor:pointer}'
     +'.lb-fin .b2{background:transparent;border:1px solid rgba(255,255,255,.35);color:#fff}.lb-fin .b1{background:#2563eb;border:0;color:#fff}.lb-fin .b1.verde{background:#16a34a}';
   function esTester(){ try{ return typeof rpEsTesterCuenta==='function' && rpEsTesterCuenta(); }catch(e){ return false; } }
@@ -571,7 +574,7 @@
   /* tarjeta: fin de vuelta (fase 2) o solo dificultad (al pasar a la 3) */
   function abreFin(op){ op=op||{}; document.querySelectorAll('.lb-fin').forEach(function(x){ x.remove(); });
     var tester=esTester();
-    var sc=document.createElement('div'); sc.className='lb-fin'; var c=document.createElement('div'); c.className='c'; if(op.final){ sc.style.setProperty('--lbc','#2563eb'); sc.classList.add('trans'); }
+    var sc=document.createElement('div'); sc.className='lb-fin'; var c=document.createElement('div'); c.className='c'; if(op.final){ sc.style.setProperty('--lbc','#2563eb'); sc.classList.add('trans'); c.addEventListener('mouseleave',function(){ sc.classList.add('liquido'); }); c.addEventListener('mouseenter',function(){ sc.classList.remove('liquido'); }); var _liq=function(ev){ if(!document.body.contains(sc)){ document.removeEventListener('pointerdown',_liq,true); return; } if(c.contains(ev.target)) sc.classList.remove('liquido'); else sc.classList.add('liquido'); }; document.addEventListener('pointerdown',_liq,true); }
     var h='<p class="k">'+(op.soloDif?'Antes de la entonación':op.final?'Realización final':'Fase 2 · Ritmo con la mano')+'</p><p class="t">'+(op.final?'Tu resultado':'¿Qué tal ha ido?')+'</p>';
     if(op.final && op.res) h+='<div class="sec lb-res">'+op.res.pct+op.res.txt+'</div>';
     if(!op.final) h+='<div class="sec"><p class="lab">Elige tu carita: <b>solo la ves tú</b>, no se guarda.</p><div class="caras">'+CARAS.map(function(x,i){ return '<button type="button" data-i="'+i+'" title="'+x[1]+'" class="'+(CARA===i?'on':'')+'">'+x[0]+'</button>'; }).join('')+'</div></div>';
@@ -631,7 +634,7 @@
     if(typeof window.rpFin==='function'){ var _rf=window.rpFin; window.rpFin=function(cortada,abandonada){ try{ rpDifPulsado=true; }catch(e){} var r=_rf.apply(this,arguments);
         /* (13:13, Iago) UNA sola ventana: el % (con su texto y la ayuda de piano) + la dificultad + volver a hacerlo */
         try{ var rc=document.querySelector('#phaseBannerHost .tap-fb.rp-res'); if(rc && !abandonada){ var res={};
-            var sc0=rc.querySelector('.score'); res.pct=sc0?sc0.outerHTML:''; var ps=rc.querySelectorAll('p'); res.txt=''; ps.forEach(function(p0){ if(!p0.classList.contains('fb-step')) res.txt+=p0.outerHTML; });
+            var sc0=rc.querySelector('.score'); try{ var pp=window.lbPct&&window.lbPct(); if(sc0 && pp!=null && !cortada){ sc0.textContent=pp+' %'; sc0.className='score '+(pp>=70?'good':pp>=50?'mid':'low'); var ptx=rc.querySelector('.score + p'); if(ptx && pp>=70) ptx.textContent='¡Muy bien!'; else if(ptx && pp>=50) ptx.textContent='Vas bien. Repite la prueba para pulir las notas que fallaron.'; } }catch(x){} res.pct=sc0?sc0.outerHTML:''; var ps=rc.querySelectorAll('p'); res.txt=''; ps.forEach(function(p0){ if(!p0.classList.contains('fb-step')) res.txt+=p0.outerHTML; });
             rc.remove(); abreFin({final:true, res:res}); } }catch(e){}
         return r; }; }
     /* (13:32, Iago) el arpegio, con el mismo pulso que la escala: sin quedarse parado en la nota aguda */
@@ -640,7 +643,20 @@
           (isMin?[0,3,7,12,7,3,0]:[0,4,7,12,7,4,0]).forEach(function(x,i,arr){ pianoHit(base+x,t,(i===arr.length-1?st*1.6:st*0.9),0.12); t+=st; }); }catch(e){ return _ro.apply(this,arguments); } }; }
     /* (13:35, Iago) piano más alto; puntuación más amable; en la realización final el piano ayuda más */
     if(typeof window.pianoHit==='function'){ var _ph=window.pianoHit; window.pianoHit=function(m,t,d,g){ return _ph.call(this,m,t,d,(g||0.1)*2.0); }; }
-    try{ if(typeof RPCFG!=='undefined'){ RPCFG.centsPerfect=RPCFG.centsPerfectLow=60; RPCFG.centsNear=RPCFG.centsNearLow=150; RPCFG.verdeSostenido=0.15; } }catch(e){}
+    try{ if(typeof RPCFG!=='undefined'){ RPCFG.centsPerfect=RPCFG.centsPerfectLow=70; RPCFG.centsNear=RPCFG.centsNearLow=160; RPCFG.verdeSostenido=0; } }catch(e){}
+    /* (20-nov 14:07, Iago: «la hice al 95-100 % y me marca 84; los niños se desmotivan») puntuación más generosa:
+       · la voz llega al micro un poco tarde: el análisis se corre 0,1 s (cada frame se atribuye a la nota que de verdad estaba cantando);
+       · una nota cuenta como cantada con un solo frame de voz (las semicorcheas apenas tienen 3 o 4);
+       · verde si algún frame cae a ≤70 cents; ámbar (≤160) cuenta 0,6 en el porcentaje. */
+    if(typeof window.rpEmpezar==='function'){ var _re=window.rpEmpezar; window.rpEmpezar=async function(){ var r=await _re.apply(this,arguments); try{ if(PR && PR.running && !PR._lat){ PR.body+=0.10; PR._lat=1; } }catch(e){} return r; }; }
+    if(typeof window.rpResuelve==='function'){ window.rpResuelve=function(){ PR.notes.forEach(function(n){ var a=PR.acc[n.i];
+        if(!a || !a.total){ n.res='red'; n.voiced=false; return; }
+        n.voiced=a.voiced>=1 && a.voiced>=a.total*0.10;
+        if(!n.voiced || a.bestCents==null){ n.res='red'; return; }
+        n.res = a.bestCents<=RPCFG.centsPerfect ? 'green' : (a.bestCents<=RPCFG.centsNear ? 'amber' : 'red'); }); }; }
+    window.lbPct=function(){ try{ var N=PR.notes.length||1, g=0; PR.notes.forEach(function(n){ g+= n.res==='green'?1:(n.res==='amber'?0.6:0); }); return Math.round(100*g/N); }catch(e){ return null; } };
+    /* el acompañamiento, más presente (la tónica y la escala ya se oyen bien) */
+    if(typeof window.padChord==='function'){ var _pc=window.padChord; window.padChord=function(m,t,d,g){ return _pc.call(this,m,t,d,(g||0.055)*1.8); }; }
     if(typeof window.rpAnaliza==='function'){ var _ra=window.rpAnaliza; var MAS={none:'sysStart',sysStart:'every2',every2:'every1',every1:'every1'};
       window.rpAnaliza=function(){ var r=_ra.apply(this,arguments);
         try{ if(!PR._lbVisto) PR._lbVisto={0:1}; Object.keys(PR.nivel||{}).forEach(function(k){ if(PR._lbVisto[k]) return; PR._lbVisto[k]=1; PR.nivel[k]=MAS[PR.nivel[k]]||PR.nivel[k]; }); }catch(e){}
@@ -659,7 +675,7 @@
      hasta donde sueltes + «loco» en diagonal (vuelta a la normalidad). Se guarda con lo anotado (store.oct). */
   var OCT={on:null, ultimo:null};
   var OCT_CSS='.lb-oct-capa{position:absolute;inset:0;pointer-events:none;z-index:6}.lb-oct-capa span{position:absolute;white-space:nowrap;font-family:"Times New Roman",Times,serif;font-style:italic;font-weight:700;color:#0b3a8f;line-height:1}'
-    +'.lb-oct-capa i{position:absolute;border-top:2px dashed #0b3a8f;height:0}.lb-oct-capa .loco{transform-origin:left bottom;transform:rotate(-32deg)}'
+    +'.lb-oct-capa i{position:absolute;border-top:2px dashed #0b3a8f;height:0}.lb-oct-capa .loco{transform:translateY(-50%);margin-left:5px}'
     +'#rpAnotBar .lb-oct{font:800 12px/1 "Helvetica Neue",Arial,sans-serif;color:#e2e8f0}#rpAnotBar .lb-oct.on{background:#16a34a!important;color:#fff}';
   function octStore(){ try{ var st=RP_ANOT.get(currentLesson); if(!st) return null; if(!st.oct) st.oct=[]; return st.oct; }catch(e){ return null; } }
   function octCapa(){ var sc=document.getElementById('score'); if(!sc) return null; if(getComputedStyle(sc).position==='static') sc.style.position='relative';
@@ -668,7 +684,7 @@
     var h=''; L.concat(prev?[prev]:[]).forEach(function(m){ var txt=m.t==='a'?'8va↑':'8va↓';
       h+='<span style="left:'+(m.x0*100)+'%;top:'+(m.y*100)+'%;font-size:'+fs+'px;transform:translateY(-50%)">'+txt+'</span>';
       if(m.x1!=null && m.x1>m.x0+0.005){ var xs=m.x0+(fs*2.6)/W; h+='<i style="left:'+(xs*100)+'%;width:'+Math.max(0,(m.x1-xs)*100)+'%;top:'+(m.y*100)+'%"></i>';
-        if(!m.vivo) h+='<span class="loco" style="left:'+(m.x1*100)+'%;top:'+(m.y*100)+'%;font-size:'+(fs*0.95)+'px;margin-top:-'+(fs*0.9)+'px">loco</span>'; } });
+        if(!m.vivo) h+='<span class="loco" style="left:'+(m.x1*100)+'%;top:'+(m.y*100)+'%;font-size:'+(fs*0.95)+'px">loco</span>'; } });
     c.innerHTML=h; }
   function octBotones(){ var bar=document.getElementById('rpAnotBar'); if(!bar || bar.querySelector('.lb-oct')) return;
     var ar=bar.querySelector('[data-t="ar"]'); if(!ar) return;
@@ -689,6 +705,13 @@
     if(typeof window.rpAnotarMontar_==='function'){ var _m=window.rpAnotarMontar_; window.rpAnotarMontar_=function(){ var r=_m.apply(this,arguments); try{ OCT.on=null; octBotones(); octPinta(); }catch(e){} return r; }; }
     var _rl=window.renderLesson; window.renderLesson=function(){ var r=_rl.apply(this,arguments); setTimeout(function(){ try{ octPinta(); }catch(e){} },30); return r; };
     window.addEventListener('resize',function(){ setTimeout(function(){ try{ octPinta(); }catch(e){} },250); });
+    /* (20-nov 14:03, Iago) pulsar cualquier otro control (Pistas, ayuda del piano, Tónica…, fases) suelta la herramienta de anotar que estuviera puesta (octava o lápiz) */
+    document.addEventListener('pointerdown',function(e){ try{ var t=e.target; if(!t || !t.closest) return;
+      var ctl=t.closest('button,select,[role="button"],.rp-paso,.rp-ayudasel,label'); if(!ctl) return;
+      if(ctl.closest('#rpAnotBar')) return;
+      if(OCT.on){ OCT.on=null; document.querySelectorAll('#rpAnotBar .lb-oct.on').forEach(function(x){ x.classList.remove('on'); }); }
+      if(typeof RP_ANOT_CTL!=='undefined' && RP_ANOT_CTL && RP_ANOT_CTL.suelta) RP_ANOT_CTL.suelta();
+    }catch(x){} },true);
     var vivo=null;
     document.addEventListener('pointerdown',function(e){ var sc=document.getElementById('score'); if(!sc || !sc.contains(e.target)) return;
       var r=sc.getBoundingClientRect(), nx=(e.clientX-r.left)/r.width, ny=(e.clientY-r.top)/r.height;
@@ -744,7 +767,7 @@
         var store=(guard&&guard.pages)?guard:{pages:{},ton:null}; RP_ANOT.set(LEC,store);
         var ult=JSON.stringify(store);
         var graba=function(){ try{ var t=JSON.stringify(store); if(t!==ult){ localStorage.setItem(CLAVE_ANOT,t); ult=t; } }catch(e){} };
-        setInterval(graba,2000); window.addEventListener('pagehide',graba); document.addEventListener('visibilitychange',graba); }
+        setInterval(graba,2000); document.addEventListener('pointerup',function(){ setTimeout(graba,120); },true); window.addEventListener('pagehide',graba); document.addEventListener('visibilitychange',graba); }
     }catch(e){ console.warn('[libro] anotaciones',e); }
   }
 
