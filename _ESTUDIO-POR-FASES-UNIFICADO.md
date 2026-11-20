@@ -41,13 +41,22 @@ los cambios del 20-nov 10:06–10:12 (§5), AJUSTADOS con la recapitulación de 
 
 ## 4. Fases de entonación (Ritmo at home 3–4, Entonación at home, Ritmo entonado 3–4 y visor)
 - **Tónica · Escala · Arpegio**.
-- **Durante el estudio NO se reproduce el acompañamiento** (ni acordes ni melodía entera): el acompañamiento es de la
-  realización final.
+- ~~Durante el estudio NO se reproduce el acompañamiento~~ → **DECISIÓN DE IAGO 20-nov 10:55 (manda):**
+  - **Ritmo at home (fases 3–4), Ritmo entonado (fase 3) y visores de ritmo de la campana GE y GP**: en la fase de estudio
+    de entonación **SÍ suena el acompañamiento** con ▶ (acordes, sin la melodía), junto con la ayuda del piano elegida.
+    **Sin micrófono** en el estudio: el micrófono solo en la realización final (fase 4), donde no hay pistas ni notas
+    premarcadas en azul (solo se ilumina la figura que toca cantar).
+  - **Entonación at home**: en los **5 minutos de estudio, NI acompañamiento NI selector de ayuda del piano**; solo
+    **Tónica · Escala · Arpegio** (y Pistas). «Las lecciones de entonación las tienen que sacar ellos mentalmente.»
 - **Ayudas**: (a) **Ayuda del piano**: **Sin ayuda · Cada pentagrama · Cada compás** (1.ª nota de cada pentagrama /
   compás; ni «todas» ni «pulso»); (b) **Pistas**: hasta **3 notas** a elección.
 - **Pistas**: se pulsa «Pistas» y queda activo (las notas **parpadean**); 3 clics seguidos para las 3 notas, sin volver
   al botón; otra pulsación en «Pistas» para salir antes. Notas de pista en azul.
-- **Entonación at home**: misma interfaz que las fases 3–4; **5 min** de estudio con estas ayudas.
+- **Entonación at home**: misma interfaz que las fases 3–4; **5 min** de estudio, pero **solo con Tónica · Escala ·
+  Arpegio y Pistas** (sin acompañamiento ni ayuda del piano: decisión del 20-nov 10:55).
+- (20-nov 10:47–10:51) En el estudio, las notas que tocará el piano según la ayuda elegida se ven en **azul**; las notas
+  azules (pistas o ayuda) **suenan al pulsarlas** siempre que quieras, sin gastar pistas. El cartel lo explica.
+  Referencia: `ritmopro/_DISENO-ESTUDIO-POR-FASES.md` §7–§8 (commit 6114ed1).
 
 ## 5. Cambios del 20-nov 10:06–10:12 (conversación de ritmopro) — valen para todas salvo lo indicado
 1. Barra de abajo SIEMPRE visible sin bajar; la partitura se ajusta al alto que quede.
