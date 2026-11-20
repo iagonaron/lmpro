@@ -87,6 +87,7 @@ los cambios del 20-nov 10:06–10:12 (§5), AJUSTADOS con la recapitulación de 
 - En la **fase 2** (ritmo con notas / con la mano) y en la **ejecución rítmica**, una fila **destacada** (borde ámbar, icono de mano):
   - **GE**: «Recuerda usar el **pulso con la mano** cada vez que practiques.»
   - **GP**: «Recuerda utilizar **la mano**, ya sea marcando **subdivisión** o **pulso**, según cómo trabajemos en clase cada dificultad.»
+- **Entonación at home (GE): HECHO y publicado** (entonacionathome b7cf64c, 20-nov 11:42): carteles visuales en «1. Estudio» y «2. Realización final». Iago lo confirmó «para todos» también desde esa conversación (12:29).
 - Visor de lecciones del libro: hecho en `libro.js` (cvContenido/cvVisualiza), pendiente del visto bueno de Iago para encenderlo (`CARTELES_VISUALES`).
 
 ## 9. Barrido final de unificación (Iago, 20-nov 12:22)
