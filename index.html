@@ -3175,6 +3175,9 @@ function showEnig(kind){
          rosa, el azul y la nota de texto: lo ya dibujado con ellos se sigue viendo (y se borra con la goma).
          (1-oct-2026, Iago) «la punta fina la primera, después verde, gris y luego las exclamaciones», como en entonación */
       +'<button class="anot-b anot-color" data-t="k" aria-label="Punta fina negra" title="Punta fina negra"><span class="anot-sw anot-sw-k"><i></i></span></button>'
+      /* (20-nov-2026, Iago) «al lado de la negra, una verde fina y una azul fina», opacas: verde para lo de ritmo, azul para lo de entonación */
+      +'<button class="anot-b anot-color" data-t="kv" aria-label="Punta fina verde · ritmo" title="Punta fina verde · ritmo"><span class="anot-sw anot-sw-k"><i style="background:#16a34a"></i></span></button>'
+      +'<button class="anot-b anot-color" data-t="ka" aria-label="Punta fina azul · entonación" title="Punta fina azul · entonación"><span class="anot-sw anot-sw-k"><i style="background:#0ea5e9"></i></span></button>'
       +'<button class="anot-b anot-color" data-t="c1" aria-label="Verde · ritmos nuevos" title="Verde · ritmos nuevos"><span class="anot-sw" style="background:#50e68c"></span></button>'
       +'<button class="anot-b anot-color" data-t="c4" aria-label="Gris · ritmos ya vistos" title="Gris · ritmos ya vistos"><span class="anot-sw" style="background:#a3a3a3"></span></button>'
       +'<button class="anot-b anot-color anot-pt" data-t="pt" aria-label="Triángulo y U" title="Triángulo y U · dibújalo a mano y se pone bonito">'+PT_SVG+'</button>'
@@ -3318,7 +3321,7 @@ function showEnig(kind){
            (1-oct-2026, Iago) «una punta fina y opaca que será de color negro» (lo ya dibujado en verde se queda verde).
            'pt' = △/U: el trazo a mano, en verde, y al segundo se cambia por el símbolo bonito si lo parece. */
         if(tool==='pt') ptToca(pg,nx,ny);
-        pg.cur=(tool==='k')?{c:'#000000',w:0.0022,f:1,p:[[nx,ny]]}:(tool==='pt')?{c:PT_COL,w:0.0022,f:1,p:[[nx,ny]]}:{c:COLORS[parseInt(tool.slice(1),10)]||COLORS[0],w:0.008,p:[[nx,ny]]};
+        pg.cur=(tool==='k')?{c:'#000000',w:0.0022,f:1,p:[[nx,ny]]}:(tool==='kv')?{c:'#16a34a',w:0.0022,f:1,p:[[nx,ny]]}:(tool==='ka')?{c:'#0ea5e9',w:0.0022,f:1,p:[[nx,ny]]}:(tool==='pt')?{c:PT_COL,w:0.0022,f:1,p:[[nx,ny]]}:{c:COLORS[parseInt(tool.slice(1),10)]||COLORS[0],w:0.008,p:[[nx,ny]]};
         pg.data.strokes.push(pg.cur);
         try{ cv.setPointerCapture(ev.pointerId); }catch(e){}
         redraw(pg);
@@ -11288,7 +11291,7 @@ body.tester-sin-by .topbar-right #rs-mini{order:2}
 <!-- (12-nov-2026, Iago) INCIDENCIAS: botón «?» junto a Mis resultados (no sale en Tester/Protester). Quitar: borrar esta línea. -->
 <script src="https://ge.lmathome.es/piel/incidencias.js?v=1" defer></script>
 <!-- (19-nov-2026, Iago) PULSO · lo que tu grupo trabaja por libre (piel/pulso.js). Quitarlo: borrar esta línea. -->
-<script src="https://ge.lmathome.es/piel/pulso.js?v=2" defer></script>
+<script src="https://ge.lmathome.es/piel/pulso.js?v=3" defer></script>
 <!-- (20-nov-2026, Iago) CARRUSEL PRO ONLINE · botón del caracol y cartelito de partidas (piel/carrusel-aviso.js, el mismo que en GE). Quitarlo: borrar esta línea. -->
 <script src="https://ge.lmathome.es/piel/carrusel-aviso.js?v=20261120a" defer></script>
 <script src="https://ge.lmathome.es/piel/avisos/actitud/mg-anim.js?v=2" defer></script><!-- (13-nov-2026, C0) animación del 👍 y el sello la primera vez -->
