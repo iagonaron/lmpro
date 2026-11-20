@@ -325,22 +325,23 @@
      Iago: en el visor de lecciones NO hay tiempos ni reloj; se pasa de fase con «Pasar a la siguiente fase».
      GE: sin patrones △/U, fases 3 y 4 «opcional». Lo anotado se guarda en este dispositivo (por alumno y lección). */
   var GE=false, CLAVE_ANOT='';
-  var VEL='<span class="libro-recuerda"><b>Recuerda:</b> abajo, en la barra de <b>Velocidad</b> (🐢 ●●●●● 🐇), puedes ir más lento o más rápido: ponla a la que te resulte <b>cómoda</b>. En la entonación podrás elegir cuánta <b>ayuda</b> necesitas. Aquí <b>no hay tiempo</b>: pasa a la siguiente fase cuando quieras.</span>';
-  function textoFase(ph){
-    if(ph.kind==='ritmo'){
-      var tap=(typeof isTouchDevice==='function' && isTouchDevice())
-        ? 'Toca el ritmo con los <b>pads verdes</b> (abajo, a izquierda y derecha; si mantienes el dedo, el sonido se mantiene).'
-        : 'Toca el ritmo con la <b>barra espaciadora</b> (si la mantienes pulsada, el sonido se mantiene).';
-      return tap+' Las figuras se iluminan al sonar. Haz tus <b>anotaciones</b> en la partitura ('+(GE?'':'patrones △/U, ')+'alertas, intervalos…): las tendrás también en las fases siguientes.'+VEL;
-    }
-    if(ph.kind==='lectura') return 'Ahora ponle <b>nombre a las notas</b> que estabas percutiendo. Marca el <b>pulso con la mano</b>, o hazlo como lo hemos trabajado en clase. Tus anotaciones siguen ahí.';
-    if(ph.kind==='entonacion') return (GE?'Esta fase es <b>opcional</b>. ':'')+'Practica la <b>entonación</b>. Pulsa <b>Tónica</b>, <b>Escala</b> y <b>Arpegio</b> siempre que quieras. Con <b>Pistas</b> puedes elegir hasta 3 notas y oirás cómo suenan. Cuando quieras, pasa a la <b>realización final</b>.';
-    return (ph.banner&&ph.banner.d)||'';
+  /* los textos de los carteles son los de Ritmo entonado PRO (mismas palabras, misma barra de Velocidad), quitando los tiempos */
+  function sinTiempo(t, ph){
+    t=String(t||'');
+    t=t.replace(/Puedes estar aquí hasta \d+ minutos? y pasar a la siguiente fase cuando quieras\./,'<b>Aquí no hay tiempo</b>: pasa a la siguiente fase cuando quieras.');
+    t=t.replace(/Ahora tienes \d+ minutos? para /i,'Ahora vas a ');
+    t=t.replace(/Tienes <b>\d+ minutos?<\/b> para practicar la entonación\./i,'Practica la <b>entonación</b>, sin prisa: <b>aquí no hay tiempo</b>.');
+    t=t.replace(/Tienes \d+ minutos?[^.]*\./i,'');
+    t=t.replace(/Cuando termine el tiempo[^.]*\./i,'Cuando quieras, pasa a la <b>realización final</b>.');
+    if(GE){ t=t.replace(/patrones △\/U, /,'').replace(/ Si te atascas con los compases dispares[^.]*\.[^.]*\./,'');
+      if(ph && ph.kind==='entonacion') t='Esta fase es <b>opcional</b>. '+t; }
+    return t;
   }
   function adaptaEstudio(J){
     GE=(J.grado==='ge'); if(GE) document.body.classList.add('libro-ge');
     try{ if(typeof RP_LIM!=='undefined'){ RP_LIM.perc=RP_LIM.ritmo=RP_LIM.ent=1e9; } }catch(e){}
-    if(typeof window.rpTextoFase==='function'){ window.rpTextoFase=textoFase; }
+    if(typeof window.rpTextoFase==='function'){ var _rtf=window.rpTextoFase; window.rpTextoFase=function(ph){ return sinTiempo(_rtf.apply(this,arguments), ph); }; }
+    if(GE && typeof window.rpPatronBtn==='function'){ window.rpPatronBtn=function(){ var b=document.getElementById('rpPatron'); if(b) b.remove(); }; }   /* GE: sin «Revelar patrón» */
     if(typeof window.renderPhaseSteps==='function'){ var _rps=window.renderPhaseSteps;
       window.renderPhaseSteps=function(){ _rps.apply(this,arguments); if(!GE) return;
         document.querySelectorAll('#phaseSteps .phase-step').forEach(function(b,i){ if(i>=2){ b.title=(b.title||'')+' · opcional'; if(b.classList.contains('cur')) b.textContent+=' · opcional'; } }); }; }
