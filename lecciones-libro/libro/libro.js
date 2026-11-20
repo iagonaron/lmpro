@@ -768,6 +768,14 @@
       try{ document.querySelectorAll('p,div').forEach(function(e){ if(e.children.length===0 && /generado proceduralmente/i.test(e.textContent)) e.style.display='none'; }); }catch(e){}
       /* (20-nov 13:00, Iago) pantalla de entrada: «Iniciar estudio» y las columnas de anotar ya a los lados (lo escrito pasa al estudio) */
       try{ var sb=document.getElementById('studyBtn'); if(sb){ var svg=sb.querySelector('svg'); sb.innerHTML=''; if(svg) sb.appendChild(svg); sb.appendChild(document.createTextNode(' Iniciar estudio')); } }catch(e){}
+      /* (20-nov 13:59, Iago) «Iniciar estudio» arriba, centrado y en verde, que se vea claro */
+      try{ if(!document.getElementById('lb-ini-css')){ var cs=document.createElement('style'); cs.id='lb-ini-css'; cs.textContent=
+        'body.libro-modo .topbar{position:relative;min-height:50px}'+
+        'body.libro-modo #barActions{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);margin:0;z-index:5}'+
+        'body.libro-modo #studyBtn{background:rgba(22,163,74,.95)!important;border:1px solid #4ade80!important;color:#fff!important;font-weight:800!important;font-size:15px!important;padding:10px 24px!important;border-radius:10px!important;box-shadow:0 4px 16px rgba(22,163,74,.35)!important;gap:9px}'+
+        'body.libro-modo #studyBtn:hover{background:rgba(34,197,94,1)!important}'+
+        'body.libro-modo #studyBtn svg{width:18px;height:18px;stroke:#fff}';
+        document.head.appendChild(cs); } }catch(e){}
       /* la lección, ya desde la entrada, al tamaño de la pantalla como en la fase 1 (mismo ajuste que el estudio) */
       var encajaEntrada=function(){ try{ if(typeof studyMode==='undefined' || studyMode || typeof rpEncaja!=='function') return; studyMode=true; try{ rpEncaja(); }finally{ studyMode=false; } document.body.classList.add('libro-entrada'); }catch(e){} };
       var anotFuera=function(){ try{ if(typeof studyMode!=='undefined' && studyMode) return; if(typeof rpAnotarMontar_==='function') rpAnotarMontar_(); encajaEntrada(); }catch(e){} };
