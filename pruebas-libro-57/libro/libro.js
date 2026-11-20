@@ -806,7 +806,9 @@
           }catch(e){ console.warn('[libro] apuntes',e); } };
         var profBoton=function(){ var b=document.getElementById('lbProf'); if(!b){ b=document.createElement('button'); b.id='lbProf'; b.type='button';
             b.style.cssText='position:fixed;left:66px;bottom:14px;z-index:60;display:flex;align-items:center;gap:9px;padding:8px 12px;border-radius:10px;background:rgba(10,16,28,.78);border:1px solid rgba(255,255,255,.25);color:#fff;font:700 13px/1 "Helvetica Neue",Arial,sans-serif;cursor:pointer;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)';
-            b.onclick=function(){ var on=!profOn(); try{ localStorage.setItem(CLAVE_PROF,on?'1':'0'); }catch(e){} profPon(on); pinta(); try{ if(typeof rpAnotarMontar_==='function') rpAnotarMontar_(); if(typeof studyMode!=='undefined' && !studyMode) encajaEntradaGlobal(); else if(typeof rpEncaja==='function') rpEncaja(); }catch(e){} };
+            b.onclick=function(){ var on=!profOn(); try{ localStorage.setItem(CLAVE_PROF,on?'1':'0'); }catch(e){} profPon(on); pinta(); try{ if(typeof rpAnotarMontar_==='function') rpAnotarMontar_(); if(typeof studyMode!=='undefined' && !studyMode) encajaEntradaGlobal(); else if(typeof rpEncaja==='function') rpEncaja(); }catch(e){}
+              /* (20-nov 21:00, Iago) quitarlos tiene que BORRAR TODO lo dibujado, trazos incluidos: la capa ya pintada no se rehacía hasta cambiar de tamaño */
+              setTimeout(function(){ try{ window.dispatchEvent(new Event('resize')); }catch(e){} try{ octPinta(); }catch(e){} },40); };
             document.body.appendChild(b); }
           var pinta=function(){ var on=profOn(); b.innerHTML='<span style="display:inline-block;width:34px;height:20px;border-radius:10px;position:relative;background:'+(on?'#16a34a':'#475569')+';transition:background .2s"><i style="position:absolute;top:2px;left:'+(on?'16px':'2px')+';width:16px;height:16px;border-radius:8px;background:#fff;transition:left .2s"></i></span>Con apuntes de Iago'; };
           pinta(); };
