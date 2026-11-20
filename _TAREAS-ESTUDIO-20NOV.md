@@ -59,5 +59,5 @@ Módulos:
 Al terminar cada bloque: probar con Playwright (capturas revisadas) y en vivo con el navegador. Apuntar HECHO aquí y en _COORDINACION-IA.md, y contárselo a Iago con ✅/⚠ y el resumen ⸻.
 
 - **Pads verdes de la tablet (Iago 17:24):** a los lados de la pantalla, en el sitio de las columnas de anotar (que se esconden mientras tocas) — **HECHO 18:10** (libro.js v26, estudio-comun v4).
-- **Blancas y redondas en modo X (Iago 17:38 y 17:40):** la X dentro de su cabeza sin rellenar (blanca con plica, redonda sin ella), también en las lecciones digitalizadas (la 47) — **HECHO 18:55** (libro.js v27; motor del visor; ritmopro 305aff0). ⚠ Ritmo at home (GE): cambiado en el clon local, sin subir (push bloqueado).
+- **Blancas y redondas en modo X (Iago 17:38 y 17:40):** la X dentro de su cabeza sin rellenar (blanca con plica, redonda sin ella), también en las lecciones digitalizadas (la 47) — **HECHO 18:55** (libro.js v27; motor del visor; ritmopro 305aff0). Ritmo at home (GE): desde estudio-comun v7 (al dibujar cada nota).
 - **Percusión con las columnas de anotar a la vista (Iago 17:41):** los pads van por dentro de las columnas — **HECHO 19:05** (libro.js v28, estudio-comun v6, ritmopro c7a90fb).
