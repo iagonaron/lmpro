@@ -1,0 +1,217 @@
+{
+ "v": 1,
+ "libro": "Ritmo entonado 2.º GP",
+ "curso": "2Gp",
+ "grado": "gp",
+ "n": 62,
+ "titulo": "62",
+ "titulo_estilo": {
+  "x": 82,
+  "y": 121,
+  "px": 43
+ },
+ "numeros_x": 64,
+ "captura": "https://woiptkyrxkbpnvioypit.supabase.co/storage/v1/object/public/diario/libros_lecciones/2Gp/ritmo_entonado/full/062.png",
+ "tonalidad": "Fa sostenido menor",
+ "armadura": "A",
+ "modo": "menor",
+ "clave": "bass",
+ "notacion": "Igual que libro/2gp/057.json. Silencio = figura:r. «-» tras la altura = tenuto.",
+ "pagina": {
+  "ancho": 1680,
+  "alto": 961,
+  "interlinea": 16.5
+ },
+ "sistemas": [
+  {
+   "y": 73,
+   "x0": 171,
+   "barras": [
+    457,
+    990,
+    1330,
+    1668
+   ],
+   "compases": [
+    0,
+    1,
+    2,
+    3
+   ]
+  },
+  {
+   "y": 312,
+   "x0": 54,
+   "barras": [
+    537,
+    867,
+    1275,
+    1665
+   ],
+   "compases": [
+    4,
+    5,
+    6,
+    7
+   ]
+  },
+  {
+   "y": 547,
+   "x0": 54,
+   "barras": [
+    680,
+    1178,
+    1667
+   ],
+   "compases": [
+    8,
+    9,
+    10
+   ],
+   "clave": "treble"
+  },
+  {
+   "y": 789,
+   "x0": 57,
+   "barras": [
+    575,
+    962,
+    1302,
+    1668
+   ],
+   "compases": [
+    11,
+    12,
+    13,
+    14
+   ],
+   "final": "fin",
+   "clave": "treble"
+  }
+ ],
+ "compases": [
+  {
+   "c": 0,
+   "compas": "3/4",
+   "anacrusa": true,
+   "m": "v 8:e3"
+  },
+  {
+   "c": 1,
+   "m": "v 8:a3 16:a3 16:b3 | v 8:c#4 16:e4 16:d4 | v 8:c#4 8:b3 8:a3",
+   "barra_ini": "repeticion"
+  },
+  {
+   "c": 2,
+   "m": "v 4:g#3 | v 8:e3 | v 4:g#3 | v 4:e3 | v 4:d3"
+  },
+  {
+   "c": 3,
+   "m": "v 8:c#3 8:a3! | v 4:r | v 4:a3 | v 8:g#3"
+  },
+  {
+   "c": 4,
+   "m": "v 4:f#3 | ^ 4:c#3 | v 4:f#3 | v 8:a3 16:g#3 16:f#3"
+  },
+  {
+   "c": 5,
+   "m": "v 4:g#3 | v 4:e#3 | ^ 4:c#3 | v 8:b3 16:a3 16:g#3"
+  },
+  {
+   "c": 6,
+   "m": "v 16:a3 16:g#3 16:a3 16:b3 | v 8:c#4 | v 8:r | v 8:e3 8:f#3 8:g#3",
+   "barra_fin": "repeticion"
+  },
+  {
+   "c": 7,
+   "m": "v 8:a3 16:g#3 16:f#3 | v 4:r | v 16:e4 16:d4 16:c#4 16:b3"
+  },
+  {
+   "c": 8,
+   "m": "^ 8:c#4 8:a3 | ^ 4:c#4 | ^ 4:a3 | ^ 4:c#4"
+  },
+  {
+   "c": 9,
+   "m": "^ 16:d4 16:r 16:a3 | ^ 16:r | ^ 4:d4 | ^ 4:a3 | ^ 4:b3"
+  },
+  {
+   "c": 10,
+   "m": "^ 16:c#4 16:f#4 8:e4 | ^ 16:r | ^ 16:f#4 16:e4 16:d4 | ^ 8:r | ^ 16:d4 16:c#4 16:b3"
+  },
+  {
+   "c": 11,
+   "m": "^ 4:a3 | ^ 4:f#3 | ^ 4:a3 | ^ 8:c#4 | ^ 8:r"
+  },
+  {
+   "c": 12,
+   "m": "^ 4:a3 | ^ 4:e3 | ^ 4:a3 | ^ 8:c#4 16:r 16:f#4"
+  },
+  {
+   "c": 13,
+   "m": "^ 4:e4 | ^ 4:r | ^ 16:e4 16:f#4 16:e4 16:d4 16:c#4 16:b3"
+  },
+  {
+   "c": 14,
+   "m": "^ 8:c#4 | ^ 8:r | ^ 4:a3 | ^ 4:a4- | ^ 4:a3"
+  }
+ ],
+ "ligaduras": [
+  "0.1-1.1 arriba",
+  "1.2-1.4 arriba",
+  "1.5-2.2 arriba",
+  "2.3-3.1 arriba",
+  "3.4-4.3 arriba",
+  "4.4-5.3 arriba",
+  "6.7-6.9 arriba",
+  "7.5-7.8 arriba",
+  "8.1-8.2 abajo",
+  "8.3-9.1 abajo",
+  "9.5-10.3 abajo",
+  "10.5-10.7 abajo",
+  "10.9-11.4 abajo",
+  "12.1-12.4 abajo",
+  "12.6-13.1 abajo",
+  "13.3-14.1 abajo"
+ ],
+ "pendiente": [],
+ "tresillos": [
+  "1.7-1.9",
+  {
+   "notas": "2.1-2.2",
+   "r": "3:2"
+  },
+  "2.3-2.5",
+  {
+   "notas": "3.4-3.5",
+   "r": "3:2"
+  },
+  "4.1-4.3",
+  "5.1-5.3",
+  "6.7-6.9",
+  "8.3-8.5",
+  "9.5-9.7",
+  "10.9-10.11",
+  "11.1-11.3",
+  "12.1-12.3",
+  {
+   "notas": "13.3-13.8",
+   "r": "6:4"
+  },
+  "14.3-14.5"
+ ],
+ "casillas": [
+  {
+   "compases": [
+    6
+   ],
+   "texto": "1."
+  },
+  {
+   "compases": [
+    7
+   ],
+   "texto": "2.",
+   "cerrada": true
+  }
+ ]
+}

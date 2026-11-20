@@ -66,7 +66,7 @@
     var compasAct=null; var porCompas={};
     J._tres=(J.tresillos||[]).map(function(t){ var s0=(typeof t==='string')?t:t.notas; var r=(typeof t==='string')?'3:2':(t.r||'3:2');
       var m=/^(\d+)\.(\d+)-(\d+)\.(\d+)$/.exec(String(s0).trim()); var rr=/^(\d+):(\d+)$/.exec(r); if(!m||!rr) return null;
-      return {c:+m[1], n1:+m[2]-1, n2:+m[4]-1, num:+rr[1], den:+rr[2], cifra:(typeof t==='string'||t.cifra!==false)?(rr[1]+(r==='3:2'?'':':'+rr[2])):null}; }).filter(Boolean);
+      return {c:+m[1], n1:+m[2]-1, n2:+m[4]-1, num:+rr[1], den:+rr[2], cifra:(typeof t==='string'||t.cifra!==false), abajo:(typeof t!=='string' && !!t.abajo), arriba:(typeof t!=='string' && !!t.arriba), ratio:(typeof t!=='string' && !!t.ratio)}; }).filter(Boolean);
     J._uni=(J.uniones||[]).map(function(t){ var m=/^(\d+)\.(\d+)-(\d+)\.(\d+)(?:\s+(arriba|abajo))?$/.exec(String(t).trim()); return m?{c1:+m[1],n1:+m[2]-1,c2:+m[3],n2:+m[4]-1,arriba:m[5]==='arriba',abajo:m[5]==='abajo'}:null; }).filter(Boolean);
     var medidas=J.compases.map(function(c){
       if(c.compas) compasAct=compasDe(c.compas);
@@ -223,11 +223,11 @@
             [['-','a-'],['!','a.'],['>','a>']].forEach(function(z){ if(n._art.indexOf(z[0])>=0){ try{ var ar=new VF.Articulation(z[1]); ar.setPosition(pos); sn.addModifier(ar,0); }catch(e){} } });
             if(n._art.indexOf('~')>=0){ try{ var fe=new VF.Articulation('a@a'); fe.setPosition(VF.ModifierPosition.ABOVE); sn.addModifier(fe,0); }catch(e){} } }
           if(!x2){ var mm=String(n.key).match(/^([a-g])(#|b)?\/(\d)/); if(mm){ var kk=mm[1]+mm[3], want=mm[2]||'n', inKey=(KEY_ACCIDENTALS[ph.keysig]||{})[mm[1]]||'n';
-            var cur=(kk in acc)?acc[kk]:inKey; acc[kk]=want; if(want!==cur) sn.addModifier(new VF.Accidental(want),0); } }
+            var cur=(kk in acc)?acc[kk]:inKey; acc[kk]=want; var prec=(J.precauciones||[]).some(function(t){ return String(t).split(/\s+/)[0]===lb.c+'.'+(ni+1); }); if(want!==cur || prec) sn.addModifier(new VF.Accidental(want),0); } }
           vfDe[lb.c+'.'+ni]=sn; return sn; });
         var beams=(m.beams||[]).map(function(g){ return new VF.Beam(g.map(function(k){ return vf[k]; }),false); });
         var tups=(m.tuplets||[]).map(function(t,ti){ var tl=(J._tres||[]).filter(function(x){ return x.c===lb.c; })[ti]||{};
-          try{ return new VF.Tuplet(t.idx.map(function(k){ return vf[k]; }),{num_notes:t.group.ratioNum,notes_occupied:t.group.ratioDen,ratioed:false}); }catch(e){ return null; } }).filter(Boolean);
+          try{ var op={num_notes:t.group.ratioNum,notes_occupied:t.group.ratioDen,ratioed:!!tl.ratio}; if(tl.abajo || (!tl.arriba && (lb.stems[t.idx[0]]||1)===-1)) op.location=-1; if(tl.cifra===false){ op.bracketed=false; } var tu=new VF.Tuplet(t.idx.map(function(k){ return vf[k]; }),op); if(tl.cifra===false){ tu.draw=function(){}; } return tu; }catch(e){ return null; } }).filter(Boolean);
         var voice=voiceOf(m); voice.addTickables(vf);
         /* como en el libro: tras la última figura queda el aire de lo que dura (una corchea con puntillo deja más hueco) */
         var _d=measureNoteBeats(m), _cap=meterCapQ(m.time), _ult=_d[_d.length-1]||0;
@@ -273,7 +273,7 @@
       if(a&&b){ try{ var td=u.abajo?1:(u.arriba?-1:(a.getStemDirection()===1?1:-1)); new VF.StaveTie({first_note:a,last_note:b,first_indices:[0],last_indices:[0]}).setDirection(td).setContext(ctx).draw(); }catch(e){} } });
     /* matices (fz, sfz, p…) bajo la nota */
     (J.matices||[]).forEach(function(t){ var m=/^(\d+)\.(\d+)\s+(\S+)/.exec(String(t).trim()); if(!m) return; var nn=vfDe[m[1]+'.'+(m[2]-1)]; if(!nn) return;
-      try{ var st=nn.getStave(), x=nn.getNoteHeadBeginX(), y=st.getYForLine(4)+U(52); ctx.save(); ctx.setFont('"Times New Roman", Times, serif', U(21).toFixed(2)+'px','bold','italic'); ctx.fillText(m[3],x-U(4),y); ctx.restore(); }catch(e){} });
+      try{ var st=nn.getStave(), x=nn.getNoteHeadBeginX(), y=Math.min(st.getYForLine(4)+U(38), Math.max.apply(null,nn.getYs())+U(30)); y=Math.max(y, st.getYForLine(4)+U(30)); if(P && P.alto) y=Math.min(y,U(P.alto)-U(6)); ctx.save(); ctx.setFont('"Times New Roman", Times, serif', U(21).toFixed(2)+'px','bold','italic'); ctx.fillText(m[3],x-U(4),y); ctx.restore(); }catch(e){} });
     /* ligaduras de expresión */
     (L._lig||[]).forEach(function(g){ var a=vfDe[g.c1+'.'+g.n1], b=vfDe[g.c2+'.'+g.n2]; if(!a||!b) return;
       var sa=a.getStave(), sb=b.getStave();
@@ -353,7 +353,7 @@
       if(li.x0!=null && li.x1!=null && tot>0){ T=T*U(li.x1-li.x0)/tot; piezas=piezasDe(T); tot=U(li.x1-li.x0); }
       var x=(li.x0!=null)?U(li.x0):(li.alinear==='derecha'?U(li.x||0)-tot:U(li.x||0)), y=U(li.y||0), k=T/17;   /* k: px del libro → unidades a este tamaño */
       piezas.forEach(function(p){
-        if(p.t!=null){ ctx.setFont(F,T.toFixed(2)+'px','normal',p.it?'italic':'normal'); ctx.fillText(p.t,x,y); }
+        if(p.t!=null){ ctx.setFont(F,T.toFixed(2)+'px',li.negrita?'bold':'normal',p.it?'italic':'normal'); ctx.fillText(String(p.t).replace(/^ +| +$/g,function(m){ return m.replace(/ /g,'\u00a0'); }),x,y); }
         else if(p.frac){ var nd=p.frac.split('/'); ctx.setFont(F,(T*0.72).toFixed(2)+'px','normal');
           if(p.apilada){ ctx.fillText(nd[0],x+3*k,y-9*k); ctx.setLineWidth(1*k); ctx.beginPath(); ctx.moveTo(x+1*k,y-6*k); ctx.lineTo(x+11*k,y-6*k); ctx.stroke(); ctx.fillText(nd[1],x+3*k,y+5*k); }
           else { ctx.fillText(nd[0],x+1*k,y-6*k); ctx.setLineWidth(1*k); ctx.beginPath(); ctx.moveTo(x+5*k,y+1*k); ctx.lineTo(x+11*k,y-12*k); ctx.stroke(); ctx.fillText(nd[1],x+10*k,y+1*k); } }
@@ -364,6 +364,16 @@
           ctx.fillRect(hx[0]+2*k,hy-10.5*k,hx[2]-hx[0]+1*k,2*k); }
         x+=p.w; });
     });
+    (nb.rayas||[]).forEach(function(r){ ctx.setLineWidth(U(1.3)); ctx.beginPath(); ctx.moveTo(U(r[0]),U(r[2])); ctx.lineTo(U(r[1]),U(r[2])); ctx.stroke(); });
+    /* figuras rítmicas sueltas (sin pentagrama): {figs:"8 16r 16 8", xs:[cabezas], y:línea de las cabezas, yb:altura de la barra} */
+    (nb.ritmos||[]).forEach(function(r){ var f=String(r.figs).trim().split(/\s+/), y=U(r.y), yb=U(r.yb!=null?r.yb:r.y-41), sx=[], dur=[];
+      f.forEach(function(t,i){ var x=U(r.xs[i]), sil=/r$/.test(t), d=parseInt(t,10); dur.push(sil?0:d);
+        if(sil){ try{ VF.Glyph.renderGlyph(ctx,x-U(6),y-U(12),U(34),d===16?'rest16th':'rest8th',{category:'restNote'}); }catch(e){} sx.push(null); return; }
+        ctx.beginPath(); for(var a=0;a<=24;a++){ var th=a/24*Math.PI*2, ex=U(6.4)*Math.cos(th), ey=U(4.6)*Math.sin(th), cr=Math.cos(-0.35), sr=Math.sin(-0.35), px=x+ex*cr-ey*sr, py=y+ex*sr+ey*cr; if(a===0) ctx.moveTo(px,py); else ctx.lineTo(px,py); } ctx.closePath(); ctx.fill();
+        var stx=x+U(5.6); ctx.fillRect(stx-U(0.7),yb,U(1.4),y-yb-U(1)); sx.push(stx); });
+      var vis=sx.filter(function(v){ return v!=null; }); if(vis.length>1) ctx.fillRect(vis[0]-U(0.7),yb,vis[vis.length-1]-vis[0]+U(1.4),U(4.2));
+      for(var i=0;i<f.length;i++){ if(dur[i]!==16) continue; var j=i; while(j+1<f.length && dur[j+1]===16) j++;
+        var y2=yb+U(7.5); if(j>i) ctx.fillRect(sx[i]-U(0.7),y2,sx[j]-sx[i]+U(1.4),U(4.2)); else ctx.fillRect(sx[i]-U(9),y2,U(9.7),U(4.2)); i=j; } });
     if(nb.flecha){ var f=nb.flecha.map(U); ctx.setLineWidth(U(1.2)); ctx.beginPath(); ctx.moveTo(f[0],f[1]); ctx.lineTo(f[2],f[3]); ctx.stroke();
       var ang=Math.atan2(f[3]-f[1],f[2]-f[0]), L2=U(13);
       ctx.beginPath(); ctx.moveTo(f[2]-L2*Math.cos(ang-0.38),f[3]-L2*Math.sin(ang-0.38)); ctx.lineTo(f[2],f[3]); ctx.lineTo(f[2]-L2*Math.cos(ang+0.38),f[3]-L2*Math.sin(ang+0.38)); ctx.stroke(); }
@@ -416,6 +426,12 @@
    +'.cv .cv-pad{width:44px;height:30px;border-radius:8px;background:#16a34a;box-shadow:0 3px 0 #14532d}'
    +'.cv .cv-mic{display:inline-flex;align-items:center;gap:8px;height:30px;padding:0 12px;border-radius:8px;border:1px solid rgba(96,165,250,.6);color:#93c5fd;font:600 12.5px/1 Inter,system-ui,sans-serif}.cv .cv-mic u{display:inline-block;width:46px;height:5px;border-radius:3px;background:linear-gradient(90deg,#3b82f6 70%,#334155 70%)}'
    +'.cv .cv-f .rp-va-bar{margin:0}.cv .cv-ok{display:inline-flex;align-items:center;gap:6px;color:#93c5fd;font:600 13px/1 Inter,system-ui,sans-serif}'
+   +'.cv .cv-f.cv-dest{border:1.5px solid #f59e0b;background:rgba(245,158,11,.12)}.cv .cv-dest .cv-tx{font-size:14.5px;color:#fde68a}.cv .cv-dest .cv-tx b{color:#fff}'
+   +'.cv .cv-mano{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:10px;background:rgba(245,158,11,.18);color:#fbbf24}'
+   +'.rp-cartel .phase-banner.cv{border-color:var(--cvc)!important;box-shadow:inset 4px 0 0 var(--cvc)!important;background:rgba(10,16,28,.96)!important}'
+   +'.rp-cartel .phase-banner.cv .pb-t{color:#fff!important}.rp-cartel .phase-banner.cv .pb-k{color:var(--cvc)!important}'
+   +'.rp-cartel .phase-banner.cv .pb-go{background:var(--cvc)!important;color:#fff!important;box-shadow:none!important;border:0!important}'
+   +'.rp-cartel .phase-banner.cv-ritmo{--cvc:#16a34a}.rp-cartel .phase-banner.cv-ent{--cvc:#2563eb}'
    +'@media (max-width:620px){.cv .cv-f{grid-template-columns:1fr;gap:8px}}';
   function cvPentagrama(cols, opts){ /* cols: colores de cada nota (negro por defecto) · opts.altos: alturas */
     opts=opts||{}; var n=cols.length, w=28+n*26, al=opts.altos||[3,1,2,0,2,1].slice(0,n), s='<svg width="'+w+'" height="34" viewBox="0 0 '+w+' 34">';
@@ -441,7 +457,9 @@
       cvFila(cvAnotar(), 'Con las <b>columnas de los lados</b> anotas en la partitura: escribir, subrayar, '+(GE?'':'patrones △/U, ')+'alertas e <b>intervalos</b>. Lo que escribas se queda en las <b>fases siguientes</b> y en <b>este dispositivo</b> para otro día.'),
       cvFila(cvVelocidad(), CV_VEL)]};
     if(tipo==='lectura'){ var f=[
-      cvFila(cvPentagrama(['#111','#111','#111','#111'])+'<span class="cv-ok">do · mi · re…</span>', 'Ponle <b>nombre a las notas</b> que percutías, <b>solfeando sin cantar</b>, marcando el <b>pulso con la mano</b> o como lo trabajamos en clase.'),
+      '<div class="cv-f cv-dest"><div class="cv-v"><span class="cv-mano"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 11V6a2 2 0 0 0-4 0v5"/><path d="M14 10V4a2 2 0 0 0-4 0v6"/><path d="M10 10.5V6a2 2 0 0 0-4 0v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.9-6-2.4l-3.6-3.6a2 2 0 0 1 2.8-2.8L7 15"/></svg></span></div><div class="cv-tx">'
+        +(GE?'Recuerda usar el <b>pulso con la mano</b> cada vez que practiques.':'Recuerda utilizar <b>la mano</b>, ya sea marcando <b>subdivisión</b> o <b>pulso</b>, según cómo trabajemos en clase cada dificultad.')+'</div></div>',
+      cvFila(cvPentagrama(['#111','#111','#111','#111'])+'<span class="cv-ok">do · mi · re…</span>', 'Ponle <b>nombre a las notas</b> que percutías: <b>solfeando, sin cantar</b>.'),
       cvFila('<span class="cv-b">♩ pulso</span>', 'Aquí no suena la subdivisión: <b>solo el pulso</b>.')];
       var disp=false; try{ disp=!GE && rpTieneDispares(); }catch(e){}
       if(disp) f.push(cvFila('<span class="cv-b">△ U</span><span class="cv-b">Revelar patrón</span>', 'Si te atascas con los compases dispares, pulsa <b>Revelar patrón</b>: verás cada pulso de 3 corcheas (△) y de 2 (U).'));
@@ -468,7 +486,7 @@
     if(/Realizaci/i.test(tt)) tipo='final';
     else { try{ var ph=phaseList[phaseIdx]; if(ph && !(currentLesson&&currentLesson.fusaN)) tipo=ph.kind; }catch(e){} }
     var c=tipo && cvContenido(tipo); if(!c) return;
-    card.classList.add('cv');
+    card.classList.add('cv', (tipo==='ritmo'||tipo==='lectura')?'cv-ritmo':'cv-ent');
     var ok=card.querySelector('.pb-ok'), kk=card.querySelector('.pb-k'), t=card.querySelector('.pb-t');
     Array.prototype.slice.call(card.children).forEach(function(el){ if(el!==ok && el!==kk && el!==t) el.remove(); });
     var lead=document.createElement('p'); lead.className='cv-lead'; lead.innerHTML=c.lead;

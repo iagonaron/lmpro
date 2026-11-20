@@ -1,0 +1,212 @@
+{
+ "v": 1,
+ "libro": "Ritmo entonado 2.º GP",
+ "curso": "2Gp",
+ "grado": "gp",
+ "n": 75,
+ "titulo": "75",
+ "titulo_estilo": {
+  "fuente": "sans",
+  "x": 82,
+  "y": 122,
+  "px": 42
+ },
+ "numeros_x": 64,
+ "captura": "https://woiptkyrxkbpnvioypit.supabase.co/storage/v1/object/public/diario/libros_lecciones/2Gp/ritmo_entonado/full/075.png",
+ "tonalidad": "Fa mayor",
+ "armadura": "F",
+ "modo": "mayor",
+ "clave": "treble",
+ "notacion": "Igual que libro/2gp/057.json. Silencio = figura:r. «-» tras la altura = tenuto.",
+ "pagina": {
+  "ancho": 1680,
+  "alto": 951,
+  "interlinea": 16.5
+ },
+ "sistemas": [
+  {
+   "y": 74,
+   "x0": 172,
+   "barras": [
+    710,
+    1008,
+    1346,
+    1670
+   ],
+   "compases": [
+    1,
+    2,
+    3,
+    4
+   ]
+  },
+  {
+   "y": 327,
+   "x0": 56,
+   "barras": [
+    615,
+    960,
+    1316,
+    1670
+   ],
+   "compases": [
+    5,
+    6,
+    7,
+    8
+   ]
+  },
+  {
+   "y": 581,
+   "x0": 55,
+   "barras": [
+    494,
+    877,
+    1266,
+    1665
+   ],
+   "compases": [
+    9,
+    10,
+    11,
+    12
+   ]
+  },
+  {
+   "y": 846,
+   "x0": 55,
+   "barras": [
+    608,
+    965,
+    1358,
+    1670
+   ],
+   "compases": [
+    13,
+    14,
+    15,
+    16
+   ],
+   "final": "fin"
+  }
+ ],
+ "compases": [
+  {
+   "c": 1,
+   "compas": "2/4",
+   "m": "^ 16:f4 16:c4 16:f4 | ^ 16:r | ^ 16:a4 16:f4 16:a4 | ^ 16:r"
+  },
+  {
+   "c": 2,
+   "m": "v 16:c5 8:c5 8:bb4 8:a4 16:c5"
+  },
+  {
+   "c": 3,
+   "m": "^ 16:c5 16:bb4 16:a4 16:g4 | ^ 4:f4 | ^ 16:e4 16:d4"
+  },
+  {
+   "c": 4,
+   "m": "^ 4:c4 | ^ 16:d4 16:e4 16:f4 16:g4 | ^ 4:a4"
+  },
+  {
+   "c": 5,
+   "m": "^ 16:f4 16:r 16:c4 16:f4 | ^ 16:a4 16:r 16:f4 16:a4"
+  },
+  {
+   "c": 6,
+   "m": "v 16:r | v 8:c5 16:bb4 | v 8:a4- 8:bb4- 8:c5-"
+  },
+  {
+   "c": 7,
+   "m": "v 8:d5 8:bb4 | ^ 4:g4 | v 16:bb4 16:c5 8:d5"
+  },
+  {
+   "c": 8,
+   "m": "v 8:c5! | v 8:r | ^ 4:f4- | v 16:a4 16:bb4 8:c5"
+  },
+  {
+   "c": 9,
+   "m": "^ 8:bb4- 8:g4- | ^ 8:r | ^ 32:bb4 32:a4 32:g4 32:f4"
+  },
+  {
+   "c": 10,
+   "m": "^ 16:e4 32:e4 32:f4 16:g4 32:g4 32:a4 | ^ 8:g4 | ^ 8:r"
+  },
+  {
+   "c": 11,
+   "m": "^ 8:f4 8:d4 | ^ 8:f4 8:a4 16:d5 16:c5"
+  },
+  {
+   "c": 12,
+   "m": "v 16:c5 16:bb4 | ^ 4:a4 | ^ 16:a4 16:g4 16:f4 16:g4 16:a4"
+  },
+  {
+   "c": 13,
+   "m": "^ 16:bb4 16:bb4 16:r 16:g4 | ^ 16:e4 16:e4 16:r 16:d4"
+  },
+  {
+   "c": 14,
+   "m": "^ 4:c4 | ^ 4.:e4 | ^ 8:g4"
+  },
+  {
+   "c": 15,
+   "m": "v 8:c5 16:bb4 16:a4 | ^ 4.:g4 | v 16:c5 16:bb4"
+  },
+  {
+   "c": 16,
+   "m": "^ 4:a4 | ^ 8.:r | ^ 16:f4"
+  }
+ ],
+ "ligaduras": [
+  "1.1-1.3 abajo",
+  "1.5-1.7 abajo",
+  "2.1-3.4 arriba",
+  "5.3-5.5 abajo",
+  "5.7-5.8 abajo",
+  "6.2-6.3 arriba",
+  "7.1-7.6 arriba",
+  "8.3-8.6 arriba",
+  "9.4-10.7 abajo",
+  "11.1-11.2 abajo",
+  "11.3-12.3 arriba",
+  "12.4-12.8 abajo",
+  "13.1-13.2 abajo",
+  "13.4-13.6 abajo",
+  "13.8-14.3 abajo",
+  "15.1-16.1 arriba"
+ ],
+ "corchetes": [
+  "4.1-4.3",
+  "4.4-4.6"
+ ],
+ "pendiente": [
+  "Marca «V» bajo la última nota (c16.3), pegada al borde inferior de la captura; no transcrita (¿respiración o resto cortado de un «3»?).",
+  "Barrado que cruza un silencio de semicorchea (la barra sigue por encima): c5 y c13, escrito como un único grupo con el silencio dentro; en c1 las barras se interrumpen y van como grupos separados.",
+  "El corchete del tresillo de c15 queda cortado por el borde inferior de la captura (solo se ve el gancho izquierdo en x≈984)."
+ ],
+ "uniones": [
+  "2.5-3.1",
+  "11.6-12.1"
+ ],
+ "tresillos": [
+  {
+   "notas": "3.5-3.7",
+   "abajo": true
+  },
+  "4.1-4.6",
+  "6.4-6.6",
+  "7.1-7.6",
+  "8.1-8.6",
+  {
+   "notas": "11.3-11.6",
+   "abajo": true
+  },
+  "12.1-12.3",
+  {
+   "notas": "12.4-12.8",
+   "r": "5:4"
+  },
+  "14.1-14.3",
+  "15.1-15.6"
+ ]
+}

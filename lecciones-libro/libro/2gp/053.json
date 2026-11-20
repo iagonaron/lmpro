@@ -1,0 +1,176 @@
+{
+ "v": 1,
+ "libro": "Ritmo entonado 2.º GP",
+ "curso": "2Gp",
+ "grado": "gp",
+ "n": 53,
+ "titulo": "53",
+ "captura": "https://woiptkyrxkbpnvioypit.supabase.co/storage/v1/object/public/diario/libros_lecciones/2Gp/ritmo_entonado/full/053.png",
+ "tonalidad": "Sol mayor",
+ "armadura": "G",
+ "modo": "mayor",
+ "clave": "treble",
+ "titulo_estilo": {
+  "x": 82,
+  "y": 124,
+  "px": 42
+ },
+ "pagina": {
+  "ancho": 1680,
+  "alto": 970,
+  "interlinea": 16.4
+ },
+ "sistemas": [
+  {
+   "y": 74,
+   "x0": 175,
+   "barras": [
+    1672
+   ],
+   "compases": [
+    1
+   ]
+  },
+  {
+   "y": 340,
+   "x0": 58,
+   "barras": [
+    1391,
+    1672
+   ],
+   "compases": [
+    2,
+    3
+   ]
+  },
+  {
+   "y": 602,
+   "x0": 58,
+   "barras": [
+    1672
+   ],
+   "compases": [
+    4
+   ]
+  },
+  {
+   "y": 864,
+   "x0": 59,
+   "barras": [
+    1669
+   ],
+   "compases": [
+    5
+   ],
+   "final": "fin"
+  }
+ ],
+ "compases": [
+  {
+   "c": 1,
+   "compas": "libre",
+   "sin_barra": true,
+   "m": "v 8:b4 8:d5 | v 8:g4 8:b4 8:d5 | ^ 8:r | v 16:g5 16:f#5 | v 8:e5 16:r 16:c5 8:e5 | v 8:g5! | v 8.:g5 16:f#5 | v 8:g5! | v 8.:e5 16:c#5 | v 4.:d5 | ^ 4:a4! | ^ 4.:f#4>"
+  },
+  {
+   "c": 2,
+   "m": "^ 4:r | ^ 8:g4 8:a4 8:g4 | ^ 4:r | ^ 8:g4 8:a4 8:g4 | ^ 4.:r | v 8:e5 8:d5 8:c5 8:b4 8:a4 8:g4 8:a4 | ^ 4:r | ^ 4.:d4 | ^ 4:r~"
+  },
+  {
+   "c": 3,
+   "sin_barra": true,
+   "m": "v 8:b4 8:d5 | v 8:g4 8:b4 8:d5"
+  },
+  {
+   "c": 4,
+   "sin_barra": true,
+   "m": "^ 16:r | v 16:g5 16:a5 16:b5 16:c6 16:b5 | v 16:d6 16:c6 16:b5 16:a5 | v 8:g5 8:g5 8:f#5 | v 8:e5 8:c5 | ^ 8:r | v 8:e5 8:c5 | ^ 8:r | v 4:e5- | v 4:c5- | v 4:e5- | v 4.:g5 | ^ 4:r"
+  },
+  {
+   "c": 5,
+   "m": "v 4:d5 | ^ 8:d4 | v 4:d5 | ^ 8:d4 | v 4:d5! | ^ 2.:f#4 | ^ 8:r | v 8:d5 8:c5 | v 8:e5 8:a4 8:g4 | ^ 8:f#4 8:d4 | ^ 8:a4 8:f#4 | v 8:c5 8:a4 | v 4.:d5 | v 8:d5 8:c5 8:a4 | v 4:b4"
+  }
+ ],
+ "ligaduras": [
+  "1.1-1.2 arriba",
+  "1.3-1.5 arriba",
+  "1.7-1.9 arriba",
+  "1.11-1.13 arriba",
+  "1.14-1.16 arriba",
+  "1.17-1.19 arriba",
+  "2.2-2.4 abajo",
+  "2.6-2.8 abajo",
+  "2.10-2.16 arriba",
+  "3.1-3.2 arriba",
+  "3.3-3.5 arriba",
+  "4.2-4.6 arriba",
+  "4.7-4.13 arriba",
+  "4.14-4.15 arriba",
+  "4.17-4.18 arriba",
+  "4.20-4.22 arriba",
+  "5.1-5.2 arriba",
+  "5.3-5.4 arriba",
+  "5.8-5.10 arriba",
+  "5.11-5.13 arriba",
+  "5.14-5.15 abajo",
+  "5.16-5.17 arriba",
+  "5.18-5.19 arriba",
+  "5.20-5.23 arriba"
+ ],
+ "notas_libro": [
+  {
+   "lineas": [
+    {
+     "x0": 728,
+     "x1": 1477,
+     "y": 233,
+     "partes": [
+      "En este tipo de escritura las ",
+      {
+       "it": "líneas divisorias"
+      },
+      " sirven para señalar períodos"
+     ]
+    },
+    {
+     "x0": 887,
+     "x1": 1317,
+     "y": 261,
+     "partes": [
+      "y dar término al efecto de las alteraciones."
+     ]
+    }
+   ],
+   "flecha": [
+    1337,
+    253,
+    1384,
+    328
+   ]
+  }
+ ],
+ "pendiente": [
+  "Campo 'precauciones' (becuadro de precaución en 2.12, c5 tras el do# de 1.18) inventado: no está en la ampliación del formato; confirmar nombre.",
+  "Marca cortada bajo la última nota del sistema 4 (x≈1660), no transcrita.",
+  "Título '53' medido x=82, y=124, px≈42 (negrita sin serifa)."
+ ],
+ "sin_numeros": true,
+ "tresillos": [
+  {
+   "notas": "2.2-2.4",
+   "cifra": false
+  },
+  "2.6-2.8",
+  {
+   "notas": "4.11-4.13",
+   "abajo": true
+  }
+ ],
+ "matices": [
+  "2.18 fz",
+  "5.6 sfz"
+ ],
+ "precauciones": [
+  "2.12 becuadro"
+ ]
+}
