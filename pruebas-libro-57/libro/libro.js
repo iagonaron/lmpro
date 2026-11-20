@@ -30,8 +30,11 @@
       ".libro-orig-btn:hover::after{content:attr(data-tip);position:absolute;right:46px;white-space:nowrap;background:rgba(10,16,30,.9);padding:6px 9px;border-radius:7px}"+
       ".libro-orig{position:fixed;inset:0;z-index:99995;background:rgba(6,9,18,.94);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:18px}"+
       ".libro-orig img{max-width:96vw;max-height:84vh;background:#fff;border-radius:8px}"+
-      "body.libro-modo #phaseControls{position:sticky;bottom:8px;z-index:60;background:rgba(22,15,4,.94);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}"+
-      "body.libro-modo #score.libro-papel svg{height:calc(100vh - 250px)!important;min-height:300px;width:100%!important}"+
+      "body.libro-modo #rpReloj{display:none!important}"+
+      "body.libro-modo footer{display:none!important}"+
+      "body.libro-ge .anot-pt{display:none!important}"+
+      "body.libro-modo .libro-recuerda{display:block}"+
+      "body.libro-modo:not(.rp-estudio) #score.libro-papel svg{height:calc(100vh - 250px)!important;min-height:300px;width:100%!important}"+
       ".libro-recuerda{margin:12px 0 0;padding:10px 12px;border:1px solid rgba(110,231,160,.55);border-radius:10px;background:rgba(22,163,74,.14);font-size:.95em;line-height:1.4;text-align:left}"+
       ".libro-recuerda b{color:#6ee7a0}"+
       ".libro-orig button{margin-top:14px;border:1px solid rgba(255,255,255,.3);background:transparent;color:#e9edf5;border-radius:9px;padding:9px 18px;font:700 13px 'Helvetica Neue',Arial;cursor:pointer}";
@@ -66,8 +69,8 @@
         var tk=g.trim().split(/\s+/); var stem=0;
         if(tk[0]==='^'){ stem=1; tk.shift(); } else if(tk[0]==='v'){ stem=-1; tk.shift(); }
         var idx=[];
-        tk.forEach(function(t){ var p=t.split(':'); var esSil=/^r/.test(p[1]);
-          var n={dur:durDe(p[0])}; if(esSil){ n.rest=true; } else { n.midi=midiDe(p[1]); n.key=keyDe(p[1]); }
+        tk.forEach(function(t){ var p=t.split(':'); var esSil=/^r/.test(p[1]); var ten=/-$/.test(p[1]); if(ten) p[1]=p[1].slice(0,-1);
+          var n={dur:durDe(p[0])}; if(esSil){ n.rest=true; } else { n.midi=midiDe(p[1]); n.key=keyDe(p[1]); if(ten) n._ten=true; }
           idx.push(notes.length); notes.push(n); stems.push(stem); total16+=dur16(p[0]); });
         if(idx.length>1) beams.push(idx);
       });
@@ -88,6 +91,7 @@
            simpleSlow5:false, mixSlow:false, fusaN:false, conjunctM4:false, noMeter:false, roles:null, combine:false,
            valid:true, libro:J};
     L._lig=(J.ligaduras||[]).map(parseLigadura);
+    L._cor=(J.corchetes||[]).map(function(t){ var m=/^(\d+)\.(\d+)-(\d+)\.(\d+)$/.exec(t.trim()); return m?{c1:+m[1],n1:+m[2]-1,c2:+m[3],n2:+m[4]-1}:null; }).filter(Boolean);
     try{ armoniza(L); }catch(e){ console.warn('[libro] armonía',e); }
     return L;
   }
@@ -180,10 +184,11 @@
         var acc={};
         var vf=m.notes.map(function(n,ni){
           var sd=lb.stems[ni];
-          if(n.rest){ return new VF.StaveNote({clef:ph.clef,keys:['b/4'],duration:durBase(n.dur)+'r'}); }
+          if(n.rest){ var rr=new VF.StaveNote({clef:ph.clef,keys:['b/4'],duration:durBase(n.dur)+'r'}); for(var dr=0;dr<durDots(n.dur);dr++) VF.Dot.buildAndAttach([rr]); vfDe[lb.c+'.'+ni]=rr; return rr; }
           var x2 = (typeof RHYTHM_XHEADS!=='undefined' && RHYTHM_XHEADS);
           var sn=new VF.StaveNote({clef:ph.clef,keys:[x2?(n.key+'/x2'):n.key],duration:durBase(n.dur),stem_direction:sd||1,auto_stem:!sd});
           for(var di=0;di<durDots(n.dur);di++) VF.Dot.buildAndAttach([sn]);
+          if(n._ten){ try{ var ar=new VF.Articulation('a-'); ar.setPosition((sd||1)===1?VF.ModifierPosition.BELOW:VF.ModifierPosition.ABOVE); sn.addModifier(ar,0); }catch(e){} }
           if(!x2){ var mm=String(n.key).match(/^([a-g])(#|b)?\/(\d)/); if(mm){ var kk=mm[1]+mm[3], want=mm[2]||'n', inKey=(KEY_ACCIDENTALS[ph.keysig]||{})[mm[1]]||'n';
             var cur=(kk in acc)?acc[kk]:inKey; acc[kk]=want; if(want!==cur) sn.addModifier(new VF.Accidental(want),0); } }
           vfDe[lb.c+'.'+ni]=sn; return sn; });
@@ -210,14 +215,24 @@
       }
       /* número de compás (italic) sobre la clave, salvo el primer sistema; título en el primero */
       ctx.save();
-      if(si===0){ ctx.setFont('LibroCifras, "TeX Gyre Schola", "Century Schoolbook", Georgia, serif', U(45).toFixed(2)+'px', 'bold');
-        ctx.fillText(J.titulo, U(83), U(sis.y)+U(53)); }
+      var TE=J.titulo_estilo||{};
+      if(si===0){ if(TE.fuente==='sans') ctx.setFont('"Helvetica Neue", Helvetica, Arial, sans-serif', U(TE.px||42).toFixed(2)+'px', 'bold');
+        else ctx.setFont('LibroCifras, "TeX Gyre Schola", "Century Schoolbook", Georgia, serif', U(TE.px||45).toFixed(2)+'px', 'bold');
+        ctx.fillText(J.titulo, U(TE.x!=null?TE.x:83), TE.y!=null?U(TE.y):U(sis.y)+U(53)); }
       else { ctx.setFont('LibroCompas, "TeX Gyre Termes", "Times New Roman", Times, serif', U(27).toFixed(2)+'px', '', 'italic');
-        ctx.fillText(String(sis.compases[0]), U(63), U(sis.y)-U(29)); }
+        ctx.fillText(String(sis.compases[0]), U(J.numeros_x!=null?J.numeros_x:63), U(sis.y)-U(29)); }
       ctx.restore();
     });
     /* ligaduras de expresión */
     (L._lig||[]).forEach(function(g){ var a=vfDe[g.c1+'.'+g.n1], b=vfDe[g.c2+'.'+g.n2]; if(a&&b) ligadura(ctx,a,b,g.arriba,S); });
+    /* corchetes discontinuos bajo grupos de notas (como en el libro) */
+    (L._cor||[]).forEach(function(g){ var a=vfDe[g.c1+'.'+g.n1], b=vfDe[g.c2+'.'+g.n2]; if(!a||!b) return;
+      try{ var x0=a.getNoteHeadBeginX()-U(4), x1=b.getNoteHeadEndX()+U(4), yb=0;
+        [a,b].forEach(function(n){ var e=n.getStemExtents?n.getStemExtents():null; var ys=n.getYs(); yb=Math.max(yb, ys[0]+U(14), e?Math.max(e.baseY,e.topY)+U(6):0); });
+        var st=a.getStave(); yb=Math.max(yb, st.getYForLine(4)+U(22));
+        ctx.save(); ctx.setStrokeStyle('#111'); ctx.setLineWidth(U(1.6)); try{ ctx.setLineDash([U(9),U(7)]); }catch(e){}
+        ctx.beginPath(); ctx.moveTo(x0,yb); ctx.lineTo(x1,yb); ctx.stroke(); try{ ctx.setLineDash([]); }catch(e){}
+        ctx.beginPath(); ctx.moveTo(x0,yb-U(7)); ctx.lineTo(x0,yb); ctx.moveTo(x1,yb-U(7)); ctx.lineTo(x1,yb); ctx.stroke(); ctx.restore(); }catch(e){} });
     /* notas del libro (texto + flecha) */
     (J.notas_libro||[]).forEach(function(nb){ notaLibro(ctx,nb,U); });
     /* encaje en la tarjeta: viewBox con las medidas del libro escaladas */
@@ -306,19 +321,49 @@
     document.body.appendChild(b);
   }
 
-  /* (20-nov-2026, Iago) en el cartel de la FASE 1 se remarca que abajo se ajusta la velocidad y, en la entonación, la ayuda */
-  var RECUERDA='<b>Recuerda:</b> abajo puedes ajustar la velocidad, de la tortuga a la liebre. Ponla a la que te resulte cómoda. '+
-               'Y en la entonación podrás elegir cuánta ayuda necesitas. Aquí no hay tiempo: tómate el que haga falta.';
-  function recordatorioFase1(){
-    var mo=new MutationObserver(function(){
-      if(typeof studyMode==='undefined' || !studyMode || phaseIdx!==0) return;
-      document.querySelectorAll('.phase-banner, .rp-cartel').forEach(function(card){
-        if(card.querySelector('.libro-recuerda')) return;
-        var p=document.createElement('p'); p.className='libro-recuerda'; p.innerHTML=RECUERDA;
-        var ok=card.querySelector('.pb-ok, .rp-cartel-ok'); if(ok) card.insertBefore(p,ok); else card.appendChild(p);
-      });
-    });
-    mo.observe(document.body,{childList:true,subtree:true});
+  /* ================= ESTUDIO POR FASES (el de Ritmo entonado PRO, 20-nov-2026) SIN TIEMPO =================
+     Iago: en el visor de lecciones NO hay tiempos ni reloj; se pasa de fase con «Pasar a la siguiente fase».
+     GE: sin patrones △/U, fases 3 y 4 «opcional». Lo anotado se guarda en este dispositivo (por alumno y lección). */
+  var GE=false, CLAVE_ANOT='';
+  var VEL='<span class="libro-recuerda"><b>Recuerda:</b> abajo, en la barra de <b>Velocidad</b> (🐢 ●●●●● 🐇), puedes ir más lento o más rápido: ponla a la que te resulte <b>cómoda</b>. En la entonación podrás elegir cuánta <b>ayuda</b> necesitas. Aquí <b>no hay tiempo</b>: pasa a la siguiente fase cuando quieras.</span>';
+  function textoFase(ph){
+    if(ph.kind==='ritmo'){
+      var tap=(typeof isTouchDevice==='function' && isTouchDevice())
+        ? 'Toca el ritmo con los <b>pads verdes</b> (abajo, a izquierda y derecha; si mantienes el dedo, el sonido se mantiene).'
+        : 'Toca el ritmo con la <b>barra espaciadora</b> (si la mantienes pulsada, el sonido se mantiene).';
+      return tap+' Las figuras se iluminan al sonar. Haz tus <b>anotaciones</b> en la partitura ('+(GE?'':'patrones △/U, ')+'alertas, intervalos…): las tendrás también en las fases siguientes.'+VEL;
+    }
+    if(ph.kind==='lectura') return 'Ahora ponle <b>nombre a las notas</b> que estabas percutiendo. Marca el <b>pulso con la mano</b>, o hazlo como lo hemos trabajado en clase. Tus anotaciones siguen ahí.';
+    if(ph.kind==='entonacion') return (GE?'Esta fase es <b>opcional</b>. ':'')+'Practica la <b>entonación</b>. Pulsa <b>Tónica</b>, <b>Escala</b> y <b>Arpegio</b> siempre que quieras. Con <b>Pistas</b> puedes elegir hasta 3 notas y oirás cómo suenan. Cuando quieras, pasa a la <b>realización final</b>.';
+    return (ph.banner&&ph.banner.d)||'';
+  }
+  function adaptaEstudio(J){
+    GE=(J.grado==='ge'); if(GE) document.body.classList.add('libro-ge');
+    try{ if(typeof RP_LIM!=='undefined'){ RP_LIM.perc=RP_LIM.ritmo=RP_LIM.ent=1e9; } }catch(e){}
+    if(typeof window.rpTextoFase==='function'){ window.rpTextoFase=textoFase; }
+    if(typeof window.renderPhaseSteps==='function'){ var _rps=window.renderPhaseSteps;
+      window.renderPhaseSteps=function(){ _rps.apply(this,arguments); if(!GE) return;
+        document.querySelectorAll('#phaseSteps .phase-step').forEach(function(b,i){ if(i>=2){ b.title=(b.title||'')+' · opcional'; if(b.classList.contains('cur')) b.textContent+=' · opcional'; } }); }; }
+    /* la barra de abajo (velocidad, subdivisión) siempre a la vista: si no cabe, la lección encoge */
+    if(typeof window.rpEncaja==='function'){ var _enc=window.rpEncaja;
+      window.rpEncaja=function(){ _enc.apply(this,arguments);
+        try{ if(!studyMode) return; var sw=document.getElementById('scoreWrap'), pc=document.getElementById('phaseControls'); if(!sw||!pc||pc.style.display==='none') return;
+          var sobra=pc.getBoundingClientRect().bottom+10-window.innerHeight; if(sobra<=2) return;
+          var r=sw.getBoundingClientRect(), f=Math.max(0.45,(r.height-sobra)/r.height);
+          sw.style.maxWidth=Math.floor(r.width*f)+'px'; sw.style.marginLeft='auto'; sw.style.marginRight='auto';
+          if(typeof RP_ANOT_CTL!=='undefined' && RP_ANOT_CTL && RP_ANOT_CTL.refit) requestAnimationFrame(function(){ RP_ANOT_CTL && RP_ANOT_CTL.refit && RP_ANOT_CTL.refit(); });
+        }catch(e){} }; }
+    /* GE: el título de la app */
+    if(GE){ try{ var h=document.getElementById('goRitmoHome'); if(h){ var rt=h.querySelector('.rt'); if(rt) rt.style.display='none'; } }catch(e){} }
+    /* anotaciones guardadas en el dispositivo */
+    try{ var cta=new URLSearchParams(location.search).get('cuenta')||'local';
+      CLAVE_ANOT='lm_libro_anot_'+(J.grado||'gp')+'_'+J.n+'_'+cta;
+      if(typeof RP_ANOT!=='undefined'){ var guard=null; try{ guard=JSON.parse(localStorage.getItem(CLAVE_ANOT)||'null'); }catch(e){}
+        var store=(guard&&guard.pages)?guard:{pages:{},ton:null}; RP_ANOT.set(LEC,store);
+        var ult=JSON.stringify(store);
+        var graba=function(){ try{ var t=JSON.stringify(store); if(t!==ult){ localStorage.setItem(CLAVE_ANOT,t); ult=t; } }catch(e){} };
+        setInterval(graba,2000); window.addEventListener('pagehide',graba); document.addEventListener('visibilitychange',graba); }
+    }catch(e){ console.warn('[libro] anotaciones',e); }
   }
 
   function arranca(){
@@ -337,7 +382,7 @@
       try{ var tg=document.getElementById('lessonTags'); if(tg) tg.innerHTML='<span>Lección '+J.n+'</span><span>'+J.tonalidad+'</span><span>'+J.compases.length+' compases</span>'; }catch(e){}
       botonOriginal(J);
       document.body.classList.add('libro-modo');
-      recordatorioFase1();
+      adaptaEstudio(J);
       try{ document.querySelectorAll('p,div').forEach(function(e){ if(e.children.length===0 && /generado proceduralmente/i.test(e.textContent)) e.style.display='none'; }); }catch(e){}
     }).catch(function(e){ console.error('[libro] no se pudo abrir la lección',e);
       var s=document.getElementById('score'); if(s) s.innerHTML='<div style="padding:30px;text-align:center;color:#7a1407">No se pudo abrir la lección '+NUM+'.</div>'; });
