@@ -612,10 +612,7 @@
         difChip(); resumen(); }; }
     if(typeof window.nextPhase==='function'){ var _n=window.nextPhase; window.nextPhase=function(){ var cur=phaseIdx;
         if(cur===1 && ((DIF==null && esTester()) || CARA==null) && !(typeof PR!=='undefined'&&PR.on)){ abreFin({soloDif:true, luego:function(){ _n(); }}); return; } return _n.apply(this,arguments); }; }
-    /* fin de una vuelta en la fase 2 */
-    if(typeof window.play==='function'){ var _p=window.play; window.play=function(opts){
-        try{ var ph=studyMode && phaseList[phaseIdx]; if(ph && ph.kind==='lectura' && opts && !(typeof PR!=='undefined'&&PR.on)){ var oe=opts.onEnd; opts.onEnd=function(){ if(oe) oe.apply(this,arguments); setTimeout(function(){ if(studyMode && phaseList[phaseIdx] && phaseList[phaseIdx].kind==='lectura') abreFin({}); },350); }; } }catch(e){}
-        return _p.apply(this,arguments); }; }
+    /* (16:14, Iago) en la fase 2 NO sale «¿Qué tal ha ido?» al acabar de reproducir: se pregunta al pasar a la fase 3 (abreFin soloDif) */
     /* claqueta en 9/8, 6/8…: solo los pulsos (sin el golpe de más que corresponde al compás fraccionario) */
     if(typeof window.subClicks==='function'){ var _sc=window.subClicks; window.subClicks=function(sched){ var out=_sc.apply(this,arguments);
         try{ if(subStepQ()!=null || !sched || !sched.measInfo) return out;
@@ -836,16 +833,20 @@
       /* (20-nov 13:59, Iago) «Iniciar estudio» arriba, centrado y en verde, que se vea claro */
       try{ if(!document.getElementById('lb-ini-css')){ var cs=document.createElement('style'); cs.id='lb-ini-css'; cs.textContent=
         'body.libro-modo .topbar{position:relative;min-height:50px}'+
-        'body.libro-modo #barActions{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);margin:0;z-index:5}'+
+        /* (16:06, Iago) arriba la tapaba la escaleta del aula: abajo, centrado */
+        'body.libro-modo #barActions{position:fixed;left:50%;top:auto;bottom:16px;transform:translateX(-50%);margin:0;z-index:50}'+
         'body.libro-modo #studyBtn{background:rgba(22,163,74,.95)!important;border:1px solid #4ade80!important;color:#fff!important;font-weight:800!important;font-size:15px!important;padding:10px 24px!important;border-radius:10px!important;box-shadow:0 4px 16px rgba(22,163,74,.35)!important;gap:9px}'+
         'body.libro-modo #studyBtn:hover{background:rgba(34,197,94,1)!important}'+
         'body.libro-modo #studyBtn svg{width:18px;height:18px;stroke:#fff}';
         document.head.appendChild(cs); } }catch(e){}
       /* la lección, ya desde la entrada, al tamaño de la pantalla como en la fase 1 (mismo ajuste que el estudio) */
-      var encajaEntrada=function(){ try{ if(typeof studyMode==='undefined' || studyMode || typeof rpEncaja!=='function') return; studyMode=true; try{ rpEncaja(); }finally{ studyMode=false; } document.body.classList.add('libro-entrada'); }catch(e){} };
+      var encajaEntrada=function(){ try{ if(typeof studyMode==='undefined' || studyMode || typeof rpEncaja!=='function') return; document.body.classList.add('lb-ent'); studyMode=true; try{ rpEncaja(); }finally{ studyMode=false; } document.body.classList.add('libro-entrada'); }catch(e){} };
       var anotFuera=function(){ try{ if(typeof studyMode!=='undefined' && studyMode) return; if(typeof rpAnotarMontar_==='function') rpAnotarMontar_(); encajaEntrada(); }catch(e){} };
       window.addEventListener('resize',function(){ clearTimeout(encajaEntrada._t); encajaEntrada._t=setTimeout(encajaEntrada,200); });
       window.encajaEntradaGlobal=encajaEntrada;
+      /* (16:06) el botón «Iniciar estudio» va abajo: en la entrada se deja su hueco debajo de la partitura */
+      try{ var cssE=document.createElement('style'); cssE.textContent='body.lb-ent #scoreWrap{padding-bottom:62px!important}'; document.head.appendChild(cssE); }catch(e){}
+      if(typeof window.openStudy==='function'){ var _os=window.openStudy; window.openStudy=function(){ document.body.classList.remove('lb-ent'); return _os.apply(this,arguments); }; }
       (function(){ var hecho=false, ya=function(){ if(hecho) return; hecho=true; anotFuera(); }; Promise.resolve(window.__lbProfPromesa).then(function(){ setTimeout(ya,30); }); setTimeout(ya,1500); })();
       if(typeof window.closeStudy==='function'){ var _cs=window.closeStudy; window.closeStudy=function(){ var r=_cs.apply(this,arguments); setTimeout(anotFuera,60); return r; }; }
     }).catch(function(e){ console.error('[libro] no se pudo abrir la lección',e);
