@@ -852,14 +852,29 @@
       var anotFuera=function(){ try{ if(typeof studyMode!=='undefined' && studyMode) return; if(typeof rpAnotarMontar_==='function') rpAnotarMontar_(); encajaEntrada(); }catch(e){} };
       window.addEventListener('resize',function(){ clearTimeout(encajaEntrada._t); encajaEntrada._t=setTimeout(encajaEntrada,200); });
       window.encajaEntradaGlobal=encajaEntrada;
-      /* (20-nov 17:24, Iago) pads verdes de la tablet a los LADOS, en el sitio de las columnas de anotar (igual que piel/estudio-comun.js) */
+      /* (20-nov 17:24 y 17:41, Iago) pads verdes de la tablet a los lados, por DENTRO de las columnas de anotar (que siguen a la vista) */
       try{ var stP=document.createElement('style');
         stP.textContent='.rhythm-pads{position:fixed!important;left:0!important;top:0!important;right:0!important;bottom:0!important;z-index:60!important;pointer-events:none}'
-          +'.rhythm-pads .rpad{position:fixed!important;bottom:auto!important;top:calc(50% - 46px)!important}.rhythm-pads .rpad.l{left:10px!important}.rhythm-pads .rpad.r{right:10px!important}'
-          +'body.lb-pads #rpAnotBar,body.lb-pads #rpTonRow,body.lb-pads #lbProf{visibility:hidden!important}body.lb-pads #scoreWrap{padding-left:112px!important;padding-right:112px!important;box-sizing:border-box}';
+          +'.rhythm-pads .rpad{position:fixed!important;bottom:auto!important;top:calc(50% - 40px)!important;width:80px!important;height:80px!important}'
+          +'.rhythm-pads .rpad.l{left:var(--lbPadL,10px)!important}.rhythm-pads .rpad.r{right:var(--lbPadR,10px)!important}';
         document.head.appendChild(stP);
-        var hayP=false; new MutationObserver(function(){ var h=!!document.querySelector('.rhythm-pads'); if(h===hayP) return; hayP=h; document.body.classList.toggle('lb-pads',h);
-          setTimeout(function(){ try{ window.dispatchEvent(new Event('resize')); }catch(e){} },30); }).observe(document.body,{childList:true,subtree:true}); }catch(e){}
+  window.lbColocaPads = window.lbColocaPads || function(observa){
+    var D=document, R=D.documentElement, hay=false;
+    function borde(id, lado){ var e=D.querySelector(id); if(!e) return null; var r=e.getBoundingClientRect(); if(!r.width || getComputedStyle(e).visibility==='hidden' || getComputedStyle(e).display==='none') return null; return lado==='d'?r.right:r.left; }
+    function coloca(){ var sw=D.getElementById('scoreWrap'); if(!sw) return;
+      var W=innerWidth, l=(borde('#rpAnotBar .rpv-col-l','d')||0)+10, r=W-((borde('#rpAnotBar .rpv-col-r','i')||W))+10;
+      R.style.setProperty('--lbPadL', l+'px'); R.style.setProperty('--lbPadR', r+'px');
+      sw.style.removeProperty('padding-left'); sw.style.removeProperty('padding-right');
+      var b=sw.getBoundingClientRect(), cs=getComputedStyle(sw);
+      var pl=Math.max(parseFloat(cs.paddingLeft)||0, l+80+10-b.left), pr=Math.max(parseFloat(cs.paddingRight)||0, b.right-(W-r-80-10));
+      sw.style.setProperty('padding-left', pl+'px','important'); sw.style.setProperty('padding-right', pr+'px','important'); sw.style.setProperty('box-sizing','border-box','important'); }
+    function quita(){ var sw=D.getElementById('scoreWrap'); if(sw){ sw.style.removeProperty('padding-left'); sw.style.removeProperty('padding-right'); } }
+    function mira(){ var h=!!D.querySelector('.rhythm-pads'); if(h===hay) return; hay=h; D.body.classList.toggle('lb-pads',h);
+      if(h) coloca(); else quita();
+      setTimeout(function(){ try{ window.dispatchEvent(new Event('resize')); }catch(e){} },30); }
+    if(observa){ try{ new MutationObserver(mira).observe(D.body,{childList:true,subtree:true}); }catch(e){} }
+  };
+        window.lbColocaPads(true); }catch(e){}
       if(/[?&]evaluar=/.test(location.search)){ try{
         document.body.classList.add('lb-eval');
         var ce=document.createElement('style'); ce.textContent='body.lb-eval #rpAnotBar,body.lb-eval #rpTonRow,body.lb-eval #barActions,body.lb-eval #lbProf{display:none!important}body.lb-eval #scoreWrap.rp-anot{padding-left:0!important;padding-right:0!important}body.lb-eval #score canvas{pointer-events:none!important}'
