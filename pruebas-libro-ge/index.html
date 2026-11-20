@@ -6701,7 +6701,7 @@ function refSet(sched){ const set=new Set();
      entonación = reproducción + 120 s. Prueba directa = reproducción + 2 min (una sola vez).
    · tope 15 min si se reprodujo la entonación (≥10 s), 12 min si no; prueba directa 12 min. El mínimo de 3 min lo aplica Supabase.
    · se manda al salir del estudio o al cerrar la pestaña; solo si hay ≥ 30 s válidos y la cuenta viene del portal (cookie lm_cta_gp o ?cuenta=). */
-const VT_APP='ritmo-gp', VT_COOKIE='lm_cta_gp', VT_CORT_ENT=120, VT_QUIETO=30000;
+const VT_APP='ritmo-ge', VT_COOKIE='lm_cta_ge', VT_CORT_ENT=120, VT_QUIETO=30000;
 const VT_SB='https://woiptkyrxkbpnvioypit.supabase.co', VT_AN='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndvaXB0a3lyeGticG52aW95cGl0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0NzI2ODYsImV4cCI6MjA5MjA0ODY4Nn0.B2nKgj5rD0rkdLeMIrd9KgD8lUPWsBT4Y7aCtmnvbjA';
 let VT=null;
 function vtCuenta(){ try{ const m=document.cookie.match(new RegExp('(?:^|;\\s*)'+VT_COOKIE+'=([0-9a-fA-F-]{36})')); if(m) return m[1];
