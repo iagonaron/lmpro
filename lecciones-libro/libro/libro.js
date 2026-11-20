@@ -340,6 +340,12 @@
     try{ var yb=b.getYs()[0]+(arriba?-8:8); arco(pb.x, yb+(arriba?-4:4), b.getNoteHeadBeginX(), yb); }catch(e){}
   }
 
+  /* el texto del libro no puede pasar de su sitio aunque la fuente del equipo sea más ancha (se revisa también cuando cargan las fuentes) */
+  function ajustaTexto(el){ try{ var w=+el.getAttribute('data-libro-w'), T=+el.getAttribute('data-libro-t'); if(!w||!T||!el.getBBox) return;
+      el.style.fontSize=T.toFixed(2)+'px'; var bw=el.getBBox().width; if(bw>w*1.01){ el.style.fontSize=(T*w/bw).toFixed(2)+'px'; } }catch(e){} }
+  function ajustaTextos(){ Array.prototype.forEach.call(document.querySelectorAll('#score text[data-libro-w]'),ajustaTexto); }
+  try{ if(document.fonts && document.fonts.ready) document.fonts.ready.then(ajustaTextos); }catch(e){}
+  window.addEventListener('load',function(){ setTimeout(ajustaTextos,300); setTimeout(ajustaTextos,1500); });
   function notaLibro(ctx, nb, U){
     ctx.save(); ctx.setFillStyle('#2b2b2b'); ctx.setStrokeStyle('#2b2b2b');
     var F='"Helvetica Neue", Helvetica, Arial, sans-serif';
@@ -354,7 +360,7 @@
       var x=(li.x0!=null)?U(li.x0):(li.alinear==='derecha'?U(li.x||0)-tot:U(li.x||0)), y=U(li.y||0), k=T/17;   /* k: px del libro → unidades a este tamaño */
       piezas.forEach(function(p){
         if(p.t!=null){ ctx.setFont(F,T.toFixed(2)+'px',li.negrita?'bold':'normal',p.it?'italic':'normal'); ctx.fillText(String(p.t).replace(/^ +| +$/g,function(m){ return m.replace(/ /g,'\u00a0'); }),x,y);
-          try{ var el=ctx.parent&&ctx.parent.lastChild; if(el && el.tagName==='text' && el.getBBox){ var bw=el.getBBox().width; if(bw>p.w*1.01 && bw>0){ el.setAttribute('font-size',(T*p.w/bw).toFixed(2)+'px'); el.style.fontSize=(T*p.w/bw).toFixed(2)+'px'; } } }catch(e){} }
+          try{ var el=ctx.parent&&ctx.parent.lastChild; if(el && el.tagName==='text'){ el.setAttribute('data-libro-w',p.w.toFixed(2)); el.setAttribute('data-libro-t',T.toFixed(2)); ajustaTexto(el); } }catch(e){} }
         else if(p.frac){ var nd=p.frac.split('/'); ctx.setFont(F,(T*0.72).toFixed(2)+'px','normal');
           if(p.apilada){ ctx.fillText(nd[0],x+3*k,y-9*k); ctx.setLineWidth(1*k); ctx.beginPath(); ctx.moveTo(x+1*k,y-6*k); ctx.lineTo(x+11*k,y-6*k); ctx.stroke(); ctx.fillText(nd[1],x+3*k,y+5*k); }
           else { ctx.fillText(nd[0],x+1*k,y-6*k); ctx.setLineWidth(1*k); ctx.beginPath(); ctx.moveTo(x+5*k,y+1*k); ctx.lineTo(x+11*k,y-12*k); ctx.stroke(); ctx.fillText(nd[1],x+10*k,y+1*k); } }
@@ -383,7 +389,7 @@
 
   /* ---------------- 4. ENGANCHE CON LA APP ---------------- */
   var _render=window.renderLesson;
-  window.renderLesson=function(container,L){ if(L && L.libro) return dibujaLibro(container,L); return _render.apply(this,arguments); };
+  window.renderLesson=function(container,L){ if(L && L.libro){ var r=dibujaLibro(container,L); try{ requestAnimationFrame(ajustaTextos); setTimeout(ajustaTextos,400); }catch(e){} return r; } return _render.apply(this,arguments); };
   var LEC=null;
   var _gen=window.generateLesson;
   window.generateLesson=function(){ if(LEC){ if(typeof studyMode!=='undefined' && studyMode) closeStudy(); currentLesson=LEC; renderCurrent(); return; } return _gen.apply(this,arguments); };
