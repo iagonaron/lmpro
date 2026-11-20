@@ -3481,6 +3481,9 @@ function showEnig(kind){
   }
   function abrirVisorLecciones(envio, imgs, parte, titulo){
     parte=parte||'lecciones'; titulo=titulo||'Lecciones de la semana';
+    /* (20-nov-2026, Iago) LECCIÓN DEL LIBRO EN DIGITAL (piel/libro-digital.js): si esta lección ya tiene versión interactiva
+       (estudio por fases sin tiempo), se abre esa en vez de la captura. De momento solo Tester/Protester. Quitarlo: borrar esta línea. */
+    try{ if(window.LMLibroDigital && window.LMLibroDigital.abre(envio, parte, titulo, function(){ if(!parteHecha(envio,parte)) marcarParte(envio,parte).then(function(){ try{ render(); }catch(e){} try{ refrescar(); }catch(e){} }); })) return; }catch(e){ console.warn('[libro digital]',e); }
     var old=document.getElementById('ts-visor'); if(old){ try{ if(old.__cerrar) old.__cerrar(true); }catch(e){} old.remove(); }
     var ov=document.createElement('div'); ov.id='ts-visor';
     ov.style.cssText='position:fixed;inset:0;z-index:100002;background:rgba(8,5,22,.96);overflow:auto;-webkit-overflow-scrolling:touch;padding:16px 10px 30px';
@@ -11292,6 +11295,8 @@ body.tester-sin-by .topbar-right #rs-mini{order:2}
 <script src="https://ge.lmathome.es/piel/incidencias.js?v=1" defer></script>
 <!-- (19-nov-2026, Iago) PULSO · lo que tu grupo trabaja por libre (piel/pulso.js). Quitarlo: borrar esta línea. -->
 <script src="https://ge.lmathome.es/piel/pulso.js?v=3" defer></script>
+<!-- (20-nov-2026, Iago) LECCIONES DEL LIBRO EN DIGITAL en la campana (piel/libro-digital.js). Quitarlo: borrar esta línea. -->
+<script src="https://ge.lmathome.es/piel/libro-digital.js?v=1" defer></script>
 <!-- (20-nov-2026, Iago) CARRUSEL PRO ONLINE · botón del caracol y cartelito de partidas (piel/carrusel-aviso.js, el mismo que en GE). Quitarlo: borrar esta línea. -->
 <script src="https://ge.lmathome.es/piel/carrusel-aviso.js?v=20261120a" defer></script>
 <script src="https://ge.lmathome.es/piel/avisos/actitud/mg-anim.js?v=2" defer></script><!-- (13-nov-2026, C0) animación del 👍 y el sello la primera vez -->

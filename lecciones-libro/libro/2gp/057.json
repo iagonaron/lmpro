@@ -1,0 +1,64 @@
+{
+  "v": 1,
+  "libro": "Ritmo entonado 2.º GP",
+  "curso": "2Gp",
+  "n": 57,
+  "titulo": "57",
+  "captura": "https://woiptkyrxkbpnvioypit.supabase.co/storage/v1/object/public/diario/libros_lecciones/2Gp/ritmo_entonado/full/057.png",
+  "tonalidad": "Sol mayor",
+  "armadura": "G",
+  "clave": "treble",
+  "notacion": "Cada compás: grupos de barrado separados por «|». Cada grupo empieza por ^ (plicas arriba) o v (plicas abajo). Nota = figura:altura (4 negra, 8 corchea, 16 semicorchea; «.» = puntillo; f#4 = fa sostenido 4; Do4 = do central). Ligaduras de expresión: «compás.nota-compás.nota posición». «aire» (opcional) = hueco tras la última figura, en fracción del compás, para clavar el espaciado del libro.",
+  "pagina": { "ancho": 1680, "alto": 1055, "interlinea": 16.75 },
+  "sistemas": [
+    { "y": 72,  "x0": 178, "barras": [725, 1045, 1375, 1670], "compases": [1, 2, 3, 4] },
+    { "y": 338, "x0": 58,  "barras": [484, 805, 1245, 1566], "compases": [5, 6, 7, 8], "final": "doble", "cortesia": { "x1": 1670, "compas": "1/4+3/4" } },
+    { "y": 601, "x0": 58,  "barras": [580, 938, 1285, 1670], "compases": [9, 10, 11, 12] },
+    { "y": 867, "x0": 58,  "barras": [620, 970, 1320, 1670], "compases": [13, 14, 15, 16], "final": "fin" }
+  ],
+  "compases": [
+    { "c": 1,  "compas": "2/4+1/4", "m": "^ 16:g4 16:a4 16:b4 16:c5 | v 16:d5 16:c5 16:b4 16:a4 16:g4" },
+    { "c": 2,  "m": "^ 8:f#4 16:f#4 16:g4 | ^ 8:a4 16:a4 16:g4 16:f#4" },
+    { "c": 3,  "m": "^ 8:g4 16:g4 16:a4 | v 8:b4 16:d5 16:a4 16:a4" },
+    { "c": 4,  "m": "^ 8:g4 16:g4 16:a4 | v 8:b4 16:d5 8:a4" },
+    { "c": 5,  "m": "^ 8:g4 8:d4 | v 8:g4 8:b4 16:d5" },
+    { "c": 6,  "m": "^ 8:a4 8:f#4 | v 8:a4 8:c5 16:e5" },
+    { "c": 7,  "m": "v 16:d5 8:d5 16:b4 | ^ 16:a4 16:b4 16:c5 16:b4 16:a4" },
+    { "c": 8,  "m": "v 4:d5 | ^ 16:d4 16:e4 16:f#4 8:d4" },
+    { "c": 9,  "compas": "1/4+3/4", "m": "^ 8:e4 8:c4 | ^ 16:e4 16:c4 16:e4" },
+    { "c": 10, "m": "^ 8:g4 8:a4 | v 16:b4 16:c5 16:b4" },
+    { "c": 11, "aire": 0.17, "m": "v 16:d5 16:c5 16:b4 16:d5 | ^ 8.:a4" },
+    { "c": 12, "aire": 0.19, "m": "^ 16:c5 16:b4 16:a4 16:g4 | ^ 8.:f#4" },
+    { "c": 13, "m": "^ 8:g4 8:a4 | v 16:b4 16:b4 16:b4" },
+    { "c": 14, "m": "^ 8:g4 8:a4 | v 8.:b4" },
+    { "c": 15, "m": "v 8:d5 8:b4 8.:a4" },
+    { "c": 16, "m": "v 8:d5 8:b4 8.:g4" }
+  ],
+  "ligaduras": [
+    "1.1-1.4 abajo", "1.5-2.1 arriba",
+    "2.2-2.4 abajo", "2.5-3.1 abajo",
+    "3.2-3.4 abajo", "3.5-4.1 arriba",
+    "4.2-4.6 arriba",
+    "5.1-5.2 abajo", "5.3-5.5 arriba",
+    "6.1-6.2 abajo", "6.3-6.5 arriba",
+    "7.1-7.3 arriba", "7.4-8.1 abajo",
+    "8.2-8.5 abajo",
+    "9.1-9.2 abajo", "9.3-9.5 abajo",
+    "10.1-10.2 abajo", "10.3-10.5 arriba",
+    "11.1-11.5 arriba",
+    "12.1-12.5 abajo",
+    "13.1-13.2 abajo", "13.3-13.5 arriba",
+    "14.1-14.3 arriba",
+    "15.1-15.3 arriba",
+    "16.1-16.3 arriba"
+  ],
+  "notas_libro": [
+    {
+      "lineas": [
+        { "x0": 947, "x1": 1566, "y": 250, "partes": ["Compás equivalente a una negra (", {"frac": "1/4", "apilada": true}, ") + ", {"frac": "3/4"}, " de negra (= ", {"figura": "3x16"}, ")."] },
+        { "x0": 980, "x1": 1527, "y": 280, "partes": ["Es otra manera de indicar el compás del ejercicio 56b."] }
+      ],
+      "flecha": [1535, 285, 1596, 324]
+    }
+  ]
+}
