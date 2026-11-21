@@ -4799,7 +4799,7 @@ function showEnig(kind){
       if(o.payload_json && o.payload_json.carrusel_penal){
         var cpe=esc(o.cuerpo||'').replace(/([Pp]ierdes )([0-9,]+)( de actitud)/,'$1<b class="carr-pen-pts">$2$3</b>');
         return cv2Tarjeta({cls:'carr-lanz carr-anim carr-penal cv2-info'+(o.leido?'':' no-leido'), id:o.id, col:'rojo', fondo:carrFx(), tileHTML:carrIc(),
-          tit:esc(o.titulo||'Penalización del carrusel'), sub:'CARRUSEL online',
+          tit:esc(o.titulo||'Penalización del carrusel').replace(/(y no apareciste|a última hora)$/,'<span class="carr-pen-pts">$1</span>'), sub:'CARRUSEL online',   /* (21-nov 16:31, Iago) «y no apareciste», en rojo */
           cuerpo:'<div class="alu-item-cuerpo">'+cpe+'</div>',
           btn:'<button type="button" class="reco-ok cv2-btn" data-reco-ok="'+esc(o.id)+'">'+cv2Svg('check')+'Entendido</button>', fecha:_f});
       }
