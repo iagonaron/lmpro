@@ -8870,6 +8870,12 @@ window.DictadoClase = (function(){
   .hero > #temazo.tz-mini.tz-hero{max-height:none;overflow:visible;display:none;position:relative;z-index:76;width:var(--tz-w,460px);max-width:100%;margin:10px auto -32px;text-align:left}
   .hero > #temazo.tz-mini.tz-hero.tz-on{display:block}
   #temazo.tz-mini.tz-hero .tz-tira{width:100%}
+  /* (21-nov-2026 07:35, Iago) ALUMNO: en el sitio de la tira de la música del Protester (debajo de «Bienvenido/a… Salir»,
+     de su mismo ancho y alto, 45 px). El Protester ya no lo ve. */
+  .portal-welcome > #temazo.tz-mini.tz-welc{max-height:none;overflow:visible;display:none;position:relative;z-index:77;align-self:stretch;width:0;min-width:100%;margin:0;white-space:nowrap}
+  .portal-welcome > #temazo.tz-mini.tz-welc.tz-on{display:block}
+  #temazo.tz-mini.tz-welc .tz-tira{width:100%;height:45px;padding:0 8px 0 6px}
+  #temazo.tz-mini.tz-welc .tz-pop{left:0;right:auto;top:51px;white-space:normal}
   #temazo.tz-mini.tz-bajo .tz-tira{height:var(--tz-h,34px)}
   #temazo.tz-mini.tz-bajo .tz-pop{top:calc(var(--tz-h,34px) + 6px)}
   #temazo.tz-mini .tz-tira::before,#temazo.tz-mini .tz-neb{display:none}
@@ -8911,8 +8917,20 @@ window.DictadoClase = (function(){
   function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
 
   var datos=null, actual=null, sec=null;
+  /* (21-nov-2026) Tester / Protester / Pro tester de Iago (como en piel/apps/portal.js) */
+  function esProfeTz(){ var s=ses(); var n=String((s&&s.nombre)||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,' ').trim().toLowerCase(); return !!(s && s.estado==='validado' && /^iago gonzalez (pro ?)?tester$/.test(n)); }
   function seccion(){
     if(sec) return sec;
+    /* (21-nov-2026 07:35, Iago) «que la canción desbloqueada en Protester no me aparezca y que a los alumnos les aparezca donde
+       yo tengo la de George Street, con esa posición y tamaño»: el profe no la ve; el alumno, debajo de «Bienvenido/a… Salir»,
+       con el ancho y el alto de la tira de la música del Protester. Para volver al título: quitar este bloque (y el CSS tz-welc). */
+    if(esProfeTz()) return null;
+    var lin=document.querySelector('#portal-welcome > .pw-linea');
+    if(lin){
+      sec=document.createElement('section'); sec.id='temazo'; sec.className='tz-mini tz-welc'; sec.setAttribute('aria-label','Temazo de la semana');
+      lin.insertAdjacentElement('afterend', sec);
+      return sec;
+    }
     /* (15-oct-2026) compacto: el primero de la fila de arriba a la derecha (a la izquierda de Mis resultados y la campana) */
     /* (19-nov) hero: debajo de la frase del título, con su mismo ancho */
     var tag=document.querySelector('.hero > .tag');
@@ -9116,7 +9134,7 @@ window.DictadoClase = (function(){
   }
   /* (15-oct-2026) compacto: de largo, como la hilera de botones de Protester (280 px), sin pasar del centro de la fila */
   function ancho(){
-    var s=sec; if(!s || !s.classList.contains('tz-mini')) return;
+    var s=sec; if(!s || !s.classList.contains('tz-mini') || s.classList.contains('tz-welc')) return;
     try{
       if(s.classList.contains('tz-hero')){   /* (19-nov) el ancho de «Entrenamiento avanzado…» */
         var tg=document.querySelector('.hero > .tag'); if(!tg) return;
