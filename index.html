@@ -4773,6 +4773,26 @@ function showEnig(kind){
           btn:'<button type="button" class="reco-ok cv2-btn" data-reco-ok="'+esc(o.id)+'">'+cv2Svg('check')+'Entendido</button>',
           fecha:_f});
       }
+      // ---------- (21-nov-2026 13:26, Iago) LANZAMIENTO DEL CARRUSEL MULTIJUGADOR: tarjeta con la textura de círculos concéntricos del
+      // carrusel y botón que abre su panel. Llega a cada grupo de GP al acabar su clase del martes (payload_json.activa_desde).
+      // Quitar: borrar este bloque (y las filas de suite_notificaciones con payload_json.carrusel_lanzamiento).
+      if(o.payload_json && o.payload_json.carrusel_lanzamiento){
+        if(!document.getElementById('carr-lanz-css')){ var _cl=document.createElement('style'); _cl.id='carr-lanz-css';
+          _cl.textContent='#alu-body .alu-item.cv2.carr-lanz{background:linear-gradient(90deg,rgba(14,9,4,.95) 0%,rgba(14,9,4,.8) 38%,rgba(14,9,4,.48) 72%,rgba(14,9,4,.32) 100%),url(https://ge.lmathome.es/piel/carrusel/textura-carrusel.jpg) 50% 45%/cover no-repeat!important}'
+            +'#alu-body .alu-item.cv2.carr-lanz .alu-item-tit,#alu-body .alu-item.cv2.carr-lanz .alu-item-cuerpo{text-shadow:0 1px 8px rgba(0,0,0,.95)}'
+            +'#alu-body .alu-item.cv2.carr-lanz .cv2-tile{background:conic-gradient(from 0deg,#5bd0ff,#bd92ff,#ff5fa2,#fff,#ffd23f,#34d399,#5bd0ff)!important;border-color:rgba(255,255,255,.35)!important}'
+            +'#alu-body .carr-lanz .carr-lanz-ic{display:flex;align-items:center;justify-content:center;width:100%;height:100%}'
+            +'#alu-body .carr-lanz .carr-lanz-ic svg{width:64%;height:64%;filter:drop-shadow(0 0 2px rgba(10,7,30,.95)) drop-shadow(0 0 5px rgba(10,7,30,.7))}';
+          document.head.appendChild(_cl);
+          document.addEventListener('click',function(ev){ var bt=ev.target&&ev.target.closest&&ev.target.closest('[data-carr-abrir]'); if(!bt) return; ev.preventDefault();
+            var x=document.getElementById('alu-close'); if(x) x.click(); var cb=document.getElementById('lm-carr-btn'); if(cb) setTimeout(function(){ cb.click(); },180); });
+        }
+        return cv2Tarjeta({cls:'carr-lanz cv2-info'+(o.leido?'':' no-leido'), id:o.id, col:'azul',
+          tileHTML:'<span class="carr-lanz-ic"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 11a2 2 0 0 1 4 0a4 4 0 0 1-8 0a6 6 0 0 1 12 0a8 8 0 0 1-16 0"/></svg></span>',
+          tit:esc(o.titulo||'¡Ya está disponible el Carrusel multijugador!'),
+          cuerpo:'<div class="alu-item-cuerpo">'+esc(o.cuerpo||'')+'</div>',
+          btn:'<button type="button" class="cv2-btn" data-carr-abrir="1">Ver partidas</button>', fecha:_f});
+      }
       // ---------- FICHA EN PAPEL CORREGIDA, suelta (3-oct-2026): va antes que las reclamaciones (viaja con la misma marca)
       // ---------- (7-nov-2026, Iago) «ME GUSTA» de Iago desde su Diario: azul, con el pulgar. FUGAZ: se da por visto solo al
       // verlo (autoLeer, abajo) y, ya visto, a los 2 días deja de salir: no se acumula
