@@ -2275,6 +2275,10 @@ function showEnig(kind){
      «Tareas de la semana» la siguen llevando en su franja, a la derecha.) En TIEMPO EXTRA (c.peligro), en vez del punto, el
      triángulo amarillo de peligro («el símbolo de peligro»). */
   var CV2_PELIGRO='<span class="cv2-peligro" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 2.6 1.4 21h21.2z" fill="#facc15" stroke="#991b1b" stroke-width="2.2" stroke-linejoin="round" paint-order="stroke"/><path d="M12 9.2v5.6" fill="none" stroke="#1c1400" stroke-width="2.5" stroke-linecap="round"/><circle cx="12" cy="17.9" r="1.45" fill="#1c1400"/></svg></span>';
+  /* (21-nov-2026 13:52, Iago) tarjetas del Carrusel online: fondo vivo (círculos que giran, como el botón) e icono del botón en
+     movimiento; el aspecto lo pone piel/carrusel-aviso.js (#lm-carr-notis-css). */
+  function carrFx(){ return '<span class="carr-fx" aria-hidden="true"><span class="gi"><span class="fx"></span></span></span>'; }
+  function carrIc(){ return '<span class="carr-ic"><span class="gi"><span class="fx"></span></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 11a2 2 0 0 1 4 0a4 4 0 0 1-8 0a6 6 0 0 1 12 0a8 8 0 0 1-16 0"/></svg></span>'; }
   function cv2Tarjeta(c){
     /* (17-oct-2026, Iago: botones del ancho estándar) si su única acción es «Marcar como visto», va abajo, como las demás */
     if(!c.btn && /cv2-btn2/.test(c.sec||'') && (String(c.sec).match(/<button/g)||[]).length===1){ c=Object.assign({},c,{btn:c.sec,sec:''}); }
@@ -2284,7 +2288,7 @@ function showEnig(kind){
        texto ocupa también la columna de los botones */
     if(!String(c.sec||'').trim() && !String(c.btn||'').trim()) c=Object.assign({},c,{cls:(c.cls||'')+' cv2-ancha'});
     return '<div class="alu-item cv2 '+(c.cls||'')+(nS?' cv2-s'+Math.min(nS,2):'')+'" data-id="'+esc(c.id)+'"'+(c.attrs||'')+cv2Estilo(c.col,c.colHex)+'>'
-      +'<div class="cv2-izq"><span class="cv2-tile" aria-hidden="true">'+(c.tileHTML||cv2Svg(c.ic,c.icCls))+'<span class="alu-dot"></span>'+(c.peligro?CV2_PELIGRO:'')+'</span>'
+      +(c.fondo||'')+'<div class="cv2-izq"><span class="cv2-tile" aria-hidden="true">'+(c.tileHTML||cv2Svg(c.ic,c.icCls))+'<span class="alu-dot"></span>'+(c.peligro?CV2_PELIGRO:'')+'</span>'
       +(c.fecha?'<span class="alu-item-fecha cv2-fecha">'+esc(c.fecha)+'</span>':'')+'</div>'
       +'<div class="alu-item-main cv2-mid">'
       +'<div class="cv2-cont"><div class="cv2-l1"><span class="alu-item-tit">'+c.tit+(c.sub?'<span class="cv2-sub"> · '+c.sub+'</span>':'')+'</span>'+(c.chip||'')+'</div>'
@@ -4342,8 +4346,8 @@ function showEnig(kind){
       if(T){ if(!T.partes[n]) n=1; hitoCSS(); c.cls+=' cv2-hito hito-'+hitoTema(portal,n).tema; c.attrs=' data-portal="'+esc(portal)+'" data-n="'+n+'"'; c.sub=esc(T.nombre+(T.parte?' · '+T.parte+' '+n:'')); }
       else { c.col=MGV_AREA[pj.area]||c.col; if(CARR) c.sub=esc('CARRUSEL online'); else if(MGV_APP[k]) c.sub=esc(MGV_APP[k]); }
       /* (20-nov-2026 22:12, Iago) carrusel online: su textura de círculos concéntricos con degradado (la misma que en el Diario) */
-      if(CARR){ c.cls+=' mgv-carr'; if(!document.getElementById('mgv-carr-css')){ var _st=document.createElement('style'); _st.id='mgv-carr-css';
-        _st.textContent='#alu-body .alu-item.cv2.mgv-carr{background:linear-gradient(90deg,rgba(14,9,4,.95) 0%,rgba(14,9,4,.84) 30%,rgba(14,9,4,.5) 60%,rgba(14,9,4,.3) 100%),url(https://ge.lmathome.es/piel/carrusel/textura-carrusel.jpg) 50% 45%/cover no-repeat!important}'   /* (20-nov 22:28, Iago) misma tarjeta, solo la textura; el contorno, el naranja de siempre */
+      if(CARR){ c.cls+=' mgv-carr carr-anim'; c.fondo=carrFx(); if(!document.getElementById('mgv-carr-css')){ var _st=document.createElement('style'); _st.id='mgv-carr-css';
+        _st.textContent='#alu-body .alu-item.cv2.mgv-carr{background:#0e0904!important}'   /* (20-nov 22:28, Iago) misma tarjeta, solo la textura; el contorno, el naranja de siempre */
           +'#alu-body .alu-item.cv2.mgv-carr .alu-item-tit,#alu-body .alu-item.cv2.mgv-carr .alu-item-cuerpo{text-shadow:0 1px 8px rgba(0,0,0,.95)}'; document.head.appendChild(_st); } }
       if(pj.texto) c.cuerpo='<div class="alu-item-cuerpo">'+esc(pj.texto)+'</div>';
       var ver='<svg class="mgv-sello" viewBox="0 0 100 100" aria-hidden="true"><defs><path id="'+sid+'" d="M50,50 m-35,0 a35,35 0 1,1 70,0 a35,35 0 1,1 -70,0"/></defs><circle cx="50" cy="50" r="47" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="50" cy="50" r="43" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="2 2.4"/><text font-size="9.4" font-weight="800" fill="currentColor"><textPath href="#'+sid+'" textLength="219.9" lengthAdjust="spacing">VERIFICADO · VERIFICADO · </textPath></text><path d="M30 52 44 66 71 36" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></svg>';
@@ -4778,17 +4782,13 @@ function showEnig(kind){
       // Quitar: borrar este bloque (y las filas de suite_notificaciones con payload_json.carrusel_lanzamiento).
       if(o.payload_json && o.payload_json.carrusel_lanzamiento){
         if(!document.getElementById('carr-lanz-css')){ var _cl=document.createElement('style'); _cl.id='carr-lanz-css';
-          _cl.textContent='#alu-body .alu-item.cv2.carr-lanz{background:linear-gradient(90deg,rgba(14,9,4,.95) 0%,rgba(14,9,4,.8) 38%,rgba(14,9,4,.48) 72%,rgba(14,9,4,.32) 100%),url(https://ge.lmathome.es/piel/carrusel/textura-carrusel.jpg) 50% 45%/cover no-repeat!important}'
-            +'#alu-body .alu-item.cv2.carr-lanz .alu-item-tit,#alu-body .alu-item.cv2.carr-lanz .alu-item-cuerpo{text-shadow:0 1px 8px rgba(0,0,0,.95)}'
-            +'#alu-body .alu-item.cv2.carr-lanz .cv2-tile{background:conic-gradient(from 0deg,#5bd0ff,#bd92ff,#ff5fa2,#fff,#ffd23f,#34d399,#5bd0ff)!important;border-color:rgba(255,255,255,.35)!important}'
-            +'#alu-body .carr-lanz .carr-lanz-ic{display:flex;align-items:center;justify-content:center;width:100%;height:100%}'
-            +'#alu-body .carr-lanz .carr-lanz-ic svg{width:64%;height:64%;filter:drop-shadow(0 0 2px rgba(10,7,30,.95)) drop-shadow(0 0 5px rgba(10,7,30,.7))}';
+          _cl.textContent='#alu-body .alu-item.cv2.carr-lanz{background:#0e0904!important}';
           document.head.appendChild(_cl);
           document.addEventListener('click',function(ev){ var bt=ev.target&&ev.target.closest&&ev.target.closest('[data-carr-abrir]'); if(!bt) return; ev.preventDefault();
             var x=document.getElementById('alu-close'); if(x) x.click(); var cb=document.getElementById('lm-carr-btn'); if(cb) setTimeout(function(){ cb.click(); },180); });
         }
-        return cv2Tarjeta({cls:'carr-lanz cv2-info'+(o.leido?'':' no-leido'), id:o.id, col:'azul',
-          tileHTML:'<span class="carr-lanz-ic"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 11a2 2 0 0 1 4 0a4 4 0 0 1-8 0a6 6 0 0 1 12 0a8 8 0 0 1-16 0"/></svg></span>',
+        return cv2Tarjeta({cls:'carr-lanz carr-anim cv2-info'+(o.leido?'':' no-leido'), id:o.id, col:'azul',
+          tileHTML:carrIc(), fondo:carrFx(),
           tit:esc(o.titulo||'¡Ya está disponible el Carrusel multijugador!'),
           cuerpo:'<div class="alu-item-cuerpo">'+esc(o.cuerpo||'')+'</div>',
           btn:'<button type="button" class="cv2-btn" data-carr-abrir="1">Ver partidas</button>', fecha:_f});
@@ -4799,11 +4799,7 @@ function showEnig(kind){
       // Quitar: borrar este bloque (y las filas de suite_notificaciones con payload_json.carrusel_partida).
       if(o.payload_json && o.payload_json.carrusel_partida){
         if(!document.getElementById('carr-lanz-css')){ var _ct=document.createElement('style'); _ct.id='carr-lanz-css';
-          _ct.textContent='#alu-body .alu-item.cv2.carr-lanz{background:linear-gradient(90deg,rgba(14,9,4,.95) 0%,rgba(14,9,4,.8) 38%,rgba(14,9,4,.48) 72%,rgba(14,9,4,.32) 100%),url(https://ge.lmathome.es/piel/carrusel/textura-carrusel.jpg) 50% 45%/cover no-repeat!important}'
-            +'#alu-body .alu-item.cv2.carr-lanz .alu-item-tit,#alu-body .alu-item.cv2.carr-lanz .alu-item-cuerpo{text-shadow:0 1px 8px rgba(0,0,0,.95)}'
-            +'#alu-body .alu-item.cv2.carr-lanz .cv2-tile{background:conic-gradient(from 0deg,#5bd0ff,#bd92ff,#ff5fa2,#fff,#ffd23f,#34d399,#5bd0ff)!important;border-color:rgba(255,255,255,.35)!important}'
-            +'#alu-body .carr-lanz .carr-lanz-ic{display:flex;align-items:center;justify-content:center;width:100%;height:100%}'
-            +'#alu-body .carr-lanz .carr-lanz-ic svg{width:64%;height:64%;filter:drop-shadow(0 0 2px rgba(10,7,30,.95)) drop-shadow(0 0 5px rgba(10,7,30,.7))}';
+          _ct.textContent='#alu-body .alu-item.cv2.carr-lanz{background:#0e0904!important}';
           document.head.appendChild(_ct); }
         var cp=o.payload_json, cpId=String(cp.carrusel_partida), cpD=new Date(cp.programada), cpF='';
         try{ cpF=cpD.toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long',timeZone:'Europe/Madrid'})+' a las '+cpD.toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit',timeZone:'Europe/Madrid'}); }catch(er){}
@@ -4811,8 +4807,8 @@ function showEnig(kind){
         var cpG=String(cp.creador_grupo||'').replace(/^(\d)\s*(gp)?\s*([a-z]?)$/i,function(_,n,gp,l){ return n+'.º '+(gp?'GP ':'')+String(l||'').toUpperCase(); }).trim();
         var cpFal=(window.LMCarr&&window.LMCarr.faltaTxt)?window.LMCarr.faltaTxt(cp.programada):'';
         setTimeout(function(){ if(window.LMCarr&&window.LMCarr.sinc) window.LMCarr.sinc(); },60);
-        return cv2Tarjeta({cls:'carr-lanz cv2-info'+(o.leido?'':' no-leido'), id:o.id, col:'azul', attrs:' data-carr-id="'+esc(cpId)+'"',
-          tileHTML:'<span class="carr-lanz-ic"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 11a2 2 0 0 1 4 0a4 4 0 0 1-8 0a6 6 0 0 1 12 0a8 8 0 0 1-16 0"/></svg></span>',
+        return cv2Tarjeta({cls:'carr-lanz carr-anim cv2-info'+(o.leido?'':' no-leido'), id:o.id, col:'azul', attrs:' data-carr-id="'+esc(cpId)+'"',
+          tileHTML:carrIc(), fondo:carrFx(),
           tit:esc(cp.creador_nombre||'Un compañero')+' ha anunciado una partida', sub:esc(cpG),
           cuerpo:'<div class="alu-item-cuerpo"><b>'+esc(cpF)+'</b> · <span data-carr-cuenta="'+esc(cp.programada||'')+'">'+esc(cpFal)+'</span></div>',
           sec:'<button type="button" class="cv2-btn2 carr-b carr-b-visto" data-carr-visto="'+esc(cpId)+'">Marcar como visto</button>',
@@ -11367,7 +11363,7 @@ body.tester-sin-by .topbar-right #rs-mini{order:2}
 <!-- (20-nov-2026, Iago) LECCIONES DEL LIBRO EN DIGITAL en la campana (piel/libro-digital.js). Quitarlo: borrar esta línea. -->
 <script src="https://ge.lmathome.es/piel/libro-digital.js?v=7" defer></script>
 <!-- (20-nov-2026, Iago) CARRUSEL PRO ONLINE · botón del caracol y cartelito de partidas (piel/carrusel-aviso.js, el mismo que en GE). Quitarlo: borrar esta línea. -->
-<script src="https://ge.lmathome.es/piel/carrusel-aviso.js?v=20261121k" defer></script>
+<script src="https://ge.lmathome.es/piel/carrusel-aviso.js?v=20261121l" defer></script>
 <script src="https://ge.lmathome.es/piel/avisos/actitud/mg-anim.js?v=2" defer></script><!-- (13-nov-2026, C0) animación del 👍 y el sello la primera vez -->
 </body>
 </html>
