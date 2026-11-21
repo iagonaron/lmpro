@@ -4793,6 +4793,16 @@ function showEnig(kind){
           cuerpo:'<div class="alu-item-cuerpo">'+esc(o.cuerpo||'')+'</div>',
           btn:'<button type="button" class="cv2-btn" data-carr-abrir="1">Ver partidas</button>', fecha:_f});
       }
+      // ---------- (21-nov-2026 16:03, Iago) PENALIZACIÓN DEL CARRUSEL: te apuntaste (o anunciaste la partida) y no apareciste, o te
+      // desapuntaste/cancelaste a menos de 5 minutos. Tarjeta con la textura del carrusel, lo que pierdes en rojo y «Entendido».
+      // Lo crea el servidor (trigger suite_cr_penal_aviso). Quitar: borrar este bloque.
+      if(o.payload_json && o.payload_json.carrusel_penal){
+        var cpe=esc(o.cuerpo||'').replace(/([Pp]ierdes )([0-9,]+)( de actitud)/,'$1<b class="carr-pen-pts">$2$3</b>');
+        return cv2Tarjeta({cls:'carr-lanz carr-anim carr-penal cv2-info'+(o.leido?'':' no-leido'), id:o.id, col:'rojo', fondo:carrFx(), tileHTML:carrIc(),
+          tit:esc(o.titulo||'Penalización del carrusel'), sub:'CARRUSEL online',
+          cuerpo:'<div class="alu-item-cuerpo">'+cpe+'</div>',
+          btn:'<button type="button" class="reco-ok cv2-btn" data-reco-ok="'+esc(o.id)+'">'+cv2Svg('check')+'Entendido</button>', fecha:_f});
+      }
       // ---------- (21-nov-2026 13:47, Iago) AVISO DE PARTIDA ANUNCIADA por un compañero del mismo curso: tarjeta con la textura del
       // carrusel, nombre y grupo de quien la anuncia, día, hora y cuenta atrás (días, horas y minutos), «Me apunto» y «Marcar como visto».
       // Las acciones y el estado al día («✓ Apuntado», «Ya no está disponible») los pone piel/carrusel-aviso.js (window.LMCarr).
@@ -5829,7 +5839,7 @@ function showEnig(kind){
      lo que resta, lo neutro y lo que suma este trimestre, la escalera de actitud, el balance de fuerzas y la barra de lo sumado (+x,xx/2).
      Datos: suite_mi_actitud (solo los suyos), su actitud del trimestre (y la del anterior), sus medias de clase y su mapa de teoría.
      Para quitarlo: borrar este bloque, la barra .mr-acc de render() y su CSS (.mr-acc / #mi-actitud). */
-  var MI_ACT_URL = 'https://ge.lmathome.es/piel/avisos/actitud/real.html?real=1&v=2026-11-13a';
+  var MI_ACT_URL = 'https://ge.lmathome.es/piel/avisos/actitud/real.html?real=1&v=2026-11-21a';
   var MAPA_JS_MR = 'https://ge.lmathome.es/piel/mapa.js?v=2026-10-21a';
   function rpcMR(fn, args){ var c = cli(); if (!c) return Promise.resolve(null); return c.rpc(fn, args).then(function(r){ return r.error ? null : r.data; }, function(){ return null; }); }
   function abrirMapaMR(){
@@ -11363,7 +11373,7 @@ body.tester-sin-by .topbar-right #rs-mini{order:2}
 <!-- (20-nov-2026, Iago) LECCIONES DEL LIBRO EN DIGITAL en la campana (piel/libro-digital.js). Quitarlo: borrar esta línea. -->
 <script src="https://ge.lmathome.es/piel/libro-digital.js?v=7" defer></script>
 <!-- (20-nov-2026, Iago) CARRUSEL PRO ONLINE · botón del caracol y cartelito de partidas (piel/carrusel-aviso.js, el mismo que en GE). Quitarlo: borrar esta línea. -->
-<script src="https://ge.lmathome.es/piel/carrusel-aviso.js?v=20261121p" defer></script>
+<script src="https://ge.lmathome.es/piel/carrusel-aviso.js?v=20261121q" defer></script>
 <script src="https://ge.lmathome.es/piel/avisos/actitud/mg-anim.js?v=2" defer></script><!-- (13-nov-2026, C0) animación del 👍 y el sello la primera vez -->
 </body>
 </html>
