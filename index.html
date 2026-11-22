@@ -4611,9 +4611,20 @@ function showEnig(kind){
        No puede ser que aparezcan los 3 días de la cabaña juntos… Mira las fechas») otra vez TODO POR FECHA: cada día de un
        portal, en la suya (el Día 3 arriba, el 2 y el 1 donde les toca, por debajo del dictado y de las tareas más nuevos).
        _ordHito solo desempata. Volver a lo del 16-oct: _cuandoOrden en lugar de _cuandoAviso aquí abajo. */
+    /* (22-nov-2026, Iago) TAREAS PRIMERO: «que no las entierren los avisos de A Iago le ha gustado». La tarjeta «Tareas de la
+       semana» se queda arriba mientras no esté en gris y le falte la ficha (digital o en papel, en plazo o en periodo extra) o
+       el quiz. Si ya solo quedan lecciones u otras, vuelve a su sitio por fecha. Para quitarlo: «||tareasPrio(x)» de abajo. */
+    var tareasPrio=function(o){
+      if(!esTareas(o) || tareasHecha(o)) return false;
+      var pj=o.payload_json||{}, se=pj.semana_envio_id;
+      if(pj.quiz && pj.quiz.envio_id && !_quizHechos[pj.quiz.envio_id]) return true;
+      if(pj.ficha && pj.ficha.numero!=null){ var fN=_fichaPorNumero[String(pj.ficha.numero)], fp=(fN&&fN.payload_json)||{};
+        if(!(fp.ficha_id && _entregadas[fp.ficha_id]) && !plazoFinDe(fp)) return true; }
+      return otrasLista(pj).some(function(x,i){ return x.papel_n!=null && !x.corregida && !parteHecha(se,otraParte(i)); });
+    };
     list.sort(function(a,b){
-      var pa=(papelNueva(a)||enTiempoExtra(a))?-1:0;
-      var pb=(papelNueva(b)||enTiempoExtra(b))?-1:0;
+      var pa=(papelNueva(a)||enTiempoExtra(a)||tareasPrio(a))?-1:0;
+      var pb=(papelNueva(b)||enTiempoExtra(b)||tareasPrio(b))?-1:0;
       return (pa-pb) || (_cuandoAviso(b)-_cuandoAviso(a)) || _ordHito(a,b);
     });
     var _hitosD={}; try{ hitoCSS(); _hitosD=await hitosAbiertos(id, listTodas); }catch(eH){}   /* (16-oct-2026) los días abiertos de cada portal */
