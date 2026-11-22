@@ -2607,7 +2607,7 @@ function showEnig(kind){
       '#alu-body .alu-item.cv2.mgv .mgv-pts{display:flex;flex-direction:column;align-items:flex-start;gap:1px;padding-left:14px;border-left:1px solid rgba(255,255,255,.22)}',
       '#alu-body .alu-item.cv2.mgv .mgv-pts b{font:800 19px/1.1 Helvetica Neue,Arial,sans-serif;color:#4ade80}',
       '#alu-body .alu-item.cv2.mgv .mgv-pts span{font:600 11px/1.1 Helvetica Neue,Arial,sans-serif;color:rgba(255,255,255,.78)}',
-      '#alu-body .alu-item.cv2.mgv .mgv-tope b{color:#facc15}',
+      '#alu-body .alu-item.cv2.mgv .mgv-tope b{color:#facc15;font-size:15px;white-space:nowrap}',
       '#alu-body .alu-item.cv2.mgv .mgv-amar b{color:#facc15}#alu-body .alu-item.cv2.mgv .mgv-amar>span:not(.mgv-tri){color:#facc15}',
       /* (19-nov 11:27) sin el cuadrado de fondo de la casilla (ni la textura de portal): solo el marco de áreas, que la ocupa entera */
       '#alu-body .alu-item.cv2.mgv.mgv-con-av .cv2-tile{border:0!important;background:none!important;background-image:none!important;box-shadow:none!important;opacity:1!important;width:46px!important;height:46px!important;padding:0!important}',
@@ -4333,6 +4333,9 @@ function showEnig(kind){
      Quitar: borrar esta función, la llamada mgV( en el bloque me_gusta de la campana y las reglas .mgv del CSS. */
   var MGV_AREA={teoria:'rosa',ritmo:'naranja',entonacion:'azul',audicion:'verde'};
   var MGV_APP={teoria:'Teoría at home',ritmo:'Ritmo',entonacion:'Entonación',dictado:'Dictado',predict:'PreDict',intervalia:'Intervalia',desafio:'Desafío',acceso:'Acceso rítmico'};
+  /* (22-nov-2026, encargo 00j) qué tope muestra un aviso 👍: el que dice Supabase (pj.tope) o, en avisos antiguos, el de sus banderas */
+  function mgvTope(pj,pts){ if(pj.tope==='semanal'||pj.tope==='trimestral') return pj.tope; if(!pj.verificado) return null;
+    if(!(pts>0)) return pj.trimestre_lleno?'trimestral':'semanal'; return pj.tope_trim_ahora?'trimestral':(pj.tope_semana_ahora||pj.semana_llena)?'semanal':null; }
   function mgV(o,c){
     try{
       var pj=o.payload_json||{}; if(typeof pj.verificado!=='boolean') return c;
@@ -4368,12 +4371,13 @@ function showEnig(kind){
         var chipA=(mult>1 && isFinite(base) && base>0 && pts>0)?'<span class="mgv-ch '+(mult>=2?'m2':'m15')+'">×'+String(mult).replace('.',',')+'</span> ':'';
         var tA=(+pj.total_min>0)?'<span class="mgv-tri"><b>'+Math.round(+pj.total_min)+' min</b> en el trimestre</span>':'';
         /* (19-nov 11:44, Iago) si con este trabajo llega al tope, se suma lo que quedaba, en amarillo, con «tope semanal alcanzado» */
-        var topeT=!!pj.tope_trim_ahora, topeS=!!(pj.tope_semana_ahora||pj.semana_llena);
-        var pA=pts>0?'<div class="mgv-pts'+((topeT||topeS)?' mgv-amar':'')+'"><b>'+chipA+'+'+fm(pts)+'</b><span>'+(topeT?'tope del trimestre alcanzado':topeS?'tope semanal alcanzado':'de actitud')+'</span>'+tA+'</div>':'<div class="mgv-pts mgv-tope"><b>Tope</b><span>alcanzado</span>'+tA+'</div>';
+        /* (22-nov-2026, Iago, encargo 00j) «Tope semanal alcanzado» / «Tope trimestral alcanzado», el mismo texto en la campana, el Pulso y el Diario */
+        var tp=mgvTope(pj,pts), topeT=tp==='trimestral', topeS=tp==='semanal';
+        var pA=pts>0?'<div class="mgv-pts'+((topeT||topeS)?' mgv-amar':'')+'"><b>'+chipA+'+'+fm(pts)+'</b><span>'+(tp?'Tope '+tp+' alcanzado':'de actitud')+'</span>'+tA+'</div>':'<div class="mgv-pts mgv-tope"><b>Tope '+(tp||'semanal')+'</b><span>alcanzado</span>'+tA+'</div>';
         num='<div class="mgv-num">'+pA+ver+'</div>';
       } else if(pj.verificado && mins>0){
         var chip=(mult>1 && isFinite(base) && base>0 && pts>0)?'<div class="mgv-base"><span>'+fm(base)+'</span><span class="mgv-ch '+(mult>=2?'m2':'m15')+'" title="Esta actividad cuenta ×'+String(mult).replace('.',',')+' en tu actitud">×'+String(mult).replace('.',',')+'</span></div>':'';
-        var p=pts>0?'<div class="mgv-pts">'+chip+'<b>+'+fm(pts)+'</b><span>de actitud</span></div>':'<div class="mgv-pts mgv-tope"><b>Tope</b><span>alcanzado</span></div>';
+        var tp2=mgvTope(pj,pts), p=pts>0?'<div class="mgv-pts'+(tp2?' mgv-amar':'')+'">'+chip+'<b>+'+fm(pts)+'</b><span>'+(tp2?'Tope '+tp2+' alcanzado':'de actitud')+'</span></div>':'<div class="mgv-pts mgv-tope"><b>Tope '+(tp2||'semanal')+'</b><span>alcanzado</span></div>';
         num='<div class="mgv-num"><div class="mgv-min"><b>'+mins+'</b><span>min</span></div>'+p+ver+'</div>';
       } else if(pj.verificado){ num='<div class="mgv-num">'+ver+'</div>'; }
       var cta='<button type="button" class="mgv-cta" data-mgv-act="1" aria-label="Consulta aquí tu puntaje: estado y límites semanales y trimestrales"><span class="mgv-ic"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M6 21h12M5 7h14"/><path d="M5 7 2.5 13a3 3 0 0 0 5 0zM19 7l-2.5 6a3 3 0 0 0 5 0z"/></svg></span><span class="mgv-lb">Consulta aquí tu puntaje</span></button>';
@@ -11369,7 +11373,7 @@ body.tester-sin-by .topbar-right #rs-mini{order:2}
 <!-- (12-nov-2026, Iago) INCIDENCIAS: botón «?» junto a Mis resultados (no sale en Tester/Protester). Quitar: borrar esta línea. -->
 <script src="https://ge.lmathome.es/piel/incidencias.js?v=1" defer></script>
 <!-- (19-nov-2026, Iago) PULSO · lo que tu grupo trabaja por libre (piel/pulso.js). Quitarlo: borrar esta línea. -->
-<script src="https://ge.lmathome.es/piel/pulso.js?v=9" defer></script>
+<script src="https://ge.lmathome.es/piel/pulso.js?v=10" defer></script>
 <!-- (20-nov-2026, Iago) LECCIONES DEL LIBRO EN DIGITAL en la campana (piel/libro-digital.js). Quitarlo: borrar esta línea. -->
 <script src="https://ge.lmathome.es/piel/libro-digital.js?v=7" defer></script>
 <!-- (20-nov-2026, Iago) CARRUSEL PRO ONLINE · botón del caracol y cartelito de partidas (piel/carrusel-aviso.js, el mismo que en GE). Quitarlo: borrar esta línea. -->
