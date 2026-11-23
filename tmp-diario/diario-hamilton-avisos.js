@@ -85,20 +85,20 @@
       '@font-face{font-family:"LM Fell";src:url(https://gp.lmathome.es/hitos/f-fell.woff2) format("woff2");font-display:swap}' +
       '.dha-item .scampana-tipo.dha-tipo{color:#e3bf6d;font-family:"LM Fell","IM Fell English",Georgia,serif;letter-spacing:.12em;text-transform:uppercase}' +
       '.dha-item .scv-tile.dha-tile{background:#170d05 url(' + VELA + ') 74% 18%/auto 190% no-repeat;border-color:#e3bf6d!important;box-shadow:inset 0 0 0 1px rgba(0,0,0,.25)}' +
-      '.dha-item .scv-tile.dha-tile::after{content:"";position:absolute;inset:0;border-radius:inherit;background:radial-gradient(circle at 74% 30%,rgba(255,186,92,.38),rgba(255,170,70,0) 55%);mix-blend-mode:screen;animation:dhaVela 3.2s linear infinite;pointer-events:none}' +
+      '.dha-item .dha-brillo{position:absolute;top:0;right:0;bottom:0;left:0;border-radius:inherit;background:radial-gradient(circle at 74% 30%,rgba(255,186,92,.38),rgba(255,170,70,0) 55%);mix-blend-mode:screen;animation:dhaVela 3.2s linear infinite;pointer-events:none}' +
       '@keyframes dhaVela{0%{opacity:.7}12%{opacity:1}22%{opacity:.55}35%{opacity:.95}50%{opacity:.7}64%{opacity:1}80%{opacity:.62}100%{opacity:.7}}' +
-      '.dha-item .scv-tile.dha-tile{position:relative;overflow:hidden}' +
+      '.dha-item .scv-tile.dha-tile{position:relative}' +
       '.dha-item .dha-grupo{display:inline-block;margin-left:7px;padding:1px 6px;border-radius:5px;border:1px solid rgba(227,191,109,.55);color:#f3d999;font-size:11px;font-weight:800;vertical-align:1px}' +
       '.dha-item .dha-nota{flex:none;align-self:center;margin-left:10px;min-width:52px;text-align:right;font-size:20px;font-weight:800;font-variant-numeric:tabular-nums}' +
       '.dha-item .dha-ham{font-family:"LM Fell","IM Fell English",Georgia,serif;letter-spacing:.08em}' +
-      '@media (prefers-reduced-motion:reduce){.dha-item .scv-tile.dha-tile::after{animation:none}}';
+      '@media (prefers-reduced-motion:reduce){.dha-item .dha-brillo{animation:none}}';
     document.head.appendChild(s);
   }
   function itemEl(h) {
     var d = document.createElement('div'), leido = !sinLeer(h);
     d.className = 'scampana-item scampana-tocable scv dha-item' + (leido ? ' scampana-leida' : '');
     d.dataset.ham = h.id; d.dataset.t = String(new Date(h.creado_en).getTime()); d.style.setProperty('--scv', '#e3bf6d');
-    d.innerHTML = '<div class="scv-lead"><span class="scv-tile dha-tile" title="Hamilton"></span></div>' +
+    d.innerHTML = '<div class="scv-lead"><span class="scv-tile dha-tile" title="Hamilton"><i class="dha-brillo"></i></span></div>' +
       '<div class="scampana-item-main"><div class="scampana-fila1"><span class="scampana-tipo dha-tipo">Hamilton</span><div class="scampana-item-nombre"><span class="scv-nom">' + esc(h.alumno) + '</span>' + (h.grupo ? '<span class="dha-grupo">' + esc(h.grupo) + '</span>' : '') + '</div></div>' +
       '<div class="scampana-item-sub"><span class="scv-sub-txt">Test de <span class="dha-ham">HAMILTON</span> · ' + esc(camino(h.camino)) + ' · ' + esc(hace(h.creado_en)) + '</span></div></div>' +
       '<div class="dha-nota" style="color:' + notaCol(h.nota) + '">' + esc(notaTxt(h.nota)) + '</div>';
