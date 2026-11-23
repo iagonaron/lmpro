@@ -84,8 +84,8 @@
     s.textContent =
       '@font-face{font-family:"LM Fell";src:url(https://gp.lmathome.es/hitos/f-fell.woff2) format("woff2");font-display:swap}' +
       '.dha-item .scampana-tipo.dha-tipo{color:#e3bf6d;font-family:"LM Fell","IM Fell English",Georgia,serif;letter-spacing:.12em;text-transform:uppercase}' +
-      '.dha-item .scv-tile.dha-tile{background:#170d05 url(' + VELA + ') 74% 18%/auto 190% no-repeat;border-color:#e3bf6d!important;box-shadow:inset 0 0 0 1px rgba(0,0,0,.25)}' +
-      '.dha-item .dha-brillo{position:absolute;top:0;right:0;bottom:0;left:0;border-radius:inherit;background:radial-gradient(circle at 74% 30%,rgba(255,186,92,.38),rgba(255,170,70,0) 55%);mix-blend-mode:screen;animation:dhaVela 3.2s linear infinite;pointer-events:none}' +
+      '.dha-item .scv-tile.dha-tile{background:#170d05 url(' + VELA + ') 83% 6%/auto 240% no-repeat;border-color:#e3bf6d!important;box-shadow:inset 0 0 0 1px rgba(0,0,0,.25)}' +
+      '.dha-item .dha-brillo{position:absolute;top:0;right:0;bottom:0;left:0;border-radius:inherit;background:radial-gradient(circle at 50% 28%,rgba(255,186,92,.38),rgba(255,170,70,0) 55%);mix-blend-mode:screen;animation:dhaVela 3.2s linear infinite;pointer-events:none}' +
       '@keyframes dhaVela{0%{opacity:.7}12%{opacity:1}22%{opacity:.55}35%{opacity:.95}50%{opacity:.7}64%{opacity:1}80%{opacity:.62}100%{opacity:.7}}' +
       '.dha-item .scv-tile.dha-tile{position:relative}' +
       '.dha-item .dha-grupo{display:inline-block;margin-left:7px;padding:1px 6px;border-radius:5px;border:1px solid rgba(227,191,109,.55);color:#f3d999;font-size:11px;font-weight:800;vertical-align:1px}' +
