@@ -35,7 +35,7 @@
     var n = Math.round((hoy - d0) / 864e5); if (n === 1) return 'ayer';
     return d.toLocaleDateString('es-ES', { day: 'numeric', month: 'numeric' });
   }
-  function camino(c) { return c === 'video' ? 'el vídeo' : (c === 'expres' ? 'Hamilton exprés' : 'sin camino'); }
+  function camino(c) { return c === 'video' ? 'vídeo' : (c === 'expres' ? 'portal interactivo' : 'sin camino'); }
   function notaTxt(n) { var x = Number(n); return isFinite(x) ? x.toFixed(2).replace('.', ',') : '—'; }
   function notaCol(n) { var x = Number(n); return !isFinite(x) ? '#cbd5e1' : (x >= 7 ? '#4ade80' : (x >= 5 ? '#fbbf24' : '#f87171')); }
 
