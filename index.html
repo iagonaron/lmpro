@@ -4433,13 +4433,11 @@ function showEnig(kind){
     var fraseP='<b>Hola'+(nom?', '+esc(nom):'')+'.</b> Como haces las fichas en papel, ¿puedes hacer esta tarea? Si no tienes medios para verla, '
       +'pídeme por <b>CentrosNET</b> que te la convalide o que te exima.';
     var url=esc(hp.url||'');
-    var sec, btn;
-    if(ent){
-      sec='<span class="h4-hecho">Entregado</span>';
-      btn=nota?('<span class="h4-nota"><span>Nota</span><b class="'+(Number(e.nota)>=5?'h4-ok':'h4-mal')+'">'+esc(nota)+'</b></span>'):'';
-      btn=btn+'';
+    var sec;
+    if(ent){   /* entregado: en gris y, en el sitio del botón, su nota (lleva a sus respuestas) */
+      sec='<a class="h4-nota" href="'+url+'" target="_blank" rel="noopener" title="Ver mis respuestas"><span>Nota</span><b class="'+(Number(e.nota)>=5?'h4-ok':'h4-mal')+'">'+esc(nota||'—')+'</b></a>';
     }else if(cerr){
-      sec='<span class="h4-hecho">Plazo terminado</span>'; btn='';
+      sec='<span class="h4-hecho">Plazo terminado</span>';
     }else{
       var q=isFinite(fin)?ham4Queda(fin):'';
       sec=(q?'<span class="h4-cuenta" data-fin="'+esc(hp.hasta)+'" title="Tiempo que te queda">'+esc(q)+'</span>':'')
@@ -4453,7 +4451,7 @@ function showEnig(kind){
       +'<div class="h4-caminos"><div class="h4-cam"><b>El vídeo</b><span>Análisis de Jaime Altozano</span><em>32 min + test</em></div>'
       +'<div class="h4-cam"><b>Hamilton exprés</b><span>Portal interactivo</span><em>15 min + test</em></div></div>'
       +'<p class="h4-p">Puedes dejarlo a medias y seguir otro día. El test tiene <b>un solo intento</b> y vale lo mismo que una ficha.</p>'
-      +'<p class="h4-p h4-sin"><span class="h4-sello">Sin tiempo extra</span> Si no lo terminas antes de tu clase'+(F.corto?' del '+esc(F.corto):'')+', cuenta como no entregado.</p>'
+      +'<p class="h4-p h4-sin"><span class="h4-sello">Sin tiempo extra</span> Si no lo terminas antes de tu clase'+(F.corto?' del '+esc(F.corto).replace(/(\d+)/g,'<span class="h4-n">$1</span>'):'')+', cuenta como no entregado.</p>'
       +'<p class="h4-firma">— Iago</p></div></div>';
     var cls='alu-item cv2 ham4'+(ent||cerr?' hecha h4-gris':' no-leido')+(papel?' h4-papel-al':'');
     return '<div class="'+cls+'" data-id="'+esc(o.id)+'" style="--cc:#e3bf6d;--ccf:#e3bf6d;--cct:#1a1006">'
@@ -4463,7 +4461,7 @@ function showEnig(kind){
       +'<div class="alu-item-main cv2-mid h4-mid"><div class="cv2-cont">'
       +'<div class="cv2-l1"><span class="alu-item-tit h4-tit"><span class="h4-nom">Hamilton</span><span class="h4-sub">Trabajo previo y test</span></span></div>'
       +'<div class="alu-item-cuerpo h4-txt">'+(papel?fraseP:frase)+'</div></div>'
-      +'<div class="cv2-der h4-der"><div class="cv2-sec h4-sec">'+sec+'</div><div class="cv2-bot h4-bot">'+(ent?btn:mas)+'</div></div>'
+      +'<div class="cv2-der h4-der"><div class="cv2-sec h4-sec">'+sec+'</div><div class="cv2-bot h4-bot">'+mas+'</div></div>'
       +'</div>'+carta+'</div>';
   }
   /* «Leer mensaje completo» ⇄ «Ver menos» y la cuenta atrás al día (cada 30 s mientras la campana está abierta) */
@@ -4490,12 +4488,13 @@ function showEnig(kind){
     s.textContent=[
       P+'{overflow:hidden!important;border:1px solid rgba(227,191,109,.78)!important;background:#170d05!important;isolation:isolate;box-shadow:0 6px 22px rgba(0,0,0,.3)!important}',
       P+' .h4-fondo{position:absolute;inset:0;z-index:-1;pointer-events:none;border-radius:inherit;'
-        +'background:linear-gradient(90deg,#170d05 0%,rgba(23,13,5,.97) 38%,rgba(23,13,5,.72) 58%,rgba(23,13,5,.2) 76%,rgba(23,13,5,.35) 100%),'
-        +'url('+HAM4_IMG+'03-escritorio-1776.webp) right -150px top 40%/620px auto no-repeat,#170d05}',
+        +'background:linear-gradient(90deg,#170d05 0%,rgba(23,13,5,.96) 44%,rgba(23,13,5,.6) 60%,rgba(23,13,5,.3) 74%,rgba(23,13,5,.5) 100%),'
+        +'url('+HAM4_IMG+'03-escritorio-1776.webp) right 62px top -20px/420px auto no-repeat,#170d05}',
       /* la vela: un halo cálido que parpadea sobre la llama de la textura */
-      P+' .h4-vela{position:absolute;right:248px;top:-26px;width:150px;height:150px;border-radius:50%;background:radial-gradient(circle,rgba(255,186,92,.42) 0,rgba(255,170,70,.16) 38%,rgba(255,170,70,0) 70%);mix-blend-mode:screen;animation:h4Vela 3.2s linear infinite}',
+      P+' .h4-vela{position:absolute;right:202px;top:-46px;width:140px;height:140px;border-radius:50%;background:radial-gradient(circle,rgba(255,186,92,.34) 0,rgba(255,170,70,.12) 38%,rgba(255,170,70,0) 70%);mix-blend-mode:screen;animation:h4Vela 3.2s linear infinite}',
       '@keyframes h4Vela{0%{opacity:.75;transform:scale(1)}8%{opacity:1}15%{opacity:.6;transform:scale(.96)}27%{opacity:.95;transform:scale(1.04)}40%{opacity:.72}55%{opacity:1;transform:scale(1)}63%{opacity:.66}76%{opacity:.98;transform:scale(1.03)}88%{opacity:.8}100%{opacity:.75;transform:scale(1)}}',
       P+' .h4-tile{border-color:#e3bf6d!important;color:#e3bf6d!important;background:rgba(23,13,5,.6)}',
+      P+' .h4-tile .alu-dot{display:none!important}',
       P+' .h4-pluma{width:22px;height:22px}',
       P+'.no-leido .h4-pluma{animation:h4Pluma 4.5s ease-in-out infinite;transform-origin:20% 90%}',
       '@keyframes h4Pluma{0%,70%,100%{transform:rotate(0)}78%{transform:rotate(-9deg)}86%{transform:rotate(5deg)}93%{transform:rotate(-3deg)}}',
@@ -4517,12 +4516,12 @@ function showEnig(kind){
       '@keyframes h4Flecha{0%,100%{transform:translateY(-1px)}50%{transform:translateY(3px)}}',
       P+'.h4-abierta .h4-flecha{transform:rotate(180deg)}',
       P+' .h4-hecho{flex:1 1 auto;box-sizing:border-box;height:28px;display:inline-flex;align-items:center;justify-content:center;border:1.5px solid rgba(227,191,109,.7);border-radius:8px;color:#f3d999;font-size:13px;font-weight:800}',
-      P+' .h4-nota{box-sizing:border-box;width:100%;height:28px;display:inline-flex;align-items:center;justify-content:space-between;padding:0 12px;border-radius:8px;background:rgba(23,13,5,.78);border:1.5px solid rgba(227,191,109,.7);color:#f3d999;font-size:13px;font-weight:700}',
+      P+' .h4-nota{box-sizing:border-box;width:100%;text-decoration:none!important;height:28px;display:inline-flex;align-items:center;justify-content:space-between;padding:0 12px;border-radius:8px;background:rgba(23,13,5,.78);border:1.5px solid rgba(227,191,109,.7);color:#f3d999;font-size:13px;font-weight:700}',
       P+' .h4-nota b{font-size:15px}',
       P+' .h4-ok{color:#4ade80}',P+' .h4-mal{color:#f87171}',
       /* la carta: plegada, solo asoma el borde del papel por abajo; desplegada, debajo del texto, de lado a lado */
-      P+' .h4-carta{grid-column:2;position:absolute;left:76px;right:246px;bottom:0;height:5px;overflow:hidden;border-radius:6px 6px 0 0;transition:none}',
-      P+' .h4-carta .h4-papel{height:5px;padding:0;background:#efe3c6 url('+HAM4_IMG+'papel-carta.webp) center/cover;box-shadow:0 -1px 6px rgba(0,0,0,.4)}',
+      P+' .h4-carta{grid-column:2;position:absolute;left:76px;right:246px;bottom:0;height:7px;overflow:hidden;border-radius:6px 6px 0 0;transition:none}',
+      P+' .h4-carta .h4-papel{height:7px;padding:0;background:#efe3c6 url('+HAM4_IMG+'papel-carta.webp) center/cover;box-shadow:0 -1px 6px rgba(0,0,0,.4)}',
       P+' .h4-carta .h4-papel>*{visibility:hidden}',
       P+'.h4-abierta .h4-carta{position:relative;left:auto;right:auto;bottom:auto;height:auto;margin-top:10px;border-radius:6px;overflow:visible}',
       P+'.h4-abierta .h4-carta .h4-papel{height:auto;padding:14px 16px 10px;border-radius:6px;box-shadow:0 4px 18px rgba(0,0,0,.45),inset 0 0 0 1px rgba(120,90,40,.25)}',
@@ -4538,6 +4537,7 @@ function showEnig(kind){
       P+' .h4-cam em{font-style:normal;font-family:"Helvetica Neue",Arial,sans-serif;font-size:12.5px;font-weight:800;color:#9b1c14}',
       P+' .h4-sin{color:#a21f16}',
       P+' .h4-sello{display:inline-block;margin-right:6px;padding:2px 7px 1px;border-radius:3px;background:#9b1c14;color:#fff3e6;font-family:"Helvetica Neue",Arial,sans-serif;font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;vertical-align:2px}',
+      P+' .h4-n{font-family:Georgia,"Times New Roman",serif;font-size:.94em}',
       P+' .h4-firma{margin:0!important;text-align:right;font-style:italic;font-size:15px}',
       P+'.h4-gris{filter:grayscale(1)!important;opacity:.6!important}',
       P+'.h4-gris .h4-vela,'+P+'.h4-gris .h4-carta:not(:hover){animation:none}',
