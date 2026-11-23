@@ -2319,7 +2319,7 @@ function showEnig(kind){
   }
   function cv2Recortes(body){
     body=body||document.getElementById('alu-body'); if(!body) return;
-    Array.prototype.forEach.call(body.querySelectorAll('.alu-item.cv2:not(.cv2-tareas):not(.cv2-hito):not(.rsm):not(.dct-det), .alu-item.cv2.mgv.cv2-hito'),function(c){ cv2Mas(c, c.querySelector(':scope > .cv2-mid .cv2-l1')); });   /* (16-oct-2026) sin «Leer mensaje completo» en las de los portales: no tienen más que leer */
+    Array.prototype.forEach.call(body.querySelectorAll('.alu-item.cv2:not(.cv2-tareas):not(.cv2-hito):not(.rsm):not(.dct-det):not(.ham4), .alu-item.cv2.mgv.cv2-hito'),function(c){ cv2Mas(c, c.querySelector(':scope > .cv2-mid .cv2-l1')); });   /* (16-oct-2026) sin «Leer mensaje completo» en las de los portales: no tienen más que leer */
     Array.prototype.forEach.call(body.querySelectorAll('.ts-parte.cv2-parte'),function(p){ cv2Mas(p, p.querySelector('.cv2-pt')); });
   }
   var _cv2RT=0;
@@ -4395,6 +4395,158 @@ function showEnig(kind){
       return c;
     }catch(er){ return c; }
   }
+  /* ===== (23-nov-2026, Iago) HAMILTON v4: la tarjeta de la campana del alumno (diseño aprobado tarjeta-hamilton-v4).
+     Mismo molde y altura que las demás (.alu-item.cv2, 94 px): pluma de oro + fecha · «HAMILTON · Trabajo previo y test» y el
+     texto plegado · a la derecha, la cuenta atrás y «Empezar» (o «Retomar» si lo dejó a medias; al entregar, en gris con su nota)
+     y debajo «Leer mensaje completo ⌄», que despliega la carta en papel (los dos caminos, un solo intento, SIN TIEMPO EXTRA).
+     Fija arriba de la campana hasta que entregue el test. A los alumnos de fichas en PAPEL, el aviso personalizado va en la
+     propia tarjeta plegada (Iago, 23-nov 15:47). Textura: hamilton/img/fondos/03-escritorio-1776.webp (la vela parpadea) y
+     papel-carta.webp. Para volver a la tarjeta del 22-oct: en AluCampana, quitar la línea «if(hp4) return ham4Tarjeta(o,_f);». */
+  var HAM4_IMG='hamilton/img/fondos/';
+  var HAM4_PLUMA='<svg class="h4-pluma" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.2 3.6c-5.4.6-9.6 3.6-11.9 8.5-.9 1.9-1.4 3.8-1.6 5.6l-2.3 2.6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M20.2 3.6c.4 4.6-1.7 9-5.6 11.5-2.2 1.4-4.6 2.2-7.6 2.6.6-3.2 1.6-5.9 3.3-8.1 2.4-3.1 5.8-5.2 9.9-6z" fill="currentColor" opacity=".9"/><path d="M8.4 15.2l3.3-3.6M10.3 16.6l3.6-3.4M13 15.6l2.6-2.6" stroke="#1a1006" stroke-width=".9" stroke-linecap="round" opacity=".55"/></svg>';
+  function ham4Fecha(iso){   /* «jueves 10 de diciembre» y «18:00», en hora de Madrid */
+    var d=new Date(iso), o={timeZone:'Europe/Madrid'};
+    try{
+      var dia=d.toLocaleDateString('es-ES',{timeZone:'Europe/Madrid',weekday:'long',day:'numeric',month:'long'}).replace(',','');
+      var hora=d.toLocaleTimeString('es-ES',{timeZone:'Europe/Madrid',hour:'2-digit',minute:'2-digit'});
+      var corto=d.toLocaleDateString('es-ES',{timeZone:'Europe/Madrid',weekday:'long',day:'numeric'}).replace(',','');
+      return {dia:dia, hora:hora, corto:corto};
+    }catch(e){ return {dia:'', hora:'', corto:''}; }
+  }
+  function ham4Queda(fin){   /* «17 d 6 h» · «5 h 20 min» · «12 min» */
+    var ms=fin-Date.now(); if(!(ms>0)) return '';
+    var m=Math.floor(ms/6e4), d=Math.floor(m/1440), h=Math.floor((m%1440)/60), mi=m%60;
+    if(d>0) return d+' d '+h+' h';
+    if(h>0) return h+' h '+mi+' min';
+    return Math.max(1,mi)+' min';
+  }
+  function ham4Tarjeta(o,_f){
+    ham4CSS();
+    var hp=o.payload_json||{}, e=hp.estado||{}, ent=!!e.entregado;
+    var emp=!ent && !!(e.camino || e.completado || (e.progreso && Object.keys(e.progreso).length));
+    var fin=hp.hasta?Date.parse(hp.hasta):NaN, cerr=!ent && isFinite(fin) && fin<Date.now();
+    var F=isFinite(fin)?ham4Fecha(hp.hasta):{dia:'',hora:'',corto:''};
+    var nota=(ent && e.nota!=null && isFinite(Number(e.nota)))?Number(e.nota).toFixed(2).replace('.',','):'';
+    var papel=!!e.papel, nom=String(e.nombre||'').trim();
+    var plazo=F.dia?('Plazo: <b>'+esc(F.dia)+', '+esc(F.hora)+'</b>, antes de tu clase.'):'';
+    var frase='En clase vamos a ver <i>Hamilton</i>, el musical. Para disfrutarlo de verdad, antes haces un trabajo previo y un test. '+plazo;
+    var fraseP='<b>Hola'+(nom?', '+esc(nom):'')+'.</b> Como haces las fichas en papel, ¿puedes hacer esta tarea? Si no tienes medios para verla, '
+      +'pídeme por <b>CentrosNET</b> que te la convalide o que te exima.';
+    var url=esc(hp.url||'');
+    var sec, btn;
+    if(ent){
+      sec='<span class="h4-hecho">Entregado</span>';
+      btn=nota?('<span class="h4-nota"><span>Nota</span><b class="'+(Number(e.nota)>=5?'h4-ok':'h4-mal')+'">'+esc(nota)+'</b></span>'):'';
+      btn=btn+'';
+    }else if(cerr){
+      sec='<span class="h4-hecho">Plazo terminado</span>'; btn='';
+    }else{
+      var q=isFinite(fin)?ham4Queda(fin):'';
+      sec=(q?'<span class="h4-cuenta" data-fin="'+esc(hp.hasta)+'" title="Tiempo que te queda">'+esc(q)+'</span>':'')
+        +'<a class="h4-ir" href="'+url+'" target="_blank" rel="noopener">'+(emp?'Retomar':'Empezar')+'</a>';
+    }
+    var mas='<button type="button" class="h4-mas" aria-expanded="false"><span class="h4-mas-t">Leer mensaje completo</span>'
+      +'<svg class="h4-flecha" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>';
+    var carta='<div class="h4-carta" aria-hidden="true"><div class="h4-papel">'
+      +(papel?'<p class="h4-p">'+frase+'</p>':'')
+      +'<p class="h4-p h4-elige">Elige tu camino. Los dos acaban en el mismo test:</p>'
+      +'<div class="h4-caminos"><div class="h4-cam"><b>El vídeo</b><span>Análisis de Jaime Altozano</span><em>32 min + test</em></div>'
+      +'<div class="h4-cam"><b>Hamilton exprés</b><span>Portal interactivo</span><em>15 min + test</em></div></div>'
+      +'<p class="h4-p">Puedes dejarlo a medias y seguir otro día. El test tiene <b>un solo intento</b> y vale lo mismo que una ficha.</p>'
+      +'<p class="h4-p h4-sin"><span class="h4-sello">Sin tiempo extra</span> Si no lo terminas antes de tu clase'+(F.corto?' del '+esc(F.corto):'')+', cuenta como no entregado.</p>'
+      +'<p class="h4-firma">— Iago</p></div></div>';
+    var cls='alu-item cv2 ham4'+(ent||cerr?' hecha h4-gris':' no-leido')+(papel?' h4-papel-al':'');
+    return '<div class="'+cls+'" data-id="'+esc(o.id)+'" style="--cc:#e3bf6d;--ccf:#e3bf6d;--cct:#1a1006">'
+      +'<span class="h4-fondo" aria-hidden="true"><i class="h4-vela"></i></span>'
+      +'<div class="cv2-izq"><span class="cv2-tile h4-tile" aria-hidden="true">'+HAM4_PLUMA+'<span class="alu-dot"></span></span>'
+      +(_f?'<span class="alu-item-fecha cv2-fecha">'+esc(_f)+'</span>':'')+'</div>'
+      +'<div class="alu-item-main cv2-mid h4-mid"><div class="cv2-cont">'
+      +'<div class="cv2-l1"><span class="alu-item-tit h4-tit"><span class="h4-nom">Hamilton</span><span class="h4-sub">Trabajo previo y test</span></span></div>'
+      +'<div class="alu-item-cuerpo h4-txt">'+(papel?fraseP:frase)+'</div></div>'
+      +'<div class="cv2-der h4-der"><div class="cv2-sec h4-sec">'+sec+'</div><div class="cv2-bot h4-bot">'+(ent?btn:mas)+'</div></div>'
+      +'</div>'+carta+'</div>';
+  }
+  /* «Leer mensaje completo» ⇄ «Ver menos» y la cuenta atrás al día (cada 30 s mientras la campana está abierta) */
+  function ham4Enlazar(body){
+    if(!body) return;
+    Array.prototype.forEach.call(body.querySelectorAll('.ham4 .h4-mas'),function(b){
+      if(b.__h4) return; b.__h4=1;
+      b.addEventListener('click',function(ev){ ev.preventDefault(); ev.stopPropagation();
+        var c=b.closest('.ham4'); var ab=c.classList.toggle('h4-abierta');
+        b.setAttribute('aria-expanded',ab?'true':'false'); b.querySelector('.h4-mas-t').textContent=ab?'Ver menos':'Leer mensaje completo';
+        var k=c.querySelector('.h4-carta'); if(k) k.setAttribute('aria-hidden',ab?'false':'true'); });
+    });
+    Array.prototype.forEach.call(body.querySelectorAll('.ham4 .h4-ir, .ham4 .h4-mas'),function(a){
+      if(a.__h4s) return; a.__h4s=1; a.addEventListener('click',function(ev){ ev.stopPropagation(); }); });
+    if(!window.__h4Reloj) window.__h4Reloj=setInterval(function(){
+      Array.prototype.forEach.call(document.querySelectorAll('.ham4 .h4-cuenta[data-fin]'),function(s){
+        var q=ham4Queda(Date.parse(s.getAttribute('data-fin'))); if(q && s.textContent!==q) s.textContent=q; });
+    },30000);
+  }
+  function ham4CSS(){
+    if(document.getElementById('ham4-css')) return;
+    try{ hitoCSS(); }catch(e){}   /* trae «LM Fell» (IM Fell English), la letra de la carta del portal */
+    var P='#alu-body .alu-item.cv2.ham4', s=document.createElement('style'); s.id='ham4-css';
+    s.textContent=[
+      P+'{overflow:hidden!important;border:1px solid rgba(227,191,109,.78)!important;background:#170d05!important;isolation:isolate;box-shadow:0 6px 22px rgba(0,0,0,.3)!important}',
+      P+' .h4-fondo{position:absolute;inset:0;z-index:-1;pointer-events:none;border-radius:inherit;'
+        +'background:linear-gradient(90deg,#170d05 0%,rgba(23,13,5,.97) 38%,rgba(23,13,5,.72) 58%,rgba(23,13,5,.2) 76%,rgba(23,13,5,.35) 100%),'
+        +'url('+HAM4_IMG+'03-escritorio-1776.webp) right -150px top 40%/620px auto no-repeat,#170d05}',
+      /* la vela: un halo cálido que parpadea sobre la llama de la textura */
+      P+' .h4-vela{position:absolute;right:248px;top:-26px;width:150px;height:150px;border-radius:50%;background:radial-gradient(circle,rgba(255,186,92,.42) 0,rgba(255,170,70,.16) 38%,rgba(255,170,70,0) 70%);mix-blend-mode:screen;animation:h4Vela 3.2s linear infinite}',
+      '@keyframes h4Vela{0%{opacity:.75;transform:scale(1)}8%{opacity:1}15%{opacity:.6;transform:scale(.96)}27%{opacity:.95;transform:scale(1.04)}40%{opacity:.72}55%{opacity:1;transform:scale(1)}63%{opacity:.66}76%{opacity:.98;transform:scale(1.03)}88%{opacity:.8}100%{opacity:.75;transform:scale(1)}}',
+      P+' .h4-tile{border-color:#e3bf6d!important;color:#e3bf6d!important;background:rgba(23,13,5,.6)}',
+      P+' .h4-pluma{width:22px;height:22px}',
+      P+'.no-leido .h4-pluma{animation:h4Pluma 4.5s ease-in-out infinite;transform-origin:20% 90%}',
+      '@keyframes h4Pluma{0%,70%,100%{transform:rotate(0)}78%{transform:rotate(-9deg)}86%{transform:rotate(5deg)}93%{transform:rotate(-3deg)}}',
+      P+' .h4-tit{display:flex!important;align-items:baseline;gap:10px;overflow:hidden}',
+      P+' .h4-nom{font-family:"LM Fell","IM Fell English",Georgia,serif;font-weight:400;font-size:19px;letter-spacing:.16em;text-transform:uppercase;color:#f3d999}',
+      P+' .h4-sub{font-family:"LM Fell","IM Fell English",Georgia,serif;font-style:italic;font-weight:400;font-size:15px;letter-spacing:.01em;color:#e8d6ae}',
+      P+' .h4-txt{color:rgba(255,246,226,.9)!important;text-shadow:0 1px 6px rgba(0,0,0,.85)}',
+      P+' .h4-txt b{color:#fff;font-weight:800}',
+      P+'.h4-papel-al .h4-txt b:first-child{color:#f3d999}',
+      P+' .h4-der{grid-template-rows:28px 28px!important;row-gap:6px!important;position:relative;z-index:1}',
+      P+' .h4-sec{gap:8px!important}',
+      P+' .h4-cuenta{flex:none;box-sizing:border-box;height:28px;padding:0 10px;display:inline-flex;align-items:center;border:1.5px solid #e3bf6d;border-radius:8px;background:rgba(23,13,5,.72);color:#f3d999;font-size:13.5px;font-weight:800;white-space:nowrap;font-variant-numeric:tabular-nums}',
+      P+' .h4-ir{flex:1 1 auto;box-sizing:border-box;height:28px;display:inline-flex;align-items:center;justify-content:center;border-radius:8px;background:linear-gradient(180deg,#f0cf7f,#d9ae55);color:#1a1006!important;font-size:14px;font-weight:800;text-decoration:none!important;box-shadow:0 3px 12px rgba(0,0,0,.45);white-space:nowrap}',
+      P+' .h4-ir:hover{filter:brightness(1.08)}',
+      P+' .h4-mas{box-sizing:border-box;width:100%;height:28px;margin:0;padding:0 10px;display:inline-flex;align-items:center;justify-content:center;gap:7px;border:1.5px solid #e3bf6d;border-radius:8px;background:rgba(23,13,5,.78);color:#f3d999;font-family:inherit;font-size:13px;font-weight:800;white-space:nowrap;cursor:pointer}',
+      P+' .h4-mas:hover{background:rgba(60,38,12,.9)}',
+      P+' .h4-flecha{width:15px;height:15px;flex:none}',
+      P+'.no-leido:not(.h4-abierta) .h4-flecha{animation:h4Flecha 1.6s ease-in-out infinite}',
+      '@keyframes h4Flecha{0%,100%{transform:translateY(-1px)}50%{transform:translateY(3px)}}',
+      P+'.h4-abierta .h4-flecha{transform:rotate(180deg)}',
+      P+' .h4-hecho{flex:1 1 auto;box-sizing:border-box;height:28px;display:inline-flex;align-items:center;justify-content:center;border:1.5px solid rgba(227,191,109,.7);border-radius:8px;color:#f3d999;font-size:13px;font-weight:800}',
+      P+' .h4-nota{box-sizing:border-box;width:100%;height:28px;display:inline-flex;align-items:center;justify-content:space-between;padding:0 12px;border-radius:8px;background:rgba(23,13,5,.78);border:1.5px solid rgba(227,191,109,.7);color:#f3d999;font-size:13px;font-weight:700}',
+      P+' .h4-nota b{font-size:15px}',
+      P+' .h4-ok{color:#4ade80}',P+' .h4-mal{color:#f87171}',
+      /* la carta: plegada, solo asoma el borde del papel por abajo; desplegada, debajo del texto, de lado a lado */
+      P+' .h4-carta{grid-column:2;position:absolute;left:76px;right:246px;bottom:0;height:5px;overflow:hidden;border-radius:6px 6px 0 0;transition:none}',
+      P+' .h4-carta .h4-papel{height:5px;padding:0;background:#efe3c6 url('+HAM4_IMG+'papel-carta.webp) center/cover;box-shadow:0 -1px 6px rgba(0,0,0,.4)}',
+      P+' .h4-carta .h4-papel>*{visibility:hidden}',
+      P+'.h4-abierta .h4-carta{position:relative;left:auto;right:auto;bottom:auto;height:auto;margin-top:10px;border-radius:6px;overflow:visible}',
+      P+'.h4-abierta .h4-carta .h4-papel{height:auto;padding:14px 16px 10px;border-radius:6px;box-shadow:0 4px 18px rgba(0,0,0,.45),inset 0 0 0 1px rgba(120,90,40,.25)}',
+      P+'.h4-abierta .h4-carta .h4-papel>*{visibility:visible}',
+      P+' .h4-papel{font-family:"LM Fell","IM Fell English",Georgia,serif;color:#2b1d0e;font-size:16px;line-height:1.4}',
+      P+' .h4-p{margin:0 0 9px!important}',
+      P+' .h4-p b{font-weight:700;font-family:Georgia,"Times New Roman",serif}',
+      P+' .h4-elige{font-size:17px}',
+      P+' .h4-caminos{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 0 10px}',
+      P+' .h4-cam{display:flex;flex-direction:column;gap:1px;padding:8px 10px;border:1px solid rgba(90,64,30,.45);border-radius:6px;background:rgba(255,250,235,.35)}',
+      P+' .h4-cam b{font-family:"LM Fell","IM Fell English",Georgia,serif;font-weight:400;font-size:17px;color:#24170a}',
+      P+' .h4-cam span{font-family:"Helvetica Neue",Arial,sans-serif;font-size:11.5px;color:#4a3a26}',
+      P+' .h4-cam em{font-style:normal;font-family:"Helvetica Neue",Arial,sans-serif;font-size:12.5px;font-weight:800;color:#9b1c14}',
+      P+' .h4-sin{color:#a21f16}',
+      P+' .h4-sello{display:inline-block;margin-right:6px;padding:2px 7px 1px;border-radius:3px;background:#9b1c14;color:#fff3e6;font-family:"Helvetica Neue",Arial,sans-serif;font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;vertical-align:2px}',
+      P+' .h4-firma{margin:0!important;text-align:right;font-style:italic;font-size:15px}',
+      P+'.h4-gris{filter:grayscale(1)!important;opacity:.6!important}',
+      P+'.h4-gris .h4-vela,'+P+'.h4-gris .h4-carta:not(:hover){animation:none}',
+      '@media (max-width:640px){'+P+' .h4-fondo{background:linear-gradient(180deg,rgba(23,13,5,.86) 0%,rgba(23,13,5,.6) 50%,rgba(23,13,5,.9) 100%),url('+HAM4_IMG+'03-escritorio-1776.webp) center/cover,#170d05}'
+        +P+' .h4-vela{right:30%}'+P+' .h4-carta{right:16px}'+P+' .h4-caminos{grid-template-columns:1fr}}',
+      '@media (prefers-reduced-motion:reduce){'+P+' .h4-vela,'+P+' .h4-pluma,'+P+' .h4-flecha{animation:none!important}}'
+    ].join('\n');
+    document.head.appendChild(s);
+  }
   function hitoTema(portal, n){
     var T=HITO_TEMAS[portal], q=(T && T.partes && T.partes[n]) || null;
     return {tema:(q && q.tema) || (T && T.tema) || 'cab'};
@@ -4622,9 +4774,12 @@ function showEnig(kind){
         if(!(fp.ficha_id && _entregadas[fp.ficha_id]) && !plazoFinDe(fp)) return true; }
       return otrasLista(pj).some(function(x,i){ return x.papel_n!=null && !x.corregida && !parteHecha(se,otraParte(i)); });
     };
+    /* (23-nov-2026, Iago) HAMILTON fija arriba de todo (como «Tareas de la semana») hasta que entregue el test */
+    var hamPrio=function(o){ var pj=(o&&o.payload_json)||{}; if(!pj.ham_portal) return false; var e=pj.estado||{}, f=pj.hasta?Date.parse(pj.hasta):NaN;
+      return !e.entregado && !(isFinite(f) && f<Date.now()); };
     list.sort(function(a,b){
-      var pa=(papelNueva(a)||enTiempoExtra(a)||tareasPrio(a))?-1:0;
-      var pb=(papelNueva(b)||enTiempoExtra(b)||tareasPrio(b))?-1:0;
+      var pa=hamPrio(a)?-2:((papelNueva(a)||enTiempoExtra(a)||tareasPrio(a))?-1:0);
+      var pb=hamPrio(b)?-2:((papelNueva(b)||enTiempoExtra(b)||tareasPrio(b))?-1:0);
       return (pa-pb) || (_cuandoAviso(b)-_cuandoAviso(a)) || _ordHito(a,b);
     });
     var _hitosD={}; try{ hitoCSS(); _hitosD=await hitosAbiertos(id, listTodas); }catch(eH){}   /* (16-oct-2026) los días abiertos de cada portal */
@@ -4943,6 +5098,7 @@ function showEnig(kind){
       // temporalidad (el diseño de plazos de las fichas)… 7 días con horario límite jueves a la hora que empieza su clase». La carta con
       // lacre a la luz de una vela; el plazo, las casillas de las fichas (7, sin tiempo extra) hasta su jueves; el botón lleva a su
       // portal («Ir al portal» → «Continuar» → ya entregado, en gris con su nota y «Ver mis respuestas»). La pinta el medallero.
+      if(o.payload_json && o.payload_json.ham_portal) return ham4Tarjeta(o,_f);   /* (23-nov-2026) Hamilton v4 */
       if(o.payload_json && o.payload_json.ham_portal){
         var hp=o.payload_json, hE=hp.estado||{}, hEnt=!!hE.entregado, hEmp=!!(hE.camino||hE.completado);
         var hFin=hp.hasta?Date.parse(hp.hasta):NaN, hCerr=!hEnt && isFinite(hFin) && hFin<Date.now();
@@ -4996,7 +5152,8 @@ function showEnig(kind){
         cuerpo:cuerpoH?'<div class="alu-item-cuerpo'+((pj.bienvenida||pj.mensaje_prof)?' alu-prewrap':'')+'">'+cuerpoH+'</div>':'',
         btn:btnF||((!fid && !o.leido)?cv2Visto(o.id):''), fecha:_f, peligro:extra});
     }).join(''):'<div class="alu-vacio">Todavía no tienes notificaciones.</div>');
-    try{ cv2Recortes(body); }catch(eR){}   /* (15-oct-2026, mediodía) «Leer mensaje completo» donde algo no cabe */
+    try{ cv2Recortes(body); }catch(eR){}
+    try{ ham4Enlazar(body); }catch(eH4){}   /* (23-nov-2026) Hamilton v4: «Leer mensaje completo» y cuenta atrás   /* (15-oct-2026, mediodía) «Leer mensaje completo» donde algo no cabe */
     try{ if(window.__LM_HAM__) window.__LM_HAM__.decorar(body); }catch(e){}
     // FASE 6.9 · las entregadas no leídas se marcan LEÍDAS solas (el alumno
     // ya cumplió: que el globito rojo no le persiga). Un solo refresco al final.
