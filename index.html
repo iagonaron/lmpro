@@ -7309,6 +7309,19 @@ window.DictadoClase = (function(){
   // Agrupa corcheas/semicorcheas por pulso (VF.Beam manual) Y fija la DIRECCIÓN DE PLICAS:
   // regla de la 3ª línea (clave sol=Si4=71, clave fa=Re3=50): en la línea o por encima,
   // plica abajo; por debajo, plica arriba. En un grupo con corchete, gana la mayoría.
+  /* (24-nov-2026, Iago: «en el dictado revelado salían las 3 notas con su corchete, pero no el número 3») TRESILLOS:
+     cada 3 notas seguidas con tm≈2/3 llevan su «3» (VF.Tuplet). Si van con corchete, solo el número; si no, con llave. */
+  function tupletsPorTm(pares){
+    var out=[], cur=[];
+    (pares||[]).forEach(function(o){
+      if(o && o.tm && Math.abs(o.tm-2/3)<0.02){ cur.push(o); if(cur.length===3){ out.push(cur); cur=[]; } }
+      else cur=[];
+    });
+    return out.map(function(g){
+      var conCorchete=g.every(function(o){ return /^(8|16|32)/.test(String(o.d||'')) && !/r/.test(String(o.d||'')); });
+      try{ return new VF.Tuplet(g.map(function(o){return o.sn;}), {num_notes:3, notes_occupied:2, bracketed:!conCorchete, ratioed:false}); }catch(e){ return null; }
+    }).filter(Boolean);
+  }
   function beamsPorPulso(pares, numB, denB, clef){
     var VF=Vex.Flow;
     var DB={'q':1,'8':0.5,'16':0.25,'h':2,'qd':1.5,'hd':3,'w':4};
@@ -7433,6 +7446,7 @@ window.DictadoClase = (function(){
           var stave=trio[0], clef=trio[1], meas=trio[2];
           var pares=notasDeCompas(meas, mi, clef);
           if(!pares.length) return;
+          var tps=tupletsPorTm(pares);   /* (24-nov-2026) el «3» de los tresillos */
           var sns=pares.map(function(o){return o.sn;});
           var v=new VF.Voice({num_beats:num, beat_value:den}).setMode(VF.Voice.Mode.SOFT);
           v.addTickables(sns);
@@ -7440,7 +7454,7 @@ window.DictadoClase = (function(){
           catch(e){ pares.forEach(function(o){ if(/^(#|b|n|##|bb)$/.test(o.acc||'')){ try{ o.sn.addModifier(new VF.Accidental(o.acc),0); }catch(x){} } }); }
           var bs=beamsPorPulso(pares, num, den, clef);   // fija plicas + crea beams (antes de draw)
           voces.push(v);
-          datos.push({stave:stave, voice:v, beams:bs});
+          datos.push({stave:stave, voice:v, beams:bs, tuplets:tps});
         });
         if(voces.length){
           var fmt=new VF.Formatter();
@@ -7463,6 +7477,7 @@ window.DictadoClase = (function(){
           datos.forEach(function(d){
             d.voice.draw(vctx, d.stave);
             d.beams.forEach(function(b){ try{ b.setContext(vctx).draw(); }catch(e){} });
+            (d.tuplets||[]).forEach(function(t){ try{ t.setContext(vctx).draw(); }catch(e){} });
           });
         }
         x+=w;
@@ -7539,6 +7554,7 @@ window.DictadoClase = (function(){
             tiePrevGE={sn:sn, L:L};
           }
         }
+        var tpsGE=tupletsPorTm(paresGE);   /* (24-nov-2026) el «3» de los tresillos */
         if(vNotes.length){
           var voice=new VF.Voice({num_beats:num, beat_value:den});
           voice.setMode(VF.Voice.Mode.SOFT);
@@ -7549,6 +7565,7 @@ window.DictadoClase = (function(){
           new VF.Formatter().joinVoices([voice]).format([voice], w-(k===0?clefW+16:28));
           voice.draw(vctx, stave);
           beams.forEach(function(b){ b.setContext(vctx).draw(); });
+          tpsGE.forEach(function(t){ try{ t.setContext(vctx).draw(); }catch(e){} });
         }
         x+=w;
       }
