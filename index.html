@@ -7312,6 +7312,7 @@ window.DictadoClase = (function(){
   /* (24-nov-2026, Iago: «en el dictado revelado salían las 3 notas con su corchete, pero no el número 3») TRESILLOS:
      cada 3 notas seguidas con tm≈2/3 llevan su «3» (VF.Tuplet). Si van con corchete, solo el número; si no, con llave. */
   function tupletsPorTm(pares){
+    var VF=Vex.Flow;   /* (24-nov-2026, 19:40) sin esto fallaba en silencio y no salía el «3» (ojeada y revelado) */
     var out=[], cur=[];
     (pares||[]).forEach(function(o){
       if(o && o.tm && Math.abs(o.tm-2/3)<0.02){ cur.push(o); if(cur.length===3){ out.push(cur); cur=[]; } }
