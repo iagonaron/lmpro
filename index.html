@@ -4995,8 +4995,10 @@ function showEnig(kind){
         var cpFal=(window.LMCarr&&window.LMCarr.faltaTxt)?window.LMCarr.faltaTxt(cp.programada):'';
         setTimeout(function(){ if(window.LMCarr&&window.LMCarr.sinc) window.LMCarr.sinc(); },60);
         return cv2Tarjeta({cls:'carr-lanz carr-anim cv2-info'+(o.leido?'':' no-leido'), id:o.id, col:'azul', attrs:' data-carr-id="'+esc(cpId)+'"',
-          tileHTML:carrIc(), fondo:carrFx(),
-          tit:esc(cp.creador_nombre||'Un compañero')+' ha anunciado una partida', sub:esc(cpG),
+          /* (25-nov-2026, Iago) el avatar de quien la crea, vivo, con la espiral pequeña girando abajo a la derecha (donde va el instrumento);
+             lo monta carrusel-aviso.js (LMCarr). Mientras carga, o si falla, queda la espiral de siempre. Si la crea él: «¡A la primera invito yo!» */
+          tileHTML:(cp.creador?'<span class="carr-avt" data-carr-av="'+esc(cp.creador)+'"'+(cp.profe?' data-carr-prof="1"':'')+' data-carr-cfg="'+esc(JSON.stringify(cp.av||null))+'">'+carrIc()+'</span>':carrIc()), fondo:carrFx(),
+          tit:esc(cp.creador_nombre||'Un compañero')+' ha anunciado una partida', sub:esc(cpG)+(cp.profe?' <span class="carr-invito">¡A la primera invito yo!</span>':''),
           cuerpo:'<div class="alu-item-cuerpo"><b>'+esc(cpF)+'</b> · <span data-carr-cuenta="'+esc(cp.programada||'')+'">'+esc(cpFal)+'</span></div>',
           sec:'<button type="button" class="cv2-btn2 carr-b carr-b-visto" data-carr-visto="'+esc(cpId)+'">Marcar como visto</button>',
           btn:'<button type="button" class="cv2-btn carr-b carr-b-si" data-carr-apunta="'+esc(cpId)+'">Me apunto</button><span class="carr-chip carr-ok">✓ Apuntado</span><span class="carr-chip carr-off">Ya no está disponible</span>',
@@ -11570,7 +11572,7 @@ body.tester-sin-by .topbar-right #rs-mini{order:2}
 <!-- (20-nov-2026, Iago) LECCIONES DEL LIBRO EN DIGITAL en la campana (piel/libro-digital.js). Quitarlo: borrar esta línea. -->
 <script src="https://ge.lmathome.es/piel/libro-digital.js?v=7" defer></script>
 <!-- (20-nov-2026, Iago) CARRUSEL PRO ONLINE · botón del caracol y cartelito de partidas (piel/carrusel-aviso.js, el mismo que en GE). Quitarlo: borrar esta línea. -->
-<script src="https://ge.lmathome.es/piel/carrusel-aviso.js?v=20261124e" defer></script>
+<script src="https://ge.lmathome.es/piel/carrusel-aviso.js?v=20261125a" defer></script>
 <script src="https://ge.lmathome.es/piel/avisos/actitud/mg-anim.js?v=2" defer></script><!-- (13-nov-2026, C0) animación del 👍 y el sello la primera vez -->
 </body>
 </html>
