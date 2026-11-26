@@ -963,8 +963,18 @@
         document.body.classList.add('lb-ent');
         var lista=(new URLSearchParams(location.search).get('evaluar')||'').split(',').map(function(x){ return parseInt(x,10); }).filter(function(x){ return x>0; });
         var tabs=document.createElement('div'); tabs.id='lbEvalTabs';
+        /* (26-nov-2026, Iago) «que me deje pasar de una a la siguiente»: además de un botón por lección, ‹ › y las flechas del teclado */
+        var irA=function(n){ if(n===J.n) return; var q=new URLSearchParams(location.search); q.set('libro',n); location.replace(location.pathname+'?'+q.toString()); };
+        var pos=lista.indexOf(J.n);
+        var flecha=function(txt,d){ var b=document.createElement('button'); b.type='button'; b.textContent=txt; b.title=d<0?'Lección anterior':'Lección siguiente';
+            b.style.padding='0 14px'; var dest=lista[pos+d]; if(pos<0 || dest==null){ b.disabled=true; b.style.opacity='.35'; b.style.cursor='default'; } else b.onclick=function(){ irA(dest); }; return b; };
+        if(lista.length>1) tabs.appendChild(flecha('‹',-1));
         if(lista.length>1) lista.forEach(function(n){ var b=document.createElement('button'); b.type='button'; b.textContent='Lección '+n; if(n===J.n) b.className='on';
-            b.onclick=function(){ if(n===J.n) return; var q=new URLSearchParams(location.search); q.set('libro',n); location.replace(location.pathname+'?'+q.toString()); }; tabs.appendChild(b); });
+            b.onclick=function(){ irA(n); }; tabs.appendChild(b); });
+        if(lista.length>1) tabs.appendChild(flecha('›',1));
+        if(lista.length>1) document.addEventListener('keydown',function(ev){ if(pos<0) return;
+            var d=(ev.key==='ArrowRight'||ev.key==='PageDown')?1:((ev.key==='ArrowLeft'||ev.key==='PageUp')?-1:0); if(!d) return;
+            var dest=lista[pos+d]; if(dest!=null){ ev.preventDefault(); irA(dest); } });
         var gl=document.createElement('span'); gl.className='g'; tabs.appendChild(gl); document.body.appendChild(tabs);
         Promise.resolve(window.__lbProfPromesa).then(function(){ var g=window.__lbEvalGrupo; gl.textContent=g?('Apuntes de clase · '+String(g).replace(/^4/,'4.º ').replace(/^2Gp/,'2.º GP ')):'Sin apuntes de clase guardados'; });
       }catch(e){ console.warn('[libro] evaluar',e); } }
