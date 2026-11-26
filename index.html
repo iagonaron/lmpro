@@ -5916,9 +5916,8 @@ function showEnig(kind){
           return '<div class="mr-fila" style="--apc:'+a.color+'"><span class="mr-barrita"></span>'
             +'<span class="mr-fmeta"><span class="mr-flec">'+esc(etiquetaLeccion(s))+'</span>'
             +'<span class="mr-fsub">'+esc(a.label)+' · '+fFecha(s.fecha)+'</span></span>'
-            +(s.rev ? '<span class="mr-fder"><span class="mr-fnota" style="color:'+colorNota(s.nota)+'">'+f2(s.nota)+'</span>'
-                +'<button type="button" class="mr-verficha" data-rev="'+esc(s.rev)+'" title="Ver tu ficha corregida">Ver ficha corregida ›</button></span></div>'
-              : '<span class="mr-fnota" style="color:'+colorNota(s.nota)+'">'+f2(s.nota)+'</span></div>'); }).join('')
+            +'<span class="mr-fnota" style="color:'+colorNota(s.nota)+'">'+f2(s.nota)+'</span>'
+            +(s.rev ? '<button type="button" class="mr-verficha" data-rev="'+esc(s.rev)+'" title="Ver tu ficha corregida">Ver ficha corregida ›</button>' : '')+'</div>'; }).join('')
       : '<div class="mr-vacio-l">Aquí irán apareciendo tus notas de clase (ritmo, entonación, dictados y fichas).</div>';
     return '<section class="mr-card"><div class="mr-ctit"><span>Notas de clase (media)</span><span class="mr-pct">'+pc(p.clase)+'</span></div>'
       +'<div class="mr-media-num" style="color:'+colorNota(m)+'">'+f2(m)+'</div>'
@@ -6231,7 +6230,7 @@ function showEnig(kind){
       +'.mr-lista::-webkit-scrollbar{width:7px}.mr-lista::-webkit-scrollbar-thumb{background:var(--mr-bd);border-radius:99px}'
       +'.mr-vacio-l{font-size:12px;color:var(--mr-dim2);line-height:1.5}'
       +'.mr-fila{display:grid;grid-template-columns:8px 1fr auto;align-items:center;gap:9px;background:var(--mr-card2);border:1px solid var(--mr-bd2);border-radius:11px;padding:7px 10px}'
-      +'.mr-fder{display:flex;flex-direction:column;align-items:flex-end;gap:4px}.mr-verficha{font:700 11px/1 inherit;color:var(--apc,#ec4899);background:transparent;border:1px solid var(--apc,#ec4899);border-radius:6px;padding:4px 8px;cursor:pointer;white-space:nowrap}.mr-verficha:hover{background:rgba(255,255,255,.08)}'
+      +'.mr-verficha{grid-column:1/-1;justify-self:end;margin-top:-3px;font-family:inherit;font-weight:700;font-size:10.5px;line-height:1;color:var(--apc,#ec4899);background:transparent;border:1px solid var(--apc,#ec4899);border-radius:6px;padding:4px 7px;cursor:pointer;white-space:nowrap}.mr-verficha:hover{background:rgba(255,255,255,.08)}'
       +'.mr-barrita{width:8px;height:26px;border-radius:99px;background:var(--apc)}'
       +'.mr-fmeta{min-width:0}.mr-flec,.mr-fsub{display:block}'
       +'.mr-flec{font-size:12.5px;font-weight:700;color:var(--mr-ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}'
