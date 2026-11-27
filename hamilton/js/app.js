@@ -605,8 +605,9 @@
   }
 
   /* ── Test ───────────────────────────────────────── */
-  // Se contesta una pregunta tras otra, sin volver atrás. Cada respuesta se guarda al pasar a la siguiente:
-  // si el alumno sale, retoma en la primera que le queda. Al acabar se entrega y se ve todo corregido.
+  // Se contesta una pregunta tras otra. (27-nov-2026, Iago) Antes de entregar se puede volver atrás y adelante para repasar
+  // y cambiar respuestas. Cada respuesta se guarda al pasar de pregunta: si el alumno sale, retoma en la primera que le queda.
+  // Al entregar ya no se puede cambiar nada y se ve todo corregido.
   var T = window.HAM_TEST;
   function rutasTest() { var r = []; T.forEach(function (q) { var m = q.media || {}; [m.img, m.audio, m.video].forEach(function (x) { if (x) r.push(x); }); (m.figuras || []).forEach(function (f) { r.push(f); }); }); return r; }
   function cargaResp() {
@@ -639,7 +640,8 @@
   }
   function pintaPregunta() {
     pararTodo(); window.scrollTo(0, 0);
-    var q = T[st.qi], m = q.media || {}, sel = null, par = {}, esc_ = "", cuerpo = "";
+    var q = T[st.qi], m = q.media || {}, prev = st.resp[q.id], sel = (q.tipo !== "emparejar" && prev) ? prev : null, par = {}, esc_ = "", cuerpo = "";
+    if (q.tipo === "emparejar" && prev && typeof prev === "object") for (var pk in prev) par[pk] = prev[pk];
     if (q.tipo === "img") esc_ = '<img class="figura" alt="Personaje del musical" src="' + esc(u(m.img)) + '">';
     else if (q.tipo === "aud") esc_ = '<div class="reproductor"><button type="button" class="play-grande" id="t-play" aria-label="Escuchar el fragmento">' + ICO.play + '</button><div class="ondas" id="t-ondas">' + "<i></i>".repeat(14) + '</div><span class="aviso">Puedes escucharlo las veces que quieras</span><audio id="t-audio" preload="auto" src="' + esc(u(m.audio)) + '"></audio></div>';
     else if (q.tipo === "vid") esc_ = '<div class="t-video">' + videoHTML(m.video, "Escuchar") + "</div>";
@@ -648,11 +650,11 @@
     if (q.tipo === "emparejar") {
       cuerpo = '<div class="parejas">' + m.figuras.map(function (f, i) {
         var key = f.split("/").pop().split(".")[0];
-        return '<div><label for="sel-' + key + '">Figura ' + (i + 1) + '</label><select id="sel-' + key + '" data-f="' + key + '"><option value="">—</option>' + q.nombres.map(function (nm) { return '<option value="' + nm.toLowerCase() + '">' + esc(nm) + "</option>"; }).join("") + "</select></div>";
+        return '<div><label for="sel-' + key + '">Figura ' + (i + 1) + '</label><select id="sel-' + key + '" data-f="' + key + '"><option value="">—</option>' + q.nombres.map(function (nm) { return '<option value="' + nm.toLowerCase() + '"' + (par[key] === nm.toLowerCase() ? " selected" : "") + ">" + esc(nm) + "</option>"; }).join("") + "</select></div>";
       }).join("") + "</div>";
     } else {
       cuerpo = '<div class="opciones">' + q.opciones.map(function (o, i) {
-        return '<button type="button" class="opcion" data-id="' + o.id + '"><span class="letra">' + "abcd"[i] + "</span><span>" + esc(o.t) + "</span></button>";
+        return '<button type="button" class="opcion' + (sel === o.id ? " sel" : "") + '" data-id="' + o.id + '"><span class="letra">' + "abcd"[i] + "</span><span>" + esc(o.t) + "</span></button>";
       }).join("") + "</div>";
     }
     var ultimo = st.qi === T.length - 1;
@@ -660,7 +662,9 @@
       '<div class="test-marco"><div class="escena' + (q.tipo === "ide" ? " escritorio" : "") + (q.tipo === "vid" ? " con-video" : "") + '">' + esc_ + "</div>" +
       '<div class="pregunta"><div class="t-cab"><p class="rotulo">Pregunta ' + q.n + " de " + T.length + '</p><i class="t-progreso"><b style="width:' + (100 * st.qi / T.length) + '%"></b></i></div>' +
       '<p class="enun">' + esc(q.texto) + "</p>" + cuerpo +
-      '<div class="botonera t-pie"><span class="aviso">Al pasar a la siguiente, esta respuesta queda guardada.</span><button class="btn lleno" type="button" id="t-sig" disabled>' + (ultimo ? "Entregar el test" : "Siguiente") + "</button></div></div></div>";
+      '<div class="botonera t-pie">' + (st.qi > 0 ? '<button class="btn icono" type="button" id="t-ant" aria-label="Pregunta anterior" title="Pregunta anterior">' + ICO.atras + "</button>" : "") +
+      '<span class="aviso">' + (ultimo ? "Antes de entregar puedes volver atrás y repasar. Al entregar, ya no se puede cambiar." : "Puedes volver atrás y cambiar respuestas hasta que entregues.") + "</span>" +
+      '<button class="btn lleno" type="button" id="t-sig"' + (respondida(q) ? "" : " disabled") + ">" + (ultimo ? "Entregar el test" : "Siguiente") + "</button></div></div></div>";
     if (q.tipo === "ide") $(".escena").style.backgroundImage = 'url("img/fondos/03-escritorio-1776.webp")';
     var sig = $("#t-sig");
     if (q.tipo === "emparejar") {
@@ -688,11 +692,18 @@
       au.onpause = au.onended = function () { pl.classList.remove("sonando"); pl.innerHTML = ICO.play; on.classList.remove("on"); };
     }
     if (q.tipo === "vid") controlVideo($(".t-video video"), $(".t-video .vo-play"), function () {});
-    sig.onclick = function () {
-      if (sig.disabled) return;
-      st.resp[q.id] = q.tipo === "emparejar" ? par : sel;
+    function apunta() { // guarda lo marcado en esta pregunta (aunque esté a medias, para no perderlo al ir atrás)
+      var r = q.tipo === "emparejar" ? par : sel;
+      if (!r || (q.tipo === "emparejar" && !Object.keys(r).some(function (x) { return r[x]; }))) return;
+      st.resp[q.id] = r;
       ls.set(k("resp"), st.resp);
       guardar(st.est.camino, { test_resp: st.resp }, false);
+    }
+    var ant = $("#t-ant");
+    if (ant) ant.onclick = function () { apunta(); st.qi--; pintaPregunta(); };
+    sig.onclick = function () {
+      if (sig.disabled) return;
+      apunta();
       if (ultimo) entregar(); else { st.qi++; pintaPregunta(); }
     };
   }
