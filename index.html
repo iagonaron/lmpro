@@ -5950,7 +5950,7 @@ function showEnig(kind){
           +'<span class="mr-marca'+(susp?' susp':(ent===5?' cinco':''))+'">'+ent+'<span class="mr-real'+(realRoja?' rojo':'')+'">'+f2(v)+'</span></span></div>'; }).join('');
       var act=actitudDe(ex,t);
       return '<div class="mr-bol"><span class="mr-bol-t">'+t+'</span><div class="mr-bol-cuerpo"><div class="mr-bol-nums">'+nums+'</div>'
-        +'<div class="mr-bol-act">Actitud: <b style="color:'+colorNota(act)+'">'+actitudTxt(act)+'</b><button type="button" class="mr-act-q" data-vid-actitud title="Cómo valoro tu actitud (vídeo)">?</button></div></div></div>';
+        +'<div class="mr-bol-act">Actitud: <b style="color:'+colorNota(act)+'">'+actitudTxt(act)+'</b></div></div></div>';
     }).join('');
     return '<section class="mr-card"><div class="mr-ctit"><span>Nota boletín</span><button class="mr-info-btn" type="button" id="mr-btn-info">¿cómo sale?</button></div>'
       +'<div class="mr-bols">'+filas+'</div></section>';
@@ -6020,10 +6020,10 @@ function showEnig(kind){
   document.addEventListener('click', function(e){ var b = e.target.closest && e.target.closest('[data-vid-actitud]'); if (!b) return; e.preventDefault(); e.stopPropagation(); abrirVideoActitud(); }, true);
   /* (12-nov-2026, Iago) «MI ACTITUD» y «MAPA TEÓRICO» en Mis resultados.
      Mi actitud: ventana con la página de ge.lmathome.es/piel/avisos/actitud/real.html (la misma del vídeo, con sus datos de verdad):
-     lo que resta, lo neutro y lo que suma este trimestre, la escalera de actitud, el balance de fuerzas y la barra de lo sumado (+x,xx/2).
+     (27-nov-2026: ya no resta nada) la nota que pone Iago, lo que suma este trimestre, la escalera de actitud y la barra de lo sumado (+x,xx/2).
      Datos: suite_mi_actitud (solo los suyos), su actitud del trimestre (y la del anterior), sus medias de clase y su mapa de teoría.
      Para quitarlo: borrar este bloque, la barra .mr-acc de render() y su CSS (.mr-acc / #mi-actitud). */
-  var MI_ACT_URL = 'https://ge.lmathome.es/piel/avisos/actitud/real.html?real=1&v=2026-11-21a';
+  var MI_ACT_URL = 'https://ge.lmathome.es/piel/avisos/actitud/real.html?real=1&v=2026-11-27a';
   var MAPA_JS_MR = 'https://ge.lmathome.es/piel/mapa.js?v=2026-10-21a';
   function rpcMR(fn, args){ var c = cli(); if (!c) return Promise.resolve(null); return c.rpc(fn, args).then(function(r){ return r.error ? null : r.data; }, function(){ return null; }); }
   function abrirMapaMR(){
@@ -6088,8 +6088,8 @@ function showEnig(kind){
     var inner='<h4>De dónde sale tu nota del boletín</h4>'
       +'<div class="mr-msub">La nota del boletín es un número entero. Dentro de él, en pequeñito, tienes la nota real con la que sale.</div>'
       +pesos
-      +'<div class="mr-blq"><h5>La actitud</h5><button type="button" class="mr-act-vid" data-vid-actitud>▶ Vídeo: cómo valoro tu actitud</button>'
-      +'<div class="mr-avi" style="margin-top:0">La actitud <b class="mr-ink">no está dentro del examen ni dentro de las notas de clase</b>. Se aplica al final, sobre la nota ya calculada: la nota académica vale un 95 % y la actitud un 5 %. Por eso la ves en cada trimestre, debajo de tu nota.</div>'
+      +'<div class="mr-blq"><h5>La actitud</h5>'
+      +'<div class="mr-avi" style="margin-top:0">La actitud <b class="mr-ink">no está dentro del examen ni dentro de las notas de clase</b>. Se aplica al final, sobre la nota ya calculada: la nota académica vale un 95 % y la actitud un 5 %. Por eso la ves en cada trimestre, debajo de tu nota. La pone Iago y, encima, se suma lo que haces por tu cuenta (hasta +2): lo ves en «Mi actitud».</div>'
       +'<div class="mr-avi" style="margin-top:10px">Lo que vale más o menos cada palabra:</div><div class="mr-esc">'+escala+'</div></div>';
     var m=document.getElementById('mr-modal');
     if(!m){ m=document.createElement('div'); m.id='mr-modal'; m.className='mr-modal';
