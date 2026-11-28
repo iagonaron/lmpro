@@ -405,12 +405,35 @@
     return '<div class="vo-video' + (peq ? " peq" : "") + '"><video playsinline preload="auto" src="' + esc(u(src)) + '"></video>' +
       '<button type="button" class="vo-play' + (txtBoton ? "" : " solo") + '" data-txt="' + esc(txtBoton || "") + '" aria-label="' + esc(txtBoton || "Reproducir") + '">' + (txtBoton ? ICO.play + " " + esc(txtBoton) : ICO.play) + '</button><i class="vo-barra"><b></b></i><div class="vo-atras" hidden></div></div>';
   }
+  // (28-nov) La frase va DELANTE del vídeo, a su altura, con el play: primero se lee y luego se pulsa (sin arranque solo).
+  // Al acabar vuelve la frase con «Otra vez»; en una pausa a mitad solo se ve el play, para no tapar la letra.
   function pasoClip(el, s, auto, listo) {
     var F = window.HAM_FIG || {};
-    el.innerHTML = '<p class="vo-txt">' + (s.fig && F[s.fig] ? '<img class="vo-fig" alt="" src="' + esc(u(F[s.fig])) + '">' : "") + "<span>" + s.txt + "</span></p>" + videoHTML(s.src);
-    var v = el.querySelector("video");
-    controlVideo(v, el.querySelector(".vo-play"), listo);
-    if (auto) intenta(v);
+    el.innerHTML = videoHTML(s.src);
+    var caja = el.querySelector(".vo-video"), v = caja.querySelector("video"), b = caja.querySelector(".vo-play");
+    var tel = document.createElement("div");
+    tel.className = "vo-telon";
+    tel.innerHTML = '<p class="vo-txt">' + (s.fig && F[s.fig] ? '<img class="vo-fig" alt="" src="' + esc(u(F[s.fig])) + '">' : "") + "<span>" + s.txt + "</span></p>";
+    tel.appendChild(b); caja.classList.add("con-telon"); caja.insertBefore(tel, v.nextSibling);
+    controlVideo(v, b, listo);
+    var base = v.onplay, fin = v.onended;
+    var mira = function () {
+      base(); tel.hidden = !v.paused;
+      tel.classList.toggle("sin-frase", v.paused && !v.ended && v.currentTime > 0.05);
+      b.classList.toggle("solo", !v.ended);
+    };
+    // La frase encaja en el recuadro del vídeo: letra lo más grande posible sin pasar de 3 líneas
+    var ajusta = function () {
+      if (!tel.isConnected) { window.removeEventListener("resize", ajusta); return; }
+      var pp = tel.querySelector(".vo-txt"), sp = pp && pp.querySelector("span"); if (!sp || tel.hidden) return;
+      var f = 24; pp.style.fontSize = f + "px";
+      while (f > 15 && sp.getBoundingClientRect().height > 3.3 * f * 1.42) { f--; pp.style.fontSize = f + "px"; }
+    };
+    v.onplay = v.onpause = function () { mira(); ajusta(); };
+    v.onended = function () { fin(); mira(); ajusta(); };
+    mira(); ajusta();
+    window.addEventListener("resize", ajusta);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(ajusta);
   }
 
   /* Actividades del exprés (no puntúan: se completan haciéndolas) */
