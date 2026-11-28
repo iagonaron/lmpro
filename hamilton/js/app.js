@@ -432,6 +432,7 @@
     v.onplay = v.onpause = function () { mira(); ajusta(); };
     v.onended = function () { fin(); mira(); ajusta(); };
     mira(); ajusta();
+    var im = tel.querySelector("img"); if (im && !im.complete) im.onload = ajusta;
     window.addEventListener("resize", ajusta);
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(ajusta);
   }
